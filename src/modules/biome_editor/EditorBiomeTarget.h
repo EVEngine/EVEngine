@@ -1,5 +1,6 @@
 #pragma once
 
+// Compatibility facade. Canonical implementation is owned by biome_editing.
 #include "biome_editing/BiomeTarget.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorProtocol.h"

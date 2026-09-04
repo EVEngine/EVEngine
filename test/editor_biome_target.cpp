@@ -1,4 +1,8 @@
 #include "biome_editing/BiomeTarget.h"
+#include "biome_editor/BiomeEditorModule.h"
+#include "common/Capability.h"
+#include "common/EditorAutomation.h"
+#include "editor/Editor.h"
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
 #include "zeroerr/assert.h"
@@ -93,4 +97,45 @@ TEST_CASE("editor.biome.runtime_publishes_candidates_and_previews_deterministica
     CHECK_EQ(static_cast<int>(runtime.publish(target, missing).code()),
              static_cast<int>(EditorStatus::NotFound));
     CHECK_EQ(runtime.revision(), published);
+}
+
+TEST_CASE("editor.biome.adapter_registers_commands_and_owns_automation_targets") {
+    using eve::editor::Editor;
+    Editor editor;
+    eve::biome_editor::BiomeEditorModule adapter;
+    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    REQUIRE(automation != nullptr);
+
+    const std::string commands = automation->invoke("commands", "{}");
+    CHECK(commands.find("biome.layer.create.v1") != std::string::npos);
+    CHECK(commands.find("biome.asset.create.v1") != std::string::npos);
+    CHECK(commands.find("biome.property.set.v1") != std::string::npos);
+
+    const std::string created = automation->invoke(
+        "target-create",
+        R"({"target":"agent.biome","type":"biome","layer":"forest","spatial":"areas/forest.spatial"})");
+    REQUIRE(created.find("\"status\":\"applied\"") != std::string::npos);
+
+    const std::string asset = automation->invoke(
+        "execute",
+        R"({"target":"agent.biome","command":"biome.asset.create.v1","payload":{"layer":"forest","id":"oak","asset":"models/oak.prefab","weight":2,"minScale":0.8,"maxScale":1.2}})");
+    REQUIRE(asset.find("\"status\":\"applied\"") != std::string::npos);
+
+    const std::string density = automation->invoke(
+        "execute",
+        R"({"target":"agent.biome","command":"biome.property.set.v1","payload":{"item":"forest","type":"biome.layer","path":"layer.density","value":0.5}})");
+    REQUIRE(density.find("\"status\":\"applied\"") != std::string::npos);
+
+    const std::string inspected = automation->invoke("inspect", R"({"target":"agent.biome"})");
+    CHECK(inspected.find("forest") != std::string::npos);
+    CHECK(inspected.find("oak") != std::string::npos);
+    CHECK(inspected.find("0.5") != std::string::npos);
+
+    const std::string undone = automation->invoke("undo", R"({"target":"agent.biome"})");
+    CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
+    const std::string afterUndo = automation->invoke("inspect", R"({"target":"agent.biome"})");
+    CHECK(afterUndo.find("0.5") == std::string::npos);
+
+    const std::string closed = automation->invoke("target-close", R"({"target":"agent.biome"})");
+    CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
 }

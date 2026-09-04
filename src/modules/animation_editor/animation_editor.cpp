@@ -1,7 +1,4 @@
+#include "animation_editor/AnimationEditorModule.h"
 #include "animation_editor/EditorAnimationClip.h"
-
-namespace eve::editor {
-namespace {
-constexpr int animationeditorModuleAnchor = 0;
-}
-}  // namespace eve::editor
+#include "animation_editor/EditorAnimationGraph.h"
+#include "animation_editor/EditorSkeletonOverlay.h"

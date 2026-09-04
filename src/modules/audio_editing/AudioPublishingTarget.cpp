@@ -14,6 +14,16 @@ AudioSourcePublishingTarget::AudioSourcePublishingTarget(
     std::string id, IAudioSourceRuntimeSink* sink)
     : document_(std::move(id)), sink_(sink) {}
 
+TargetDescriptor AudioSourcePublishingTarget::describe() const {
+    TargetDescriptor descriptor = document_.describe();
+    descriptor.type = "audio-source-runtime";
+    return descriptor;
+}
+
+void* AudioSourcePublishingTarget::queryCapability(const CapabilityId& capability) {
+    return document_.queryCapability(capability);
+}
+
 EditorResult<void> AudioSourcePublishingTarget::applyDomainOperation(
     const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);

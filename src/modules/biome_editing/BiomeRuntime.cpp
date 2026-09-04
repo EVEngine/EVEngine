@@ -16,7 +16,7 @@ EditorResult<T> fail(EditorStatus status, const char* rule, std::string message)
 BiomeDocumentRuntime::BiomeDocumentRuntime()  = default;
 BiomeDocumentRuntime::~BiomeDocumentRuntime() = default;
 
-EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget& document,
+EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget&   document,
                                                  const IBiomeSpatialResolver& resolver) {
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
@@ -54,8 +54,10 @@ EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget& docu
     return eve::editing::applied<void>(diagnostics);
 }
 
-EditorResult<std::unique_ptr<procgen::PointSet>> BiomeDocumentRuntime::preview(
-    procgen::SpatialData* domain, float spacing, std::uint32_t seed, float jitter, Revision expectedRevision) {
+EditorResult<std::unique_ptr<procgen::PointSet>> BiomeDocumentRuntime::preview(procgen::SpatialData* domain,
+                                                                               float spacing, std::uint32_t seed,
+                                                                               float    jitter,
+                                                                               Revision expectedRevision) {
     if (expectedRevision != revision_)
         return fail<std::unique_ptr<procgen::PointSet>>(EditorStatus::Conflict, "editor.biome.stale",
                                                         "Biome preview generation is stale");

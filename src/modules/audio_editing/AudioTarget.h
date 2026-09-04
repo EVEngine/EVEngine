@@ -12,8 +12,12 @@ namespace eve::audio_editing {
 class AudioSourceTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
-                                public IPropertyProvider {
+                                public IPropertyProvider,
+                                public IEditingSnapshotProvider {
 public:
+    /** @brief Stable capability identity for audio-source property editing. */
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.audio-source"); }
+
     explicit AudioSourceTarget(std::string id);
 
     TargetId targetId() const override { return TargetId(id_); }
@@ -36,7 +40,7 @@ public:
                                             const PropertyPath& path) const override;
 
     /** @brief Capture deterministic source settings for scene/prefab persistence. */
-    EditorValue snapshotValue() const;
+    EditorValue snapshotValue() const override;
     /** @brief Atomically load a versioned source snapshot. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Report missing assets and inconsistent attenuation/loop settings. */
@@ -81,6 +85,13 @@ public:
     std::uint64_t revision() const override { return document_.revision(); }
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
+    TargetDescriptor describe() const override;
+    /**
+     * @brief Forward authoring capabilities from the owned document.
+     * @return Borrowed pointer owned by this target, or null.
+     * @lifetime Valid until this target is destroyed or its document is replaced.
+     */
+    void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     [[nodiscard]] EditorResult<void> commitDomainState(

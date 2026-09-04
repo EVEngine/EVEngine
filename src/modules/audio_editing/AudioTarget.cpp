@@ -36,13 +36,14 @@ AudioSourceTarget::AudioSourceTarget(std::string id) : id_(std::move(id)), value
 
 TargetDescriptor AudioSourceTarget::describe() const {
     return {TargetId(id_), "audio-source", revision_, false,
-            {CapabilityId("eve.editor.target.audio-source")}};
+            {editingCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
 
 void* AudioSourceTarget::queryCapability(const CapabilityId& capability) {
-    return capability == CapabilityId("eve.editor.target.audio-source")
-               ? static_cast<IPropertyProvider*>(this)
-               : nullptr;
+    if (capability == editingCapabilityId()) return static_cast<IPropertyProvider*>(this);
+    if (capability == IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<IEditingSnapshotProvider*>(this);
+    return nullptr;
 }
 
 EditorResult<void> AudioSourceTarget::applyDomainOperation(const DomainOperation& operation) {
