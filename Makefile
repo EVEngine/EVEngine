@@ -336,6 +336,21 @@ ensure-built/win32:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
+	if [ ! -f build/win32/test/test_src.txt ]; then stale=1; \
+	else \
+	  n_disk=0; \
+	  for cpp in test/*.cpp; do \
+	    [ -f "$$cpp" ] || continue; \
+	    n_disk=$$((n_disk+1)); \
+	    if [ "$$cpp" -nt build/win32/test/test_src.txt ]; then stale=1; break; fi; \
+	  done; \
+	  n_list=$$(grep -c . build/win32/test/test_src.txt 2>/dev/null || echo 0); \
+	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
+	fi; \
+	if [ "$$stale" = 1 ] && [ -f build/win32/build.ninja ]; then \
+	  echo "source list stale; reconfiguring build/win32"; \
+	  $(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS); \
+	fi; \
 	if [ -f build/win32/build.ninja ] \
 	   && [ "$$(cat build/win32/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
 	   && [ "$$stale" = 0 ] \
@@ -407,6 +422,17 @@ ensure-built/win32-debug:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
+	if [ ! -f build/win32-debug/test/test_src.txt ]; then stale=1; \
+	else \
+	  n_disk=0; \
+	  for cpp in test/*.cpp; do \
+	    [ -f "$$cpp" ] || continue; \
+	    n_disk=$$((n_disk+1)); \
+	    if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; break; fi; \
+	  done; \
+	  n_list=$$(grep -c . build/win32-debug/test/test_src.txt 2>/dev/null || echo 0); \
+	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
+	fi; \
 	if [ "$$stale" = 1 ] && [ -f build/win32-debug/build.ninja ]; then \
 	  echo "source list stale; reconfiguring build/win32-debug"; \
 	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \

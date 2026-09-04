@@ -17,10 +17,27 @@ add_test(NAME cmake.third_party_patch_idempotence
 set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
 
 # Test sources are discovered like engine/module sources. Do not use
-# CONFIGURE_DEPENDS here: Ninja glob verification plus files appearing during
-# a long configure restacks "Re-checking globbed directories" forever.
-# `make test/win32-debug` already treats a newer test/ directory as stale.
+# CONFIGURE_DEPENDS: Ninja glob verification plus files appearing during a
+# long configure restacks "Re-checking globbed directories" forever.
+# Write test_src.txt only when the sorted glob changes. `make test/win32-debug`
+# reconfigures when an individual test/*.cpp is newer than that list (not when
+# anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+list(SORT all_test_cpp)
+set(_eve_test_src_txt "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt")
+set(_eve_test_src_text "")
+foreach(_eve_test_cpp IN LISTS all_test_cpp)
+    file(TO_CMAKE_PATH "${_eve_test_cpp}" _eve_test_cpp)
+    string(APPEND _eve_test_src_text "${_eve_test_cpp}\n")
+endforeach()
+if(EXISTS "${_eve_test_src_txt}")
+    file(READ "${_eve_test_src_txt}" _eve_test_src_old)
+else()
+    set(_eve_test_src_old "")
+endif()
+if(NOT _eve_test_src_text STREQUAL _eve_test_src_old)
+    file(WRITE "${_eve_test_src_txt}" "${_eve_test_src_text}")
+endif()
 list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
 
 if(EVENGINE_BUILD_DEMO)
