@@ -137,10 +137,16 @@ EditorDiagnostic diagnostic(const char* rule, std::string message) {
 }  // namespace
 AvatarDocumentTarget::AvatarDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor AvatarDocumentTarget::describe() const {
-    return {TargetId(id_), "avatar-asset", revision_, false, {CapabilityId("eve.editor.target.avatar-properties")}};
+    return {TargetId(id_),
+            "avatar-asset",
+            revision_,
+            false,
+            {CapabilityId("eve.editor.target.avatar-properties"), IPropertyProvider::editingCapabilityId()}};
 }
 void* AvatarDocumentTarget::queryCapability(const CapabilityId& c) {
-    return c == CapabilityId("eve.editor.target.avatar-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
+    if (c == CapabilityId("eve.editor.target.avatar-properties") || c == IPropertyProvider::editingCapabilityId())
+        return static_cast<IPropertyProvider*>(this);
+    return nullptr;
 }
 bool AvatarDocumentTarget::matches(const SelectionSnapshot& s) const {
     if (s.items.empty()) return false;

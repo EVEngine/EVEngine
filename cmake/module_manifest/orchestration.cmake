@@ -112,10 +112,14 @@ eve_declare_module(NAME voxelworld_target LAYER 7 SCRIPT VoxelWorldTargetModule 
 # domain editing implementation.
 eve_declare_module(NAME action_editor LAYER 7 SCRIPT ActionEditorModule SLOT actionEditor
                    DEPS action animation editor GROUP 3d)
-eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor GROUP 3d web)
-eve_declare_module(NAME audio_editor LAYER 7 DEPS audio_editing editor GROUP 3d web)
-eve_declare_module(NAME avatar_editor LAYER 7 DEPS avatar_editing editor GROUP 3d)
-eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor GROUP 3d)
+eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor
+                   SCRIPT AnimationEditorModule SLOT animationEditor GROUP 3d web)
+eve_declare_module(NAME audio_editor LAYER 7 SCRIPT AudioEditorModule SLOT audioEditor
+                   DEPS audio audio_editing editor sound GROUP 3d web)
+eve_declare_module(NAME avatar_editor LAYER 7 SCRIPT AvatarEditorModule SLOT avatarEditor
+                   DEPS avatar_editing editor GROUP 3d)
+eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor procgen
+                   SCRIPT BiomeEditorModule SLOT biomeEditor GROUP 3d)
 eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d web)
 eve_declare_module(NAME domain_gizmo_editor LAYER 7 DEPS domain_gizmo_editing editor GROUP 3d web)
 eve_declare_module(NAME camera_editor LAYER 7 DEPS camera_editing domain_gizmo_editor editor GROUP 3d web)

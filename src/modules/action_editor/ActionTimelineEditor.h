@@ -7,6 +7,8 @@
 
 #include "action/ActionTimeline.h"
 #include "editor/EditorAuthority.h"
+#include "editor/EditorProperty.h"
+#include "editor/EditorSelection.h"
 #include "editor/EditorTransactionService.h"
 #include "editor/EditorWorkspace.h"
 
@@ -34,10 +36,21 @@ struct ActionTimelinePreviewPlan {
  * document persistence, undo and runtime loading cannot drift into separate
  * field mappings.
  */
-class ActionTimelineTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
+class ActionTimelineTarget final : public IDomainOperationTarget,
+                                   public IDomainOperationTargetStaging,
+                                   public IPropertyProvider,
+                                   public eve::editing::IEditingSnapshotProvider {
 public:
+    /**
+     * @brief Construct an empty, valid seed timeline for automation and inspectors.
+     * @param targetId Stable editor target identity; also seeds `actionId` when it is a LogicalId.
+     */
+    explicit ActionTimelineTarget(std::string targetId);
     /** @brief Construct an owning target from an already validated timeline. */
     ActionTimelineTarget(std::string targetId, action::ActionTimeline timeline);
+
+    /** @brief Capability identity published by describe() for Inspector property editing. */
+    static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.action-properties"); }
 
     /** @brief Stable editor target identity. */
     TargetId targetId() const override { return TargetId(targetId_); }
@@ -47,6 +60,14 @@ public:
     EditRegion dirtyRegion() const override { return {}; }
     /** @brief No-op for a semantic document target. */
     void clearDirtyRegion() override {}
+    /** @brief Describe the timeline document for tools and automation. */
+    TargetDescriptor describe() const override;
+    /**
+     * @brief Query property or snapshot capabilities.
+     * @return Borrowed pointer owned by this target, or null.
+     * @lifetime Valid until this target is destroyed or replaced.
+     */
+    void* queryCapability(const CapabilityId& capability) override;
 
     /** @brief Borrow the authoritative timeline until the next mutation. */
     const action::ActionTimeline& timeline() const noexcept { return timeline_; }
@@ -57,7 +78,25 @@ public:
     /** @brief Atomically publish a validated candidate. */
     [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    PropertySchema                           schema(const SelectionSnapshot& selection) const override;
+    PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    [[nodiscard]] EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+                                                        const EditorValue& value, PropertySetMode mode) const override;
+    [[nodiscard]] EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+                                                          const PropertyPath&      path) const override;
+
+    /** @brief Capture the canonical timeline as an authoring value tree. */
+    EditorValue snapshotValue() const override;
+    /** @brief Replace content when opening a persisted or automation-supplied timeline. */
+    [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+
 private:
+    bool matches(const SelectionSnapshot& selection) const;
+    [[nodiscard]] EditorResult<DomainOperation> replacement(const action::ActionTimeline& candidate,
+                                                            std::string                   property) const;
+    [[nodiscard]] EditorResult<void>            assign(action::ActionTimeline candidate);
+
     std::string            targetId_;
     action::ActionTimeline timeline_;
     unsigned long long     revision_ = 0;

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstdint>
 #include <set>
 #include <utility>
 
@@ -26,9 +27,18 @@ const std::string* stringField(const EditorValue& value, const char* key) {
     return entry ? entry->getIf<std::string>() : nullptr;
 }
 
-const double* numberField(const EditorValue& value, const char* key) {
+bool readNumber(const EditorValue& value, const char* key, double& out) {
     const EditorValue* entry = field(value, key);
-    return entry ? entry->getIf<double>() : nullptr;
+    if (!entry) return false;
+    if (const auto* real = entry->getIf<double>()) {
+        out = *real;
+        return true;
+    }
+    if (const auto* integer = entry->getIf<std::int64_t>()) {
+        out = static_cast<double>(*integer);
+        return true;
+    }
+    return false;
 }
 
 EditorValue keyValue(const AnimationTransformKey& key) {
@@ -41,27 +51,25 @@ EditorValue keyValue(const AnimationTransformKey& key) {
 
 EditorResult<AnimationTransformKey> parseKey(const EditorValue& value) {
     const auto* id = stringField(value, "id");
-    const auto* time = numberField(value, "time");
-    const auto* px = numberField(value, "px"); const auto* py = numberField(value, "py");
-    const auto* pz = numberField(value, "pz"); const auto* rx = numberField(value, "rx");
-    const auto* ry = numberField(value, "ry"); const auto* rz = numberField(value, "rz");
-    const auto* rw = numberField(value, "rw"); const auto* sx = numberField(value, "sx");
-    const auto* sy = numberField(value, "sy"); const auto* sz = numberField(value, "sz");
-    if (!id || id->empty() || !time || !px || !py || !pz || !rx || !ry || !rz || !rw || !sx || !sy || !sz)
+    double time = 0, px = 0, py = 0, pz = 0, rx = 0, ry = 0, rz = 0, rw = 0, sx = 0, sy = 0, sz = 0;
+    if (!id || id->empty() || !readNumber(value, "time", time) || !readNumber(value, "px", px) ||
+        !readNumber(value, "py", py) || !readNumber(value, "pz", pz) || !readNumber(value, "rx", rx) ||
+        !readNumber(value, "ry", ry) || !readNumber(value, "rz", rz) || !readNumber(value, "rw", rw) ||
+        !readNumber(value, "sx", sx) || !readNumber(value, "sy", sy) || !readNumber(value, "sz", sz))
         return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.invalid-key",
                                                 "Transform key requires a stable id, time and complete TRS");
-    const double values[]{*time, *px, *py, *pz, *rx, *ry, *rz, *rw, *sx, *sy, *sz};
+    const double values[]{time, px, py, pz, rx, ry, rz, rw, sx, sy, sz};
     for (double component : values)
         if (!std::isfinite(component))
             return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.nonfinite-key",
                                                     "Transform key components must be finite");
-    const double length = std::sqrt(*rx * *rx + *ry * *ry + *rz * *rz + *rw * *rw);
-    if (*time < 0.0 || *sx <= 0.0 || *sy <= 0.0 || *sz <= 0.0 || length < 1e-8)
+    const double length = std::sqrt(rx * rx + ry * ry + rz * rz + rw * rw);
+    if (time < 0.0 || sx <= 0.0 || sy <= 0.0 || sz <= 0.0 || length < 1e-8)
         return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.invalid-key-range",
                                                 "Key time must be non-negative, scale positive and rotation non-zero");
-    return eve::editing::applied<AnimationTransformKey>({StableId(*id), *time, *px, *py, *pz,
-                                                          *rx / length, *ry / length, *rz / length, *rw / length,
-                                                          *sx, *sy, *sz});
+    return eve::editing::applied<AnimationTransformKey>({StableId(*id), time, px, py, pz,
+                                                          rx / length, ry / length, rz / length, rw / length,
+                                                          sx, sy, sz});
 }
 
 EditorValue trackValue(const AnimationBoneTrack& track) {
@@ -99,12 +107,15 @@ EditorValue eventValue(const AnimationEventRecord& event) {
 }
 
 EditorResult<AnimationEventRecord> parseEvent(const EditorValue& value) {
-    const auto* id = stringField(value, "id"); const auto* time = numberField(value, "time");
-    const auto* name = stringField(value, "name"); const auto* payload = stringField(value, "payload");
-    if (!id || id->empty() || !time || !std::isfinite(*time) || *time < 0.0 || !name || name->empty() || !payload)
+    const auto* id = stringField(value, "id");
+    double time = 0;
+    const auto* name = stringField(value, "name");
+    const auto* payload = stringField(value, "payload");
+    if (!id || id->empty() || !readNumber(value, "time", time) || !std::isfinite(time) || time < 0.0 ||
+        !name || name->empty() || !payload)
         return clipError<AnimationEventRecord>(EditorStatus::Rejected, "editor.animation.invalid-event",
                                                "Event requires stable id, non-negative time, name and payload");
-    return eve::editing::applied<AnimationEventRecord>({StableId(*id), *time, *name, *payload});
+    return eve::editing::applied<AnimationEventRecord>({StableId(*id), time, *name, *payload});
 }
 
 EditorValue settingsValue(double duration, double sampleRate, bool loop) {
@@ -141,24 +152,29 @@ AnimationClipDocumentTarget::AnimationClipDocumentTarget(std::string id) : id_(s
 TargetDescriptor AnimationClipDocumentTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_); result.type = "animation-clip-document"; result.revision = revision_;
-    result.capabilities = {IAnimationClipEditTarget::editorCapabilityId()};
+    result.capabilities = {IAnimationClipEditTarget::editingCapabilityId(),
+                           eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
 }
 
 void* AnimationClipDocumentTarget::queryCapability(const CapabilityId& capability) {
-    return capability == IAnimationClipEditTarget::editorCapabilityId()
-               ? static_cast<IAnimationClipEditTarget*>(this) : nullptr;
+    if (capability == IAnimationClipEditTarget::editingCapabilityId())
+        return static_cast<IAnimationClipEditTarget*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
+    return nullptr;
 }
 
 EditorResult<void> AnimationClipDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_))
         return clipError<void>(EditorStatus::Rejected, "editor.animation.target-mismatch", "Operation targets another clip");
     if (op.type == "animation.clip.settings.v1") {
-        const auto* duration = numberField(op.payload, "duration"); const auto* rate = numberField(op.payload, "sampleRate");
+        double duration = 0, rate = 0;
         const EditorValue* loopEntry = field(op.payload, "loop"); const auto* loop = loopEntry ? loopEntry->getIf<bool>() : nullptr;
-        if (!duration || !rate || !loop || !std::isfinite(*duration) || !std::isfinite(*rate) || *duration <= 0.0 || *rate <= 0.0)
+        if (!readNumber(op.payload, "duration", duration) || !readNumber(op.payload, "sampleRate", rate) ||
+            !loop || !std::isfinite(duration) || !std::isfinite(rate) || duration <= 0.0 || rate <= 0.0)
             return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Duration and sample rate must be positive");
-        duration_ = *duration; sampleRate_ = *rate; loop_ = *loop;
+        duration_ = duration; sampleRate_ = rate; loop_ = *loop;
     } else if (op.type == "animation.clip.track.set.v1") {
         auto track = parseTrack(op.payload); if (!track.ok()) return clipError<void>(track.code(), "editor.animation.invalid-track", "Track payload is invalid");
         for (const auto& key : track.value().keys)
@@ -178,10 +194,11 @@ EditorResult<void> AnimationClipDocumentTarget::applyDomainOperation(const Domai
         auto event = parseEvent(op.payload); if (!event.ok() || !events_.erase(event.value().id))
             return clipError<void>(EditorStatus::NotFound, "editor.animation.event-not-found", "Event was not found");
     } else if (op.type == "animation.clip.mask.set.v1") {
-        const auto* bone = stringField(op.payload, "bone"); const auto* weight = numberField(op.payload, "weight");
-        if (!bone || bone->empty() || !weight || !std::isfinite(*weight) || *weight < 0.0 || *weight > 1.0)
+        const auto* bone = stringField(op.payload, "bone"); double weight = 0;
+        if (!bone || bone->empty() || !readNumber(op.payload, "weight", weight) || !std::isfinite(weight) ||
+            weight < 0.0 || weight > 1.0)
             return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Mask weight must be in [0, 1]");
-        mask_[*bone] = *weight;
+        mask_[*bone] = weight;
     } else {
         return clipError<void>(EditorStatus::Unsupported, "editor.animation.unsupported-operation", "Unsupported clip operation");
     }
@@ -307,15 +324,19 @@ EditorResult<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& 
     const EditorValue* settings = field(snapshot, "settings"); const EditorValue* tracksEntry = field(snapshot, "tracks"); const EditorValue* eventsEntry = field(snapshot, "events"); const EditorValue* masksEntry = field(snapshot, "masks");
     const auto* tracks = tracksEntry ? tracksEntry->getIf<EditorValue::Array>() : nullptr; const auto* events = eventsEntry ? eventsEntry->getIf<EditorValue::Array>() : nullptr; const auto* masks = masksEntry ? masksEntry->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !settings || !tracks || !events || !masks) return clipError<void>(EditorStatus::Unsupported, "editor.animation.invalid-snapshot", "Clip snapshot schema is unsupported");
-    const auto* duration = numberField(*settings, "duration"); const auto* rate = numberField(*settings, "sampleRate");
+    double duration = 0, rate = 0;
     const EditorValue* loopEntry = field(*settings, "loop"); const auto* loop = loopEntry ? loopEntry->getIf<bool>() : nullptr;
-    if (!duration || !rate || !loop) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Clip snapshot settings are incomplete");
-    AnimationClipDocumentTarget candidate(id_); auto settingsOp = candidate.makeSetSettings(*duration, *rate, *loop);
+    if (!readNumber(*settings, "duration", duration) || !readNumber(*settings, "sampleRate", rate) || !loop)
+        return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Clip snapshot settings are incomplete");
+    AnimationClipDocumentTarget candidate(id_); auto settingsOp = candidate.makeSetSettings(duration, rate, *loop);
     if (!settingsOp.ok() || !candidate.applyDomainOperation(settingsOp.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Clip snapshot settings are invalid");
     for (const auto& entry : *tracks) { auto parsed = parseTrack(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot contains invalid track"); auto op = candidate.makeSetTrack(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot track cannot be applied"); }
     for (const auto& entry : *events) { auto parsed = parseEvent(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot contains invalid event"); auto op = candidate.makeSetEvent(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot event cannot be applied"); }
-    for (const auto& entry : *masks) { const auto* bone = stringField(entry, "bone"); const auto* weight = numberField(entry, "weight"); if (!bone || !weight) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot contains invalid mask"); auto op = candidate.makeSetMask({*bone, *weight}); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot mask cannot be applied"); }
+    for (const auto& entry : *masks) { const auto* bone = stringField(entry, "bone"); double weight = 0; if (!bone || !readNumber(entry, "weight", weight)) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot contains invalid mask"); auto op = candidate.makeSetMask({*bone, weight}); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot mask cannot be applied"); }
     candidate.revision_ = revision_ + 1; candidate.dirty_.include(0, 0); *this = std::move(candidate); return eve::editing::applied<void>();
 }
+
+EditorResult<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value) { return parseTrack(value); }
+EditorResult<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value) { return parseEvent(value); }
 
 }  // namespace eve::animation_editing

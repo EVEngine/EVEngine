@@ -14,6 +14,7 @@ using editing::EditRegion;
 using editing::IDomainOperationTarget;
 using editing::IDomainOperationTargetStaging;
 using editing::IEditableTarget;
+using editing::IEditingSnapshotProvider;
 using editing::IPropertyProvider;
 using editing::ObjectId;
 using editing::PropertyDescriptor;

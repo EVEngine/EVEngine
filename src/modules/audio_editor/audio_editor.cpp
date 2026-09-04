@@ -1,7 +1,6 @@
+#include "audio_editor/AudioEditorModule.h"
+#include "audio_editor/EditorAudioEffects.h"
+#include "audio_editor/EditorAudioImportDiagnostics.h"
 #include "audio_editor/EditorAudioTarget.h"
-
-namespace eve::editor {
-namespace {
-constexpr int audioeditorModuleAnchor = 0;
-}
-}  // namespace eve::editor
+#include "audio_editor/EditorAudioTransport.h"
+#include "audio_editor/EditorAudioWaveform.h"

@@ -524,7 +524,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
         lines.append(f'    registerChunk{index}(registry);')
     lines += ['}', '', '}  // namespace eve::script', '']
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines), encoding="utf-8")
+    text = "\n".join(lines)
+    if path.exists() and path.read_text(encoding="utf-8") == text:
+        return
+    path.write_text(text, encoding="utf-8")
 
 
 def source_files() -> dict[Path, str]:

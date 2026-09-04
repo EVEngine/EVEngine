@@ -77,7 +77,9 @@ class IAnimationClipEditTarget {
 public:
     virtual ~IAnimationClipEditTarget() = default;
     /** @brief Stable capability id for clip timeline operations. */
-    static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.animation-clip"); }
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.animation-clip"); }
+    /** @brief Compatibility spelling retained for existing editor tools. */
+    static CapabilityId editorCapabilityId() { return editingCapabilityId(); }
     /** @brief Plan replacement of duration, sample rate and looping settings. */
     virtual EditorResult<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const = 0;
     /** @brief Plan creation or replacement of a complete stable bone track. */
@@ -96,6 +98,7 @@ public:
 class AnimationClipDocumentTarget final : public virtual IEditableTarget,
                                           public IDomainOperationTarget,
                                           public IDomainOperationTargetStaging,
+                                          public eve::editing::IEditingSnapshotProvider,
                                           public IAnimationClipEditTarget {
 public:
     explicit AnimationClipDocumentTarget(std::string id);
@@ -117,6 +120,12 @@ public:
     EditorResult<DomainOperation> makeDeleteEvent(const StableId& event) const override;
     EditorResult<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const override;
 
+    /** @brief Clip duration in seconds. */
+    double duration() const noexcept { return duration_; }
+    /** @brief Authored sample rate. */
+    double sampleRate() const noexcept { return sampleRate_; }
+    /** @brief Whether preview time wraps. */
+    bool loop() const noexcept { return loop_; }
     /** @brief Return tracks ordered by stable id. */
     std::vector<AnimationBoneTrack> tracks() const;
     /** @brief Return event markers ordered by time then stable id. */
@@ -128,7 +137,7 @@ public:
     /** @brief Preview exact then normalized-name retarget mapping without baking a clip. */
     AnimationRetargetPreview previewRetarget(const std::vector<std::string>& targetBones) const;
     /** @brief Capture deterministic schema-version-one clip data. */
-    EditorValue snapshotValue() const;
+    EditorValue snapshotValue() const override;
     /** @brief Atomically load deterministic schema-version-one clip data. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
@@ -143,6 +152,17 @@ private:
     std::map<StableId, AnimationEventRecord> events_;
     std::map<std::string, double> mask_;
 };
+
+/** @brief Parse one authored bone track from an owning Value payload.
+ *  @param value Owning track object with id, bone and keys.
+ *  @return Applied track, or a structured rejection when required fields are missing.
+ *  @thread Main/composition thread; payload is copied and not retained. */
+[[nodiscard]] EditorResult<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value);
+/** @brief Parse one authored event marker from an owning Value payload.
+ *  @param value Owning event object with id, time, name and payload.
+ *  @return Applied event, or a structured rejection when required fields are missing.
+ *  @thread Main/composition thread; payload is copied and not retained. */
+[[nodiscard]] EditorResult<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value);
 
 /** @brief Optional bridge producing a real runtime AnimClip from an editor document. */
 class AnimationClipRuntimeBuilder {

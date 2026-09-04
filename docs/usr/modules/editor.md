@@ -618,15 +618,29 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 音频编辑的规范 C++ API 已拆到独立的 `audio_editing` 模块，使用
 `audio_editing/AudioTarget.h`、`audio_editing/AudioEffects.h`、
 `audio_editing/AudioWaveform.h`、`audio_editing/AudioImportDiagnostics.h` 和
-`audio_editing/AudioTransport.h`。原有 `editor/EditorAudio*.h` 仅作为兼容入口保留，
-新代码不应再通过 `editor` 获取音频编辑契约。
+`audio_editing/AudioTransport.h`。启用 `audio_editor` 时，`AudioEditorModule`
+`AudioAuditionTransport` 做 play/pause/stop/seek 和区间循环试听。
+启用 `audio_editor` 时，`eve.AudioEditorModule().create(targetId)` 返回脚本拥有的
+`AudioSourceEditor`：原生对象是 source 文档、波形包络、试听 transport 和撤销事务的
+唯一事实源。`configureWorkspace` 安装 Sources / Waveform / Inspector / Transport
+四面板（capability `audio.source`）。完整可运行示例见
+[`examples/audio-source-editor`](../../../examples/audio-source-editor)。
+
+`audio-source` / `audio-mixer` / `audio-effects` target 工厂仍供 automation 使用。原有
+`editor/EditorAudio*.h` 仅作为兼容入口保留，新代码不应再通过 `editor` 获取音频编辑契约。
 
 Scene 和 Map 的规范 C++ authoring API 分别位于 `scene_editing/SceneTarget.h`、
 `scene_editing/SceneComponentPayload.h` 与 `map_editing/MapDocument.h`。对应的
 `editor/EditorScene*.h`、`map_editor/EditorMapDocument.h` 只用于源代码兼容。
 
 Animation clip 的规范 authoring API 位于 `animation_editing/AnimationClip.h`；
-`animation_editor/EditorAnimationClip.h` 是兼容入口。
+`animation_editor/EditorAnimationClip.h` 是兼容入口。启用 `animation_editor` 时，
+`eve.AnimationEditorModule().create(targetId)` 返回脚本拥有的 `AnimationClipEditor`：
+原生对象是 clip 文档、姿态 scrub、skeleton overlay、dope-sheet 布局和撤销事务的唯一事实源。
+`configureWorkspace` 安装 Skeleton / Pose Preview / Inspector / Dope 四面板（capability
+`animation.clip`）。完整可运行示例见
+[`examples/animation-clip-editor`](../../../examples/animation-clip-editor)。
+`animation-clip` automation 工厂仍供 MCP/命令路径使用。
 
 音频资源可通过 `AudioAuditionTransport` 做 play/pause/stop/seek 和区间循环试听。
 所有操作都绑定资源 revision；检测到旧 revision 时会立即停止并解绑播放源，避免继续试听
@@ -684,6 +698,11 @@ tint 及 2D 叠片表现参数。`SpriteStackBakeRuntime` 在 CPU 临时 generat
 表达式 channel。Layer Inspector 覆盖纹理、Z、可见性、偏移、尺寸与颜色；Parameter Inspector
 覆盖 default/min/max/current。删除仍被表达式引用的图层或参数会被拒绝。`AvatarDocumentRuntime`
 先解析所有纹理并完整创建候选 `AvatarInstance`，任一 backend load 或 channel 应用失败都会保留旧 generation。
+启用 `avatar_editor` 时，`eve.AvatarEditorModule().create(targetId)` 返回脚本拥有的
+`AvatarDocumentEditor`：原生对象是文档、CPU 图层合成预览和撤销事务的唯一事实源。
+`configureWorkspace` 安装 Layers / Preview / Inspector / Parameters / Expressions
+（capability `avatar.document`）。完整可运行示例见
+[`examples/avatar-document-editor`](../../../examples/avatar-document-editor)。
 
 `VoxelPaletteTarget` 编辑 CubeType 的六面图集 ID、方向性、compose group 和连接提示。方向性类型
 在运行时占四个连续 ID，普通类型占一个；Editor 会在超过 255 个 variant 前拒绝操作。
@@ -694,6 +713,11 @@ tint 及 2D 叠片表现参数。`SpriteStackBakeRuntime` 在 CPU 临时 generat
 和密度，子项 Inspector 编辑加权 prefab/model、缩放范围和随机朝向，exclusion 也使用空间 AssetRef。
 结构编辑、属性编辑和快照均可撤销且原子校验；`BiomeDocumentRuntime` 先解析所有空间资源并构建完整
 候选规则，成功后才发布。预览按文档 revision 拒绝过期请求，并以固定 seed 确定性生成 PointSet。
+启用 `biome_editor` 时，`eve.BiomeEditorModule().create(targetId)` 返回脚本拥有的
+`BiomeRulesEditor`：原生对象是规则文档、空间域、PointSet 预览和撤销事务的唯一事实源。
+`configureWorkspace` 安装 Layers / World Preview / Inspector / Assets（capability `biome.rules`）。
+排除区挂在 Inspector，不单开 dock。完整可运行示例见
+[`examples/biome-rules-editor`](../../../examples/biome-rules-editor)。
 
 `TextureRecipeTarget` 直接读取 Procgen `RecipeDescriptor`，把参数类型、范围、枚举、分类和默认值映射为
 通用 Inspector，因此新增 recipe 无需再编写专用面板。参数编辑和快照可撤销且原子校验；
@@ -760,6 +784,9 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - Heightmap Target 模块：`create` / `bind` / `applyBrush` / `newMesh` / `updateMesh` / `newSmoothMesh` / `updateSmoothMesh`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
 - 动作时间轴：`configureWorkspace` / `setViewport` / `pointerDown` / `pointerMove` / `pointerUp` / `seekX` / `seekSeconds` / `resizeState` / `undo` / `redo` / `update` / `snapshot` / `play` / `pause` / `isPlaying` / `canUndo` / `canRedo` / `isDragging` / `getDuration` / `getPreviewTime` / `getRevision` / `getAnimationUri` / `getTrackCount` / `getTrackId` / `getTrackLabel` / `getTrackKind` / `getTrackMuted` / `getLayoutWidth` / `getLayoutHeight` / `getPlayheadX` / `getItemCount` / `getItemId` / `getItemType` / `getItemState` / `getItemSelected` / `getItemMinX` / `getItemMaxX` / `getItemMinY` / `getItemMaxY` / `getStateStart` / `getStateEnd` / `getEventCount` / `getEventItemId` / `getEventType` / `getEventTime` / `getEventKind`
+- 动画 Clip：`eve.AnimationEditorModule().create` / `configureWorkspace` / `setViewport` / `pointerDown` / `seekX` / `seekSeconds` / `selectBone` / `setMaskWeight` / `setDuration` / `setSampleRate` / `setLoop` / `undo` / `redo` / `play` / `pause` / `stop` / `update` / `getTrack*` / `getKey*` / `getEvent*` / `getPrimitive*`
+- Avatar 文档：`eve.AvatarEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectParameter` / `selectExpression` / `pointerDown` / `setLayerVisible` / `setLayerZ` / `setParameterValue` / `createLayer` / `deleteSelectedLayer` / `deleteSelectedParameter` / `undo` / `redo` / `getPreview*` / `getLayer*` / `getParameter*` / `getExpression*`
+- Biome 规则：`eve.BiomeEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectAsset` / `setLayerDensity` / `setLayerPriority` / `setAssetWeight` / `addExclusion` / `removeExclusion` / `setSeed` / `undo` / `redo` / `getPoint*` / `getLayer*` / `getAsset*` / `getExclusion*`
 - 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`。领域 Target 通过各自模块的 `bind(session, target)` 接入。
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`

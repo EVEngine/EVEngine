@@ -16,9 +16,11 @@ add_test(NAME cmake.third_party_patch_idempotence
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
 set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
 
-# Test sources are discovered like engine/module sources. CONFIGURE_DEPENDS makes
-# Ninja/CMake reconfigure when a top-level test/*.cpp file is added or removed.
-file(GLOB all_test_cpp CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+# Test sources are discovered like engine/module sources. Do not use
+# CONFIGURE_DEPENDS here: Ninja glob verification plus files appearing during
+# a long configure restacks "Re-checking globbed directories" forever.
+# `make test/win32-debug` already treats a newer test/ directory as stale.
+file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
 
 if(EVENGINE_BUILD_DEMO)

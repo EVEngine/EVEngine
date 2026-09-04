@@ -315,7 +315,6 @@ endef
 
 build/win32: build/win32/build.ninja
 	$(call reconfigure-if-args-changed,build/win32,$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS))
-	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32/build.ninja:
@@ -325,6 +324,9 @@ build/win32/build.ninja:
 # ~100ms and lists every pending edge, so vcvars + cmake only run when
 # something is actually stale. check_sources_* rescan targets run on every
 # build by design, so their lines are filtered out of the dry-run output.
+# Do not use `test/ -nt unit_test.exe`: PRE_BUILD asset scripts and any write
+# under test/ bump the directory mtime on Windows, which reconfigured CMake
+# and rebuilt every test TU.
 ensure-built/win32:
 	@stale=0; \
 	for f in build/win32/src/modules/*_src.txt build/win32/src/engine/*_src.txt; do \
@@ -334,8 +336,6 @@ ensure-built/win32:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
-	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32/test/unit_test.exe ] \
-	   && [ test -nt build/win32/test/unit_test.exe ]; then stale=1; fi; \
 	if [ -f build/win32/build.ninja ] \
 	   && [ "$$(cat build/win32/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
 	   && [ "$$stale" = 0 ] \
@@ -393,7 +393,6 @@ build/android/build.ninja:
 
 build/win32-debug: build/win32-debug/build.ninja
 	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
-	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
@@ -408,8 +407,10 @@ ensure-built/win32-debug:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
-	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32-debug/test/unit_test.exe ] \
-	   && [ test -nt build/win32-debug/test/unit_test.exe ]; then stale=1; fi; \
+	if [ "$$stale" = 1 ] && [ -f build/win32-debug/build.ninja ]; then \
+	  echo "source list stale; reconfiguring build/win32-debug"; \
+	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
+	fi; \
 	if [ -f build/win32-debug/build.ninja ] \
 	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
 	   && [ "$$stale" = 0 ] \

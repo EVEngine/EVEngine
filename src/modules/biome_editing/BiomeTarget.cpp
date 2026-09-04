@@ -98,10 +98,17 @@ EditorDiagnostic diagnostic(const char* rule, DiagnosticSeverity severity, std::
 }  // namespace
 BiomeDocumentTarget::BiomeDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor BiomeDocumentTarget::describe() const {
-    return {TargetId(id_), "biome-rules", revision_, false, {CapabilityId("eve.editor.target.biome-properties")}};
+    return {TargetId(id_),
+            "biome-rules",
+            revision_,
+            false,
+            {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
 void* BiomeDocumentTarget::queryCapability(const CapabilityId& c) {
-    return c == CapabilityId("eve.editor.target.biome-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
+    if (c == propertyCapabilityId()) return static_cast<IPropertyProvider*>(this);
+    if (c == IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<IEditingSnapshotProvider*>(this);
+    return nullptr;
 }
 bool BiomeDocumentTarget::matches(const SelectionSnapshot& s) const {
     if (s.items.empty()) return false;
@@ -300,8 +307,8 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector
 std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
     std::vector<EditorDiagnostic> d;
     if (layers_.size() > 256 || exclusions_.size() > 256)
-        d.push_back(diagnostic("editor.biome.budget", DiagnosticSeverity::Error,
-                               "Biome exceeds 256 layers or exclusions"));
+        d.push_back(
+            diagnostic("editor.biome.budget", DiagnosticSeverity::Error, "Biome exceeds 256 layers or exclusions"));
     std::set<std::string> ids, names, exclusions;
     for (const auto& e : exclusions_)
         if (e.empty() || !exclusions.insert(e).second)
@@ -312,8 +319,8 @@ std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
             d.push_back(diagnostic("editor.biome.layer-identity", DiagnosticSeverity::Error,
                                    "Biome layer IDs and names must be unique"));
         if (l.spatialAsset.empty())
-            d.push_back(diagnostic("editor.biome.spatial", DiagnosticSeverity::Error,
-                                   "Biome layer requires a spatial asset"));
+            d.push_back(
+                diagnostic("editor.biome.spatial", DiagnosticSeverity::Error, "Biome layer requires a spatial asset"));
         if (l.priority < -100000 || l.priority > 100000 || !std::isfinite(l.density) || l.density < 0 || l.density > 1)
             d.push_back(diagnostic("editor.biome.layer-range", DiagnosticSeverity::Error,
                                    "Biome layer priority or density is invalid"));
@@ -321,8 +328,8 @@ std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
             d.push_back(diagnostic("editor.biome.empty-layer", DiagnosticSeverity::Warning,
                                    "Biome layer has no assets: " + l.name));
         if (l.assets.size() > 4096)
-            d.push_back(diagnostic("editor.biome.asset-budget", DiagnosticSeverity::Error,
-                                   "Biome layer exceeds 4096 assets"));
+            d.push_back(
+                diagnostic("editor.biome.asset-budget", DiagnosticSeverity::Error, "Biome layer exceeds 4096 assets"));
         for (const auto& a : l.assets) {
             if (a.id.empty() || a.asset.empty() || !ids.insert(a.id.value()).second || !std::isfinite(a.weight) ||
                 a.weight <= 0 || !std::isfinite(a.minScale) || !std::isfinite(a.maxScale) || a.minScale <= 0 ||

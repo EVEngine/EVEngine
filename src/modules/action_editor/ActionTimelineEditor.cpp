@@ -1,6 +1,9 @@
 #include "action_editor/ActionTimelineEditor.h"
 
+#include "editor/EditorProperty.h"
+
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 namespace eve::editor {
@@ -8,8 +11,9 @@ namespace {
 
 constexpr std::string_view kReplaceOperation = "action.timeline.replace";
 
-EditorResult<void> editorError(EditorStatus status, std::string rule, std::string message) {
-    return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
+template <class T = void>
+EditorResult<T> editorError(EditorStatus status, std::string rule, std::string message) {
+    return eve::editing::failed<T>(status, RuleId(std::move(rule)), std::move(message));
 }
 
 std::string commonMessage(const Status& status, std::string fallback) {
@@ -52,10 +56,54 @@ const std::string* jsonPayload(const EditorValue& value) {
     return found == object->end() ? nullptr : found->second.getIf<std::string>();
 }
 
+action::ActionTimeline seedTimeline(const std::string& targetId) {
+    action::ActionTimeline timeline;
+    if (auto parsed = LogicalId::parse(targetId)) {
+        timeline.actionId = std::move(*parsed);
+    } else if (auto fromName = LogicalId::fromParts("action", targetId.empty() ? "untitled" : targetId)) {
+        timeline.actionId = std::move(*fromName);
+    } else {
+        timeline.actionId = *LogicalId::fromParts("action", "untitled");
+    }
+    timeline.duration = Duration::fromNanoseconds(1'000'000'000);
+    return timeline;
+}
+
+PropertyDescriptor property(const char* path, const char* label, PropertyType type, EditorValue defaultValue,
+                            double minimum = 0.0, double maximum = 1e9) {
+    PropertyDescriptor descriptor;
+    descriptor.path           = PropertyPath(path);
+    descriptor.displayNameKey = label;
+    descriptor.category       = "timeline";
+    descriptor.type           = type;
+    descriptor.flags          = PropertyFlag::Runtime;
+    descriptor.defaultValue   = std::move(defaultValue);
+    descriptor.numeric.minimum = minimum;
+    descriptor.numeric.maximum = maximum;
+    return descriptor;
+}
+
 }  // namespace
+
+ActionTimelineTarget::ActionTimelineTarget(std::string targetId) {
+    timeline_ = seedTimeline(targetId);
+    targetId_ = std::move(targetId);
+}
 
 ActionTimelineTarget::ActionTimelineTarget(std::string targetId, action::ActionTimeline timeline)
     : targetId_(std::move(targetId)), timeline_(std::move(timeline)) {}
+
+TargetDescriptor ActionTimelineTarget::describe() const {
+    return {TargetId(targetId_), "action-timeline", revision_, false,
+            {propertyCapabilityId(), eve::editing::IEditingSnapshotProvider::editingCapabilityId()}};
+}
+
+void* ActionTimelineTarget::queryCapability(const CapabilityId& capability) {
+    if (capability == propertyCapabilityId()) return static_cast<IPropertyProvider*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
+    return nullptr;
+}
 
 EditorResult<void> ActionTimelineTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target.value() != targetId_)
@@ -101,6 +149,154 @@ EditorResult<void> ActionTimelineTarget::commitDomainState(std::unique_ptr<IDoma
     return eve::editing::applied<void>();
 }
 
+bool ActionTimelineTarget::matches(const SelectionSnapshot& selection) const {
+    if (selection.items.empty()) return false;
+    for (const auto& item : selection.items) {
+        if (item.target != TargetId(targetId_)) return false;
+    }
+    return true;
+}
+
+EditorResult<void> ActionTimelineTarget::assign(action::ActionTimeline candidate) {
+    auto valid = candidate.validate();
+    if (!valid)
+        return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
+                           commonMessage(valid.status(), "Action timeline asset is invalid"));
+    timeline_ = std::move(candidate);
+    ++revision_;
+    return eve::editing::applied<void>();
+}
+
+EditorResult<DomainOperation> ActionTimelineTarget::replacement(const action::ActionTimeline& candidate,
+                                                                std::string                   property) const {
+    auto beforeValue = timeline_.toValue();
+    auto afterValue  = candidate.toValue();
+    if (!beforeValue || !afterValue)
+        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.encode-failed",
+                                            "Could not encode the action timeline edit");
+    auto beforeJson = beforeValue.value().toJson();
+    auto afterJson  = afterValue.value().toJson();
+    if (!beforeJson || !afterJson)
+        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.encode-failed",
+                                            "Could not serialize the action timeline edit");
+    DomainOperation operation;
+    operation.type        = std::string(kReplaceOperation);
+    operation.inverseType = std::string(kReplaceOperation);
+    operation.target      = TargetId(targetId_);
+    operation.payload     = replacementPayload(afterJson.value());
+    operation.inverse     = replacementPayload(beforeJson.value());
+    operation.hasInverse  = true;
+    operation.affectedObjects.push_back({operation.target, timeline_.actionId.format(), revision_});
+    if (!property.empty()) operation.affectedProperties.push_back(std::move(property));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
+}
+
+eve::Result<eve::Revision> ActionTimelineTarget::currentRevision(const SelectionSnapshot& selection) const {
+    if (!matches(selection))
+        return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Action timeline selection mismatch", "editor.action.selection"));
+    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+}
+
+PropertySchema ActionTimelineTarget::schema(const SelectionSnapshot&) const {
+    PropertySchema schema;
+    schema.typeId                  = "action.timeline";
+    schema.version                 = 1;
+    auto animation                 = property("timeline.animationUri", "editor.action.animation-uri",
+                                              PropertyType::AssetRef, "");
+    animation.assetTypeFilters     = {"animation", "model3d"};
+    schema.properties              = {property("timeline.actionId", "editor.action.action-id", PropertyType::String,
+                                               seedTimeline(targetId_).actionId.format()),
+                                      property("timeline.durationSeconds", "editor.action.duration", PropertyType::Float,
+                                               1.0, 0.0, 3600.0),
+                                      std::move(animation)};
+    return schema;
+}
+
+PropertyReadResult ActionTimelineTarget::read(const SelectionSnapshot& selection, const PropertyPath& path) const {
+    if (!matches(selection) || !schema(selection).find(path)) return {};
+    if (path == PropertyPath("timeline.actionId"))
+        return {PropertyReadState::Value, timeline_.actionId.format(), {}};
+    if (path == PropertyPath("timeline.durationSeconds"))
+        return {PropertyReadState::Value, timeline_.duration.seconds(), {}};
+    return {PropertyReadState::Value, timeline_.animationUri, {}};
+}
+
+EditorResult<DomainOperation> ActionTimelineTarget::makeSet(const SelectionSnapshot& selection,
+                                                            const PropertyPath& path, const EditorValue& value,
+                                                            PropertySetMode mode) const {
+    if (mode == PropertySetMode::Reset) return makeReset(selection, path);
+    const auto descriptor = schema(selection).find(path);
+    if (!matches(selection) || !descriptor || mode != PropertySetMode::Absolute ||
+        !validatePropertyValue(*descriptor, value).ok())
+        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.property-invalid",
+                                            "Action timeline property assignment is invalid");
+    action::ActionTimeline candidate = timeline_;
+    if (path == PropertyPath("timeline.actionId")) {
+        const auto* text   = value.getIf<std::string>();
+        auto        parsed = text ? LogicalId::parse(*text) : std::optional<LogicalId>{};
+        if (!parsed)
+            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.action-id",
+                                                "Action id must be a namespace:name logical id");
+        candidate.actionId = std::move(*parsed);
+    } else if (path == PropertyPath("timeline.durationSeconds")) {
+        const auto* seconds = value.getIf<double>();
+        if (!seconds)
+            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.duration",
+                                                "Timeline duration must be a number of seconds");
+        auto duration = Duration::fromSeconds(*seconds);
+        if (!duration)
+            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.duration",
+                                                commonMessage(duration.status(), "Timeline duration is invalid"));
+        candidate.duration = std::move(duration).takeValue();
+    } else {
+        const auto* uri = value.getIf<std::string>();
+        if (!uri)
+            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.animation-uri",
+                                                "Animation URI must be a string");
+        candidate.animationUri = *uri;
+    }
+    auto valid = candidate.validate();
+    if (!valid)
+        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
+                                            commonMessage(valid.status(), "Action timeline property edit is invalid"));
+    return replacement(candidate, path.value());
+}
+
+EditorResult<DomainOperation> ActionTimelineTarget::makeReset(const SelectionSnapshot& selection,
+                                                              const PropertyPath&      path) const {
+    const auto descriptor = schema(selection).find(path);
+    if (!descriptor)
+        return editorError<DomainOperation>(EditorStatus::Unsupported, "editor.action.timeline.property-unsupported",
+                                            "Unknown action timeline property");
+    return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
+}
+
+EditorValue ActionTimelineTarget::snapshotValue() const {
+    auto encoded = timeline_.toValue();
+    if (!encoded) return {};
+    return toEditorValue(encoded.value());
+}
+
+EditorResult<void> ActionTimelineTarget::loadSnapshot(const EditorValue& snapshot) {
+    if (const std::string* json = jsonPayload(snapshot)) {
+        auto value = Value::fromJson(*json);
+        if (!value)
+            return editorError(EditorStatus::Rejected, "editor.action.timeline.json-invalid",
+                               commonMessage(value.status(), "Action timeline JSON is invalid"));
+        auto decoded = action::ActionTimeline::fromValue(value.value());
+        if (!decoded)
+            return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
+                               commonMessage(decoded.status(), "Action timeline asset is invalid"));
+        return assign(std::move(decoded).takeValue());
+    }
+    auto decoded = action::ActionTimeline::fromValue(toPresentationValue(snapshot));
+    if (!decoded)
+        return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
+                           commonMessage(decoded.status(), "Action timeline asset is invalid"));
+    return assign(std::move(decoded).takeValue());
+}
+
 ActionTimelineEditor::ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline)
     : target_(std::move(targetId), std::move(timeline)), authority_(&target_), transactions_(&authority_) {}
 
@@ -114,18 +310,19 @@ EditorResult<void> ActionTimelineEditor::configureWorkspace(EditorWorkspace& wor
         const char* id;
         const char* title;
         const char* region;
+        const char* context;
         int         order;
     };
     constexpr Panel panels[] = {
-        {"action.assets", "Actions", "left", 100},
-        {"action.preview", "Action Preview", "center", 100},
-        {"action.inspector", "Action Inspector", "right", 100},
-        {"action.timeline", "Action Timeline", "bottom", 100},
+        {"action.assets", "Actions", "left", "list", 100},
+        {"action.preview", "Action Preview", "center", "preview", 100},
+        {"action.inspector", "Action Inspector", "right", "inspector", 100},
+        {"action.timeline", "Action Timeline", "bottom", "timeline", 100},
     };
     for (const auto& panel : panels) {
         if (!candidate.registerPanel(panel.id, panel.title, panel.region, panel.order) ||
             !candidate.setPanelCapability(panel.id, "action.timeline") ||
-            !candidate.setPanelContext(panel.id, "timeline"))
+            !candidate.setPanelContext(panel.id, panel.context))
             return rejected("editor.action.timeline.workspace-conflict",
                             "Could not install the action editor workspace composition");
     }
