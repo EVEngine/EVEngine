@@ -141,7 +141,11 @@ public:
     /** @brief Read a property using the source selection. */
     [[nodiscard]] audio_editing::PropertyReadResult read(const std::string& path) const;
 
-    /** @brief Envelope bucket for drawing; channel 0. */
+    /**
+     * @brief Envelope bucket for drawing; channel 0.
+     * @ownership Borrowed bucket owned by this editor.
+     * @lifetime Valid until the next setViewportWidth/rebuild or destruction; null when index is out of range.
+     */
     [[nodiscard]] const audio_editing::AudioWaveformBucket* bucket(int index) const;
 
     /** @brief Latest transport observation after a successful update/play. */

@@ -125,7 +125,7 @@ public:
     /** @brief Authored sample rate. */
     double sampleRate() const noexcept { return sampleRate_; }
     /** @brief Whether preview time wraps. */
-    bool loop() const noexcept { return loop_; }
+    bool isLooping() const noexcept { return loop_; }
     /** @brief Return tracks ordered by stable id. */
     std::vector<AnimationBoneTrack> tracks() const;
     /** @brief Return event markers ordered by time then stable id. */

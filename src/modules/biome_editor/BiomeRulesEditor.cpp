@@ -346,7 +346,7 @@ int BiomeRulesEditor::layerPriority(int index) const {
     if (index < 0 || static_cast<std::size_t>(index) >= target_.layers().size()) return 0;
     return target_.layers()[static_cast<std::size_t>(index)].priority;
 }
-bool BiomeRulesEditor::layerSelected(int index) const {
+bool BiomeRulesEditor::isLayerSelected(int index) const {
     return selectedType_ == "biome.layer" && layerId(index) == selectedId_;
 }
 
@@ -366,7 +366,7 @@ float BiomeRulesEditor::assetWeight(int index) const {
     const auto* asset = assetAt(index);
     return asset ? asset->weight : 0.0f;
 }
-bool BiomeRulesEditor::assetSelected(int index) const {
+bool BiomeRulesEditor::isAssetSelected(int index) const {
     const auto* asset = assetAt(index);
     return asset && selectedType_ == "biome.asset" && asset->id.value() == selectedId_;
 }

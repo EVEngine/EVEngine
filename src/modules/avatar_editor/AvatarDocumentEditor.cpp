@@ -371,7 +371,7 @@ int AvatarDocumentEditor::layerZ(int index) const {
     const auto* layer = layerAt(index);
     return layer ? layer->zIndex : 0;
 }
-bool AvatarDocumentEditor::layerSelected(int index) const {
+bool AvatarDocumentEditor::isLayerSelected(int index) const {
     const auto* layer = layerAt(index);
     return layer && selectedType_ == "avatar.layer" && layer->id.value() == selectedId_;
 }
@@ -408,7 +408,7 @@ float AvatarDocumentEditor::previewA(int index) const {
     const auto* rect = previewAt(index);
     return rect ? rect->a : 0.0f;
 }
-bool AvatarDocumentEditor::previewSelected(int index) const {
+bool AvatarDocumentEditor::isPreviewSelected(int index) const {
     const auto* rect = previewAt(index);
     return rect && rect->selected;
 }
@@ -437,7 +437,7 @@ float AvatarDocumentEditor::parameterMaximum(int index) const {
     const auto* parameter = parameterAt(index);
     return parameter ? parameter->maximum : 1.0f;
 }
-bool AvatarDocumentEditor::parameterSelected(int index) const {
+bool AvatarDocumentEditor::isParameterSelected(int index) const {
     const auto* parameter = parameterAt(index);
     return parameter && selectedType_ == "avatar.parameter" && parameter->id.value() == selectedId_;
 }
@@ -450,7 +450,7 @@ std::string AvatarDocumentEditor::expressionName(int index) const {
     const auto* expression = expressionAt(index);
     return expression ? expression->name : std::string{};
 }
-bool AvatarDocumentEditor::expressionSelected(int index) const {
+bool AvatarDocumentEditor::isExpressionSelected(int index) const {
     const auto* expression = expressionAt(index);
     return expression && selectedType_ == "avatar.expression" && expression->id.value() == selectedId_;
 }

@@ -185,7 +185,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
         return self ? self->editor().layerZ(index) : 0;
     });
     avatarEditor.addFunc("getLayerSelected", [](ScriptAvatarDocumentEditor* self, int index) {
-        return self && self->editor().layerSelected(index);
+        return self && self->editor().isLayerSelected(index);
     });
     avatarEditor.addFunc("getPreviewLayerCount", [](ScriptAvatarDocumentEditor* self) {
         return self ? self->editor().previewLayerCount() : 0;
@@ -215,7 +215,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
         return self ? self->editor().previewA(index) : 0.0f;
     });
     avatarEditor.addFunc("getPreviewSelected", [](ScriptAvatarDocumentEditor* self, int index) {
-        return self && self->editor().previewSelected(index);
+        return self && self->editor().isPreviewSelected(index);
     });
     avatarEditor.addFunc("getPreviewName", [](ScriptAvatarDocumentEditor* self, int index) {
         return self ? self->editor().previewName(index) : std::string{};
@@ -239,7 +239,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
         return self ? self->editor().parameterMaximum(index) : 1.0f;
     });
     avatarEditor.addFunc("getParameterSelected", [](ScriptAvatarDocumentEditor* self, int index) {
-        return self && self->editor().parameterSelected(index);
+        return self && self->editor().isParameterSelected(index);
     });
     avatarEditor.addFunc("getExpressionCount", [](ScriptAvatarDocumentEditor* self) {
         return self ? self->editor().expressionCount() : 0;
@@ -251,7 +251,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
         return self ? self->editor().expressionName(index) : std::string{};
     });
     avatarEditor.addFunc("getExpressionSelected", [](ScriptAvatarDocumentEditor* self, int index) {
-        return self && self->editor().expressionSelected(index);
+        return self && self->editor().isExpressionSelected(index);
     });
     avatarEditor.addFunc("getExpressionChannelCount", [](ScriptAvatarDocumentEditor* self, int index) {
         return self ? self->editor().expressionChannelCount(index) : 0;

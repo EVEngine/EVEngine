@@ -77,13 +77,13 @@ public:
     std::string layerName(int index) const;
     float       layerDensity(int index) const;
     int         layerPriority(int index) const;
-    bool        layerSelected(int index) const;
+    bool        isLayerSelected(int index) const;
 
     int         assetCount() const;
     std::string assetId(int index) const;
     std::string assetRef(int index) const;
     float       assetWeight(int index) const;
-    bool        assetSelected(int index) const;
+    bool        isAssetSelected(int index) const;
 
     int         exclusionCount() const { return static_cast<int>(target_.exclusions().size()); }
     std::string exclusionAsset(int index) const;
@@ -115,7 +115,9 @@ private:
     [[nodiscard]] biome_editing::EditorResult<void> refreshPreview();
     void                                            seedPreviewDocument();
     editor::SelectionSnapshot                       selection() const;
+    /** @ownership Borrowed layer owned by the document target. @lifetime Valid until the next document mutation or destruction; null when no layer is selected. */
     const biome_editing::BiomeLayerValue*           selectedLayer() const;
+    /** @ownership Borrowed asset owned by the selected layer. @lifetime Valid until the next document mutation or destruction; null when index is out of range. */
     const biome_editing::BiomeAssetValue*           assetAt(int index) const;
 
     biome_editing::BiomeDocumentTarget  target_;

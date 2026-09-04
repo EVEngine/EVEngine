@@ -173,11 +173,11 @@ animation_editing::EditorResult<void> AnimationClipEditor::setMaskWeight(double 
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::setDuration(double duration) {
-    return commit(target_.makeSetSettings(duration, target_.sampleRate(), target_.loop()), "Set clip duration");
+    return commit(target_.makeSetSettings(duration, target_.sampleRate(), target_.isLooping()), "Set clip duration");
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::setSampleRate(double sampleRate) {
-    return commit(target_.makeSetSettings(target_.duration(), sampleRate, target_.loop()), "Set clip sample rate");
+    return commit(target_.makeSetSettings(target_.duration(), sampleRate, target_.isLooping()), "Set clip sample rate");
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::setLoop(bool loop) {
@@ -262,7 +262,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::update(double deltaSe
         const double duration = target_.duration();
         if (duration <= 0.0) {
             playhead_ = 0.0;
-        } else if (target_.loop()) {
+        } else if (target_.isLooping()) {
             playhead_ = std::fmod(playhead_, duration);
             if (playhead_ < 0.0) playhead_ += duration;
         } else if (playhead_ >= duration) {
@@ -336,7 +336,7 @@ std::string AnimationClipEditor::trackId(int index) const {
     return tracks[static_cast<std::size_t>(index)].id.value();
 }
 
-bool AnimationClipEditor::trackSelected(int index) const { return trackBone(index) == selectedBone_; }
+bool AnimationClipEditor::isTrackSelected(int index) const { return trackBone(index) == selectedBone_; }
 
 int AnimationClipEditor::keyCount() const { return static_cast<int>(flattenKeys().size()); }
 
@@ -352,7 +352,7 @@ float AnimationClipEditor::keyY(int index) const {
     return static_cast<float>(keys[static_cast<std::size_t>(index)].row) * rowHeight_ + rowHeight_ * 0.5f;
 }
 
-bool AnimationClipEditor::keySelected(int index) const {
+bool AnimationClipEditor::isKeySelected(int index) const {
     const auto keys = flattenKeys();
     if (index < 0 || static_cast<std::size_t>(index) >= keys.size()) return false;
     const auto& key = keys[static_cast<std::size_t>(index)];

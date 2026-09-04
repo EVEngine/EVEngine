@@ -164,7 +164,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     clipEditor.addFunc("getSampleRate", [](ScriptAnimationClipEditor* self) {
         return self ? static_cast<float>(self->editor().sampleRate()) : 0.0f;
     });
-    clipEditor.addFunc("getLoop", [](ScriptAnimationClipEditor* self) { return self && self->editor().loop(); });
+    clipEditor.addFunc("getLoop", [](ScriptAnimationClipEditor* self) { return self && self->editor().isLooping(); });
     clipEditor.addFunc("getPlayhead", [](ScriptAnimationClipEditor* self) {
         return self ? static_cast<float>(self->editor().playhead()) : 0.0f;
     });
@@ -193,7 +193,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? self->editor().trackId(index) : std::string{};
     });
     clipEditor.addFunc("getTrackSelected", [](ScriptAnimationClipEditor* self, int index) {
-        return self && self->editor().trackSelected(index);
+        return self && self->editor().isTrackSelected(index);
     });
     clipEditor.addFunc("getKeyCount", [](ScriptAnimationClipEditor* self) {
         return self ? self->editor().keyCount() : 0;
@@ -205,7 +205,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? self->editor().keyY(index) : 0.0f;
     });
     clipEditor.addFunc("getKeySelected", [](ScriptAnimationClipEditor* self, int index) {
-        return self && self->editor().keySelected(index);
+        return self && self->editor().isKeySelected(index);
     });
     clipEditor.addFunc("getEventCount", [](ScriptAnimationClipEditor* self) {
         return self ? self->editor().eventCount() : 0;

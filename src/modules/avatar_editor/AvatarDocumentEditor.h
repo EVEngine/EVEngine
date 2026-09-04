@@ -76,7 +76,7 @@ public:
     std::string layerName(int index) const;
     bool        layerVisible(int index) const;
     int         layerZ(int index) const;
-    bool        layerSelected(int index) const;
+    bool        isLayerSelected(int index) const;
 
     int         previewLayerCount() const { return static_cast<int>(preview_.size()); }
     float       previewX(int index) const;
@@ -87,7 +87,7 @@ public:
     float       previewG(int index) const;
     float       previewB(int index) const;
     float       previewA(int index) const;
-    bool        previewSelected(int index) const;
+    bool        isPreviewSelected(int index) const;
     std::string previewName(int index) const;
 
     int         parameterCount() const { return static_cast<int>(target_.parameters().size()); }
@@ -96,12 +96,12 @@ public:
     float       parameterValue(int index) const;
     float       parameterMinimum(int index) const;
     float       parameterMaximum(int index) const;
-    bool        parameterSelected(int index) const;
+    bool        isParameterSelected(int index) const;
 
     int         expressionCount() const { return static_cast<int>(target_.expressions().size()); }
     std::string expressionId(int index) const;
     std::string expressionName(int index) const;
-    bool        expressionSelected(int index) const;
+    bool        isExpressionSelected(int index) const;
     int         expressionChannelCount(int index) const;
     std::string expressionChannelName(int expression, int channel) const;
 
@@ -119,9 +119,13 @@ private:
     [[nodiscard]] avatar_editing::EditorResult<void> refreshPreview();
     void                                             seedPreviewDocument();
     editor::SelectionSnapshot                        selection() const;
+    /** @ownership Borrowed preview rect owned by this editor. @lifetime Valid until the next preview refresh or destruction; null when index is out of range. */
     const PreviewRect*                               previewAt(int index) const;
+    /** @ownership Borrowed layer owned by the document target. @lifetime Valid until the next document mutation or destruction; null when index is out of range. */
     const avatar_editing::AvatarLayerValue*          layerAt(int index) const;
+    /** @ownership Borrowed parameter owned by the document target. @lifetime Valid until the next document mutation or destruction; null when index is out of range. */
     const avatar_editing::AvatarParameterValue*      parameterAt(int index) const;
+    /** @ownership Borrowed expression owned by the document target. @lifetime Valid until the next document mutation or destruction; null when index is out of range. */
     const avatar_editing::AvatarExpressionValue*     expressionAt(int index) const;
     float                                            smileAmount() const;
 

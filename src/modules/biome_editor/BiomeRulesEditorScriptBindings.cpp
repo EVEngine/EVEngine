@@ -173,7 +173,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
         return self ? self->editor().layerPriority(index) : 0;
     });
     biomeEditor.addFunc("getLayerSelected", [](ScriptBiomeRulesEditor* self, int index) {
-        return self && self->editor().layerSelected(index);
+        return self && self->editor().isLayerSelected(index);
     });
     biomeEditor.addFunc("getAssetCount", [](ScriptBiomeRulesEditor* self) {
         return self ? self->editor().assetCount() : 0;
@@ -188,7 +188,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
         return self ? self->editor().assetWeight(index) : 0.0f;
     });
     biomeEditor.addFunc("getAssetSelected", [](ScriptBiomeRulesEditor* self, int index) {
-        return self && self->editor().assetSelected(index);
+        return self && self->editor().isAssetSelected(index);
     });
     biomeEditor.addFunc("getExclusionCount", [](ScriptBiomeRulesEditor* self) {
         return self ? self->editor().exclusionCount() : 0;

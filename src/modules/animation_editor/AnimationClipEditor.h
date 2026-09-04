@@ -87,7 +87,7 @@ public:
     std::uint64_t revision() const noexcept { return target_.revision(); }
     double        duration() const noexcept { return target_.duration(); }
     double        sampleRate() const noexcept { return target_.sampleRate(); }
-    bool          loop() const noexcept { return target_.loop(); }
+    bool          isLooping() const noexcept { return target_.isLooping(); }
     double        playhead() const noexcept { return playhead_; }
     float         layoutWidth() const noexcept { return viewportWidth_; }
     float         layoutHeight() const noexcept;
@@ -98,11 +98,11 @@ public:
     int         trackCount() const;
     std::string trackBone(int index) const;
     std::string trackId(int index) const;
-    bool        trackSelected(int index) const;
+    bool        isTrackSelected(int index) const;
     int         keyCount() const;
     float       keyX(int index) const;
     float       keyY(int index) const;
-    bool        keySelected(int index) const;
+    bool        isKeySelected(int index) const;
     int         eventCount() const;
     float       eventX(int index) const;
     std::string eventName(int index) const;
@@ -137,6 +137,7 @@ private:
     std::vector<std::string>                            skeletonBones() const;
     float                                               timeToX(double time) const;
     double                                              xToTime(float x) const;
+    /** @ownership Borrowed overlay primitive owned by this editor. @lifetime Valid until the next preview refresh or destruction; null when index is out of range. */
     const eve::editing::GizmoPrimitive*                 primitiveAt(int index) const;
     std::vector<TimelineKey>                            flattenKeys() const;
 
