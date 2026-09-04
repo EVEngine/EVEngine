@@ -21,12 +21,21 @@ TEST_CASE("stylize.mesh_vfx_scalability selects deterministic tiers within budge
 
     const auto decisions = planner.plan(candidates);
     REQUIRE_EQ(decisions.size(), candidates.size());
-    REQUIRE_EQ(static_cast<int>(decisions[0].tier), static_cast<int>(MeshVfxLodTier::Culled));
+    REQUIRE_EQ(static_cast<int>(decisions[0].tier), static_cast<int>(MeshVfxLodTier::Minimal));
     REQUIRE_EQ(static_cast<int>(decisions[1].tier), static_cast<int>(MeshVfxLodTier::Full));
     REQUIRE_EQ(static_cast<int>(decisions[2].tier), static_cast<int>(MeshVfxLodTier::Reduced));
-    REQUIRE_EQ(static_cast<int>(decisions[3].tier), static_cast<int>(MeshVfxLodTier::Minimal));
+    REQUIRE_EQ(static_cast<int>(decisions[3].tier), static_cast<int>(MeshVfxLodTier::Culled));
     REQUIRE_EQ(decisions[2].trailSampleStride, 2u);
-    REQUIRE_EQ(decisions[3].meshUpdateInterval, 4u);
+    REQUIRE_EQ(decisions[0].meshUpdateInterval, 4u);
+    REQUIRE_EQ(decisions[0].workUnits, 1u);
+    REQUIRE_EQ(decisions[1].workUnits, 4u);
+    REQUIRE_EQ(decisions[2].workUnits, 2u);
+    REQUIRE_EQ(decisions[3].workUnits, 0u);
+    std::uint32_t usedWorkUnits = 0;
+    for (const auto& decision : decisions) {
+        usedWorkUnits += decision.workUnits;
+    }
+    REQUIRE_EQ(usedWorkUnits, policy.workUnitBudget);
 }
 
 TEST_CASE("stylize.mesh_vfx_scalability is independent of candidate iteration order") {

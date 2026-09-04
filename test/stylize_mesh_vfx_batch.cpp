@@ -59,10 +59,24 @@ TEST_CASE("stylize.mesh_vfx_batch preserves alpha back-to-front order") {
         visible(3, MeshVfxLodTier::Full),
     };
     const auto queue = MeshVfxRenderBatchPlanner{}.build(items, decisions, 0);
-    REQUIRE_EQ(queue.batches.size(), 3u);
+    REQUIRE_EQ(queue.batches.size(), 2u);
+    REQUIRE_EQ(queue.batches[0].draws.size(), 1u);
+    REQUIRE_EQ(queue.batches[1].draws.size(), 2u);
     REQUIRE_EQ(queue.batches[0].draws[0].stableInstanceId, 2u);
     REQUIRE_EQ(queue.batches[1].draws[0].stableInstanceId, 3u);
-    REQUIRE_EQ(queue.batches[2].draws[0].stableInstanceId, 1u);
+    REQUIRE_EQ(queue.batches[1].draws[1].stableInstanceId, 1u);
+
+    // Equal material keys must not merge across an intervening alpha draw.
+    auto interleavedItems = items;
+    interleavedItems[2].viewDepth = 10.0f;
+    const auto interleaved = MeshVfxRenderBatchPlanner{}.build(interleavedItems, decisions, 0);
+    REQUIRE_EQ(interleaved.batches.size(), 3u);
+    for (const auto& batch : interleaved.batches) {
+        REQUIRE_EQ(batch.draws.size(), 1u);
+    }
+    REQUIRE_EQ(interleaved.batches[0].draws[0].stableInstanceId, 3u);
+    REQUIRE_EQ(interleaved.batches[1].draws[0].stableInstanceId, 2u);
+    REQUIRE_EQ(interleaved.batches[2].draws[0].stableInstanceId, 1u);
 }
 
 TEST_CASE("stylize.mesh_vfx_batch staggers reduced mesh refreshes") {
