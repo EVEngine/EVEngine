@@ -1,0 +1,643 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action::ActionExecution类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li><li class="navelem"><a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1action_1_1ActionExecution-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::action::ActionExecution类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Read-only view of one execution owned by <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>.  
+ <a href="classeve_1_1action_1_1ActionExecution.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Action_8h_source.html">Action.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a86f73609773336768addc9f05bc4c463" id="r_a86f73609773336768addc9f05bc4c463"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a86f73609773336768addc9f05bc4c463">id</a> () const noexcept</td></tr>
+<tr class="memdesc:a86f73609773336768addc9f05bc4c463"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> identity.  <br /></td></tr>
+<tr class="separator:a86f73609773336768addc9f05bc4c463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3a1a6a2c29f79a0d215a2f02f4c15ba" id="r_ae3a1a6a2c29f79a0d215a2f02f4c15ba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#ae3a1a6a2c29f79a0d215a2f02f4c15ba">definitionId</a> () const noexcept</td></tr>
+<tr class="memdesc:ae3a1a6a2c29f79a0d215a2f02f4c15ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Definition identity copied at submission time.  <br /></td></tr>
+<tr class="separator:ae3a1a6a2c29f79a0d215a2f02f4c15ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e77ac4db4de90722121337925a331ef" id="r_a1e77ac4db4de90722121337925a331ef"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a1e77ac4db4de90722121337925a331ef">definition</a> () const noexcept</td></tr>
+<tr class="memdesc:a1e77ac4db4de90722121337925a331ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original definition owned by this execution.  <br /></td></tr>
+<tr class="separator:a1e77ac4db4de90722121337925a331ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0b58a33cc3c425d172bb17d70e897d8" id="r_ad0b58a33cc3c425d172bb17d70e897d8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#ad0b58a33cc3c425d172bb17d70e897d8">request</a> () const noexcept</td></tr>
+<tr class="memdesc:ad0b58a33cc3c425d172bb17d70e897d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original request owned by this execution.  <br /></td></tr>
+<tr class="separator:ad0b58a33cc3c425d172bb17d70e897d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d140a2decb16ed6bbcd2e9ee9a29017" id="r_a1d140a2decb16ed6bbcd2e9ee9a29017"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">ActionPhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a1d140a2decb16ed6bbcd2e9ee9a29017">phase</a> () const noexcept</td></tr>
+<tr class="memdesc:a1d140a2decb16ed6bbcd2e9ee9a29017"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current lifecycle phase.  <br /></td></tr>
+<tr class="separator:a1d140a2decb16ed6bbcd2e9ee9a29017"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adff142b1fae66605fec8e3275f1a58c2" id="r_adff142b1fae66605fec8e3275f1a58c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#adff142b1fae66605fec8e3275f1a58c2">phaseElapsed</a> () const noexcept</td></tr>
+<tr class="memdesc:adff142b1fae66605fec8e3275f1a58c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time spent in the current phase.  <br /></td></tr>
+<tr class="separator:adff142b1fae66605fec8e3275f1a58c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e32b5819922628aff63d553264d655" id="r_aa3e32b5819922628aff63d553264d655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#aa3e32b5819922628aff63d553264d655">totalElapsed</a> () const noexcept</td></tr>
+<tr class="memdesc:aa3e32b5819922628aff63d553264d655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total injected simulation duration consumed.  <br /></td></tr>
+<tr class="separator:aa3e32b5819922628aff63d553264d655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ddc1e6dae086208b054081e20ca7de" id="r_a16ddc1e6dae086208b054081e20ca7de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a16ddc1e6dae086208b054081e20ca7de">lastTick</a> () const noexcept</td></tr>
+<tr class="memdesc:a16ddc1e6dae086208b054081e20ca7de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last simulation tick observed by the execution.  <br /></td></tr>
+<tr class="separator:a16ddc1e6dae086208b054081e20ca7de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69740f153c49398199d704016f969c62" id="r_a69740f153c49398199d704016f969c62"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a69740f153c49398199d704016f969c62">status</a> () const noexcept</td></tr>
+<tr class="memdesc:a69740f153c49398199d704016f969c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current structured execution status.  <br /></td></tr>
+<tr class="separator:a69740f153c49398199d704016f969c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01bfdfa3aa707dd55b0ce63cad181149" id="r_a01bfdfa3aa707dd55b0ce63cad181149"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1sensing_1_1TargetSet.html">sensing::TargetSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a01bfdfa3aa707dd55b0ce63cad181149">resolvedTargets</a> () const noexcept</td></tr>
+<tr class="memdesc:a01bfdfa3aa707dd55b0ce63cad181149"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolved targets, or null until a Query action is validated.  <br /></td></tr>
+<tr class="separator:a01bfdfa3aa707dd55b0ce63cad181149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05aab9bbfb5bdc987d51bc598fd32bae" id="r_a05aab9bbfb5bdc987d51bc598fd32bae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a05aab9bbfb5bdc987d51bc598fd32bae">hasCommittedCost</a> () const noexcept</td></tr>
+<tr class="memdesc:a05aab9bbfb5bdc987d51bc598fd32bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Active committed a resource debit.  <br /></td></tr>
+<tr class="separator:a05aab9bbfb5bdc987d51bc598fd32bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62aa315c32aaba1b1786930589f4e162" id="r_a62aa315c32aaba1b1786930589f4e162"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a62aa315c32aaba1b1786930589f4e162">activeExecuted</a> () const noexcept</td></tr>
+<tr class="memdesc:a62aa315c32aaba1b1786930589f4e162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the Active transaction has committed successfully.  <br /></td></tr>
+<tr class="separator:a62aa315c32aaba1b1786930589f4e162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af29f135018d76f566319d6e8cbe2a4ff" id="r_af29f135018d76f566319d6e8cbe2a4ff"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">transaction::TransactionReceipt</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#af29f135018d76f566319d6e8cbe2a4ff">transactionReceipt</a> () const noexcept</td></tr>
+<tr class="memdesc:af29f135018d76f566319d6e8cbe2a4ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the common transaction receipt produced at Active.  <br /></td></tr>
+<tr class="separator:af29f135018d76f566319d6e8cbe2a4ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a9e511ea17ed03c2c43b0776dff6fae57" id="r_a9e511ea17ed03c2c43b0776dff6fae57"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html#a9e511ea17ed03c2c43b0776dff6fae57">ActionRuntime</a></td></tr>
+<tr class="separator:a9e511ea17ed03c2c43b0776dff6fae57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Read-only view of one execution owned by <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>. </p>
+<p>Adapters receive no mutable lifecycle fields and must not create a second timer or phase machine. The optional receipt is an audit value; the resource provider/account remains authoritative for resource state. A reservation is never retained across an action phase or frame. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00380">380</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a62aa315c32aaba1b1786930589f4e162" name="a62aa315c32aaba1b1786930589f4e162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62aa315c32aaba1b1786930589f4e162">&#9670;&#160;</a></span>activeExecuted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::action::ActionExecution::activeExecuted </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the Active transaction has committed successfully. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00413">413</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e77ac4db4de90722121337925a331ef" name="a1e77ac4db4de90722121337925a331ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e77ac4db4de90722121337925a331ef">&#9670;&#160;</a></span>definition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a> &amp; eve::action::ActionExecution::definition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Original definition owned by this execution. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00387">387</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3a1a6a2c29f79a0d215a2f02f4c15ba" name="ae3a1a6a2c29f79a0d215a2f02f4c15ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3a1a6a2c29f79a0d215a2f02f4c15ba">&#9670;&#160;</a></span>definitionId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp; eve::action::ActionExecution::definitionId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition identity copied at submission time. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00385">385</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05aab9bbfb5bdc987d51bc598fd32bae" name="a05aab9bbfb5bdc987d51bc598fd32bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05aab9bbfb5bdc987d51bc598fd32bae">&#9670;&#160;</a></span>hasCommittedCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::action::ActionExecution::hasCommittedCost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether Active committed a resource debit. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00411">411</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86f73609773336768addc9f05bc4c463" name="a86f73609773336768addc9f05bc4c463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86f73609773336768addc9f05bc4c463">&#9670;&#160;</a></span>id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> eve::action::ActionExecution::id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> identity. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00383">383</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16ddc1e6dae086208b054081e20ca7de" name="a16ddc1e6dae086208b054081e20ca7de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16ddc1e6dae086208b054081e20ca7de">&#9670;&#160;</a></span>lastTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> eve::action::ActionExecution::lastTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last simulation tick observed by the execution. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00397">397</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d140a2decb16ed6bbcd2e9ee9a29017" name="a1d140a2decb16ed6bbcd2e9ee9a29017"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d140a2decb16ed6bbcd2e9ee9a29017">&#9670;&#160;</a></span>phase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">ActionPhase</a> eve::action::ActionExecution::phase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current lifecycle phase. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00391">391</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adff142b1fae66605fec8e3275f1a58c2" name="adff142b1fae66605fec8e3275f1a58c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adff142b1fae66605fec8e3275f1a58c2">&#9670;&#160;</a></span>phaseElapsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::action::ActionExecution::phaseElapsed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time spent in the current phase. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00393">393</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0b58a33cc3c425d172bb17d70e897d8" name="ad0b58a33cc3c425d172bb17d70e897d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0b58a33cc3c425d172bb17d70e897d8">&#9670;&#160;</a></span>request()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a> &amp; eve::action::ActionExecution::request </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Original request owned by this execution. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00389">389</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01bfdfa3aa707dd55b0ce63cad181149" name="a01bfdfa3aa707dd55b0ce63cad181149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01bfdfa3aa707dd55b0ce63cad181149">&#9670;&#160;</a></span>resolvedTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1sensing_1_1TargetSet.html">sensing::TargetSet</a> * eve::action::ActionExecution::resolvedTargets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolved targets, or null until a Query action is validated. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed storage owned by this <a class="el" href="classeve_1_1action_1_1ActionExecution.html" title="Read-only view of one execution owned by ActionRuntime.">ActionExecution</a>; valid until the execution is erased or its <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> is destroyed. @lifetime The pointer is observation-only and must not be retained across <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> ownership changes. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00407">407</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69740f153c49398199d704016f969c62" name="a69740f153c49398199d704016f969c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69740f153c49398199d704016f969c62">&#9670;&#160;</a></span>status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp; eve::action::ActionExecution::status </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current structured execution status. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="aa3e32b5819922628aff63d553264d655" name="aa3e32b5819922628aff63d553264d655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3e32b5819922628aff63d553264d655">&#9670;&#160;</a></span>totalElapsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::action::ActionExecution::totalElapsed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total injected simulation duration consumed. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00395">395</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af29f135018d76f566319d6e8cbe2a4ff" name="af29f135018d76f566319d6e8cbe2a4ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af29f135018d76f566319d6e8cbe2a4ff">&#9670;&#160;</a></span>transactionReceipt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">transaction::TransactionReceipt</a> * eve::action::ActionExecution::transactionReceipt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the common transaction receipt produced at Active. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed receipt, or null when the legacy effect port was used. @lifetime Valid until this <a class="el" href="classeve_1_1action_1_1ActionExecution.html" title="Read-only view of one execution owned by ActionRuntime.">ActionExecution</a> is erased or its <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> is destroyed; the caller must not retain it beyond that owner. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00420">420</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a9e511ea17ed03c2c43b0776dff6fae57" name="a9e511ea17ed03c2c43b0776dff6fae57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e511ea17ed03c2c43b0776dff6fae57">&#9670;&#160;</a></span>ActionRuntime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00425">425</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/action/<a class="el" href="Action_8h_source.html">Action.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

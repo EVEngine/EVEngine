@@ -1,0 +1,381 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ResourceRef.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ResourceRef.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ResourceRef_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Uri_8h.html">common/Uri.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">   21</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">ResourceRefKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca26e9054be7f40079575582b7ad3f7363">Asset</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_class" href="classeve_1_1Uri.html">Uri</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca0b890b1926b90387673882e6ccae7fdc">Definition</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_class" href="classeve_1_1Object.html">Object</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve.html#ab2fd5a82cc867949e4ee4c735f24afaa">   29</a></span>[[nodiscard]] <span class="keyword">constexpr</span> std::string_view <a class="code hl_function" href="namespaceeve.html#ab2fd5a82cc867949e4ee4c735f24afaa">resourceRefKindName</a>(<a class="code hl_enumeration" href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">ResourceRefKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca26e9054be7f40079575582b7ad3f7363">ResourceRefKind::Asset</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;asset&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca3840cd8f73026713059f0ed0562c5493">ResourceRefKind::Uri</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;uri&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca0b890b1926b90387673882e6ccae7fdc">ResourceRefKind::Definition</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;definition&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">ResourceRefKind::Object</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;object&quot;</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve.html#a46fd1eeb7ab706345f82fc1b46ff0c16">   40</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">operator&lt;&lt;</a>(std::ostream&amp; stream, <a class="code hl_enumeration" href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">ResourceRefKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> stream &lt;&lt; <a class="code hl_function" href="namespaceeve.html#ab2fd5a82cc867949e4ee4c735f24afaa">resourceRefKindName</a>(<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1AssetRef.html">   51</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AssetRef&gt;</a> parse(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AssetRef&gt;</a> fromId(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AssetRef&gt;</a> fromUri(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ResourceUri.html">ResourceUri</a>&amp; uri);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1AssetRef.html#a6ed0c03d1013f972e97218a48b4a1b34">   63</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>&amp; <a class="code hl_function" href="classeve_1_1AssetRef.html#a6ed0c03d1013f972e97218a48b4a1b34">id</a>() const noexcept { <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] std::string format() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1AssetRef.html#a2d590f4982543b2058ed117169e82093">   69</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1AssetRef.html#a2d590f4982543b2058ed117169e82093">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <span class="keywordtype">id</span>) : id_(<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) {}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> id_;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="};">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1DefinitionRef.html">   83</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a> {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1DefinitionRef.html#a2e3630f0770f90bd207f3f5e9f6f6d7c">   86</a></span>    <a class="code hl_function" href="classeve_1_1DefinitionRef.html#a2e3630f0770f90bd207f3f5e9f6f6d7c">DefinitionRef</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DefinitionRef&gt;</a> parse(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DefinitionRef&gt;</a> fromId(<a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1DefinitionRef.html#afd7329dd5c44f06493195a3ecb514022">   95</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_function" href="classeve_1_1DefinitionRef.html#afd7329dd5c44f06493195a3ecb514022">id</a>() const noexcept { <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1DefinitionRef.html#ac9680c2a70ff6f09eda95d529d74ee60">   98</a></span>    [[nodiscard]] <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1DefinitionRef.html#ac9680c2a70ff6f09eda95d529d74ee60">format</a>() const noexcept { <span class="keywordflow">return</span> id_.format(); }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1DefinitionRef.html#a70fd16cefcf1d2e24aa70d79c1c3edd3">  101</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1DefinitionRef.html#a70fd16cefcf1d2e24aa70d79c1c3edd3">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a>(<a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a> <span class="keywordtype">id</span>) : id_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)) {}</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a> id_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="};">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1ObjectRef.html">  115</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a> {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ObjectRef&gt;</a> parse(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ObjectRef&gt;</a> fromId(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1ObjectRef.html#a5c402ada379df8117cc3aa94f9955cee">  124</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>&amp; <a class="code hl_function" href="classeve_1_1ObjectRef.html#a5c402ada379df8117cc3aa94f9955cee">id</a>() const noexcept { <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1ObjectRef.html#a487a035504c1ee371ec4ad00d9668c18">  127</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classeve_1_1ObjectRef.html#a487a035504c1ee371ec4ad00d9668c18">format</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_.format(); }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeve_1_1ObjectRef.html#a9294a613f1537f85e48752616e8c5425">  130</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1ObjectRef.html#a9294a613f1537f85e48752616e8c5425">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <span class="keywordtype">id</span>) : id_(<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) {}</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> id_;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="};">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html">  146</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a> {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ResourceRef&gt;</a> parse(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html#ad738ec8cf6fc6024b9d23ec6c2263437">  152</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a> <a class="code hl_function" href="classeve_1_1ResourceRef.html#ad738ec8cf6fc6024b9d23ec6c2263437">fromAsset</a>(<a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html#a1ba5f6ec1ad52b7b8770014489ce1516">  155</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a> <a class="code hl_function" href="classeve_1_1ResourceRef.html#a1ba5f6ec1ad52b7b8770014489ce1516">fromUri</a>(<a class="code hl_class" href="classeve_1_1ResourceUri.html">ResourceUri</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html#a1a2ee948e43f1424dd44759bd4a37f68">  158</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a> <a class="code hl_function" href="classeve_1_1ResourceRef.html#a1a2ee948e43f1424dd44759bd4a37f68">fromDefinition</a>(<a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html#a05a5bfdb6ef2113b7c128078d02b94bf">  161</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a> <a class="code hl_function" href="classeve_1_1ResourceRef.html#a05a5bfdb6ef2113b7c128078d02b94bf">fromObject</a>(<a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">ResourceRefKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>() const noexcept;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    [[nodiscard]] const <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>* asset() const noexcept;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    [[nodiscard]] const <a class="code hl_class" href="classeve_1_1ResourceUri.html">ResourceUri</a>* uri() const noexcept;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    [[nodiscard]] const <a class="code hl_class" href="classeve_1_1DefinitionRef.html">DefinitionRef</a>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a>() const noexcept;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    [[nodiscard]] const <a class="code hl_class" href="classeve_1_1ObjectRef.html">ObjectRef</a>* <span class="keywordtype">object</span>() const noexcept;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceRef.html#a3ed5eeb972f27a66093f7b390b351a0c">  211</a></span>    friend <span class="keywordtype">bool</span> operator==(const <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>&amp;, const <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>&amp;) noexcept = default;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>private:</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    explicit <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(<a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)) {}</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1ResourceRef.html">ResourceRef</a>(<a class="code hl_class" href="classeve_1_1ResourceUri.html">ResourceUri</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)) {}</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keyword">explicit</span> ResourceRef(DefinitionRef <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)) {}</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">explicit</span> ResourceRef(ObjectRef <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)) {}</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    std::variant&lt;AssetRef, ResourceUri, DefinitionRef, ObjectRef&gt; value_;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>};</div>
+</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>}  <span class="comment">// namespace eve</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacestd.html">std</a> {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="keyword">struct </span><a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e">AssetRef</a>&gt; {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    std::size_t operator()(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">eve::AssetRef</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">return</span> std::hash&lt;eve::PersistentId&gt;{}(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.id());</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>};</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="keyword">struct </span><a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve_1_1definitions.html#aaea86a997b5d2286d1e992f228d585af">DefinitionRef</a>&gt; {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    std::size_t operator()(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordflow">return</span> std::hash&lt;eve::LogicalId&gt;{}(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.id());</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>};</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="keyword">struct </span><a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d">ObjectRef</a>&gt; {</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    std::size_t operator()(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ObjectRef.html">eve::ObjectRef</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordflow">return</span> std::hash&lt;eve::PersistentId&gt;{}(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.id());</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>};</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>}  <span class="comment">// namespace std</span></div>
+<div class="ttc" id="aEvpack_8cpp_html_a5fb132b1d88427518f97e5e710bc1c93"><div class="ttname"><a href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a></div><div class="ttdeci">std::array&lt; std::uint8_t, 32 &gt; hash</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00177">Evpack.cpp:177</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6628c09c9a9dbab79c7c314df8957796"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a></div><div class="ttdeci">LogicalId definition</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00115">TacticsPersistence.cpp:115</a></div></div>
+<div class="ttc" id="aUri_8h_html"><div class="ttname"><a href="Uri_8h.html">Uri.h</a></div><div class="ttdoc">Strict, canonical resource URI values shared by engine modules.</div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00051">ResourceRef.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html_a2d590f4982543b2058ed117169e82093"><div class="ttname"><a href="classeve_1_1AssetRef.html#a2d590f4982543b2058ed117169e82093">eve::AssetRef::operator==</a></div><div class="ttdeci">friend bool operator==(const AssetRef &amp;, const AssetRef &amp;) noexcept=default</div><div class="ttdoc">Compare asset references by persistent identity.</div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html_a6ed0c03d1013f972e97218a48b4a1b34"><div class="ttname"><a href="classeve_1_1AssetRef.html#a6ed0c03d1013f972e97218a48b4a1b34">eve::AssetRef::id</a></div><div class="ttdeci">const PersistentId &amp; id() const noexcept</div><div class="ttdoc">Return the stable asset identity.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00063">ResourceRef.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html"><div class="ttname"><a href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a></div><div class="ttdoc">Stable definition reference backed by LogicalId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00083">ResourceRef.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html_a2e3630f0770f90bd207f3f5e9f6f6d7c"><div class="ttname"><a href="classeve_1_1DefinitionRef.html#a2e3630f0770f90bd207f3f5e9f6f6d7c">eve::DefinitionRef::DefinitionRef</a></div><div class="ttdeci">DefinitionRef()=default</div><div class="ttdoc">Constructs an invalid reference for optional/component storage.</div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html_a70fd16cefcf1d2e24aa70d79c1c3edd3"><div class="ttname"><a href="classeve_1_1DefinitionRef.html#a70fd16cefcf1d2e24aa70d79c1c3edd3">eve::DefinitionRef::operator==</a></div><div class="ttdeci">friend bool operator==(const DefinitionRef &amp;, const DefinitionRef &amp;) noexcept=default</div><div class="ttdoc">Compare definition references by logical identity.</div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html_ac9680c2a70ff6f09eda95d529d74ee60"><div class="ttname"><a href="classeve_1_1DefinitionRef.html#ac9680c2a70ff6f09eda95d529d74ee60">eve::DefinitionRef::format</a></div><div class="ttdeci">const std::string &amp; format() const noexcept</div><div class="ttdoc">Return canonical namespace:name text.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00098">ResourceRef.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html_afd7329dd5c44f06493195a3ecb514022"><div class="ttname"><a href="classeve_1_1DefinitionRef.html#afd7329dd5c44f06493195a3ecb514022">eve::DefinitionRef::id</a></div><div class="ttdeci">const LogicalId &amp; id() const noexcept</div><div class="ttdoc">Return the stable logical definition identity.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00095">ResourceRef.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1ObjectRef_html"><div class="ttname"><a href="classeve_1_1ObjectRef.html">eve::ObjectRef</a></div><div class="ttdoc">Stable world/object identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00115">ResourceRef.h:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1ObjectRef_html_a487a035504c1ee371ec4ad00d9668c18"><div class="ttname"><a href="classeve_1_1ObjectRef.html#a487a035504c1ee371ec4ad00d9668c18">eve::ObjectRef::format</a></div><div class="ttdeci">std::string format() const</div><div class="ttdoc">Return canonical UUID text without a resource URI scheme.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00127">ResourceRef.h:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1ObjectRef_html_a5c402ada379df8117cc3aa94f9955cee"><div class="ttname"><a href="classeve_1_1ObjectRef.html#a5c402ada379df8117cc3aa94f9955cee">eve::ObjectRef::id</a></div><div class="ttdeci">const PersistentId &amp; id() const noexcept</div><div class="ttdoc">Return the stable object identity.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00124">ResourceRef.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1ObjectRef_html_a9294a613f1537f85e48752616e8c5425"><div class="ttname"><a href="classeve_1_1ObjectRef.html#a9294a613f1537f85e48752616e8c5425">eve::ObjectRef::operator==</a></div><div class="ttdeci">friend bool operator==(const ObjectRef &amp;, const ObjectRef &amp;) noexcept=default</div><div class="ttdoc">Compare object references by persistent identity.</div></div>
+<div class="ttc" id="aclasseve_1_1Object_html"><div class="ttname"><a href="classeve_1_1Object.html">eve::Object</a></div><div class="ttdoc">Object is the base class for all game objects. It provides reference counting and dirty flag for upda...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00018">Object.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceRef_html"><div class="ttname"><a href="classeve_1_1ResourceRef.html">eve::ResourceRef</a></div><div class="ttdoc">Type-safe union of the reference forms accepted by resource-facing APIs.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00146">ResourceRef.h:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceRef_html_a05a5bfdb6ef2113b7c128078d02b94bf"><div class="ttname"><a href="classeve_1_1ResourceRef.html#a05a5bfdb6ef2113b7c128078d02b94bf">eve::ResourceRef::fromObject</a></div><div class="ttdeci">static ResourceRef fromObject(ObjectRef value)</div><div class="ttdoc">Wrap an object reference in the generic reference union.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00161">ResourceRef.h:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceRef_html_a1a2ee948e43f1424dd44759bd4a37f68"><div class="ttname"><a href="classeve_1_1ResourceRef.html#a1a2ee948e43f1424dd44759bd4a37f68">eve::ResourceRef::fromDefinition</a></div><div class="ttdeci">static ResourceRef fromDefinition(DefinitionRef value)</div><div class="ttdoc">Wrap a definition reference in the generic reference union.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00158">ResourceRef.h:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceRef_html_a1ba5f6ec1ad52b7b8770014489ce1516"><div class="ttname"><a href="classeve_1_1ResourceRef.html#a1ba5f6ec1ad52b7b8770014489ce1516">eve::ResourceRef::fromUri</a></div><div class="ttdeci">static ResourceRef fromUri(ResourceUri value)</div><div class="ttdoc">Wrap a resource URI in the generic reference union.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00155">ResourceRef.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceRef_html_ad738ec8cf6fc6024b9d23ec6c2263437"><div class="ttname"><a href="classeve_1_1ResourceRef.html#ad738ec8cf6fc6024b9d23ec6c2263437">eve::ResourceRef::fromAsset</a></div><div class="ttdeci">static ResourceRef fromAsset(AssetRef value)</div><div class="ttdoc">Wrap an asset reference in the generic reference union.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00152">ResourceRef.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html"><div class="ttname"><a href="classeve_1_1ResourceUri.html">eve::ResourceUri</a></div><div class="ttdoc">A semantically named resource locator.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8h_source.html#l00101">Uri.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Uri_html"><div class="ttname"><a href="classeve_1_1Uri.html">eve::Uri</a></div><div class="ttdoc">An immutable, canonical URI value.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8h_source.html#l00044">Uri.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions_html_aaea86a997b5d2286d1e992f228d585af"><div class="ttname"><a href="namespaceeve_1_1definitions.html#aaea86a997b5d2286d1e992f228d585af">eve::definitions::DefinitionRef</a></div><div class="ttdeci">eve::DefinitionRef DefinitionRef</div><div class="ttdoc">Compatibility names for the canonical common definition identity.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00025">Definitions.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e">eve::editing::PropertyType::AssetRef</a></div><div class="ttdeci">@ AssetRef</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d">eve::editing::PropertyType::ObjectRef</a></div><div class="ttdeci">@ ObjectRef</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a1015537ba9a7c49a74a0c5749d424eb7"><div class="ttname"><a href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">eve::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, Severity severity)</div><div class="ttdoc">Writes a severity for diagnostics and test output.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00039">Diagnostic.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487c"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487c">eve::ResourceRefKind</a></div><div class="ttdeci">ResourceRefKind</div><div class="ttdoc">The alternative held by a generic ResourceRef.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00021">ResourceRef.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca0b890b1926b90387673882e6ccae7fdc"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca0b890b1926b90387673882e6ccae7fdc">eve::ResourceRefKind::Definition</a></div><div class="ttdeci">@ Definition</div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca26e9054be7f40079575582b7ad3f7363"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca26e9054be7f40079575582b7ad3f7363">eve::ResourceRefKind::Asset</a></div><div class="ttdeci">@ Asset</div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca3840cd8f73026713059f0ed0562c5493"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca3840cd8f73026713059f0ed0562c5493">eve::ResourceRefKind::Uri</a></div><div class="ttdeci">@ Uri</div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">eve::ResourceRefKind::Object</a></div><div class="ttdeci">@ Object</div></div>
+<div class="ttc" id="anamespaceeve_html_ab2fd5a82cc867949e4ee4c735f24afaa"><div class="ttname"><a href="namespaceeve.html#ab2fd5a82cc867949e4ee4c735f24afaa">eve::resourceRefKindName</a></div><div class="ttdeci">constexpr std::string_view resourceRefKindName(ResourceRefKind kind) noexcept</div><div class="ttdoc">Returns the stable resource-reference alternative spelling.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00029">ResourceRef.h:29</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1943 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimLattice类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1animation_1_1AnimLattice-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimLattice类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU 3D lattice scale-deformer (晶格缩放变形).  
+ <a href="classeve_1_1animation_1_1AnimLattice.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac89587730e9cb9221a215d302747efed" id="r_ac89587730e9cb9221a215d302747efed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac89587730e9cb9221a215d302747efed">AnimLattice</a> ()</td></tr>
+<tr class="separator:ac89587730e9cb9221a215d302747efed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82402ba3bda4c3e0870ac646fb732875" id="r_a82402ba3bda4c3e0870ac646fb732875"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a82402ba3bda4c3e0870ac646fb732875">AnimLattice</a> (int divX, int divY, int divZ)</td></tr>
+<tr class="memdesc:a82402ba3bda4c3e0870ac646fb732875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a lattice with the given divisions (each &gt;= 2).  <br /></td></tr>
+<tr class="separator:a82402ba3bda4c3e0870ac646fb732875"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c490b93f741af571051b204f67f2b20" id="r_a2c490b93f741af571051b204f67f2b20"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a2c490b93f741af571051b204f67f2b20">AnimLattice</a> (const <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp;)=delete</td></tr>
+<tr class="separator:a2c490b93f741af571051b204f67f2b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82f8c7f5ebca25aa3a7a03a30ca03089" id="r_a82f8c7f5ebca25aa3a7a03a30ca03089"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a82f8c7f5ebca25aa3a7a03a30ca03089">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp;)=delete</td></tr>
+<tr class="separator:a82f8c7f5ebca25aa3a7a03a30ca03089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00fc656b771e58819f524f01144a2530" id="r_a00fc656b771e58819f524f01144a2530"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a00fc656b771e58819f524f01144a2530">setDivisions</a> (int divX, int divY, int divZ)</td></tr>
+<tr class="memdesc:a00fc656b771e58819f524f01144a2530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes divisions; resets all control points to identity and clears the bind.  <br /></td></tr>
+<tr class="separator:a00fc656b771e58819f524f01144a2530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a998eb4ebaad1855ab9393bc0902833f3" id="r_a998eb4ebaad1855ab9393bc0902833f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a998eb4ebaad1855ab9393bc0902833f3">getDivisionsX</a> () const</td></tr>
+<tr class="separator:a998eb4ebaad1855ab9393bc0902833f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63ff5e357e16e45a2f1919597a9bb171" id="r_a63ff5e357e16e45a2f1919597a9bb171"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a63ff5e357e16e45a2f1919597a9bb171">getDivisionsY</a> () const</td></tr>
+<tr class="separator:a63ff5e357e16e45a2f1919597a9bb171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf19b4d0c67e0fabbdb4ef7d2a5fb21c" id="r_adf19b4d0c67e0fabbdb4ef7d2a5fb21c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">getDivisionsZ</a> () const</td></tr>
+<tr class="separator:adf19b4d0c67e0fabbdb4ef7d2a5fb21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99a891a59f725265153cb23f23269c9" id="r_ab99a891a59f725265153cb23f23269c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab99a891a59f725265153cb23f23269c9">setSize</a> (float sx, float sy, float sz)</td></tr>
+<tr class="memdesc:ab99a891a59f725265153cb23f23269c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space size of the lattice box (components must be &gt; 0).  <br /></td></tr>
+<tr class="separator:ab99a891a59f725265153cb23f23269c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5c2daacd20bbd91cd54f60c9fefd938" id="r_af5c2daacd20bbd91cd54f60c9fefd938"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af5c2daacd20bbd91cd54f60c9fefd938">getSizeX</a> () const</td></tr>
+<tr class="separator:af5c2daacd20bbd91cd54f60c9fefd938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab765d47992df2c43f6c14186d7b920b0" id="r_ab765d47992df2c43f6c14186d7b920b0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab765d47992df2c43f6c14186d7b920b0">getSizeY</a> () const</td></tr>
+<tr class="separator:ab765d47992df2c43f6c14186d7b920b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f3d745bfdc33c9bf297d37e37e8ae1b" id="r_a1f3d745bfdc33c9bf297d37e37e8ae1b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a1f3d745bfdc33c9bf297d37e37e8ae1b">getSizeZ</a> () const</td></tr>
+<tr class="separator:a1f3d745bfdc33c9bf297d37e37e8ae1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa2c184cf52d7a928f0faf423bdfdc2" id="r_a7fa2c184cf52d7a928f0faf423bdfdc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a7fa2c184cf52d7a928f0faf423bdfdc2">setOrigin</a> (float <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, float <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, float oz)</td></tr>
+<tr class="memdesc:a7fa2c184cf52d7a928f0faf423bdfdc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Center of the lattice box in model space.  <br /></td></tr>
+<tr class="separator:a7fa2c184cf52d7a928f0faf423bdfdc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac17086d2133d64240bed2c87a28ae437" id="r_ac17086d2133d64240bed2c87a28ae437"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac17086d2133d64240bed2c87a28ae437">getOriginX</a> () const</td></tr>
+<tr class="separator:ac17086d2133d64240bed2c87a28ae437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69742e7a1d56da530c2fc71f76665f59" id="r_a69742e7a1d56da530c2fc71f76665f59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a69742e7a1d56da530c2fc71f76665f59">getOriginY</a> () const</td></tr>
+<tr class="separator:a69742e7a1d56da530c2fc71f76665f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf6313e22a040d5fbd84c748772f8de" id="r_a4cf6313e22a040d5fbd84c748772f8de"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a4cf6313e22a040d5fbd84c748772f8de">getOriginZ</a> () const</td></tr>
+<tr class="separator:a4cf6313e22a040d5fbd84c748772f8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80a901b7273a556c24b3977784cc5537" id="r_a80a901b7273a556c24b3977784cc5537"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a80a901b7273a556c24b3977784cc5537">setClamp</a> (bool clamp)</td></tr>
+<tr class="memdesc:a80a901b7273a556c24b3977784cc5537"><td class="mdescLeft">&#160;</td><td class="mdescRight">When true (default), vertices outside the box are clamped to the boundary cells; when false, lattice coordinates extrapolate linearly.  <br /></td></tr>
+<tr class="separator:a80a901b7273a556c24b3977784cc5537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d1936b778d9846712a483bfadc43cc0" id="r_a3d1936b778d9846712a483bfadc43cc0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a3d1936b778d9846712a483bfadc43cc0">getClamp</a> () const</td></tr>
+<tr class="separator:a3d1936b778d9846712a483bfadc43cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf90a542a66d03cff6d4706bfac3f052" id="r_aaf90a542a66d03cff6d4706bfac3f052"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aaf90a542a66d03cff6d4706bfac3f052">getPointCount</a> () const</td></tr>
+<tr class="memdesc:aaf90a542a66d03cff6d4706bfac3f052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total control point count (divX * divY * divZ).  <br /></td></tr>
+<tr class="separator:aaf90a542a66d03cff6d4706bfac3f052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1333b22b042b10f24863581f5d0a8072" id="r_a1333b22b042b10f24863581f5d0a8072"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a1333b22b042b10f24863581f5d0a8072">setPointScale</a> (int ix, int iy, int iz, float sx, float sy, float sz)</td></tr>
+<tr class="memdesc:a1333b22b042b10f24863581f5d0a8072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-control-point scale (squash / stretch about the lattice origin).  <br /></td></tr>
+<tr class="separator:a1333b22b042b10f24863581f5d0a8072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf2ffeac03ae6a895062868930cfa212" id="r_abf2ffeac03ae6a895062868930cfa212"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#abf2ffeac03ae6a895062868930cfa212">setPointOffset</a> (int ix, int iy, int iz, float dx, float dy, float dz)</td></tr>
+<tr class="memdesc:abf2ffeac03ae6a895062868930cfa212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-control-point translation offset (local bulge / pinch).  <br /></td></tr>
+<tr class="separator:abf2ffeac03ae6a895062868930cfa212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace39b136a38b7fb5ecdca0756d5f0663" id="r_ace39b136a38b7fb5ecdca0756d5f0663"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ace39b136a38b7fb5ecdca0756d5f0663">setScale</a> (float sx, float sy, float sz)</td></tr>
+<tr class="memdesc:ace39b136a38b7fb5ecdca0756d5f0663"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies one scale to every control point (whole-lattice squash &amp; stretch).  <br /></td></tr>
+<tr class="separator:ace39b136a38b7fb5ecdca0756d5f0663"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af651dfc18b4cc909813d77ba2b652c00" id="r_af651dfc18b4cc909813d77ba2b652c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af651dfc18b4cc909813d77ba2b652c00">reset</a> ()</td></tr>
+<tr class="memdesc:af651dfc18b4cc909813d77ba2b652c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets every control point to identity (offset 0, scale 1).  <br /></td></tr>
+<tr class="separator:af651dfc18b4cc909813d77ba2b652c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914be7b460db6dd8b3ef4d037abc93e6" id="r_a914be7b460db6dd8b3ef4d037abc93e6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a914be7b460db6dd8b3ef4d037abc93e6">getPointScaleX</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:a914be7b460db6dd8b3ef4d037abc93e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7c0e6b8cab578ba178fba3276ffec2" id="r_acd7c0e6b8cab578ba178fba3276ffec2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#acd7c0e6b8cab578ba178fba3276ffec2">getPointScaleY</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:acd7c0e6b8cab578ba178fba3276ffec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af890d766ec09bbaf9e7c773fda501732" id="r_af890d766ec09bbaf9e7c773fda501732"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af890d766ec09bbaf9e7c773fda501732">getPointScaleZ</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:af890d766ec09bbaf9e7c773fda501732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155c4ff91e97dfa70065c94c6e1040f9" id="r_a155c4ff91e97dfa70065c94c6e1040f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a155c4ff91e97dfa70065c94c6e1040f9">getPointOffsetX</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:a155c4ff91e97dfa70065c94c6e1040f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa31b0a274bbfa07af17662d803429ed3" id="r_aa31b0a274bbfa07af17662d803429ed3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa31b0a274bbfa07af17662d803429ed3">getPointOffsetY</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:aa31b0a274bbfa07af17662d803429ed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af606ec4b7b6b607331349bbc481c11bf" id="r_af606ec4b7b6b607331349bbc481c11bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af606ec4b7b6b607331349bbc481c11bf">getPointOffsetZ</a> (int ix, int iy, int iz) const</td></tr>
+<tr class="separator:af606ec4b7b6b607331349bbc481c11bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8377729034943edefd9269c797c04370" id="r_a8377729034943edefd9269c797c04370"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8377729034943edefd9269c797c04370">bindModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int meshIndex)</td></tr>
+<tr class="memdesc:a8377729034943edefd9269c797c04370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current lattice to meshIndex of model (uses current divisions).  <br /></td></tr>
+<tr class="separator:a8377729034943edefd9269c797c04370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff29d2b5cf287ed84b14604817afef06" id="r_aff29d2b5cf287ed84b14604817afef06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aff29d2b5cf287ed84b14604817afef06">bindPositions</a> (const float *posXYZ, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:aff29d2b5cf287ed84b14604817afef06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a packed xyz array (count * 3 floats). Uses current divisions/size/origin.  <br /></td></tr>
+<tr class="separator:aff29d2b5cf287ed84b14604817afef06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab47b17e6770097cf127d323f76055324" id="r_ab47b17e6770097cf127d323f76055324"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab47b17e6770097cf127d323f76055324">clearBind</a> ()</td></tr>
+<tr class="separator:ab47b17e6770097cf127d323f76055324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee17c8af8bbcfad9afe9c5d55e361105" id="r_aee17c8af8bbcfad9afe9c5d55e361105"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount</a> () const</td></tr>
+<tr class="separator:aee17c8af8bbcfad9afe9c5d55e361105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a044f7ad6e539d0904681bb7ef81ad" id="r_af2a044f7ad6e539d0904681bb7ef81ad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af2a044f7ad6e539d0904681bb7ef81ad">getBindPositionX</a> (int vertexIndex) const</td></tr>
+<tr class="memdesc:af2a044f7ad6e539d0904681bb7ef81ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind-pose position component for vertex v (0..vertexCount-1).  <br /></td></tr>
+<tr class="separator:af2a044f7ad6e539d0904681bb7ef81ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff6d7eb051a815a290eeef257089ad09" id="r_aff6d7eb051a815a290eeef257089ad09"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aff6d7eb051a815a290eeef257089ad09">getBindPositionY</a> (int vertexIndex) const</td></tr>
+<tr class="separator:aff6d7eb051a815a290eeef257089ad09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bfaced56d3ebb724a94cbfd7886b05d" id="r_a7bfaced56d3ebb724a94cbfd7886b05d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a7bfaced56d3ebb724a94cbfd7886b05d">getBindPositionZ</a> (int vertexIndex) const</td></tr>
+<tr class="separator:a7bfaced56d3ebb724a94cbfd7886b05d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa29b9cc149dc35a7fdf2a8038c1cff63" id="r_aa29b9cc149dc35a7fdf2a8038c1cff63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa29b9cc149dc35a7fdf2a8038c1cff63">deformPositions</a> (const float *inPosXYZ, float *outPosXYZ, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) const</td></tr>
+<tr class="memdesc:aa29b9cc149dc35a7fdf2a8038c1cff63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deforms count packed xyz positions into outPosXYZ. Both buffers must hold count * 3 floats; count must equal <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount()</a> when bound (unbound lattices still deform raw positions).  <br /></td></tr>
+<tr class="separator:aa29b9cc149dc35a7fdf2a8038c1cff63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee2c94b75bd4c1556bd8ac19a1347a1a" id="r_aee2c94b75bd4c1556bd8ac19a1347a1a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee2c94b75bd4c1556bd8ac19a1347a1a">deformPositionsTo</a> (const std::vector&lt; float &gt; &amp;inPosXYZ, std::vector&lt; float &gt; &amp;outPosXYZ) const</td></tr>
+<tr class="memdesc:aee2c94b75bd4c1556bd8ac19a1347a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: deform into a vector sized count*3.  <br /></td></tr>
+<tr class="separator:aee2c94b75bd4c1556bd8ac19a1347a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d06c989e408411e2925c26d1840996" id="r_a69d06c989e408411e2925c26d1840996"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a69d06c989e408411e2925c26d1840996">deformNormals</a> (const float *posXYZ, const float *inNrmXYZ, float *outNrmXYZ, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) const</td></tr>
+<tr class="memdesc:a69d06c989e408411e2925c26d1840996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms normals with the interpolated scale field and renormalizes. posXYZ provides the (deformed) vertex positions used for the lattice-cell lookup; count must equal <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount()</a> when bound.  <br /></td></tr>
+<tr class="separator:a69d06c989e408411e2925c26d1840996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1023333f3d50a41052d1dd7a2bdded6" id="r_ab1023333f3d50a41052d1dd7a2bdded6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab1023333f3d50a41052d1dd7a2bdded6">updateDeformedPositions</a> (const std::vector&lt; float &gt; &amp;inPosXYZ)</td></tr>
+<tr class="memdesc:ab1023333f3d50a41052d1dd7a2bdded6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deform an input packed xyz array into the internal cache (size vertexCount*3).  <br /></td></tr>
+<tr class="separator:ab1023333f3d50a41052d1dd7a2bdded6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a533425725e4dfb6a47347356a0170312" id="r_a533425725e4dfb6a47347356a0170312"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312">updateDeformedPositions</a> ()</td></tr>
+<tr class="memdesc:a533425725e4dfb6a47347356a0170312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deform the bound bind positions into the internal cache.  <br /></td></tr>
+<tr class="separator:a533425725e4dfb6a47347356a0170312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f63d667c2813a915fe373fc67ff5182" id="r_a8f63d667c2813a915fe373fc67ff5182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182">updateDeformedNormals</a> (const std::vector&lt; float &gt; &amp;posXYZ, const std::vector&lt; float &gt; &amp;inNrmXYZ)</td></tr>
+<tr class="memdesc:a8f63d667c2813a915fe373fc67ff5182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deform packed xyz normals (with packed positions for cell lookup) into the internal normal cache.  <br /></td></tr>
+<tr class="separator:a8f63d667c2813a915fe373fc67ff5182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9910eb3e2d111f74bb346afc7c088f0" id="r_ac9910eb3e2d111f74bb346afc7c088f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac9910eb3e2d111f74bb346afc7c088f0">hasDeformedPositions</a> () const</td></tr>
+<tr class="memdesc:ac9910eb3e2d111f74bb346afc7c088f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after a successful <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312" title="Deform the bound bind positions into the internal cache.">updateDeformedPositions()</a>.  <br /></td></tr>
+<tr class="separator:ac9910eb3e2d111f74bb346afc7c088f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6cfd114b4204af8f3eff55da1e6076c" id="r_af6cfd114b4204af8f3eff55da1e6076c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af6cfd114b4204af8f3eff55da1e6076c">hasDeformedNormals</a> () const</td></tr>
+<tr class="memdesc:af6cfd114b4204af8f3eff55da1e6076c"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after a successful <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182" title="Deform packed xyz normals (with packed positions for cell lookup) into the internal normal cache.">updateDeformedNormals()</a>.  <br /></td></tr>
+<tr class="separator:af6cfd114b4204af8f3eff55da1e6076c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0214340499205c1ec8e244a770897d5d" id="r_a0214340499205c1ec8e244a770897d5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0214340499205c1ec8e244a770897d5d">getDeformedPositionX</a> (int vertexIndex) const</td></tr>
+<tr class="memdesc:a0214340499205c1ec8e244a770897d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached deformed position component (requires updateDeformedPositions).  <br /></td></tr>
+<tr class="separator:a0214340499205c1ec8e244a770897d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6bc7aee60fb90aa333abd16feb451ad" id="r_aa6bc7aee60fb90aa333abd16feb451ad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa6bc7aee60fb90aa333abd16feb451ad">getDeformedPositionY</a> (int vertexIndex) const</td></tr>
+<tr class="separator:aa6bc7aee60fb90aa333abd16feb451ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb69852d328731d54fdddc03235d5b07" id="r_abb69852d328731d54fdddc03235d5b07"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#abb69852d328731d54fdddc03235d5b07">getDeformedPositionZ</a> (int vertexIndex) const</td></tr>
+<tr class="separator:abb69852d328731d54fdddc03235d5b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd02fc3d3851dca1ceadea8f83b6e28" id="r_a0dd02fc3d3851dca1ceadea8f83b6e28"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0dd02fc3d3851dca1ceadea8f83b6e28">getDeformedPositions</a> () const</td></tr>
+<tr class="memdesc:a0dd02fc3d3851dca1ceadea8f83b6e28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the cached deformed positions (xyz packed; empty when not updated).  <br /></td></tr>
+<tr class="separator:a0dd02fc3d3851dca1ceadea8f83b6e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4c5f95943ed45f5edef85c8b6b9b51" id="r_a0a4c5f95943ed45f5edef85c8b6b9b51"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0a4c5f95943ed45f5edef85c8b6b9b51">getDeformedNormals</a> () const</td></tr>
+<tr class="memdesc:a0a4c5f95943ed45f5edef85c8b6b9b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the cached deformed normals (xyz packed; empty when not updated).  <br /></td></tr>
+<tr class="separator:a0a4c5f95943ed45f5edef85c8b6b9b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae8d8d874e1ec6e5f1a8a70d53cc62d6a" id="r_ae8d8d874e1ec6e5f1a8a70d53cc62d6a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ae8d8d874e1ec6e5f1a8a70d53cc62d6a">fromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int meshIndex, int divX, int divY, int divZ)</td></tr>
+<tr class="memdesc:ae8d8d874e1ec6e5f1a8a70d53cc62d6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a lattice bound to meshIndex of model (Assimp vertices). Throws on null model / invalid mesh / empty mesh. Returned pointer is owned by the caller / script GC.  <br /></td></tr>
+<tr class="separator:ae8d8d874e1ec6e5f1a8a70d53cc62d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:ad2ffbae11a7b126d72eaddd47cfd16a0" id="r_ad2ffbae11a7b126d72eaddd47cfd16a0"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a> = 2</td></tr>
+<tr class="separator:ad2ffbae11a7b126d72eaddd47cfd16a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU 3D lattice scale-deformer (晶格缩放变形). </p>
+<p>A lattice is a box of control points (divisions x/y/z, each &gt;= 2). Every control point carries a scale and an offset; a bound vertex is deformed by trilinear interpolation of the eight surrounding control points:</p>
+<p>p' = origin + <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset(p)</a> + <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale(p)</a> * (p - origin)</p>
+<p>with <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale(p)</a> the interpolated diagonal scale and <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset(p)</a> the interpolated offsets. Defaults are identity (offset 0, scale 1), so the lattice is a no-op until control points are driven — perfect for procedural squash &amp; stretch / local bulge animations driven per frame from scripts.</p>
+<p>Vertices outside the box are clamped to the boundary cells by default (setClamp(false) switches to linear extrapolation).</p>
+<p>Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimLattice.html" title="CPU 3D lattice scale-deformer (晶格缩放变形).">AnimLattice</a></code> (created via <code>anim.newLattice(divX, divY, divZ)</code>).</p>
+<p>Typical frame (script): lat.setPointScale(3, 3, 3, 2.0, 1.0, 1.0); lat.updateDeformedPositions(); lat.updateDeformedNormalsFromArray(nrmArray); gfx.updateMeshVertices(mesh, lat.getDeformedPositions(), lat.getDeformedNormals(), [], vertexCount, [], 0);</p>
+<p>Pipeline with skinning (C++): skinPositionsTo(pose, skinned) then deformPositions(skinned.data(), out.data(), vertexCount). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00041">41</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac89587730e9cb9221a215d302747efed" name="ac89587730e9cb9221a215d302747efed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac89587730e9cb9221a215d302747efed">&#9670;&#160;</a></span>AnimLattice() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimLattice::AnimLattice </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8h_source.html#l00043">kMinDivisions</a> , 以及 <a class="el" href="AnimLattice_8cpp_source.html#l00046">setDivisions()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00139">fromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a82402ba3bda4c3e0870ac646fb732875" name="a82402ba3bda4c3e0870ac646fb732875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82402ba3bda4c3e0870ac646fb732875">&#9670;&#160;</a></span>AnimLattice() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimLattice::AnimLattice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a lattice with the given divisions (each &gt;= 2). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00046">setDivisions()</a>.</p>
+
+</div>
+</div>
+<a id="a2c490b93f741af571051b204f67f2b20" name="a2c490b93f741af571051b204f67f2b20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c490b93f741af571051b204f67f2b20">&#9670;&#160;</a></span>AnimLattice() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimLattice::AnimLattice </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8377729034943edefd9269c797c04370" name="a8377729034943edefd9269c797c04370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8377729034943edefd9269c797c04370">&#9670;&#160;</a></span>bindModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::bindModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binds the current lattice to meshIndex of model (uses current divisions). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00169">bindPositions()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a>.</p>
+
+</div>
+</div>
+<a id="aff29d2b5cf287ed84b14604817afef06" name="aff29d2b5cf287ed84b14604817afef06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff29d2b5cf287ed84b14604817afef06">&#9670;&#160;</a></span>bindPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::bindPositions </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binds a packed xyz array (count * 3 floats). Uses current divisions/size/origin. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00155">bindModel()</a>.</p>
+
+</div>
+</div>
+<a id="ab47b17e6770097cf127d323f76055324" name="ab47b17e6770097cf127d323f76055324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab47b17e6770097cf127d323f76055324">&#9670;&#160;</a></span>clearBind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::clearBind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00046">setDivisions()</a>.</p>
+
+</div>
+</div>
+<a id="a69d06c989e408411e2925c26d1840996" name="a69d06c989e408411e2925c26d1840996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d06c989e408411e2925c26d1840996">&#9670;&#160;</a></span>deformNormals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::deformNormals </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>inNrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>outNrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transforms normals with the interpolated scale field and renormalizes. posXYZ provides the (deformed) vertex positions used for the lattice-cell lookup; count must equal <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount()</a> when bound. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Grass_8cpp_source.html#l00064">i0</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">pz</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00329">updateDeformedNormals()</a>.</p>
+
+</div>
+</div>
+<a id="aa29b9cc149dc35a7fdf2a8038c1cff63" name="aa29b9cc149dc35a7fdf2a8038c1cff63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29b9cc149dc35a7fdf2a8038c1cff63">&#9670;&#160;</a></span>deformPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::deformPositions </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>inPosXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>outPosXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deforms count packed xyz positions into outPosXYZ. Both buffers must hold count * 3 floats; count must equal <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount()</a> when bound (unbound lattices still deform raw positions). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Grass_8cpp_source.html#l00064">i0</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00257">deformPositionsTo()</a> , 以及 <a class="el" href="AnimLattice_8cpp_source.html#l00310">updateDeformedPositions()</a>.</p>
+
+</div>
+</div>
+<a id="aee2c94b75bd4c1556bd8ac19a1347a1a" name="aee2c94b75bd4c1556bd8ac19a1347a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee2c94b75bd4c1556bd8ac19a1347a1a">&#9670;&#160;</a></span>deformPositionsTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::deformPositionsTo </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inPosXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outPosXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: deform into a vector sized count*3. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="AnimLattice_8cpp_source.html#l00212">deformPositions()</a>.</p>
+
+</div>
+</div>
+<a id="ae8d8d874e1ec6e5f1a8a70d53cc62d6a" name="ae8d8d874e1ec6e5f1a8a70d53cc62d6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8d8d874e1ec6e5f1a8a70d53cc62d6a">&#9670;&#160;</a></span>fromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> * eve::animation::AnimLattice::fromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds a lattice bound to meshIndex of model (Assimp vertices). Throws on null model / invalid mesh / empty mesh. Returned pointer is owned by the caller / script GC. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00042">AnimLattice()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00390">eve::animation::Animation::newLatticeFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="af2a044f7ad6e539d0904681bb7ef81ad" name="af2a044f7ad6e539d0904681bb7ef81ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a044f7ad6e539d0904681bb7ef81ad">&#9670;&#160;</a></span>getBindPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getBindPositionX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind-pose position component for vertex v (0..vertexCount-1). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff6d7eb051a815a290eeef257089ad09" name="aff6d7eb051a815a290eeef257089ad09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff6d7eb051a815a290eeef257089ad09">&#9670;&#160;</a></span>getBindPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getBindPositionY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bfaced56d3ebb724a94cbfd7886b05d" name="a7bfaced56d3ebb724a94cbfd7886b05d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bfaced56d3ebb724a94cbfd7886b05d">&#9670;&#160;</a></span>getBindPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getBindPositionZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d1936b778d9846712a483bfadc43cc0" name="a3d1936b778d9846712a483bfadc43cc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d1936b778d9846712a483bfadc43cc0">&#9670;&#160;</a></span>getClamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::getClamp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a4c5f95943ed45f5edef85c8b6b9b51" name="a0a4c5f95943ed45f5edef85c8b6b9b51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a4c5f95943ed45f5edef85c8b6b9b51">&#9670;&#160;</a></span>getDeformedNormals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::animation::AnimLattice::getDeformedNormals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy of the cached deformed normals (xyz packed; empty when not updated). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0dd02fc3d3851dca1ceadea8f83b6e28" name="a0dd02fc3d3851dca1ceadea8f83b6e28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd02fc3d3851dca1ceadea8f83b6e28">&#9670;&#160;</a></span>getDeformedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::animation::AnimLattice::getDeformedPositions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy of the cached deformed positions (xyz packed; empty when not updated). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0214340499205c1ec8e244a770897d5d" name="a0214340499205c1ec8e244a770897d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0214340499205c1ec8e244a770897d5d">&#9670;&#160;</a></span>getDeformedPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getDeformedPositionX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cached deformed position component (requires updateDeformedPositions). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6bc7aee60fb90aa333abd16feb451ad" name="aa6bc7aee60fb90aa333abd16feb451ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6bc7aee60fb90aa333abd16feb451ad">&#9670;&#160;</a></span>getDeformedPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getDeformedPositionY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb69852d328731d54fdddc03235d5b07" name="abb69852d328731d54fdddc03235d5b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb69852d328731d54fdddc03235d5b07">&#9670;&#160;</a></span>getDeformedPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getDeformedPositionZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a998eb4ebaad1855ab9393bc0902833f3" name="a998eb4ebaad1855ab9393bc0902833f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998eb4ebaad1855ab9393bc0902833f3">&#9670;&#160;</a></span>getDivisionsX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLattice::getDivisionsX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63ff5e357e16e45a2f1919597a9bb171" name="a63ff5e357e16e45a2f1919597a9bb171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63ff5e357e16e45a2f1919597a9bb171">&#9670;&#160;</a></span>getDivisionsY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLattice::getDivisionsY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf19b4d0c67e0fabbdb4ef7d2a5fb21c" name="adf19b4d0c67e0fabbdb4ef7d2a5fb21c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">&#9670;&#160;</a></span>getDivisionsZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLattice::getDivisionsZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac17086d2133d64240bed2c87a28ae437" name="ac17086d2133d64240bed2c87a28ae437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac17086d2133d64240bed2c87a28ae437">&#9670;&#160;</a></span>getOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69742e7a1d56da530c2fc71f76665f59" name="a69742e7a1d56da530c2fc71f76665f59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69742e7a1d56da530c2fc71f76665f59">&#9670;&#160;</a></span>getOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cf6313e22a040d5fbd84c748772f8de" name="a4cf6313e22a040d5fbd84c748772f8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf6313e22a040d5fbd84c748772f8de">&#9670;&#160;</a></span>getOriginZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getOriginZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf90a542a66d03cff6d4706bfac3f052" name="aaf90a542a66d03cff6d4706bfac3f052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf90a542a66d03cff6d4706bfac3f052">&#9670;&#160;</a></span>getPointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLattice::getPointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total control point count (divX * divY * divZ). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a155c4ff91e97dfa70065c94c6e1040f9" name="a155c4ff91e97dfa70065c94c6e1040f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a155c4ff91e97dfa70065c94c6e1040f9">&#9670;&#160;</a></span>getPointOffsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointOffsetX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>.</p>
+
+</div>
+</div>
+<a id="aa31b0a274bbfa07af17662d803429ed3" name="aa31b0a274bbfa07af17662d803429ed3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa31b0a274bbfa07af17662d803429ed3">&#9670;&#160;</a></span>getPointOffsetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointOffsetY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>.</p>
+
+</div>
+</div>
+<a id="af606ec4b7b6b607331349bbc481c11bf" name="af606ec4b7b6b607331349bbc481c11bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af606ec4b7b6b607331349bbc481c11bf">&#9670;&#160;</a></span>getPointOffsetZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointOffsetZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a914be7b460db6dd8b3ef4d037abc93e6" name="a914be7b460db6dd8b3ef4d037abc93e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a914be7b460db6dd8b3ef4d037abc93e6">&#9670;&#160;</a></span>getPointScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointScaleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd7c0e6b8cab578ba178fba3276ffec2" name="acd7c0e6b8cab578ba178fba3276ffec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7c0e6b8cab578ba178fba3276ffec2">&#9670;&#160;</a></span>getPointScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointScaleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af890d766ec09bbaf9e7c773fda501732" name="af890d766ec09bbaf9e7c773fda501732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af890d766ec09bbaf9e7c773fda501732">&#9670;&#160;</a></span>getPointScaleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getPointScaleZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5c2daacd20bbd91cd54f60c9fefd938" name="af5c2daacd20bbd91cd54f60c9fefd938"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5c2daacd20bbd91cd54f60c9fefd938">&#9670;&#160;</a></span>getSizeX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getSizeX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab765d47992df2c43f6c14186d7b920b0" name="ab765d47992df2c43f6c14186d7b920b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab765d47992df2c43f6c14186d7b920b0">&#9670;&#160;</a></span>getSizeY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getSizeY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f3d745bfdc33c9bf297d37e37e8ae1b" name="a1f3d745bfdc33c9bf297d37e37e8ae1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f3d745bfdc33c9bf297d37e37e8ae1b">&#9670;&#160;</a></span>getSizeZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLattice::getSizeZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee17c8af8bbcfad9afe9c5d55e361105" name="aee17c8af8bbcfad9afe9c5d55e361105"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee17c8af8bbcfad9afe9c5d55e361105">&#9670;&#160;</a></span>getVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLattice::getVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6cfd114b4204af8f3eff55da1e6076c" name="af6cfd114b4204af8f3eff55da1e6076c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6cfd114b4204af8f3eff55da1e6076c">&#9670;&#160;</a></span>hasDeformedNormals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::hasDeformedNormals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after a successful <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182" title="Deform packed xyz normals (with packed positions for cell lookup) into the internal normal cache.">updateDeformedNormals()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9910eb3e2d111f74bb346afc7c088f0" name="ac9910eb3e2d111f74bb346afc7c088f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9910eb3e2d111f74bb346afc7c088f0">&#9670;&#160;</a></span>hasDeformedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::hasDeformedPositions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after a successful <a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312" title="Deform the bound bind positions into the internal cache.">updateDeformedPositions()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82f8c7f5ebca25aa3a7a03a30ca03089" name="a82f8c7f5ebca25aa3a7a03a30ca03089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f8c7f5ebca25aa3a7a03a30ca03089">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp; eve::animation::AnimLattice::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af651dfc18b4cc909813d77ba2b652c00" name="af651dfc18b4cc909813d77ba2b652c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af651dfc18b4cc909813d77ba2b652c00">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets every control point to identity (offset 0, scale 1). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80a901b7273a556c24b3977784cc5537" name="a80a901b7273a556c24b3977784cc5537"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80a901b7273a556c24b3977784cc5537">&#9670;&#160;</a></span>setClamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setClamp </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clamp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>When true (default), vertices outside the box are clamped to the boundary cells; when false, lattice coordinates extrapolate linearly. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a00fc656b771e58819f524f01144a2530" name="a00fc656b771e58819f524f01144a2530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00fc656b771e58819f524f01144a2530">&#9670;&#160;</a></span>setDivisions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setDivisions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes divisions; resets all control points to identity and clears the bind. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00182">clearBind()</a> , 以及 <a class="el" href="AnimLattice_8h_source.html#l00043">kMinDivisions</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00042">AnimLattice()</a> , 以及 <a class="el" href="AnimLattice_8cpp_source.html#l00044">AnimLattice()</a>.</p>
+
+</div>
+</div>
+<a id="a7fa2c184cf52d7a928f0faf423bdfdc2" name="a7fa2c184cf52d7a928f0faf423bdfdc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fa2c184cf52d7a928f0faf423bdfdc2">&#9670;&#160;</a></span>setOrigin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setOrigin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Center of the lattice box in model space. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a> , 以及 <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>.</p>
+
+</div>
+</div>
+<a id="abf2ffeac03ae6a895062868930cfa212" name="abf2ffeac03ae6a895062868930cfa212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf2ffeac03ae6a895062868930cfa212">&#9670;&#160;</a></span>setPointOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setPointOffset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-control-point translation offset (local bulge / pinch). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a1333b22b042b10f24863581f5d0a8072" name="a1333b22b042b10f24863581f5d0a8072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1333b22b042b10f24863581f5d0a8072">&#9670;&#160;</a></span>setPointScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setPointScale </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-control-point scale (squash / stretch about the lattice origin). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ace39b136a38b7fb5ecdca0756d5f0663" name="ace39b136a38b7fb5ecdca0756d5f0663"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace39b136a38b7fb5ecdca0756d5f0663">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies one scale to every control point (whole-lattice squash &amp; stretch). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ab99a891a59f725265153cb23f23269c9" name="ab99a891a59f725265153cb23f23269c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab99a891a59f725265153cb23f23269c9">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLattice::setSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space size of the lattice box (components must be &gt; 0). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f63d667c2813a915fe373fc67ff5182" name="a8f63d667c2813a915fe373fc67ff5182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f63d667c2813a915fe373fc67ff5182">&#9670;&#160;</a></span>updateDeformedNormals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::updateDeformedNormals </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inNrmXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deform packed xyz normals (with packed positions for cell lookup) into the internal normal cache. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00265">deformNormals()</a>.</p>
+
+</div>
+</div>
+<a id="a533425725e4dfb6a47347356a0170312" name="a533425725e4dfb6a47347356a0170312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a533425725e4dfb6a47347356a0170312">&#9670;&#160;</a></span>updateDeformedPositions() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::updateDeformedPositions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deform the bound bind positions into the internal cache. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00321">updateDeformedPositions()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00321">updateDeformedPositions()</a>.</p>
+
+</div>
+</div>
+<a id="ab1023333f3d50a41052d1dd7a2bdded6" name="ab1023333f3d50a41052d1dd7a2bdded6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1023333f3d50a41052d1dd7a2bdded6">&#9670;&#160;</a></span>updateDeformedPositions() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLattice::updateDeformedPositions </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inPosXYZ</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deform an input packed xyz array into the internal cache (size vertexCount*3). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a> 第 <a class="el" href="AnimLattice_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLattice_8cpp_source.html#l00212">deformPositions()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ad2ffbae11a7b126d72eaddd47cfd16a0" name="ad2ffbae11a7b126d72eaddd47cfd16a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2ffbae11a7b126d72eaddd47cfd16a0">&#9670;&#160;</a></span>kMinDivisions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::animation::AnimLattice::kMinDivisions = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a> 第 <a class="el" href="AnimLattice_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLattice_8cpp_source.html#l00042">AnimLattice()</a> , 以及 <a class="el" href="AnimLattice_8cpp_source.html#l00046">setDivisions()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimLattice_8h_source.html">AnimLattice.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimLattice_8cpp_source.html">AnimLattice.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

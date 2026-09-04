@@ -1,0 +1,219 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/decal_editing/DecalGizmo.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b36fa3839b4d42722b7e153ba3013a9b.html">decal_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DecalGizmo.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DecalGizmo_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DecalTarget_8h.html">decal_editing/DecalTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespaceeve_1_1decal__editing.html">    5</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1decal__editing.html">eve::decal_editing</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1decal__editing_1_1DecalGizmoPreviewService.html#aa98ddf0764b0ef611d960e0eec0f2b10">    7</a></span><a class="code hl_struct" href="structeve_1_1editing_1_1GizmoSnapshot.html">EditorGizmoSnapshot</a> <a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalGizmoPreviewService.html#aa98ddf0764b0ef611d960e0eec0f2b10">DecalGizmoPreviewService::build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html">DecalDocumentTarget</a>&amp; document)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoSnapshot.html">EditorGizmoSnapshot</a> result; result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#afc9225814f51eb4d3fe6de10da30d116">target</a>=document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a06d6986a04cb8d5908c3436f0613a97b">targetId</a>().value();result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a21d57a3f49eec0e9fe0704b149452dd5">targetRevision</a>=document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a6f08b7c811d38bfc8173fba73dedc35a">revision</a>();</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">const</span> <span class="keyword">auto</span> diagnostics=document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#af802287097037bc50c0135b49639c69e">validate</a>();<span class="keywordflow">for</span>(<span class="keyword">const</span> <span class="keyword">auto</span>&amp;diagnostic:diagnostics)<span class="keywordflow">if</span>(diagnostic.severity()==DiagnosticSeverity::Error){result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a096db4a305b0a2afdc879c944392b0c1">status</a>=EditorStatus::Rejected;result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a9a6e3469681fe749b5c441e407f2a0a1">diagnostics</a>=diagnostics;<span class="keywordflow">return</span> result;}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>=*document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a>(<span class="stringliteral">&quot;transform.position&quot;</span>)-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>&gt;();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>=*document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a>(<span class="stringliteral">&quot;transform.normal&quot;</span>)-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>&gt;();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    std::array&lt;double,3&gt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>{},<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>{};<span class="keywordtype">double</span> length2=0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i){<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[i]=*<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>[i].getIf&lt;<span class="keywordtype">double</span>&gt;();<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>[i]=*<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>[i].getIf&lt;<span class="keywordtype">double</span>&gt;();length2+=<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>[i]*<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>[i];}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>=std::sqrt(length2);<span class="keywordflow">for</span>(<span class="keywordtype">double</span>&amp;component:<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)component/=<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> size=*document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a>(<span class="stringliteral">&quot;projection.size&quot;</span>)-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>=*document.<a class="code hl_function" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a>(<span class="stringliteral">&quot;projection.depth&quot;</span>)-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a8fcef1e64b91d5117e8328248c6769b2">primitives</a>.push_back({<span class="stringliteral">&quot;decal-volume&quot;</span>,<span class="stringliteral">&quot;oriented-wire-box&quot;</span>,<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>,{size,size,<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>},<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,{0.2,0.75,1.0,0.9},0,0,<span class="keyword">true</span>});</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a8fcef1e64b91d5117e8328248c6769b2">primitives</a>.push_back({<span class="stringliteral">&quot;decal-normal&quot;</span>,<span class="stringliteral">&quot;arrow&quot;</span>,<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>,{},<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,{1.0,0.55,0.1,1.0},0,std::max(<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>,size*0.5),<span class="keyword">false</span>});</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a9a6e3469681fe749b5c441e407f2a0a1">diagnostics</a>=diagnostics;result.<a class="code hl_variable" href="structeve_1_1editing_1_1GizmoSnapshot.html#a096db4a305b0a2afdc879c944392b0c1">status</a>=EditorStatus::Applied;<span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>} <span class="comment">// namespace eve::decal_editing</span></div>
+</div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aDecalTarget_8h_html"><div class="ttname"><a href="DecalTarget_8h.html">DecalTarget.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00094">ModelRenderer.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalDocumentTarget_html"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html">eve::decal_editing::DecalDocumentTarget</a></div><div class="ttdoc">Stable, serializable authoring document for one projected decal.</div><div class="ttdef"><b>Definition</b> <a href="DecalTarget_8h_source.html#l00029">DecalTarget.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalDocumentTarget_html_a06d6986a04cb8d5908c3436f0613a97b"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a06d6986a04cb8d5908c3436f0613a97b">eve::decal_editing::DecalDocumentTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="DecalTarget_8h_source.html#l00035">DecalTarget.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalDocumentTarget_html_a0f8e7957ad8f28ea302f03e9d028d099"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">eve::decal_editing::DecalDocumentTarget::value</a></div><div class="ttdeci">const EditorValue * value(const std::string &amp;path) const</div><div class="ttdoc">Read a renderer-neutral property by stable path.</div><div class="ttdef"><b>Definition</b> <a href="DecalTarget_8cpp_source.html#l00033">DecalTarget.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalDocumentTarget_html_a6f08b7c811d38bfc8173fba73dedc35a"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a6f08b7c811d38bfc8173fba73dedc35a">eve::decal_editing::DecalDocumentTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="DecalTarget_8h_source.html#l00036">DecalTarget.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalDocumentTarget_html_af802287097037bc50c0135b49639c69e"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#af802287097037bc50c0135b49639c69e">eve::decal_editing::DecalDocumentTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate projection geometry, fades, UVs and texture-channel rules.</div><div class="ttdef"><b>Definition</b> <a href="DecalTarget_8cpp_source.html#l00039">DecalTarget.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1decal__editing_1_1DecalGizmoPreviewService_html_aa98ddf0764b0ef611d960e0eec0f2b10"><div class="ttname"><a href="classeve_1_1decal__editing_1_1DecalGizmoPreviewService.html#aa98ddf0764b0ef611d960e0eec0f2b10">eve::decal_editing::DecalGizmoPreviewService::build</a></div><div class="ttdeci">EditorGizmoSnapshot build(const DecalDocumentTarget &amp;document) const</div><div class="ttdoc">Create a revision-bound projection volume and direction arrow.</div><div class="ttdef"><b>Definition</b> <a href="DecalGizmo_8cpp_source.html#l00007">DecalGizmo.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00019">EditingValue.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_af38afcaa2d6048edb43ecc098158a3f2"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">eve::editing::Value::getIf</a></div><div class="ttdeci">const T * getIf() const</div><div class="ttdoc">Return an immediately borrowed typed value.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00050">EditingValue.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal__editing_html"><div class="ttname"><a href="namespaceeve_1_1decal__editing.html">eve::decal_editing</a></div><div class="ttdef"><b>Definition</b> <a href="DecalGizmo_8cpp_source.html#l00005">DecalGizmo.cpp:5</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html">eve::editing::GizmoSnapshot</a></div><div class="ttdoc">Immutable revision-tagged overlay snapshot consumed by any viewport renderer.</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00025">EditingGizmo.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html_a096db4a305b0a2afdc879c944392b0c1"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html#a096db4a305b0a2afdc879c944392b0c1">eve::editing::GizmoSnapshot::status</a></div><div class="ttdeci">Status status</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00026">EditingGizmo.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html_a21d57a3f49eec0e9fe0704b149452dd5"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html#a21d57a3f49eec0e9fe0704b149452dd5">eve::editing::GizmoSnapshot::targetRevision</a></div><div class="ttdeci">Revision targetRevision</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00028">EditingGizmo.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html_a8fcef1e64b91d5117e8328248c6769b2"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html#a8fcef1e64b91d5117e8328248c6769b2">eve::editing::GizmoSnapshot::primitives</a></div><div class="ttdeci">std::vector&lt; GizmoPrimitive &gt; primitives</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00029">EditingGizmo.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html_a9a6e3469681fe749b5c441e407f2a0a1"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html#a9a6e3469681fe749b5c441e407f2a0a1">eve::editing::GizmoSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00030">EditingGizmo.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html_afc9225814f51eb4d3fe6de10da30d116"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html#afc9225814f51eb4d3fe6de10da30d116">eve::editing::GizmoSnapshot::target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00027">EditingGizmo.h:27</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

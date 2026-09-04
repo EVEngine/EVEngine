@@ -1,0 +1,346 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/combat/Damage.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_8ff025988e0b86b4485582b47b9a5d61.html">combat</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Damage.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Damage_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1combat.html">eve::combat</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1Impulse3.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1Impulse3.html#a4d372c6587057933eba67b5a7fbf2e4c">   16</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1Impulse3.html#a4d372c6587057933eba67b5a7fbf2e4c">x</a> = 0.0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1Impulse3.html#a16c092732e4eb557b484d6847909c4ad">   17</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1Impulse3.html#a16c092732e4eb557b484d6847909c4ad">y</a> = 0.0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1Impulse3.html#abc8a8ed0ada7e40efe10786489583d76">   18</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1Impulse3.html#abc8a8ed0ada7e40efe10786489583d76">z</a> = 0.0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">   22</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">HitReaction</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">Flinch</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">Stagger</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">Knockdown</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">Death</a> };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">   25</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">DamageRuleSource</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67">Default</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af">Provider</a> };</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html#a7873aa37458caf32fded0fa0fa751724">   34</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="structeve_1_1combat_1_1CombatState.html#a7873aa37458caf32fded0fa0fa751724">subject</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html#a78ddd41c20fb3b6416f310e816f15a06">   35</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1combat_1_1CombatState.html#a78ddd41c20fb3b6416f310e816f15a06">health</a>    = 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html#aad9a2612369ed2a01d63fff46d3dc481">   36</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1combat_1_1CombatState.html#aad9a2612369ed2a01d63fff46d3dc481">maxHealth</a> = 0.0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html#aa62bf3a6de42b010f472e99231c500c5">   37</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1combat_1_1CombatState.html#aa62bf3a6de42b010f472e99231c500c5">poise</a>     = 0.0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatState.html#a07f6555e63c2a5dd4af8fea4fd7bcf50">   38</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1combat_1_1CombatState.html#a07f6555e63c2a5dd4af8fea4fd7bcf50">maxPoise</a>  = 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1combat_1_1CombatState.html#a04c802daa6856e10f808909043ecc226">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#ab3d573ed7b3257afbb6dc592839b117e">   46</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>                               <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#ab3d573ed7b3257afbb6dc592839b117e">source</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#af946e08441a0b2c316933c91987d28d2">   47</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>                               <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#af946e08441a0b2c316933c91987d28d2">target</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#afee212d27fe03a28502657c2a204d25e">   48</a></span>    std::optional&lt;action::ActionExecutionId&gt; <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#afee212d27fe03a28502657c2a204d25e">actionExecution</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#a790439733d913fbd0419e6f2ab5a0e9c">   49</a></span>    std::string                              <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#a790439733d913fbd0419e6f2ab5a0e9c">damageType</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#a1a3641bb6636e3e47d82b14a26daaf8e">   50</a></span>    <span class="keywordtype">double</span>                                   <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#a1a3641bb6636e3e47d82b14a26daaf8e">healthDamage</a> = 0.0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#ad5160bb8aefb5196382cd2611b75692c">   51</a></span>    <span class="keywordtype">double</span>                                   <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#ad5160bb8aefb5196382cd2611b75692c">poiseDamage</a>  = 0.0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageRequest.html#acf336220bccf34a12bb84abd31c55e1f">   52</a></span>    <a class="code hl_struct" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a>                                 <a class="code hl_variable" href="structeve_1_1combat_1_1DamageRequest.html#acf336220bccf34a12bb84abd31c55e1f">knockback</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1combat_1_1DamageRequest.html#a9bf3513c81a8930ef24000b0cfadaead">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageAmounts.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1DamageAmounts.html">DamageAmounts</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageAmounts.html#a16a3ca2f910b7f39f0f8e8a310381fa4">   60</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1DamageAmounts.html#a16a3ca2f910b7f39f0f8e8a310381fa4">healthDamage</a>   = 0.0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageAmounts.html#a17764499bed8589b8d1e9ae07627f6cb">   61</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1DamageAmounts.html#a17764499bed8589b8d1e9ae07627f6cb">poiseDamage</a>    = 0.0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageAmounts.html#a60ca461bbdbe0bd1546c7d6cb6e87093">   62</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1DamageAmounts.html#a60ca461bbdbe0bd1546c7d6cb6e87093">knockbackScale</a> = 1.0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1IDamageRule.html">   71</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1combat_1_1IDamageRule.html">IDamageRule</a> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1IDamageRule.html#a0f05031a2e9633f7be115efec460eee3">   73</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1combat_1_1IDamageRule.html#a0f05031a2e9633f7be115efec460eee3">~IDamageRule</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1IDamageRule.html#a1ec221590127466647a018a2046ce9e7">   75</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DamageAmounts&gt;</a> <a class="code hl_function" href="classeve_1_1combat_1_1IDamageRule.html#a1ec221590127466647a018a2046ce9e7">evaluate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a>&amp; request,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                         <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1combat_1_1CombatState.html">CombatState</a>&amp;   <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="};">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1HitReactionPolicy.html">   80</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1HitReactionPolicy.html">HitReactionPolicy</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1HitReactionPolicy.html#adfd8033312db1e1018176840f5139a52">   81</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1HitReactionPolicy.html#adfd8033312db1e1018176840f5139a52">flinchDamageThreshold</a> = 0.0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1HitReactionPolicy.html#ac74478f974372ef94413ca6e0b14f566">   82</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1combat_1_1HitReactionPolicy.html#ac74478f974372ef94413ca6e0b14f566">staggerPoiseFraction</a>  = 0.5;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1combat_1_1HitReactionPolicy.html#a1bbf7cab8970876910546d87f1f48add">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="};">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html">   89</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a86d669fdb7fd8c0a647876ecd0a046a2">   90</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>       <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a86d669fdb7fd8c0a647876ecd0a046a2">source</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#ad0431c49a95ff036e12314dbbe1b74bc">   91</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>       <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#ad0431c49a95ff036e12314dbbe1b74bc">target</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#abd15edef9aa06a075d4aa5aa2ac1bcba">   92</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#abd15edef9aa06a075d4aa5aa2ac1bcba">previousHealth</a>      = 0.0;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#ae8281ba79961a2fdb365b88cbbfe54f7">   93</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#ae8281ba79961a2fdb365b88cbbfe54f7">health</a>              = 0.0;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a31256b7a980717fb2e41cb69634ed76c">   94</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a31256b7a980717fb2e41cb69634ed76c">previousPoise</a>       = 0.0;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a46f4749fc36575c8a5b63ca3d3e6502b">   95</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a46f4749fc36575c8a5b63ca3d3e6502b">poise</a>               = 0.0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a746bac9ccc8a65a3ab4d495966c215c0">   96</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a746bac9ccc8a65a3ab4d495966c215c0">appliedHealthDamage</a> = 0.0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#af16ee87dc24283c06fa023c671ead6d4">   97</a></span>    <span class="keywordtype">double</span>           <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#af16ee87dc24283c06fa023c671ead6d4">appliedPoiseDamage</a>  = 0.0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a1914aabd66448fa14c9b39c17b90dba4">   98</a></span>    <a class="code hl_struct" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a>         <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a1914aabd66448fa14c9b39c17b90dba4">knockback</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#a56081485467f2d00e804943ae9fddbe0">   99</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">HitReaction</a>      <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#a56081485467f2d00e804943ae9fddbe0">reaction</a>   = <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">HitReaction::None</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1DamageOutcome.html#af48874edb2ea9ca04b635ccc2760118b">  100</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">DamageRuleSource</a> <a class="code hl_variable" href="structeve_1_1combat_1_1DamageOutcome.html#af48874edb2ea9ca04b635ccc2760118b">ruleSource</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67">DamageRuleSource::Default</a>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="};">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1DamageRuntime.html">  111</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1combat_1_1DamageRuntime.html">DamageRuntime</a> {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1DamageRuntime.html#a4fc2712d52306c278f8cdf6f341be358">  114</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1combat_1_1DamageRuntime.html#a4fc2712d52306c278f8cdf6f341be358">DamageRuntime</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1combat_1_1IDamageRule.html">IDamageRule</a>* rule = <span class="keyword">nullptr</span>, <a class="code hl_struct" href="structeve_1_1combat_1_1HitReactionPolicy.html">HitReactionPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = {})</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        : rule_(rule), policy_(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DamageAmounts&gt;</a> <a class="code hl_function" href="classeve_1_1combat_1_1DamageRuntime.html#a7db417768431e2fc415ba31d15bbbe79">preview</a>(<span class="keyword">const</span> CombatState&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> DamageRequest&amp; request) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DamageOutcome&gt;</a> <a class="code hl_function" href="classeve_1_1combat_1_1DamageRuntime.html#af56ca91afd9dd20d495e0e4d3024aed9">apply</a>(CombatState&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> DamageRequest&amp; request) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;double&gt;</a> <a class="code hl_function" href="classeve_1_1combat_1_1DamageRuntime.html#a8444f490717668fec3361779deb7018e">recoverPoise</a>(CombatState&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keywordtype">double</span> amount) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">const</span> IDamageRule* rule_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    HitReactionPolicy  policy_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>};</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::combat</span></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html">eve::combat::DamageRuntime</a></div><div class="ttdoc">Owner-thread deterministic damage coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00111">Damage.h:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html_a4fc2712d52306c278f8cdf6f341be358"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html#a4fc2712d52306c278f8cdf6f341be358">eve::combat::DamageRuntime::DamageRuntime</a></div><div class="ttdeci">DamageRuntime(const IDamageRule *rule=nullptr, HitReactionPolicy policy={})</div><div class="ttdoc">Construct with an optional borrowed rule provider and owning policy copy.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00114">Damage.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html_a7db417768431e2fc415ba31d15bbbe79"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html#a7db417768431e2fc415ba31d15bbbe79">eve::combat::DamageRuntime::preview</a></div><div class="ttdeci">Result&lt; DamageAmounts &gt; preview(const CombatState &amp;target, const DamageRequest &amp;request) const</div><div class="ttdoc">Resolve final damage amounts without mutating the target, for authoritative tactical prediction.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00061">Damage.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html_a8444f490717668fec3361779deb7018e"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html#a8444f490717668fec3361779deb7018e">eve::combat::DamageRuntime::recoverPoise</a></div><div class="ttdeci">Result&lt; double &gt; recoverPoise(CombatState &amp;target, double amount) const</div><div class="ttdoc">Restore an explicit poise amount, clamped to maxPoise.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00121">Damage.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html_af56ca91afd9dd20d495e0e4d3024aed9"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html#af56ca91afd9dd20d495e0e4d3024aed9">eve::combat::DamageRuntime::apply</a></div><div class="ttdeci">Result&lt; DamageOutcome &gt; apply(CombatState &amp;target, const DamageRequest &amp;request) const</div><div class="ttdoc">Resolve and atomically commit one damage request.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00079">Damage.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1IDamageRule_html"><div class="ttname"><a href="classeve_1_1combat_1_1IDamageRule.html">eve::combat::IDamageRule</a></div><div class="ttdoc">Optional game-owned mitigation/amplification policy.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00071">Damage.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1IDamageRule_html_a0f05031a2e9633f7be115efec460eee3"><div class="ttname"><a href="classeve_1_1combat_1_1IDamageRule.html#a0f05031a2e9633f7be115efec460eee3">eve::combat::IDamageRule::~IDamageRule</a></div><div class="ttdeci">virtual ~IDamageRule()=default</div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1IDamageRule_html_a1ec221590127466647a018a2046ce9e7"><div class="ttname"><a href="classeve_1_1combat_1_1IDamageRule.html#a1ec221590127466647a018a2046ce9e7">eve::combat::IDamageRule::evaluate</a></div><div class="ttdeci">virtual Result&lt; DamageAmounts &gt; evaluate(const DamageRequest &amp;request, const CombatState &amp;target) const =0</div><div class="ttdoc">Resolve final non-negative amounts without mutating target state.</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html"><div class="ttname"><a href="namespaceeve_1_1combat.html">eve::combat</a></div><div class="ttdef"><b>Definition</b> <a href="CombatAttributes_8cpp_source.html#l00010">CombatAttributes.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12e"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">eve::combat::HitReaction</a></div><div class="ttdeci">HitReaction</div><div class="ttdoc">Typed reaction selected after health and poise are resolved.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00022">Damage.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">eve::combat::HitReaction::Flinch</a></div><div class="ttdeci">@ Flinch</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">eve::combat::HitReaction::Death</a></div><div class="ttdeci">@ Death</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">eve::combat::HitReaction::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">eve::combat::HitReaction::Stagger</a></div><div class="ttdeci">@ Stagger</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601"><div class="ttname"><a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">eve::combat::HitReaction::Knockdown</a></div><div class="ttdeci">@ Knockdown</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_ae48a90769b26c01a49b5d2fb2f21e86e"><div class="ttname"><a href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">eve::combat::DamageRuleSource</a></div><div class="ttdeci">DamageRuleSource</div><div class="ttdoc">Indicates whether default amounts or an injected rule produced the outcome.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00025">Damage.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af"><div class="ttname"><a href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af">eve::combat::DamageRuleSource::Provider</a></div><div class="ttdeci">@ Provider</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67"><div class="ttname"><a href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67">eve::combat::DamageRuleSource::Default</a></div><div class="ttdeci">@ Default</div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html">eve::combat::CombatState</a></div><div class="ttdoc">Mutable combat state owned by the gameplay domain for one subject.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00033">Damage.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_a04c802daa6856e10f808909043ecc226"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#a04c802daa6856e10f808909043ecc226">eve::combat::CombatState::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate finite ranges and the non-nil subject link.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00034">Damage.cpp:34</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_a07f6555e63c2a5dd4af8fea4fd7bcf50"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#a07f6555e63c2a5dd4af8fea4fd7bcf50">eve::combat::CombatState::maxPoise</a></div><div class="ttdeci">double maxPoise</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00038">Damage.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_a7873aa37458caf32fded0fa0fa751724"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#a7873aa37458caf32fded0fa0fa751724">eve::combat::CombatState::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00034">Damage.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_a78ddd41c20fb3b6416f310e816f15a06"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#a78ddd41c20fb3b6416f310e816f15a06">eve::combat::CombatState::health</a></div><div class="ttdeci">double health</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00035">Damage.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_aa62bf3a6de42b010f472e99231c500c5"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#aa62bf3a6de42b010f472e99231c500c5">eve::combat::CombatState::poise</a></div><div class="ttdeci">double poise</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00037">Damage.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html_aad9a2612369ed2a01d63fff46d3dc481"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html#aad9a2612369ed2a01d63fff46d3dc481">eve::combat::CombatState::maxHealth</a></div><div class="ttdeci">double maxHealth</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00036">Damage.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageAmounts_html"><div class="ttname"><a href="structeve_1_1combat_1_1DamageAmounts.html">eve::combat::DamageAmounts</a></div><div class="ttdoc">Provider result prepared before the authoritative state is mutated.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00059">Damage.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageAmounts_html_a16a3ca2f910b7f39f0f8e8a310381fa4"><div class="ttname"><a href="structeve_1_1combat_1_1DamageAmounts.html#a16a3ca2f910b7f39f0f8e8a310381fa4">eve::combat::DamageAmounts::healthDamage</a></div><div class="ttdeci">double healthDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00060">Damage.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageAmounts_html_a17764499bed8589b8d1e9ae07627f6cb"><div class="ttname"><a href="structeve_1_1combat_1_1DamageAmounts.html#a17764499bed8589b8d1e9ae07627f6cb">eve::combat::DamageAmounts::poiseDamage</a></div><div class="ttdeci">double poiseDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00061">Damage.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageAmounts_html_a60ca461bbdbe0bd1546c7d6cb6e87093"><div class="ttname"><a href="structeve_1_1combat_1_1DamageAmounts.html#a60ca461bbdbe0bd1546c7d6cb6e87093">eve::combat::DamageAmounts::knockbackScale</a></div><div class="ttdeci">double knockbackScale</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00062">Damage.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html">eve::combat::DamageOutcome</a></div><div class="ttdoc">Complete owning audit result of one committed damage transaction.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00089">Damage.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a1914aabd66448fa14c9b39c17b90dba4"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a1914aabd66448fa14c9b39c17b90dba4">eve::combat::DamageOutcome::knockback</a></div><div class="ttdeci">Impulse3 knockback</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00098">Damage.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a31256b7a980717fb2e41cb69634ed76c"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a31256b7a980717fb2e41cb69634ed76c">eve::combat::DamageOutcome::previousPoise</a></div><div class="ttdeci">double previousPoise</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00094">Damage.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a46f4749fc36575c8a5b63ca3d3e6502b"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a46f4749fc36575c8a5b63ca3d3e6502b">eve::combat::DamageOutcome::poise</a></div><div class="ttdeci">double poise</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00095">Damage.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a56081485467f2d00e804943ae9fddbe0"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a56081485467f2d00e804943ae9fddbe0">eve::combat::DamageOutcome::reaction</a></div><div class="ttdeci">HitReaction reaction</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00099">Damage.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a746bac9ccc8a65a3ab4d495966c215c0"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a746bac9ccc8a65a3ab4d495966c215c0">eve::combat::DamageOutcome::appliedHealthDamage</a></div><div class="ttdeci">double appliedHealthDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00096">Damage.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_a86d669fdb7fd8c0a647876ecd0a046a2"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#a86d669fdb7fd8c0a647876ecd0a046a2">eve::combat::DamageOutcome::source</a></div><div class="ttdeci">SubjectRef source</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00090">Damage.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_abd15edef9aa06a075d4aa5aa2ac1bcba"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#abd15edef9aa06a075d4aa5aa2ac1bcba">eve::combat::DamageOutcome::previousHealth</a></div><div class="ttdeci">double previousHealth</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00092">Damage.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_ad0431c49a95ff036e12314dbbe1b74bc"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#ad0431c49a95ff036e12314dbbe1b74bc">eve::combat::DamageOutcome::target</a></div><div class="ttdeci">SubjectRef target</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00091">Damage.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_ae8281ba79961a2fdb365b88cbbfe54f7"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#ae8281ba79961a2fdb365b88cbbfe54f7">eve::combat::DamageOutcome::health</a></div><div class="ttdeci">double health</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00093">Damage.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_af16ee87dc24283c06fa023c671ead6d4"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#af16ee87dc24283c06fa023c671ead6d4">eve::combat::DamageOutcome::appliedPoiseDamage</a></div><div class="ttdeci">double appliedPoiseDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00097">Damage.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageOutcome_html_af48874edb2ea9ca04b635ccc2760118b"><div class="ttname"><a href="structeve_1_1combat_1_1DamageOutcome.html#af48874edb2ea9ca04b635ccc2760118b">eve::combat::DamageOutcome::ruleSource</a></div><div class="ttdeci">DamageRuleSource ruleSource</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00100">Damage.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html">eve::combat::DamageRequest</a></div><div class="ttdoc">Owning input for one damage transaction.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00045">Damage.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_a1a3641bb6636e3e47d82b14a26daaf8e"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#a1a3641bb6636e3e47d82b14a26daaf8e">eve::combat::DamageRequest::healthDamage</a></div><div class="ttdeci">double healthDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00050">Damage.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_a790439733d913fbd0419e6f2ab5a0e9c"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#a790439733d913fbd0419e6f2ab5a0e9c">eve::combat::DamageRequest::damageType</a></div><div class="ttdeci">std::string damageType</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00049">Damage.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_a9bf3513c81a8930ef24000b0cfadaead"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#a9bf3513c81a8930ef24000b0cfadaead">eve::combat::DamageRequest::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate target, canonical gameplay-tag damage type and finite amounts.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00043">Damage.cpp:43</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_ab3d573ed7b3257afbb6dc592839b117e"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#ab3d573ed7b3257afbb6dc592839b117e">eve::combat::DamageRequest::source</a></div><div class="ttdeci">SubjectRef source</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00046">Damage.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_acf336220bccf34a12bb84abd31c55e1f"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#acf336220bccf34a12bb84abd31c55e1f">eve::combat::DamageRequest::knockback</a></div><div class="ttdeci">Impulse3 knockback</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00052">Damage.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_ad5160bb8aefb5196382cd2611b75692c"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#ad5160bb8aefb5196382cd2611b75692c">eve::combat::DamageRequest::poiseDamage</a></div><div class="ttdeci">double poiseDamage</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00051">Damage.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_af946e08441a0b2c316933c91987d28d2"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#af946e08441a0b2c316933c91987d28d2">eve::combat::DamageRequest::target</a></div><div class="ttdeci">SubjectRef target</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00047">Damage.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1DamageRequest_html_afee212d27fe03a28502657c2a204d25e"><div class="ttname"><a href="structeve_1_1combat_1_1DamageRequest.html#afee212d27fe03a28502657c2a204d25e">eve::combat::DamageRequest::actionExecution</a></div><div class="ttdeci">std::optional&lt; action::ActionExecutionId &gt; actionExecution</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00048">Damage.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1HitReactionPolicy_html"><div class="ttname"><a href="structeve_1_1combat_1_1HitReactionPolicy.html">eve::combat::HitReactionPolicy</a></div><div class="ttdoc">Threshold policy for deterministic reaction selection.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00080">Damage.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1HitReactionPolicy_html_a1bbf7cab8970876910546d87f1f48add"><div class="ttname"><a href="structeve_1_1combat_1_1HitReactionPolicy.html#a1bbf7cab8970876910546d87f1f48add">eve::combat::HitReactionPolicy::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate finite non-negative thresholds and fraction in [0,1].</div><div class="ttdef"><b>Definition</b> <a href="Damage_8cpp_source.html#l00053">Damage.cpp:53</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1HitReactionPolicy_html_ac74478f974372ef94413ca6e0b14f566"><div class="ttname"><a href="structeve_1_1combat_1_1HitReactionPolicy.html#ac74478f974372ef94413ca6e0b14f566">eve::combat::HitReactionPolicy::staggerPoiseFraction</a></div><div class="ttdeci">double staggerPoiseFraction</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00082">Damage.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1HitReactionPolicy_html_adfd8033312db1e1018176840f5139a52"><div class="ttname"><a href="structeve_1_1combat_1_1HitReactionPolicy.html#adfd8033312db1e1018176840f5139a52">eve::combat::HitReactionPolicy::flinchDamageThreshold</a></div><div class="ttdeci">double flinchDamageThreshold</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00081">Damage.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1Impulse3_html"><div class="ttname"><a href="structeve_1_1combat_1_1Impulse3.html">eve::combat::Impulse3</a></div><div class="ttdoc">Renderer/physics-neutral knockback impulse authored in world units.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00015">Damage.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1Impulse3_html_a16c092732e4eb557b484d6847909c4ad"><div class="ttname"><a href="structeve_1_1combat_1_1Impulse3.html#a16c092732e4eb557b484d6847909c4ad">eve::combat::Impulse3::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00017">Damage.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1Impulse3_html_a4d372c6587057933eba67b5a7fbf2e4c"><div class="ttname"><a href="structeve_1_1combat_1_1Impulse3.html#a4d372c6587057933eba67b5a7fbf2e4c">eve::combat::Impulse3::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00016">Damage.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1Impulse3_html_abc8a8ed0ada7e40efe10786489583d76"><div class="ttname"><a href="structeve_1_1combat_1_1Impulse3.html#abc8a8ed0ada7e40efe10786489583d76">eve::combat::Impulse3::z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00018">Damage.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

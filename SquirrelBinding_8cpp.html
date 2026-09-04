@@ -1,0 +1,277 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/SquirrelBinding.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">SquirrelBinding.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="SquirrelBinding_8h_source.html">common/SquirrelBinding.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Assert_8h_source.html">common/Assert.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cctype&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="SquirrelBinding_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1script" id="r_namespaceeve_1_1script"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html">eve::script</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a0409ef6800fb3a1f11aa4c439db1d828" id="r_a0409ef6800fb3a1f11aa4c439db1d828"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a0409ef6800fb3a1f11aa4c439db1d828">eve::script::valueFromSquirrel</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, SQInteger <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a0409ef6800fb3a1f11aa4c439db1d828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert one Squirrel value into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree.  <br /></td></tr>
+<tr class="separator:a0409ef6800fb3a1f11aa4c439db1d828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab3e5c9ffbc12aeb6d6e345992bdd48" id="r_a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a4ab3e5c9ffbc12aeb6d6e345992bdd48">eve::script::valueFromSquirrel</a> (const ssq::Object &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a rooted Squirrel object into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree.  <br /></td></tr>
+<tr class="separator:a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a2718be6d14b5b3b7d8d9098d9e753" id="r_a29a2718be6d14b5b3b7d8d9098d9e753"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a29a2718be6d14b5b3b7d8d9098d9e753">eve::script::pushValue</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a29a2718be6d14b5b3b7d8d9098d9e753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a canonical <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> into the active Squirrel VM.  <br /></td></tr>
+<tr class="separator:a29a2718be6d14b5b3b7d8d9098d9e753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa313dd05578d039f2898acc6af7ae9f" id="r_afa313dd05578d039f2898acc6af7ae9f"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#afa313dd05578d039f2898acc6af7ae9f">eve::script::projectDiagnostic</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> &amp;diagnostic)</td></tr>
+<tr class="memdesc:afa313dd05578d039f2898acc6af7ae9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one <a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a> using the common script table schema.  <br /></td></tr>
+<tr class="separator:afa313dd05578d039f2898acc6af7ae9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921c318b270412cbb5d71e8085ab7537" id="r_a921c318b270412cbb5d71e8085ab7537"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a921c318b270412cbb5d71e8085ab7537">eve::script::projectStatus</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>)</td></tr>
+<tr class="memdesc:a921c318b270412cbb5d71e8085ab7537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> using the common script table schema.  <br /></td></tr>
+<tr class="separator:a921c318b270412cbb5d71e8085ab7537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a568ea2eb2d061d37ec7dbe79d8797d77" id="r_a568ea2eb2d061d37ec7dbe79d8797d77"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a568ea2eb2d061d37ec7dbe79d8797d77">eve::script::projectStatusResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, bool <a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>, bool hasValue, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>={})</td></tr>
+<tr class="memdesc:a568ea2eb2d061d37ec7dbe79d8797d77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project an already-consumed native status and optional <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload.  <br /></td></tr>
+<tr class="separator:a568ea2eb2d061d37ec7dbe79d8797d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4df5edc4f47ca3cc0e7e160d4a3b7c" id="r_aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&amp;result)</td></tr>
+<tr class="memdesc:aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume and project a void native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> using the common schema.  <br /></td></tr>
+<tr class="separator:aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abda141283fd327e274ae32d3c7946495" id="r_abda141283fd327e274ae32d3c7946495"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#abda141283fd327e274ae32d3c7946495">eve::script::ignoreResult</a> (const ssq::Object &amp;result, const std::string &amp;reason)</td></tr>
+<tr class="memdesc:abda141283fd327e274ae32d3c7946495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a projected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> table as intentionally ignored by script.  <br /></td></tr>
+<tr class="separator:abda141283fd327e274ae32d3c7946495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a986f169a30607834af11eaad0cefe60c" id="r_a986f169a30607834af11eaad0cefe60c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a986f169a30607834af11eaad0cefe60c">eve::script::exposeResultBindings</a> (ssq::Table &amp;eveTable)</td></tr>
+<tr class="memdesc:a986f169a30607834af11eaad0cefe60c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the common script helpers under <code>eve.result</code>.  <br /></td></tr>
+<tr class="separator:a986f169a30607834af11eaad0cefe60c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a0161de1a576ec1ebf096aa6ead3a67c5" name="a0161de1a576ec1ebf096aa6ead3a67c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0161de1a576ec1ebf096aa6ead3a67c5">&#9670;&#160;</a></span>activeContainers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;const void*&gt; activeContainers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cb7ebae0f472ee88c186932fb62a8a1" name="a9cb7ebae0f472ee88c186932fb62a8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cb7ebae0f472ee88c186932fb62a8a1">&#9670;&#160;</a></span>elements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t elements = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00369">eve::script::pushValue()</a>.</p>
+
+</div>
+</div>
+<a id="abebf9d839cc4bbffbf6bb3cf6c4b1038" name="abebf9d839cc4bbffbf6bb3cf6c4b1038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abebf9d839cc4bbffbf6bb3cf6c4b1038">&#9670;&#160;</a></span>options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const SquirrelValueOptions&amp; options</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00659">eve::ui::UI::addCombo()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00621">eve::script::ScriptCompiler::analyze()</a>, <a class="el" href="Runtime_8cpp_source.html#l00360">eve::ReflectedMember::attrOptions()</a>, <a class="el" href="SkeletonOverlayRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationSkeletonOverlayAdapter::build()</a>, <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00193">eve::ui::buildPropertyField()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00205">eve::ui::buildPropertyView()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00218">eve::model3d::buildRenderable()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00233">eve::model3d::buildRenderables()</a>, <a class="el" href="Decision_8cpp_source.html#l00199">eve::decision::DecisionContext::choose()</a>, <a class="el" href="Widget_8cpp_source.html#l00363">eve::ui::combo()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00941">eve::dev::LanguageServer::formatDocument()</a>, <a class="el" href="LanguageText_8cpp_source.html#l00196">eve::dev::lsp::formatEveScript()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l01003">eve::dev::LanguageServer::handleMessage()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01063">eve::sceneloader::SceneLoader::inspect()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00966">eve::sceneloader::SceneLoader::load()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00989">eve::sceneloader::SceneLoader::load()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01135">eve::sceneloader::SceneLoader::loadAsync()</a>, <a class="el" href="ModelLoader_8cpp_source.html#l00148">eve::model3d::modelCacheKey()</a>, <a class="el" href="Model3D_8cpp_source.html#l00091">eve::model3d::Model3D::newModelData()</a>, <a class="el" href="Model3D_8cpp_source.html#l00137">eve::model3d::Model3D::newModelDataFromFile()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01181">eve::sceneloader::SceneLoader::prewarmAsync()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00189">eve::ui::propertyWidgetId()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00418">eve::procgen::ArtifactPublisher::publish()</a>, <a class="el" href="Procgen_8cpp_source.html#l02129">eve::procgen::Procgen::publishArtifact()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00369">eve::script::pushValue()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00064">eve::profiler_editing::EditorProfilerModel::query()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00997">eve::sceneloader::SceneLoader::reload()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00264">eve::ui::PropertyComponent::setOptions()</a>, <a class="el" href="SpriteStack2D_8cpp_source.html#l00216">eve::spritestack::SpriteStack::sliceModel()</a>, <a class="el" href="SpriteStack2D_8cpp_source.html#l00203">eve::spritestack::SpriteStack::slicePrimitive()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00104">eve::ik::Solver2D::solveChain()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00106">eve::ik::Solver3D::solveChain()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00113">eve::ik::Solver2D::stepChain()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00118">eve::ik::Solver3D::stepChain()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00300">eve::ui::DatabasePanel::sync()</a>, <a class="el" href="Inspector_8cpp_source.html#l00503">eve::ui::Inspector::sync()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00223">eve::ui::syncPropertyView()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00356">eve::script::valueFromSquirrel()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">eve::script::valueFromSquirrel()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

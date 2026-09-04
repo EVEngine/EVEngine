@@ -1,0 +1,554 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::StoryEventSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html">StoryEventSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1StoryEventSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::StoryEventSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Caller-owned runtime cursor over a copied story-event definition.  
+ <a href="classeve_1_1rpg_1_1StoryEventSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StoryEvent_8h_source.html">StoryEvent.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7790fe0211423e2d0757f8df1171533d" id="r_a7790fe0211423e2d0757f8df1171533d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a7790fe0211423e2d0757f8df1171533d">begin</a> (const std::string &amp;eventId, <a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> *gameState)</td></tr>
+<tr class="memdesc:a7790fe0211423e2d0757f8df1171533d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin or resume an event from its authoritative <a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> cursor.  <br /></td></tr>
+<tr class="separator:a7790fe0211423e2d0757f8df1171533d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bfc35d25c1f304b630dbb9ba8483cfb" id="r_a2bfc35d25c1f304b630dbb9ba8483cfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a2bfc35d25c1f304b630dbb9ba8483cfb">advance</a> (<a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> *gameState)</td></tr>
+<tr class="memdesc:a2bfc35d25c1f304b630dbb9ba8483cfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acknowledge the current presentation command and persist the next cursor atomically.  <br /></td></tr>
+<tr class="separator:a2bfc35d25c1f304b630dbb9ba8483cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c1756e53a9c6d782d72427e6c957779" id="r_a1c1756e53a9c6d782d72427e6c957779"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a1c1756e53a9c6d782d72427e6c957779">isActive</a> () const</td></tr>
+<tr class="memdesc:a1c1756e53a9c6d782d72427e6c957779"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a current step is awaiting acknowledgement.  <br /></td></tr>
+<tr class="separator:a1c1756e53a9c6d782d72427e6c957779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a391bf64cd09b457ed52adbe215aa648b" id="r_a391bf64cd09b457ed52adbe215aa648b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a391bf64cd09b457ed52adbe215aa648b">isFinished</a> () const</td></tr>
+<tr class="memdesc:a391bf64cd09b457ed52adbe215aa648b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether this session acknowledged its final step.  <br /></td></tr>
+<tr class="separator:a391bf64cd09b457ed52adbe215aa648b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c7fd69632d2ed5214cd51584d57934" id="r_a04c7fd69632d2ed5214cd51584d57934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a04c7fd69632d2ed5214cd51584d57934">getStepIndex</a> () const</td></tr>
+<tr class="memdesc:a04c7fd69632d2ed5214cd51584d57934"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the zero-based current cursor, or the step count after completion.  <br /></td></tr>
+<tr class="separator:a04c7fd69632d2ed5214cd51584d57934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861db0592d2af2deae3da903e889eec1" id="r_a861db0592d2af2deae3da903e889eec1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a861db0592d2af2deae3da903e889eec1">getStepCount</a> () const</td></tr>
+<tr class="memdesc:a861db0592d2af2deae3da903e889eec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the copied definition's total step count.  <br /></td></tr>
+<tr class="separator:a861db0592d2af2deae3da903e889eec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46d7299333691d418dd87a4782b0fb3b" id="r_a46d7299333691d418dd87a4782b0fb3b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a46d7299333691d418dd87a4782b0fb3b">getEventId</a> () const</td></tr>
+<tr class="memdesc:a46d7299333691d418dd87a4782b0fb3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning copy of the current event id.  <br /></td></tr>
+<tr class="separator:a46d7299333691d418dd87a4782b0fb3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ab55295d6c2020f03ace642994b0c8c" id="r_a8ab55295d6c2020f03ace642994b0c8c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a8ab55295d6c2020f03ace642994b0c8c">getStepKind</a> () const</td></tr>
+<tr class="memdesc:a8ab55295d6c2020f03ace642994b0c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current command kind, or an empty string while inactive.  <br /></td></tr>
+<tr class="separator:a8ab55295d6c2020f03ace642994b0c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050ecd0ac95295577f96ea7ac36b30e6" id="r_a050ecd0ac95295577f96ea7ac36b30e6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a050ecd0ac95295577f96ea7ac36b30e6">getReference</a> () const</td></tr>
+<tr class="memdesc:a050ecd0ac95295577f96ea7ac36b30e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning copy of the current dialogue/message reference.  <br /></td></tr>
+<tr class="separator:a050ecd0ac95295577f96ea7ac36b30e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71bf24be6949166363146b9ba594e6a5" id="r_a71bf24be6949166363146b9ba594e6a5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a71bf24be6949166363146b9ba594e6a5">getActorId</a> () const</td></tr>
+<tr class="memdesc:a71bf24be6949166363146b9ba594e6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning copy of the current move actor id.  <br /></td></tr>
+<tr class="separator:a71bf24be6949166363146b9ba594e6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a704e3ed745cf101e3af42debc0e65b26" id="r_a704e3ed745cf101e3af42debc0e65b26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a704e3ed745cf101e3af42debc0e65b26">getX</a> () const</td></tr>
+<tr class="memdesc:a704e3ed745cf101e3af42debc0e65b26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current move/camera X coordinate, or zero while inactive.  <br /></td></tr>
+<tr class="separator:a704e3ed745cf101e3af42debc0e65b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36517534f8647108c1ed1dfb458e35c2" id="r_a36517534f8647108c1ed1dfb458e35c2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a36517534f8647108c1ed1dfb458e35c2">getY</a> () const</td></tr>
+<tr class="memdesc:a36517534f8647108c1ed1dfb458e35c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current move/camera Y coordinate, or zero while inactive.  <br /></td></tr>
+<tr class="separator:a36517534f8647108c1ed1dfb458e35c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11b2a6e44e34d14be69ce1a464af5925" id="r_a11b2a6e44e34d14be69ce1a464af5925"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StoryEventSession.html#a11b2a6e44e34d14be69ce1a464af5925">getDuration</a> () const</td></tr>
+<tr class="memdesc:a11b2a6e44e34d14be69ce1a464af5925"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current wait/motion duration in seconds, or zero while inactive.  <br /></td></tr>
+<tr class="separator:a11b2a6e44e34d14be69ce1a464af5925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Caller-owned runtime cursor over a copied story-event definition. </p>
+<dl class="section remark"><dt>备注</dt><dd><a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> remains the sole owner of persistent cursor/completion facts. The session owns its definition copy so catalogue hot replacement cannot invalidate an active event. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8h_source.html">StoryEvent.h</a> 第 <a class="el" href="StoryEvent_8h_source.html#l00066">66</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a2bfc35d25c1f304b630dbb9ba8483cfb" name="a2bfc35d25c1f304b630dbb9ba8483cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bfc35d25c1f304b630dbb9ba8483cfb">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::StoryEventSession::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> *&#160;</td>
+          <td class="paramname"><em>gameState</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Acknowledge the current presentation command and persist the next cursor atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gameState</td><td>Borrowed owner used to persist progress; must be the same logical save. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Remaining step count, or structured failure without cursor mutation. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Acknowledging the final command persists completion before the session becomes inactive. @thread Call on the <a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> owning simulation thread. @reentrancy No callbacks or scripts are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="GameState_8cpp_source.html#l00064">eve::rpg::GameState::getSelfVariable()</a>, <a class="el" href="GameState_8cpp_source.html#l00071">eve::rpg::GameState::hasSelfVariable()</a>, <a class="el" href="StoryEvent_8h_source.html#l00029">eve::rpg::StoryEventDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="GameState_8cpp_source.html#l00060">eve::rpg::GameState::setSelfVariable()</a>, <a class="el" href="StoryEvent_8h_source.html#l00031">eve::rpg::StoryEventDefinition::steps</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7790fe0211423e2d0757f8df1171533d" name="a7790fe0211423e2d0757f8df1171533d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7790fe0211423e2d0757f8df1171533d">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::StoryEventSession::begin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>eventId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> *&#160;</td>
+          <td class="paramname"><em>gameState</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin or resume an event from its authoritative <a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> cursor. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eventId</td><td>Exact registered event id. </td></tr>
+    <tr><td class="paramname">gameState</td><td>Borrowed persistent state owner used only for this synchronous call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied/unchanged success, or a structured validation/conflict failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Non-repeatable completed events reject restart. Failed begin leaves this session and <a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> unchanged. @thread Call on the <a class="el" href="classeve_1_1rpg_1_1GameState.html" title="一份游戏状态（开关/变量/独立变量）。">GameState</a> owning simulation thread. @reentrancy No callbacks or scripts are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="StoryEvent_8cpp_source.html#l00175">eve::rpg::StoryEventCatalogue::find()</a>, <a class="el" href="GameState_8cpp_source.html#l00064">eve::rpg::GameState::getSelfVariable()</a>, <a class="el" href="GameState_8cpp_source.html#l00071">eve::rpg::GameState::hasSelfVariable()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="GameState_8cpp_source.html#l00060">eve::rpg::GameState::setSelfVariable()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a71bf24be6949166363146b9ba594e6a5" name="a71bf24be6949166363146b9ba594e6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71bf24be6949166363146b9ba594e6a5">&#9670;&#160;</a></span>getActorId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StoryEventSession::getActorId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning copy of the current move actor id. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a11b2a6e44e34d14be69ce1a464af5925" name="a11b2a6e44e34d14be69ce1a464af5925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11b2a6e44e34d14be69ce1a464af5925">&#9670;&#160;</a></span>getDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::StoryEventSession::getDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current wait/motion duration in seconds, or zero while inactive. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a46d7299333691d418dd87a4782b0fb3b" name="a46d7299333691d418dd87a4782b0fb3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46d7299333691d418dd87a4782b0fb3b">&#9670;&#160;</a></span>getEventId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StoryEventSession::getEventId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning copy of the current event id. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StoryEvent_8h_source.html#l00029">eve::rpg::StoryEventDefinition::id</a>.</p>
+
+</div>
+</div>
+<a id="a050ecd0ac95295577f96ea7ac36b30e6" name="a050ecd0ac95295577f96ea7ac36b30e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050ecd0ac95295577f96ea7ac36b30e6">&#9670;&#160;</a></span>getReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StoryEventSession::getReference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning copy of the current dialogue/message reference. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a861db0592d2af2deae3da903e889eec1" name="a861db0592d2af2deae3da903e889eec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861db0592d2af2deae3da903e889eec1">&#9670;&#160;</a></span>getStepCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::StoryEventSession::getStepCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the copied definition's total step count. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StoryEvent_8h_source.html#l00031">eve::rpg::StoryEventDefinition::steps</a>.</p>
+
+</div>
+</div>
+<a id="a04c7fd69632d2ed5214cd51584d57934" name="a04c7fd69632d2ed5214cd51584d57934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04c7fd69632d2ed5214cd51584d57934">&#9670;&#160;</a></span>getStepIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::StoryEventSession::getStepIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the zero-based current cursor, or the step count after completion. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ab55295d6c2020f03ace642994b0c8c" name="a8ab55295d6c2020f03ace642994b0c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ab55295d6c2020f03ace642994b0c8c">&#9670;&#160;</a></span>getStepKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StoryEventSession::getStepKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current command kind, or an empty string while inactive. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00256">256</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a704e3ed745cf101e3af42debc0e65b26" name="a704e3ed745cf101e3af42debc0e65b26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a704e3ed745cf101e3af42debc0e65b26">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::StoryEventSession::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current move/camera X coordinate, or zero while inactive. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a36517534f8647108c1ed1dfb458e35c2" name="a36517534f8647108c1ed1dfb458e35c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36517534f8647108c1ed1dfb458e35c2">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::StoryEventSession::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current move/camera Y coordinate, or zero while inactive. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a1c1756e53a9c6d782d72427e6c957779" name="a1c1756e53a9c6d782d72427e6c957779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c1756e53a9c6d782d72427e6c957779">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::StoryEventSession::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether a current step is awaiting acknowledgement. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a391bf64cd09b457ed52adbe215aa648b" name="a391bf64cd09b457ed52adbe215aa648b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a391bf64cd09b457ed52adbe215aa648b">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::StoryEventSession::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether this session acknowledged its final step. </p>
+
+<p class="definition">在文件 <a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a> 第 <a class="el" href="StoryEvent_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="StoryEvent_8h_source.html">StoryEvent.h</a></li>
+<li>src/modules/rpg/<a class="el" href="StoryEvent_8cpp_source.html">StoryEvent.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

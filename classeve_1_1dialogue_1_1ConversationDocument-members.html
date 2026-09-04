@@ -1,0 +1,212 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">ConversationDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::dialogue::ConversationDocument 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a06a22f62f22d65da63210086f7e53691">addNode</a>(const std::string &amp;nodeId, const std::string &amp;kind)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a30eb9635a4421c446f2e441e93c805dd">addParameter</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7597ab24deb1758f794a5c84d26250e0">addRoute</a>(const std::string &amp;nodeId, const std::string &amp;label, const std::string &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a70fcd8aa3d69b4c0000fde69cdff2fb1">asset</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">ConversationDocument</a>(std::string id={})</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#af70175ff6b6c74a956b3f00b0f3d5f6b">ConversationDocument</a>(ConversationAsset asset)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">getDiagnosticCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f5011d6d5c80ee43c831d385206c193">getDiagnosticLine</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8045c431377a6c4713631896a8394ecb">getDiagnosticMessage</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac701f97638ac6d3a75eb013b3715dd38">getDiagnosticPath</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac0283286eeafe40d7161ba8f063b0288">getDiagnosticSeverity</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#acd24b3bc66484c33c372d90ff3d27036">getEntry</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a2c1e2aa32913023d94781e748c729043">getField</a>(const std::string &amp;nodeId, const std::string &amp;field) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a5706fac70d82006c4da9fd365e89b13a">getFieldCount</a>(const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a93e35fb604eead21d917166e479854a0">getFieldKind</a>(const std::string &amp;nodeId, int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a6468c8b5a4cb36d4c2099bc2488bb4a8">getFieldName</a>(const std::string &amp;nodeId, int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1c094366e6503ec6015a34d4581a3dd7">getId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">getNodeCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ab39dd7db666b5b42041faad29ab6aa3f">getNodeId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0e42daa29453a4aec4c4e4e1e5fa682d">getNodeKind</a>(const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a09eafe59ba98bce15ce5ae79b60beb89">getParameter</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">getParameterCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4ab1761ade14f25ff9d49bf8c21635c3">getRouteCount</a>(const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a498f60d5594a86d7f6b0cca9cd263ec9">getRouteLabel</a>(const std::string &amp;nodeId, int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4e36f7bc394226ecf45042054b074c41">getRouteTarget</a>(const std::string &amp;nodeId, int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8c2accd77ddd4be54e86b653b68533c6">getVersion</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad4efdeb509d1272786934dd604f08245">hasNode</a>(const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa45ae0f9900e4c3ea0b71fc859ad021f">removeNode</a>(const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a3106c11ab51d35c1e67c96ce83ef34f0">removeParameter</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f9b9e0f5f4eafa2288210a8456beff9">removeRoute</a>(const std::string &amp;nodeId, int index)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aca55ee859633cf2dad5654ea990f25e1">renameNode</a>(const std::string &amp;oldId, const std::string &amp;newId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1a0b3e55dfabc47cc310f827efc551f3">setEntry</a>(const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad7b6846c0133be5579256a1e5e68e85b">setField</a>(const std::string &amp;nodeId, const std::string &amp;field, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#adf543b2dd5d463799c51979bf10a8f09">setId</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa249ba1f2256804ad04e71baccf21b3c">setNodeKind</a>(const std::string &amp;nodeId, const std::string &amp;kind)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7873e11944d1d4a079d1d69166e15437">setRoute</a>(const std::string &amp;nodeId, int index, const std::string &amp;label, const std::string &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aac2a04b25d956e22025bbcd6e1c3e49e">setVersion</a>(int version)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a03c102ced6dcf5322126957071d32d33">validate</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorPropertyModel.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorPropertyModel.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorPropertyModel_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorHostProfile_8h.html">editor/EditorHostProfile.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorPropertyPresenter_8h.html">editor/EditorPropertyPresenter.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="PropertyAccess_8h.html">property_access/PropertyAccess.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>IEditorTransactionBackend;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">struct </span>EditorDryRunReport;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7">   21</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7">PropertyModelSurface</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891">Developer</a>, <a class="code hl_class" href="classeve_1_1Runtime.html">Runtime</a> };</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EditorPropertyModel.html">EditorPropertyModel</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a67204edf7ecd273aaf1e8c82188c110c">   38</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1editor_1_1EditorPropertyModel.html#a67204edf7ecd273aaf1e8c82188c110c">EditSink</a> = std::function&lt;EditorResult&lt;void&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1PropertyEditIntent.html">PropertyEditIntent</a> &amp;)&gt;;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorPropertyModel.html">EditorPropertyModel</a>(<a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a97ba5f668cd071012821cb644fa14276">schema</a>, <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a> *provider,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                        <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7">PropertyModelSurface</a>       surface            = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7a672caf27f5363dc833bda5099775e891">PropertyModelSurface::Developer</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                        <a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>                profile            = <a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">HostProfile::developer</a>(),</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                        <a class="code hl_class" href="classeve_1_1editor_1_1IEditorTransactionBackend.html">IEditorTransactionBackend</a> *transactionBackend = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a3a922277b5b9f38ec39868d4dd750704">   44</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a3a922277b5b9f38ec39868d4dd750704">~EditorPropertyModel</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a97ba5f668cd071012821cb644fa14276">   46</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1property__access_1_1PropertySchema.html">property_access::PropertySchema</a>     &amp;<a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a97ba5f668cd071012821cb644fa14276">schema</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> presentationSchema_; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::optional&lt;eve::Value&gt;                  <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#ae12e224ed76af6451472a2d280e5ab04">read</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1property__access_1_1WriteResult.html">property_access::WriteResult</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a0d58f6dd4c1954a19aedcdaed897858a">write</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a5ad341c0b8424a5904d09115bcb362de">   49</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a5ad341c0b8424a5904d09115bcb362de">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="classeve_1_1Subscription.html">property_access::Subscription</a>              <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a3045d1e3d0f24ff133420b7725f0e362">subscribe</a>(<a class="code hl_typedef" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a> callback) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a99690c29c5b86a026869a7f9017dcc66">   53</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::Revision</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a99690c29c5b86a026869a7f9017dcc66">targetRevision</a>() const noexcept { <span class="keywordflow">return</span> targetRevision_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#ae92274bbce202f49cd1e73e047e1bd21">bind</a>();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a6c66a9d214e930eb3f8263a2e8ad5e51">setTransactionBackend</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IEditorTransactionBackend.html">IEditorTransactionBackend</a> *backend);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TransactionId&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a18fb08b4465df58e2871fa007e2be5db">beginTransaction</a>(std::string label = <span class="stringliteral">&quot;Edit property&quot;</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorDryRunReport&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#ad67908c7608420639670f0b982cffbaf">previewTransaction</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#ad7448659c8254f3ce155643cc99f6648">commitTransaction</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#ab6da62c69b42bf45002fbf0da59061fc">rollbackTransaction</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a275fcbc2c6f6595ea84f68e3bcf05b22">retryTransaction</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a59ea557b888d2bb25dd42ef2cfbf5135">undo</a>();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#af392954b4db52f6ba931357d6bb8d0e7">redo</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorPropertyModel.html#a1e2072e4bf05541361fb7ab2bde57c87">   88</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a1e2072e4bf05541361fb7ab2bde57c87">setEditSink</a>(<a class="code hl_typedef" href="classeve_1_1editor_1_1EditorPropertyModel.html#a67204edf7ecd273aaf1e8c82188c110c">EditSink</a> sink) { sink_ = std::move(sink); }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#aa551a6bbea00782ae7c80fda60b26503">refresh</a>();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorPropertyModel.html#a48c7fbd9c77cd43728be337824115b9a">rebase</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">struct </span>CachedProperty {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <a class="code hl_enumeration" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014b">property_access::PropertyChangeState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e">property_access::PropertyChangeState::Missing</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        std::optional&lt;eve::Value&gt;             <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CachedProperty &amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    };</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">struct </span>ObserverState;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> rebuildSchema();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span>                                      dispatch(std::vector&lt;property_access::PropertyChange&gt; changes);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] EditorResult&lt;eve::Revision&gt; readProviderRevision() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] EditorResult&lt;void&gt;          ensureCurrentRevision() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#af9e44d8a01cf6eae11767880e9004a37">PropertySchema</a> editorSchema_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">SelectionSnapshot</a> selection_;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#adf0fe8669656aeb19d4f7a674afa9e88">IPropertyProvider</a> *provider_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7">PropertyModelSurface</a> surface_ = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7a672caf27f5363dc833bda5099775e891">PropertyModelSurface::Developer</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    HostProfile profile_;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_struct" href="structeve_1_1property__access_1_1PropertySchema.html">property_access::PropertySchema</a>   presentationSchema_;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::map&lt;std::string, CachedProperty&gt; cachedProperties_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_typedef" href="classeve_1_1editor_1_1EditorPropertyModel.html#a67204edf7ecd273aaf1e8c82188c110c">EditSink</a> sink_;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    IEditorTransactionBackend        *transactionBackend_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::set&lt;std::string&gt;             pendingPaths_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::Revision</a>                     targetRevision_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">bool</span>                              bound_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    std::uint64_t revision_ = 0;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::shared_ptr&lt;ObserverState&gt; observers_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    std::vector&lt;std::vector&lt;property_access::PropertyChange&gt;&gt; notificationQueue_;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">bool</span> dispatchingNotifications_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>};</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aEditorHostProfile_8h_html"><div class="ttname"><a href="EditorHostProfile_8h.html">EditorHostProfile.h</a></div></div>
+<div class="ttc" id="aEditorPropertyPresenter_8h_html"><div class="ttname"><a href="EditorPropertyPresenter_8h.html">EditorPropertyPresenter.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPropertyAccess_8h_html"><div class="ttname"><a href="PropertyAccess_8h.html">PropertyAccess.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Runtime_html"><div class="ttname"><a href="classeve_1_1Runtime.html">eve::Runtime</a></div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00173">Runtime.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1Subscription_html"><div class="ttname"><a href="classeve_1_1Subscription.html">eve::Subscription</a></div><div class="ttdoc">Move-only RAII token that owns one observer registration.</div><div class="ttdef"><b>Definition</b> <a href="Subscription_8h_source.html#l00027">Subscription.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></div><div class="ttdoc">UI-independent property access for an immutable selection snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00117">EditingProperty.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html">eve::editor::EditorPropertyModel</a></div><div class="ttdoc">Adapts command-backed editor properties to the shared MVVM contract.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00036">EditorPropertyModel.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a0d58f6dd4c1954a19aedcdaed897858a"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a0d58f6dd4c1954a19aedcdaed897858a">eve::editor::EditorPropertyModel::write</a></div><div class="ttdeci">property_access::WriteResult write(const std::string &amp;path, const eve::Value &amp;value) override</div><div class="ttdoc">Request a two-way binding write.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00143">EditorPropertyModel.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a18fb08b4465df58e2871fa007e2be5db"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a18fb08b4465df58e2871fa007e2be5db">eve::editor::EditorPropertyModel::beginTransaction</a></div><div class="ttdeci">EditorResult&lt; TransactionId &gt; beginTransaction(std::string label=&quot;Edit property&quot;)</div><div class="ttdoc">Begin an explicit property transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00262">EditorPropertyModel.cpp:262</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a1e2072e4bf05541361fb7ab2bde57c87"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a1e2072e4bf05541361fb7ab2bde57c87">eve::editor::EditorPropertyModel::setEditSink</a></div><div class="ttdeci">void setEditSink(EditSink sink)</div><div class="ttdoc">Install the legacy command sink; canonical code should inject a backend.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00088">EditorPropertyModel.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a275fcbc2c6f6595ea84f68e3bcf05b22"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a275fcbc2c6f6595ea84f68e3bcf05b22">eve::editor::EditorPropertyModel::retryTransaction</a></div><div class="ttdeci">EditorResult&lt; TransactionReceipt &gt; retryTransaction()</div><div class="ttdoc">Retry a retained failed commit.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00327">EditorPropertyModel.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a3045d1e3d0f24ff133420b7725f0e362"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a3045d1e3d0f24ff133420b7725f0e362">eve::editor::EditorPropertyModel::subscribe</a></div><div class="ttdeci">property_access::Subscription subscribe(ChangeCallback callback) override</div><div class="ttdoc">Observe changes until the returned token is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00373">EditorPropertyModel.cpp:373</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a3a922277b5b9f38ec39868d4dd750704"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a3a922277b5b9f38ec39868d4dd750704">eve::editor::EditorPropertyModel::~EditorPropertyModel</a></div><div class="ttdeci">~EditorPropertyModel() override</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a48c7fbd9c77cd43728be337824115b9a"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a48c7fbd9c77cd43728be337824115b9a">eve::editor::EditorPropertyModel::rebase</a></div><div class="ttdeci">EditorResult&lt; void &gt; rebase()</div><div class="ttdoc">Explicit spelling for refreshing and rebasing this model.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00404">EditorPropertyModel.cpp:404</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a59ea557b888d2bb25dd42ef2cfbf5135"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a59ea557b888d2bb25dd42ef2cfbf5135">eve::editor::EditorPropertyModel::undo</a></div><div class="ttdeci">EditorResult&lt; TransactionReceipt &gt; undo()</div><div class="ttdoc">Undo the latest committed property transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00343">EditorPropertyModel.cpp:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a5ad341c0b8424a5904d09115bcb362de"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a5ad341c0b8424a5904d09115bcb362de">eve::editor::EditorPropertyModel::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdoc">Monotonic revision incremented after observable changes.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00049">EditorPropertyModel.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a67204edf7ecd273aaf1e8c82188c110c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a67204edf7ecd273aaf1e8c82188c110c">eve::editor::EditorPropertyModel::EditSink</a></div><div class="ttdeci">std::function&lt; EditorResult&lt; void &gt;(const PropertyEditIntent &amp;)&gt; EditSink</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00038">EditorPropertyModel.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a6c66a9d214e930eb3f8263a2e8ad5e51"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a6c66a9d214e930eb3f8263a2e8ad5e51">eve::editor::EditorPropertyModel::setTransactionBackend</a></div><div class="ttdeci">EditorResult&lt; void &gt; setTransactionBackend(IEditorTransactionBackend *backend)</div><div class="ttdoc">Set the borrowed canonical transaction boundary.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00249">EditorPropertyModel.cpp:249</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a97ba5f668cd071012821cb644fa14276"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a97ba5f668cd071012821cb644fa14276">eve::editor::EditorPropertyModel::schema</a></div><div class="ttdeci">const property_access::PropertySchema &amp; schema() const override</div><div class="ttdoc">Return the stable schema exposed by this model.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00046">EditorPropertyModel.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_a99690c29c5b86a026869a7f9017dcc66"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#a99690c29c5b86a026869a7f9017dcc66">eve::editor::EditorPropertyModel::targetRevision</a></div><div class="ttdeci">eve::Revision targetRevision() const noexcept</div><div class="ttdoc">Return the authoritative provider revision captured by this model.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00053">EditorPropertyModel.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_aa551a6bbea00782ae7c80fda60b26503"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#aa551a6bbea00782ae7c80fda60b26503">eve::editor::EditorPropertyModel::refresh</a></div><div class="ttdeci">EditorResult&lt; void &gt; refresh()</div><div class="ttdoc">Re-read values and adopt the provider's current revision.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00406">EditorPropertyModel.cpp:406</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_ab6da62c69b42bf45002fbf0da59061fc"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#ab6da62c69b42bf45002fbf0da59061fc">eve::editor::EditorPropertyModel::rollbackTransaction</a></div><div class="ttdeci">EditorResult&lt; void &gt; rollbackTransaction()</div><div class="ttdoc">Discard pending property writes without publishing them.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00318">EditorPropertyModel.cpp:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_ad67908c7608420639670f0b982cffbaf"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#ad67908c7608420639670f0b982cffbaf">eve::editor::EditorPropertyModel::previewTransaction</a></div><div class="ttdeci">EditorResult&lt; EditorDryRunReport &gt; previewTransaction()</div><div class="ttdoc">Validate pending property writes without changing the target.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00292">EditorPropertyModel.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_ad7448659c8254f3ce155643cc99f6648"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#ad7448659c8254f3ce155643cc99f6648">eve::editor::EditorPropertyModel::commitTransaction</a></div><div class="ttdeci">EditorResult&lt; TransactionReceipt &gt; commitTransaction()</div><div class="ttdoc">Commit pending property writes and refresh observers after success.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00302">EditorPropertyModel.cpp:302</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_ae12e224ed76af6451472a2d280e5ab04"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#ae12e224ed76af6451472a2d280e5ab04">eve::editor::EditorPropertyModel::read</a></div><div class="ttdeci">std::optional&lt; eve::Value &gt; read(const std::string &amp;path) const override</div><div class="ttdoc">Read a property value, or nullopt when it is absent.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00135">EditorPropertyModel.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_ae92274bbce202f49cd1e73e047e1bd21"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#ae92274bbce202f49cd1e73e047e1bd21">eve::editor::EditorPropertyModel::bind</a></div><div class="ttdeci">EditorResult&lt; void &gt; bind()</div><div class="ttdoc">Bind to the provider's current revision and values.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00402">EditorPropertyModel.cpp:402</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorPropertyModel_html_af392954b4db52f6ba931357d6bb8d0e7"><div class="ttname"><a href="classeve_1_1editor_1_1EditorPropertyModel.html#af392954b4db52f6ba931357d6bb8d0e7">eve::editor::EditorPropertyModel::redo</a></div><div class="ttdeci">EditorResult&lt; TransactionReceipt &gt; redo()</div><div class="ttdoc">Redo the latest undone property transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8cpp_source.html#l00358">EditorPropertyModel.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html">eve::editor::HostProfile</a></div><div class="ttdoc">Upper capability boundary for one editor host.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8h_source.html#l00046">EditorHostProfile.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_a1ed69bd0915eba18592a74670c4c855b"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">eve::editor::HostProfile::developer</a></div><div class="ttdeci">static HostProfile developer()</div><div class="ttdoc">Unrestricted developer profile used by legacy sessions.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8cpp_source.html#l00005">EditorHostProfile.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorTransactionBackend_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorTransactionBackend.html">eve::editor::IEditorTransactionBackend</a></div><div class="ttdoc">Transaction boundary consumed by editor property and other UI models.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionService_8h_source.html#l00015">EditorTransactionService.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1property__access_1_1IPropertyAccess_html"><div class="ttname"><a href="classeve_1_1property__access_1_1IPropertyAccess.html">eve::property_access::IPropertyAccess</a></div><div class="ttdoc">Renderer- and transaction-independent MVVM property surface.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00143">PropertyAccess.h:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1property__access_1_1IPropertyAccess_html_a549150ac18f8075fb2de41e24ea33b33"><div class="ttname"><a href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">eve::property_access::IPropertyAccess::ChangeCallback</a></div><div class="ttdeci">std::function&lt; void(const PropertyChange &amp;)&gt; ChangeCallback</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00145">PropertyAccess.h:145</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a700d7804628a8d365988f7573578ebc5"><div class="ttname"><a href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">eve::editor::SelectionSnapshot</a></div><div class="ttdeci">eve::editing::SelectionSnapshot SelectionSnapshot</div><div class="ttdoc">Immutable multi-selection captured for property and command work.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8h_source.html#l00023">EditorSelection.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a8cf37193fb83b0af30bb081a2285eed7"><div class="ttname"><a href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7">eve::editor::PropertyModelSurface</a></div><div class="ttdeci">PropertyModelSurface</div><div class="ttdoc">Property visibility/permission surface exposed by an editor model.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyModel_8h_source.html#l00021">EditorPropertyModel.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a8cf37193fb83b0af30bb081a2285eed7a672caf27f5363dc833bda5099775e891"><div class="ttname"><a href="namespaceeve_1_1editor.html#a8cf37193fb83b0af30bb081a2285eed7a672caf27f5363dc833bda5099775e891">eve::editor::PropertyModelSurface::Developer</a></div><div class="ttdeci">@ Developer</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891">eve::editor::ExtensionAudience::Developer</a></div><div class="ttdeci">@ Developer</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_adf0fe8669656aeb19d4f7a674afa9e88"><div class="ttname"><a href="namespaceeve_1_1editor.html#adf0fe8669656aeb19d4f7a674afa9e88">eve::editor::IPropertyProvider</a></div><div class="ttdeci">eve::editing::IPropertyProvider IPropertyProvider</div><div class="ttdef"><b>Definition</b> <a href="EditorProperty_8h_source.html#l00023">EditorProperty.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_af9e44d8a01cf6eae11767880e9004a37"><div class="ttname"><a href="namespaceeve_1_1editor.html#af9e44d8a01cf6eae11767880e9004a37">eve::editor::PropertySchema</a></div><div class="ttdeci">eve::editing::PropertySchema PropertySchema</div><div class="ttdef"><b>Definition</b> <a href="EditorProperty_8h_source.html#l00019">EditorProperty.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1property__access_html_ad140ddb2497b20b648304a6f4a49014b"><div class="ttname"><a href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014b">eve::property_access::PropertyChangeState</a></div><div class="ttdeci">PropertyChangeState</div><div class="ttdoc">Availability of a property in an immutable model snapshot.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00117">PropertyAccess.h:117</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1property__access_html_ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e"><div class="ttname"><a href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e">eve::property_access::PropertyChangeState::Missing</a></div><div class="ttdeci">@ Missing</div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00099">EditingProperty.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1PropertyEditIntent_html"><div class="ttname"><a href="structeve_1_1editor_1_1PropertyEditIntent.html">eve::editor::PropertyEditIntent</a></div><div class="ttdoc">Command intent emitted by a presenter instead of calling a setter.</div><div class="ttdef"><b>Definition</b> <a href="EditorPropertyPresenter_8h_source.html#l00024">EditorPropertyPresenter.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertySchema.html">eve::property_access::PropertySchema</a></div><div class="ttdoc">Versioned schema for one view model or editable target.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00083">PropertyAccess.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1WriteResult_html"><div class="ttname"><a href="structeve_1_1property__access_1_1WriteResult.html">eve::property_access::WriteResult</a></div><div class="ttdoc">Result of a model write, including a stable diagnostic code.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00093">PropertyAccess.h:93</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

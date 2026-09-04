@@ -1,0 +1,551 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/FluidSurfaceBinding.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FluidSurfaceBinding.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FluidSurfaceBinding_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSurfaceBinding_8h.html">fluids/FluidSurfaceBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/gtx/norm.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">struct </span>EdgeKey {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">   14</a></span>    uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">   15</a></span>    uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = 0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> EdgeKey&amp; rhs)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> == rhs.a &amp;&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == rhs.b; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">struct </span>EdgeHash {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">size_t</span> operator()(<span class="keyword">const</span> EdgeKey&amp; edge)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> = std::hash&lt;uint32_t&gt;{}(edge.a);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> second = std::hash&lt;uint32_t&gt;{}(edge.b);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> ^ (second + size_t(0x9e3779b9u) + (<a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> &lt;&lt; 6u) + (<a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> &gt;&gt; 2u));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">struct </span>EdgeOwner {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>      = -1;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="FluidSurfaceBinding_8cpp.html#a657c89e7f3ef6e57ef965a1380bcf79a">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a657c89e7f3ef6e57ef965a1380bcf79a">oppositeVertex</a> = -1;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>EdgeKey edgeKey(uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> {std::min(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>), std::max(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)}; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>glm::vec3 closestPointBarycentric(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                  <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> glm::vec3 ab = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> glm::vec3 ac = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> glm::vec3 ap = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d1 = glm::dot(ab, ap);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d2 = glm::dot(ac, ap);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (d1 &lt;= 0.f &amp;&amp; d2 &lt;= 0.f) <span class="keywordflow">return</span> {1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> glm::vec3 bp = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d3 = glm::dot(ab, bp);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d4 = glm::dot(ac, bp);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (d3 &gt;= 0.f &amp;&amp; d4 &lt;= d3) <span class="keywordflow">return</span> {0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> vc = d1 * d4 - d3 * d2;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (vc &lt;= 0.f &amp;&amp; d1 &gt;= 0.f &amp;&amp; d3 &lt;= 0.f) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = d1 / (d1 - d3);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> {1.f - <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 0.f};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">const</span> glm::vec3 cp = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d5 = glm::dot(ab, cp);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     d6 = glm::dot(ac, cp);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">if</span> (d6 &gt;= 0.f &amp;&amp; d5 &lt;= d6) <span class="keywordflow">return</span> {0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> vb = d5 * d2 - d1 * d6;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (vb &lt;= 0.f &amp;&amp; d2 &gt;= 0.f &amp;&amp; d6 &lt;= 0.f) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = d2 / (d2 - d6);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> {1.f - <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, 0.f, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> va = d3 * d6 - d5 * d4;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (va &lt;= 0.f &amp;&amp; d4 - d3 &gt;= 0.f &amp;&amp; d5 - d6 &gt;= 0.f) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = (d4 - d3) / ((d4 - d3) + (d5 - d6));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> {0.f, 1.f - <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> inv = 1.f / (va + vb + vc);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>   = vb * inv;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>   = vc * inv;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> {1.f - <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> - <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a3d1940e53ffdcd4e7b88ec62ab4fdef4">   80</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a3d1940e53ffdcd4e7b88ec62ab4fdef4">FluidSurfaceBinding::build</a>(<span class="keyword">const</span> std::vector&lt;glm::vec3&gt;&amp; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                <span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                <span class="keyword">const</span> std::vector&lt;glm::vec2&gt;&amp; uvs) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    restPositions_.clear();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    currentPositions_.clear();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    previousPositions_.clear();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    indices_.clear();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    uvs_.clear();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    adjacency_.clear();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <span class="keyword">auto</span> fail = [&amp;]() {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        restPositions_.clear();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        currentPositions_.clear();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        previousPositions_.clear();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        indices_.clear();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        uvs_.clear();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        adjacency_.clear();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    };</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.empty() || <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.empty() || <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() % 3u != 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">if</span> (!uvs.empty() &amp;&amp; uvs.size() != <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.size()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">for</span> (uint32_t <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> : <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>) <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.size()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    restPositions_     = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    currentPositions_  = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    previousPositions_ = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    indices_           = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    uvs_               = uvs;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    adjacency_.assign(<a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() / 3u, glm::ivec3(-1));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::unordered_map&lt;EdgeKey, std::vector&lt;EdgeOwner&gt;, EdgeHash&gt; <a class="code hl_variable" href="UrbanGenerator_8cpp.html#a8c3e0084763dd82e6658687b5e7fc613">edges</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> tri = 0; tri &lt; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">triangleCount</a>(); ++tri) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> uint32_t base = uint32_t(tri) * 3u;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> glm::vec3 ab = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[indices_[base + 1u]] - <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[indices_[base]];</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> glm::vec3 ac = <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[indices_[base + 2u]] - <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[indices_[base]];</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">if</span> (glm::length2(glm::cross(ab, ac)) &lt; 1e-16f) <span class="keywordflow">return</span> fail();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> opposite = 0; opposite &lt; 3; ++opposite) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = indices_[base + uint32_t((opposite + 1) % 3)];</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = indices_[base + uint32_t((opposite + 2) % 3)];</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keyword">const</span> EdgeKey  <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> = edgeKey(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keyword">auto</span>&amp; owners = <a class="code hl_variable" href="UrbanGenerator_8cpp.html#a8c3e0084763dd82e6658687b5e7fc613">edges</a>[<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>];</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            owners.push_back({tri, opposite});</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">if</span> (owners.size() &gt; 2u) <span class="keywordflow">return</span> fail();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, owners] : <a class="code hl_variable" href="UrbanGenerator_8cpp.html#a8c3e0084763dd82e6658687b5e7fc613">edges</a>) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        (void)<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">if</span> (owners.size() != 2u) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        adjacency_[size_t(owners[0].<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>)][owners[0].oppositeVertex] = owners[1].triangle;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        adjacency_[size_t(owners[1].<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>)][owners[1].oppositeVertex] = owners[0].triangle;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
+</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a5403fdbf69ff9f3d55e64e143dc97b96">  133</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a5403fdbf69ff9f3d55e64e143dc97b96">FluidSurfaceBinding::setTransform</a>(<span class="keyword">const</span> glm::mat4&amp; transform) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">isValid</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    previousPositions_ = currentPositions_;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; restPositions_.size(); ++i)</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        currentPositions_[i] = glm::vec3(transform * glm::vec4(restPositions_[i], 1.f));</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>}</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aa8a11f706ec1857a3ede69f406891999">  140</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aa8a11f706ec1857a3ede69f406891999">FluidSurfaceBinding::setDeformedPositions</a>(<span class="keyword">const</span> std::vector&lt;glm::vec3&gt;&amp; worldPositions) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">isValid</a>() || worldPositions.size() != currentPositions_.size()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    previousPositions_ = currentPositions_;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    currentPositions_  = worldPositions;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aec39e05ef316988861e142f38890d2ad">  147</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aec39e05ef316988861e142f38890d2ad">FluidSurfaceBinding::commitPose</a>() { previousPositions_ = currentPositions_; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">  149</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">FluidSurfaceBinding::isValid</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">return</span> !currentPositions_.empty() &amp;&amp; currentPositions_.size() == previousPositions_.size() &amp;&amp;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>           indices_.size() &gt;= 3u &amp;&amp; indices_.size() % 3u == 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
+</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">  154</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">FluidSurfaceBinding::triangleCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(indices_.size() / 3u); }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="foldopen" id="foldopen00156" data-start="{" data-end="}">
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac9144193a52db7e98f87356299228436">  156</a></span>std::vector&lt;glm::uvec3&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac9144193a52db7e98f87356299228436">FluidSurfaceBinding::triangles</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::vector&lt;glm::uvec3&gt; result;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    result.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">triangleCount</a>()));</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i + 2u &lt; indices_.size(); i += 3u)</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        result.emplace_back(indices_[i], indices_[i + 1u], indices_[i + 2u]);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>}</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>glm::vec3 FluidSurfaceBinding::triangleNormal(uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">const</span> uint32_t base = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> * 3u;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = currentPositions_[indices_[base]];</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = currentPositions_[indices_[base + 1u]];</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = currentPositions_[indices_[base + 2u]];</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = glm::cross(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> n2 = glm::length2(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">return</span> n2 &gt; 1e-16f ? <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> / std::sqrt(n2) : glm::vec3(0.f, 1.f, 0.f);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>glm::vec3 FluidSurfaceBinding::barycentric(uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> uint32_t base = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> * 3u;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = currentPositions_[indices_[base]];</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = currentPositions_[indices_[base + 1u]];</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = currentPositions_[indices_[base + 2u]];</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">const</span> glm::vec3 v0 = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">const</span> glm::vec3 v1 = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">const</span> glm::vec3 v2 = <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> d00 = glm::dot(v0, v0);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> d01 = glm::dot(v0, v1);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> d11 = glm::dot(v1, v1);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> d20 = glm::dot(v2, v0);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> d21 = glm::dot(v2, v1);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> denom = d00 * d11 - d01 * d01;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">if</span> (std::fabs(denom) &lt; 1e-16f) <span class="keywordflow">return</span> {1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = (d11 * d20 - d01 * d21) / denom;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = (d00 * d21 - d01 * d20) / denom;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">return</span> {1.f - <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> - <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>};</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="foldopen" id="foldopen00194" data-start="{" data-end="}">
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a6d164423e5f7e27be813ef0cf24bd4d8">  194</a></span><a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a6d164423e5f7e27be813ef0cf24bd4d8">FluidSurfaceBinding::evaluate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a>&amp; location, <span class="keywordtype">float</span> dt)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> sample;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">isValid</a>() || location.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a> &gt;= uint32_t(<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">triangleCount</a>())) <span class="keywordflow">return</span> sample;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a5cd8efdfb4eb27387852fb5f3c8c4a4d">location</a> = location;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">const</span> glm::vec3 bary = location.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">const</span> uint32_t base = location.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a> * 3u;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">const</span> uint32_t vertex = indices_[base + uint32_t(i)];</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0a1aae1e49581b97cff45bb8f5ea42a8">position</a> += currentPositions_[vertex] * bary[i];</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a8a07605b1406286cd572e277e076d5d9">previousPosition</a> += previousPositions_[vertex] * bary[i];</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordflow">if</span> (!uvs_.empty()) sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a6adbb8acfddb8848ff71237d0dff0cfb">uv</a> += uvs_[vertex] * bary[i];</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a> = triangleNormal(location.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">const</span> glm::vec3 edge = currentPositions_[indices_[base + 1u]] - currentPositions_[indices_[base]];</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> = edge - sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a> * glm::dot(edge, sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a>);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> t2 = glm::length2(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a04739a655c8de43b852fea7bad4934e5">tangent</a> = t2 &gt; 1e-16f ? <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> / std::sqrt(t2) : glm::vec3(1.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a722c61b5873651f4a235359a3e3f6564">bitangent</a> = glm::normalize(glm::cross(sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a>, sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a04739a655c8de43b852fea7bad4934e5">tangent</a>));</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">if</span> (dt &gt; 1e-8f) sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a9d01cc9a3187a36ad49991a5d829cf0c">velocity</a> = (sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0a1aae1e49581b97cff45bb8f5ea42a8">position</a> - sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a8a07605b1406286cd572e277e076d5d9">previousPosition</a>) / dt;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">return</span> sample;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>}</div>
+</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="foldopen" id="foldopen00216" data-start="{" data-end="}">
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#af675637ca26a3fcbec6b8a342ce09063">  216</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#af675637ca26a3fcbec6b8a342ce09063">FluidSurfaceBinding::project</a>(<span class="keyword">const</span> glm::vec3&amp; worldPosition, <span class="keywordtype">float</span> maxDistance,</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                                  <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a>&amp; outLocation)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">isValid</a>()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">float</span> best = std::numeric_limits&lt;float&gt;::max();</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> location;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> tri = 0; tri &lt; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">triangleCount</a>(); ++tri) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">const</span> uint32_t base = uint32_t(tri) * 3u;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">const</span> glm::vec3 bary = closestPointBarycentric(worldPosition,</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            currentPositions_[indices_[base]], currentPositions_[indices_[base + 1u]],</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            currentPositions_[indices_[base + 2u]]);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> = currentPositions_[indices_[base]] * bary.x +</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                                currentPositions_[indices_[base + 1u]] * bary.y +</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                                currentPositions_[indices_[base + 2u]] * bary.z;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> distance2 = glm::distance2(worldPosition, <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">if</span> (distance2 &lt; best) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            best = distance2;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            location = {uint32_t(tri), bary};</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        }</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">if</span> (maxDistance &gt;= 0.f &amp;&amp; best &gt; maxDistance * maxDistance) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    outLocation = location;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>}</div>
+</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="foldopen" id="foldopen00240" data-start="{" data-end="}">
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac66f21c06e7e018e4f115c0d5820211d">  240</a></span><a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceWalkResult.html">SurfaceWalkResult</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac66f21c06e7e018e4f115c0d5820211d">FluidSurfaceBinding::walkAcrossSurface</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                                                         <span class="keyword">const</span> glm::vec3&amp; worldDisplacement,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                                                         <span class="keywordtype">int</span> maxCrossings)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceWalkResult.html">SurfaceWalkResult</a> result;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">isValid</a>() || <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>.triangle &gt;= uint32_t(<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">triangleCount</a>()) || maxCrossings &lt; 0) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a> = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a42b928b8f3f2f8d0e1046c6f8feade2a">valid</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    glm::vec3 remaining = worldDisplacement;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keyword">constexpr</span> <span class="keywordtype">float</span> epsilon = 1e-5f;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> crossing = 0; crossing &lt;= maxCrossings; ++crossing) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> sample = <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a6d164423e5f7e27be813ef0cf24bd4d8">evaluate</a>(result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>, 0.f);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        remaining -= sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a> * glm::dot(remaining, sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">normal</a>);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <span class="keywordflow">if</span> (glm::length2(remaining) &lt; epsilon * epsilon) {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a902b73a44e7b61460d36bea9afa71974">remainingDisplacement</a> = glm::vec3(0.f);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        }</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keyword">const</span> glm::vec3 targetBary = barycentric(result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a>, sample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0a1aae1e49581b97cff45bb8f5ea42a8">position</a> + remaining);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordtype">int</span> outside = -1;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">float</span> mostNegative = -epsilon;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">if</span> (targetBary[i] &lt; mostNegative) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                mostNegative = targetBary[i];</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                outside = i;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            }</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        }</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordflow">if</span> (outside &lt; 0) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> = glm::max(targetBary, glm::vec3(0.f));</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> /= result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.x + result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.y +</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                                           result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.z;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a902b73a44e7b61460d36bea9afa71974">remainingDisplacement</a> = glm::vec3(0.f);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> = result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>[outside];</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a> = targetBary[outside];</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp(<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> / (<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> - <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>), 0.f, 1.f);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        glm::vec3 edgeBary = glm::mix(result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>, targetBary, <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        edgeBary[outside] = 0.f;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        edgeBary = glm::max(edgeBary, glm::vec3(0.f));</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        edgeBary /= edgeBary.x + edgeBary.y + edgeBary.z;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        remaining *= 1.f - <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> next = <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac25df1d00a250a304b13aa686cfc2947">adjacentTriangle</a>(result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a>, outside);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordflow">if</span> (next &lt; 0) {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> = edgeBary;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a902b73a44e7b61460d36bea9afa71974">remainingDisplacement</a> = remaining;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a5ee39c767528d0c54f50b7094fbbbdd7">reachedBoundary</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        }</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> edgeSample = <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a6d164423e5f7e27be813ef0cf24bd4d8">evaluate</a>({result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a>, edgeBary}, 0.f);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">triangle</a> = uint32_t(next);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> = barycentric(uint32_t(next), edgeSample.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceSample.html#a0a1aae1e49581b97cff45bb8f5ea42a8">position</a>);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> = glm::max(result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>, glm::vec3(0.f));</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a> /= result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.x + result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.y +</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                                       result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">location</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">barycentric</a>.z;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keywordflow">if</span> (crossing == maxCrossings) {</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            result.<a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a902b73a44e7b61460d36bea9afa71974">remainingDisplacement</a> = remaining;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        }</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    }</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>}</div>
+</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
+<div class="foldopen" id="foldopen00305" data-start="{" data-end="}">
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac25df1d00a250a304b13aa686cfc2947">  305</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac25df1d00a250a304b13aa686cfc2947">FluidSurfaceBinding::adjacentTriangle</a>(uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a657c89e7f3ef6e57ef965a1380bcf79a">oppositeVertex</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> &gt;= adjacency_.size() || oppositeVertex &lt; 0 || oppositeVertex &gt; 2) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keywordflow">return</span> adjacency_[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>][<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a657c89e7f3ef6e57ef965a1380bcf79a">oppositeVertex</a>];</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>}</div>
+</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00028">EvpackGraphicsLoader.cpp:28</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a657c89e7f3ef6e57ef965a1380bcf79a"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a657c89e7f3ef6e57ef965a1380bcf79a">oppositeVertex</a></div><div class="ttdeci">int oppositeVertex</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00030">FluidSurfaceBinding.cpp:30</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a9b7fb3a94d7230e91baab1b890918213"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a></div><div class="ttdeci">int triangle</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00029">FluidSurfaceBinding.cpp:29</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8h_html"><div class="ttname"><a href="FluidSurfaceBinding_8h.html">FluidSurfaceBinding.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aNinePatch_8cpp_html_a6c8ec3c3e77241328358d43697f6f840"><div class="ttname"><a href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a></div><div class="ttdeci">int first</div><div class="ttdef"><b>Definition</b> <a href="NinePatch_8cpp_source.html#l00021">NinePatch.cpp:21</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="aUrbanGenerator_8cpp_html_a8c3e0084763dd82e6658687b5e7fc613"><div class="ttname"><a href="UrbanGenerator_8cpp.html#a8c3e0084763dd82e6658687b5e7fc613">edges</a></div><div class="ttdeci">std::vector&lt; int &gt; edges</div><div class="ttdef"><b>Definition</b> <a href="UrbanGenerator_8cpp_source.html#l00210">UrbanGenerator.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_a3d1940e53ffdcd4e7b88ec62ab4fdef4"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a3d1940e53ffdcd4e7b88ec62ab4fdef4">eve::fluids::FluidSurfaceBinding::build</a></div><div class="ttdeci">bool build(const std::vector&lt; glm::vec3 &gt; &amp;positions, const std::vector&lt; uint32_t &gt; &amp;indices, const std::vector&lt; glm::vec2 &gt; &amp;uvs={})</div><div class="ttdoc">Build topology and initialize the current and previous poses.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00080">FluidSurfaceBinding.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_a5403fdbf69ff9f3d55e64e143dc97b96"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a5403fdbf69ff9f3d55e64e143dc97b96">eve::fluids::FluidSurfaceBinding::setTransform</a></div><div class="ttdeci">void setTransform(const glm::mat4 &amp;transform)</div><div class="ttdoc">Apply a new rigid pose and preserve the old pose for velocity queries.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00133">FluidSurfaceBinding.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_a6d164423e5f7e27be813ef0cf24bd4d8"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a6d164423e5f7e27be813ef0cf24bd4d8">eve::fluids::FluidSurfaceBinding::evaluate</a></div><div class="ttdeci">SurfaceSample evaluate(const SurfaceLocation &amp;location, float dt) const</div><div class="ttdoc">Evaluate a surface address in the current and previous poses.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00194">FluidSurfaceBinding.cpp:194</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_a83ff24fc0edeaad17e75f01af8f8250a"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#a83ff24fc0edeaad17e75f01af8f8250a">eve::fluids::FluidSurfaceBinding::isValid</a></div><div class="ttdeci">bool isValid() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00149">FluidSurfaceBinding.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_aa8a11f706ec1857a3ede69f406891999"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aa8a11f706ec1857a3ede69f406891999">eve::fluids::FluidSurfaceBinding::setDeformedPositions</a></div><div class="ttdeci">bool setDeformedPositions(const std::vector&lt; glm::vec3 &gt; &amp;worldPositions)</div><div class="ttdoc">Supply a new deformed world-space pose and preserve the previous pose.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00140">FluidSurfaceBinding.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_ac25df1d00a250a304b13aa686cfc2947"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac25df1d00a250a304b13aa686cfc2947">eve::fluids::FluidSurfaceBinding::adjacentTriangle</a></div><div class="ttdeci">int adjacentTriangle(uint32_t triangle, int oppositeVertex) const</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00305">FluidSurfaceBinding.cpp:305</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_ac36389af799d0fdee615199381ab1a70"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac36389af799d0fdee615199381ab1a70">eve::fluids::FluidSurfaceBinding::triangleCount</a></div><div class="ttdeci">int triangleCount() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00154">FluidSurfaceBinding.cpp:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_ac66f21c06e7e018e4f115c0d5820211d"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac66f21c06e7e018e4f115c0d5820211d">eve::fluids::FluidSurfaceBinding::walkAcrossSurface</a></div><div class="ttdeci">SurfaceWalkResult walkAcrossSurface(const SurfaceLocation &amp;start, const glm::vec3 &amp;worldDisplacement, int maxCrossings=16) const</div><div class="ttdoc">Move a location by a world-space displacement, crossing triangle edges.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00240">FluidSurfaceBinding.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_ac9144193a52db7e98f87356299228436"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#ac9144193a52db7e98f87356299228436">eve::fluids::FluidSurfaceBinding::triangles</a></div><div class="ttdeci">std::vector&lt; glm::uvec3 &gt; triangles() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00156">FluidSurfaceBinding.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_aec39e05ef316988861e142f38890d2ad"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#aec39e05ef316988861e142f38890d2ad">eve::fluids::FluidSurfaceBinding::commitPose</a></div><div class="ttdeci">void commitPose()</div><div class="ttdoc">Make the current pose the previous pose, yielding zero surface velocity.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00147">FluidSurfaceBinding.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html_af675637ca26a3fcbec6b8a342ce09063"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#af675637ca26a3fcbec6b8a342ce09063">eve::fluids::FluidSurfaceBinding::project</a></div><div class="ttdeci">bool project(const glm::vec3 &amp;worldPosition, float maxDistance, SurfaceLocation &amp;outLocation) const</div><div class="ttdoc">Find the closest material point on the current surface.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00216">FluidSurfaceBinding.cpp:216</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidGpuKernels_8h_source.html#l00036">FluidGpuKernels.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceLocation_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceLocation.html">eve::fluids::SurfaceLocation</a></div><div class="ttdoc">Stable material-space address of a point on a triangle surface.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00011">FluidSurfaceBinding.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceLocation_html_a04460dfe20fd4b088694ef67f407e240"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceLocation.html#a04460dfe20fd4b088694ef67f407e240">eve::fluids::SurfaceLocation::barycentric</a></div><div class="ttdeci">glm::vec3 barycentric</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00013">FluidSurfaceBinding.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceLocation_html_a4318785048af4a25c4dcfce78f431717"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceLocation.html#a4318785048af4a25c4dcfce78f431717">eve::fluids::SurfaceLocation::triangle</a></div><div class="ttdeci">uint32_t triangle</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00012">FluidSurfaceBinding.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html">eve::fluids::SurfaceSample</a></div><div class="ttdoc">Evaluated world-space frame and motion at a surface location.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00017">FluidSurfaceBinding.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a04739a655c8de43b852fea7bad4934e5"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a04739a655c8de43b852fea7bad4934e5">eve::fluids::SurfaceSample::tangent</a></div><div class="ttdeci">glm::vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00022">FluidSurfaceBinding.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a0a1aae1e49581b97cff45bb8f5ea42a8"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a0a1aae1e49581b97cff45bb8f5ea42a8">eve::fluids::SurfaceSample::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00019">FluidSurfaceBinding.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a0d4e1c0c5fb77b2617b63cd91bb96780"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a0d4e1c0c5fb77b2617b63cd91bb96780">eve::fluids::SurfaceSample::normal</a></div><div class="ttdeci">glm::vec3 normal</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00021">FluidSurfaceBinding.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a5cd8efdfb4eb27387852fb5f3c8c4a4d"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a5cd8efdfb4eb27387852fb5f3c8c4a4d">eve::fluids::SurfaceSample::location</a></div><div class="ttdeci">SurfaceLocation location</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00018">FluidSurfaceBinding.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a6adbb8acfddb8848ff71237d0dff0cfb"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a6adbb8acfddb8848ff71237d0dff0cfb">eve::fluids::SurfaceSample::uv</a></div><div class="ttdeci">glm::vec2 uv</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00025">FluidSurfaceBinding.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a722c61b5873651f4a235359a3e3f6564"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a722c61b5873651f4a235359a3e3f6564">eve::fluids::SurfaceSample::bitangent</a></div><div class="ttdeci">glm::vec3 bitangent</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00023">FluidSurfaceBinding.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a8a07605b1406286cd572e277e076d5d9"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a8a07605b1406286cd572e277e076d5d9">eve::fluids::SurfaceSample::previousPosition</a></div><div class="ttdeci">glm::vec3 previousPosition</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00020">FluidSurfaceBinding.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceSample_html_a9d01cc9a3187a36ad49991a5d829cf0c"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceSample.html#a9d01cc9a3187a36ad49991a5d829cf0c">eve::fluids::SurfaceSample::velocity</a></div><div class="ttdeci">glm::vec3 velocity</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00024">FluidSurfaceBinding.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWalkResult_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWalkResult.html">eve::fluids::SurfaceWalkResult</a></div><div class="ttdoc">Result of walking a material point across triangle adjacency.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00029">FluidSurfaceBinding.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWalkResult_html_a42b928b8f3f2f8d0e1046c6f8feade2a"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a42b928b8f3f2f8d0e1046c6f8feade2a">eve::fluids::SurfaceWalkResult::valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00033">FluidSurfaceBinding.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWalkResult_html_a4c2bec13a5b8826989fd42012c0050c4"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a4c2bec13a5b8826989fd42012c0050c4">eve::fluids::SurfaceWalkResult::location</a></div><div class="ttdeci">SurfaceLocation location</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00030">FluidSurfaceBinding.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWalkResult_html_a5ee39c767528d0c54f50b7094fbbbdd7"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a5ee39c767528d0c54f50b7094fbbbdd7">eve::fluids::SurfaceWalkResult::reachedBoundary</a></div><div class="ttdeci">bool reachedBoundary</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00032">FluidSurfaceBinding.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWalkResult_html_a902b73a44e7b61460d36bea9afa71974"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWalkResult.html#a902b73a44e7b61460d36bea9afa71974">eve::fluids::SurfaceWalkResult::remainingDisplacement</a></div><div class="ttdeci">glm::vec3 remainingDisplacement</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00031">FluidSurfaceBinding.h:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

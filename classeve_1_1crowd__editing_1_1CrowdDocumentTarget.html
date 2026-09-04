@@ -1,0 +1,971 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd_editing::CrowdDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd__editing.html">crowd_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html">CrowdDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd_editing::CrowdDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral agent/zone/path document with reversible domain operations.  
+ <a href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::crowd_editing::CrowdDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.png" usemap="#eve::crowd_5Fediting::CrowdDocumentTarget_map" alt=""/>
+  <map id="eve::crowd_5Fediting::CrowdDocumentTarget_map" name="eve::crowd_5Fediting::CrowdDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab2cde6d93c5eeedc206818ad6e9e4850" id="r_ab2cde6d93c5eeedc206818ad6e9e4850"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#ab2cde6d93c5eeedc206818ad6e9e4850">CrowdDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ab2cde6d93c5eeedc206818ad6e9e4850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7e7021b26c1a2f92eb2162807c85a82" id="r_af7e7021b26c1a2f92eb2162807c85a82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#a91d21059f7d539554a2cebb6952237ce">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#af7e7021b26c1a2f92eb2162807c85a82">targetId</a> () const override</td></tr>
+<tr class="separator:af7e7021b26c1a2f92eb2162807c85a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a906b80cffff562b44e5d0b39e1b56f" id="r_a5a906b80cffff562b44e5d0b39e1b56f"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a5a906b80cffff562b44e5d0b39e1b56f">revision</a> () const override</td></tr>
+<tr class="separator:a5a906b80cffff562b44e5d0b39e1b56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b926398fd726392d41b25e8e5b8911" id="r_a18b926398fd726392d41b25e8e5b8911"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#a635e79a9f2a605d08d67fa292c536443">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a18b926398fd726392d41b25e8e5b8911">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a18b926398fd726392d41b25e8e5b8911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ffab464e2c590d29a9c7cc483b01cad" id="r_a0ffab464e2c590d29a9c7cc483b01cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a0ffab464e2c590d29a9c7cc483b01cad">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:a0ffab464e2c590d29a9c7cc483b01cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afba5c0a03d286576d23eab408d6ff0e4" id="r_afba5c0a03d286576d23eab408d6ff0e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#a89d379f74e0942d75f9e2a7cebac8f16">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#afba5c0a03d286576d23eab408d6ff0e4">describe</a> () const override</td></tr>
+<tr class="memdesc:afba5c0a03d286576d23eab408d6ff0e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:afba5c0a03d286576d23eab408d6ff0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af99e3d3d3f4cee8e5e3bcae9feca9109" id="r_af99e3d3d3f4cee8e5e3bcae9feca9109"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#af99e3d3d3f4cee8e5e3bcae9feca9109">queryCapability</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#a041c0a56703b4ff881c5f32074dbf11d">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:af99e3d3d3f4cee8e5e3bcae9feca9109"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:af99e3d3d3f4cee8e5e3bcae9feca9109"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e887e23dda4a2ee34269e81259c2591" id="r_a6e887e23dda4a2ee34269e81259c2591"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a6e887e23dda4a2ee34269e81259c2591">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a6e887e23dda4a2ee34269e81259c2591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a6e887e23dda4a2ee34269e81259c2591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21faa9e2740f5055ea9a8d7195814aa2" id="r_a21faa9e2740f5055ea9a8d7195814aa2"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#ae1f05fa7bc09818986c1c069adbfaafc">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a21faa9e2740f5055ea9a8d7195814aa2">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a21faa9e2740f5055ea9a8d7195814aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a21faa9e2740f5055ea9a8d7195814aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b87df8ae842637ea8db0ff07358f2f6" id="r_a1b87df8ae842637ea8db0ff07358f2f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a1b87df8ae842637ea8db0ff07358f2f6">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#ae1f05fa7bc09818986c1c069adbfaafc">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a1b87df8ae842637ea8db0ff07358f2f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a1b87df8ae842637ea8db0ff07358f2f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ba09d57e8593944373084ce16ce2d2" id="r_ac5ba09d57e8593944373084ce16ce2d2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdAgentRecord.html">CrowdAgentRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#ac5ba09d57e8593944373084ce16ce2d2">agents</a> () const</td></tr>
+<tr class="memdesc:ac5ba09d57e8593944373084ce16ce2d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate agents in stable-id order.  <br /></td></tr>
+<tr class="separator:ac5ba09d57e8593944373084ce16ce2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c9319814d3eb2ea7b70f9b1308e5e9f" id="r_a7c9319814d3eb2ea7b70f9b1308e5e9f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdZoneRecord.html">CrowdZoneRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a7c9319814d3eb2ea7b70f9b1308e5e9f">zones</a> () const</td></tr>
+<tr class="memdesc:a7c9319814d3eb2ea7b70f9b1308e5e9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate zones in stable-id order.  <br /></td></tr>
+<tr class="separator:a7c9319814d3eb2ea7b70f9b1308e5e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6438130f3f6f6c73f1e229006836b5b4" id="r_a6438130f3f6f6c73f1e229006836b5b4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdPathRecord.html">CrowdPathRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a6438130f3f6f6c73f1e229006836b5b4">paths</a> () const</td></tr>
+<tr class="memdesc:a6438130f3f6f6c73f1e229006836b5b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate paths in stable-id order.  <br /></td></tr>
+<tr class="separator:a6438130f3f6f6c73f1e229006836b5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab33aaa77f92e0beb2f69902692474f1d" id="r_ab33aaa77f92e0beb2f69902692474f1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#ab33aaa77f92e0beb2f69902692474f1d">makeSetAgent</a> (const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdAgentRecord.html">CrowdAgentRecord</a> &amp;record) const</td></tr>
+<tr class="memdesc:ab33aaa77f92e0beb2f69902692474f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible agent creation or replacement.  <br /></td></tr>
+<tr class="separator:ab33aaa77f92e0beb2f69902692474f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b03b1b1444b5e4508a6b0dbb03d0a82" id="r_a4b03b1b1444b5e4508a6b0dbb03d0a82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a4b03b1b1444b5e4508a6b0dbb03d0a82">makeDeleteAgent</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a4b03b1b1444b5e4508a6b0dbb03d0a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible agent deletion.  <br /></td></tr>
+<tr class="separator:a4b03b1b1444b5e4508a6b0dbb03d0a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a4c9350ba6325b1325fa64edebac3d" id="r_a41a4c9350ba6325b1325fa64edebac3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a41a4c9350ba6325b1325fa64edebac3d">makeSetZone</a> (const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdZoneRecord.html">CrowdZoneRecord</a> &amp;record) const</td></tr>
+<tr class="memdesc:a41a4c9350ba6325b1325fa64edebac3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible zone creation or replacement.  <br /></td></tr>
+<tr class="separator:a41a4c9350ba6325b1325fa64edebac3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05bbfd1b10534b62c77b6fa94d5b20cc" id="r_a05bbfd1b10534b62c77b6fa94d5b20cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a05bbfd1b10534b62c77b6fa94d5b20cc">makeDeleteZone</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a05bbfd1b10534b62c77b6fa94d5b20cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible zone deletion.  <br /></td></tr>
+<tr class="separator:a05bbfd1b10534b62c77b6fa94d5b20cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a132ec305cadd9cda1f513789707f0a" id="r_a3a132ec305cadd9cda1f513789707f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a3a132ec305cadd9cda1f513789707f0a">makeSetPath</a> (const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdPathRecord.html">CrowdPathRecord</a> &amp;record) const</td></tr>
+<tr class="memdesc:a3a132ec305cadd9cda1f513789707f0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible path creation or replacement.  <br /></td></tr>
+<tr class="separator:a3a132ec305cadd9cda1f513789707f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9241056caf6092d19159db367b12c4e2" id="r_a9241056caf6092d19159db367b12c4e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a9241056caf6092d19159db367b12c4e2">makeDeletePath</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a9241056caf6092d19159db367b12c4e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible path deletion when no agent references it.  <br /></td></tr>
+<tr class="separator:a9241056caf6092d19159db367b12c4e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bb6db95c69a13662875975355474437" id="r_a3bb6db95c69a13662875975355474437"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a80ed67f797109286600a92de075a7e78">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a3bb6db95c69a13662875975355474437">validate</a> () const</td></tr>
+<tr class="memdesc:a3bb6db95c69a13662875975355474437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate geometry, numeric limits and cross references.  <br /></td></tr>
+<tr class="separator:a3bb6db95c69a13662875975355474437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a924dbfd66520d9158e07c5753160f48e" id="r_a924dbfd66520d9158e07c5753160f48e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd__editing_1_1CrowdOverlayResult.html">CrowdOverlayResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a924dbfd66520d9158e07c5753160f48e">overlay</a> (int primitiveBudget=100000) const</td></tr>
+<tr class="memdesc:a924dbfd66520d9158e07c5753160f48e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce deterministic path, zone and agent overlay primitives.  <br /></td></tr>
+<tr class="separator:a924dbfd66520d9158e07c5753160f48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68205e96ea4efcbd7c8d777f5d234751" id="r_a68205e96ea4efcbd7c8d777f5d234751"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#afc98e7cc3bad15ba0f45b432a8b85389">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a68205e96ea4efcbd7c8d777f5d234751">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:a68205e96ea4efcbd7c8d777f5d234751"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic schema-version-one authoring data.  <br /></td></tr>
+<tr class="separator:a68205e96ea4efcbd7c8d777f5d234751"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ea3f78b138ebca834366bc5fdae8fe8" id="r_a5ea3f78b138ebca834366bc5fdae8fe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#a5ea3f78b138ebca834366bc5fdae8fe8">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1crowd__editing.html#afc98e7cc3bad15ba0f45b432a8b85389">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a5ea3f78b138ebca834366bc5fdae8fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load validated authoring data.  <br /></td></tr>
+<tr class="separator:a5ea3f78b138ebca834366bc5fdae8fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:af0961700b5c7e7be1eb3d667ceeced6f" id="r_af0961700b5c7e7be1eb3d667ceeced6f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1crowd__editing.html#a041c0a56703b4ff881c5f32074dbf11d">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd__editing_1_1CrowdDocumentTarget.html#af0961700b5c7e7be1eb3d667ceeced6f">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:af0961700b5c7e7be1eb3d667ceeced6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability id for crowd agent, zone and path editing.  <br /></td></tr>
+<tr class="separator:af0961700b5c7e7be1eb3d667ceeced6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral agent/zone/path document with reversible domain operations. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00078">78</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab2cde6d93c5eeedc206818ad6e9e4850" name="ab2cde6d93c5eeedc206818ad6e9e4850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2cde6d93c5eeedc206818ad6e9e4850">&#9670;&#160;</a></span>CrowdDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::crowd_editing::CrowdDocumentTarget::CrowdDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac5ba09d57e8593944373084ce16ce2d2" name="ac5ba09d57e8593944373084ce16ce2d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ba09d57e8593944373084ce16ce2d2">&#9670;&#160;</a></span>agents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdAgentRecord.html">CrowdAgentRecord</a> &gt; eve::crowd_editing::CrowdDocumentTarget::agents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerate agents in stable-id order. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdDocument_8cpp_source.html#l00226">loadSnapshot()</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00221">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="a6e887e23dda4a2ee34269e81259c2591" name="a6e887e23dda4a2ee34269e81259c2591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e887e23dda4a2ee34269e81259c2591">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt; eve::crowd_editing::CrowdDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0ffab464e2c590d29a9c7cc483b01cad" name="a0ffab464e2c590d29a9c7cc483b01cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ffab464e2c590d29a9c7cc483b01cad">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd_editing::CrowdDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a21faa9e2740f5055ea9a8d7195814aa2" name="a21faa9e2740f5055ea9a8d7195814aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21faa9e2740f5055ea9a8d7195814aa2">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#ae1f05fa7bc09818986c1c069adbfaafc">IDomainOperationTarget</a> &gt; eve::crowd_editing::CrowdDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b87df8ae842637ea8db0ff07358f2f6" name="a1b87df8ae842637ea8db0ff07358f2f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b87df8ae842637ea8db0ff07358f2f6">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt; eve::crowd_editing::CrowdDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#ae1f05fa7bc09818986c1c069adbfaafc">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afba5c0a03d286576d23eab408d6ff0e4" name="afba5c0a03d286576d23eab408d6ff0e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afba5c0a03d286576d23eab408d6ff0e4">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#a89d379f74e0942d75f9e2a7cebac8f16">TargetDescriptor</a> eve::crowd_editing::CrowdDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00037">eve::editing::TargetDescriptor::capabilities</a>, <a class="el" href="CrowdDocument_8h_source.html#l00083">editorCapabilityId()</a>, <a class="el" href="EditableTarget_8h_source.html#l00033">eve::editing::TargetDescriptor::id</a>, <a class="el" href="EditableTarget_8h_source.html#l00035">eve::editing::TargetDescriptor::revision</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00034">eve::editing::TargetDescriptor::type</a>.</p>
+
+</div>
+</div>
+<a id="a18b926398fd726392d41b25e8e5b8911" name="a18b926398fd726392d41b25e8e5b8911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b926398fd726392d41b25e8e5b8911">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#a635e79a9f2a605d08d67fa292c536443">EditRegion</a> eve::crowd_editing::CrowdDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0961700b5c7e7be1eb3d667ceeced6f" name="af0961700b5c7e7be1eb3d667ceeced6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0961700b5c7e7be1eb3d667ceeced6f">&#9670;&#160;</a></span>editorCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1crowd__editing.html#a041c0a56703b4ff881c5f32074dbf11d">CapabilityId</a> eve::crowd_editing::CrowdDocumentTarget::editorCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable capability id for crowd agent, zone and path editing. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdDocument_8cpp_source.html#l00156">describe()</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00161">queryCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a5ea3f78b138ebca834366bc5fdae8fe8" name="a5ea3f78b138ebca834366bc5fdae8fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ea3f78b138ebca834366bc5fdae8fe8">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; void &gt; eve::crowd_editing::CrowdDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#afc98e7cc3bad15ba0f45b432a8b85389">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load validated authoring data. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdDocument_8cpp_source.html#l00188">agents()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00190">paths()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00202">validate()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00189">zones()</a>.</p>
+
+</div>
+</div>
+<a id="a4b03b1b1444b5e4508a6b0dbb03d0a82" name="a4b03b1b1444b5e4508a6b0dbb03d0a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b03b1b1444b5e4508a6b0dbb03d0a82">&#9670;&#160;</a></span>makeDeleteAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeDeleteAgent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible agent deletion. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9241056caf6092d19159db367b12c4e2" name="a9241056caf6092d19159db367b12c4e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9241056caf6092d19159db367b12c4e2">&#9670;&#160;</a></span>makeDeletePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeDeletePath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible path deletion when no agent references it. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a05bbfd1b10534b62c77b6fa94d5b20cc" name="a05bbfd1b10534b62c77b6fa94d5b20cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bbfd1b10534b62c77b6fa94d5b20cc">&#9670;&#160;</a></span>makeDeleteZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeDeleteZone </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#aec329bef33e6dd894f7a48ce02e6a385">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible zone deletion. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ab33aaa77f92e0beb2f69902692474f1d" name="ab33aaa77f92e0beb2f69902692474f1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab33aaa77f92e0beb2f69902692474f1d">&#9670;&#160;</a></span>makeSetAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeSetAgent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdAgentRecord.html">CrowdAgentRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>record</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible agent creation or replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdDocument_8h_source.html#l00025">eve::crowd_editing::CrowdAgentRecord::id</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a3a132ec305cadd9cda1f513789707f0a" name="a3a132ec305cadd9cda1f513789707f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a132ec305cadd9cda1f513789707f0a">&#9670;&#160;</a></span>makeSetPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeSetPath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdPathRecord.html">CrowdPathRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>record</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible path creation or replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdDocument_8h_source.html#l00055">eve::crowd_editing::CrowdPathRecord::id</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a41a4c9350ba6325b1325fa64edebac3d" name="a41a4c9350ba6325b1325fa64edebac3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41a4c9350ba6325b1325fa64edebac3d">&#9670;&#160;</a></span>makeSetZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#af43edd2257c93e639c1d5917e458d1cb">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a8f414514d015bdef5467ca3c4ddd63cb">DomainOperation</a> &gt; eve::crowd_editing::CrowdDocumentTarget::makeSetZone </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1crowd__editing_1_1CrowdZoneRecord.html">CrowdZoneRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>record</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan reversible zone creation or replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdDocument_8h_source.html#l00037">eve::crowd_editing::CrowdZoneRecord::id</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a924dbfd66520d9158e07c5753160f48e" name="a924dbfd66520d9158e07c5753160f48e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a924dbfd66520d9158e07c5753160f48e">&#9670;&#160;</a></span>overlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd__editing_1_1CrowdOverlayResult.html">CrowdOverlayResult</a> eve::crowd_editing::CrowdDocumentTarget::overlay </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>primitiveBudget</em> = <code>100000</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Produce deterministic path, zone and agent overlay primitives. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="CrowdDocument_8h_source.html#l00074">eve::crowd_editing::CrowdOverlayResult::diagnostics</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="CrowdDocument_8h_source.html#l00073">eve::crowd_editing::CrowdOverlayResult::primitives</a>, <a class="el" href="CrowdDocument_8h_source.html#l00072">eve::crowd_editing::CrowdOverlayResult::revision</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="CrowdDocument_8h_source.html#l00071">eve::crowd_editing::CrowdOverlayResult::status</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00202">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a6438130f3f6f6c73f1e229006836b5b4" name="a6438130f3f6f6c73f1e229006836b5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6438130f3f6f6c73f1e229006836b5b4">&#9670;&#160;</a></span>paths()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdPathRecord.html">CrowdPathRecord</a> &gt; eve::crowd_editing::CrowdDocumentTarget::paths </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerate paths in stable-id order. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdDocument_8cpp_source.html#l00226">loadSnapshot()</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00221">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="af99e3d3d3f4cee8e5e3bcae9feca9109" name="af99e3d3d3f4cee8e5e3bcae9feca9109"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af99e3d3d3f4cee8e5e3bcae9feca9109">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::crowd_editing::CrowdDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1crowd__editing.html#a041c0a56703b4ff881c5f32074dbf11d">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a> , 以及 <a class="el" href="CrowdDocument_8h_source.html#l00083">editorCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a5a906b80cffff562b44e5d0b39e1b56f" name="a5a906b80cffff562b44e5d0b39e1b56f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a906b80cffff562b44e5d0b39e1b56f">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::crowd_editing::CrowdDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68205e96ea4efcbd7c8d777f5d234751" name="a68205e96ea4efcbd7c8d777f5d234751"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68205e96ea4efcbd7c8d777f5d234751">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#afc98e7cc3bad15ba0f45b432a8b85389">EditorValue</a> eve::crowd_editing::CrowdDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture deterministic schema-version-one authoring data. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdDocument_8cpp_source.html#l00188">agents()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00190">paths()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00189">zones()</a>.</p>
+
+</div>
+</div>
+<a id="af7e7021b26c1a2f92eb2162807c85a82" name="af7e7021b26c1a2f92eb2162807c85a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e7021b26c1a2f92eb2162807c85a82">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd__editing.html#a91d21059f7d539554a2cebb6952237ce">TargetId</a> eve::crowd_editing::CrowdDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a> 第 <a class="el" href="CrowdDocument_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bb6db95c69a13662875975355474437" name="a3bb6db95c69a13662875975355474437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bb6db95c69a13662875975355474437">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1crowd__editing.html#a80ed67f797109286600a92de075a7e78">EditorDiagnostic</a> &gt; eve::crowd_editing::CrowdDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate geometry, numeric limits and cross references. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdDocument_8cpp_source.html#l00226">loadSnapshot()</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00209">overlay()</a>.</p>
+
+</div>
+</div>
+<a id="a7c9319814d3eb2ea7b70f9b1308e5e9f" name="a7c9319814d3eb2ea7b70f9b1308e5e9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c9319814d3eb2ea7b70f9b1308e5e9f">&#9670;&#160;</a></span>zones()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1crowd__editing_1_1CrowdZoneRecord.html">CrowdZoneRecord</a> &gt; eve::crowd_editing::CrowdDocumentTarget::zones </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerate zones in stable-id order. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a> 第 <a class="el" href="CrowdDocument_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdDocument_8cpp_source.html#l00226">loadSnapshot()</a> , 以及 <a class="el" href="CrowdDocument_8cpp_source.html#l00221">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/crowd_editing/<a class="el" href="CrowdDocument_8h_source.html">CrowdDocument.h</a></li>
+<li>src/modules/crowd_editing/<a class="el" href="CrowdDocument_8cpp_source.html">CrowdDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

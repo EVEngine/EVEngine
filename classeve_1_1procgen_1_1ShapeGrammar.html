@@ -1,0 +1,596 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::ShapeGrammar类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1ShapeGrammar-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::ShapeGrammar类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Module-based shape grammar expanded continuously along a 3D polyline.  
+ <a href="classeve_1_1procgen_1_1ShapeGrammar.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ShapeGrammar_8h_source.html">ShapeGrammar.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a32feee88cd39a5286ed44e1e9fee5897" id="r_a32feee88cd39a5286ed44e1e9fee5897"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a32feee88cd39a5286ed44e1e9fee5897">clear</a> ()</td></tr>
+<tr class="memdesc:a32feee88cd39a5286ed44e1e9fee5897"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every registered symbol and diagnostic.  <br /></td></tr>
+<tr class="separator:a32feee88cd39a5286ed44e1e9fee5897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9ab4ae1c3aef590902654e59da59406" id="r_aa9ab4ae1c3aef590902654e59da59406"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa9ab4ae1c3aef590902654e59da59406">addModule</a> (const std::string &amp;symbol, const std::string &amp;asset, float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa9ab4ae1c3aef590902654e59da59406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a weighted asset variant for a symbol.  <br /></td></tr>
+<tr class="separator:aa9ab4ae1c3aef590902654e59da59406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278f37a1eb333f81261e1a0f279763ca" id="r_a278f37a1eb333f81261e1a0f279763ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a278f37a1eb333f81261e1a0f279763ca">removeModule</a> (const std::string &amp;symbol)</td></tr>
+<tr class="separator:a278f37a1eb333f81261e1a0f279763ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9819f06b213edb742d2a427c93790a71" id="r_a9819f06b213edb742d2a427c93790a71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a9819f06b213edb742d2a427c93790a71">hasModule</a> (const std::string &amp;symbol) const</td></tr>
+<tr class="separator:a9819f06b213edb742d2a427c93790a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4147bd0ebeb0ee8b10b6c4beb0f1aa1c" id="r_a4147bd0ebeb0ee8b10b6c4beb0f1aa1c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">getModuleCount</a> () const</td></tr>
+<tr class="separator:a4147bd0ebeb0ee8b10b6c4beb0f1aa1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05cdcab39f74c3d7a1e6ad40e6c1865c" id="r_a05cdcab39f74c3d7a1e6ad40e6c1865c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a05cdcab39f74c3d7a1e6ad40e6c1865c">getModuleSymbol</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a05cdcab39f74c3d7a1e6ad40e6c1865c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2920560579a2b2873822fa966d67d67" id="r_aa2920560579a2b2873822fa966d67d67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa2920560579a2b2873822fa966d67d67">getVariantCount</a> (const std::string &amp;symbol) const</td></tr>
+<tr class="separator:aa2920560579a2b2873822fa966d67d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3358b748472e2659292c7813129e4d7" id="r_ab3358b748472e2659292c7813129e4d7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#ab3358b748472e2659292c7813129e4d7">getVariantAsset</a> (const std::string &amp;symbol, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab3358b748472e2659292c7813129e4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431ad22d7c850e1e92965ea99cb9fb03" id="r_a431ad22d7c850e1e92965ea99cb9fb03"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a431ad22d7c850e1e92965ea99cb9fb03">getVariantLength</a> (const std::string &amp;symbol, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a431ad22d7c850e1e92965ea99cb9fb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6accc3129f2ada8fe915ad2c6a9e16e4" id="r_a6accc3129f2ada8fe915ad2c6a9e16e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a6accc3129f2ada8fe915ad2c6a9e16e4">validate</a> (const std::string &amp;grammar)</td></tr>
+<tr class="memdesc:a6accc3129f2ada8fe915ad2c6a9e16e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and validate grammar without generating output.  <br /></td></tr>
+<tr class="separator:a6accc3129f2ada8fe915ad2c6a9e16e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4bb658843490ca9572a7fe26fb43b95" id="r_ac4bb658843490ca9572a7fe26fb43b95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#ac4bb658843490ca9572a7fe26fb43b95">generate</a> (const std::string &amp;grammar, <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *controlPoints, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, bool acceptIncomplete)</td></tr>
+<tr class="memdesc:ac4bb658843490ca9572a7fe26fb43b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand grammar along control points.  <br /></td></tr>
+<tr class="separator:ac4bb658843490ca9572a7fe26fb43b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a563a96f781dbb6bc4d9f28ad74395022" id="r_a563a96f781dbb6bc4d9f28ad74395022"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#a563a96f781dbb6bc4d9f28ad74395022">getError</a> () const</td></tr>
+<tr class="separator:a563a96f781dbb6bc4d9f28ad74395022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8659ca7cd8ccd9b593ce2b00e263d61" id="r_af8659ca7cd8ccd9b593ce2b00e263d61"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html#af8659ca7cd8ccd9b593ce2b00e263d61">debugReport</a> () const</td></tr>
+<tr class="separator:af8659ca7cd8ccd9b593ce2b00e263d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Module-based shape grammar expanded continuously along a 3D polyline. </p>
+<p>Grammar syntax follows UE PCG's useful subset: comma-separated symbols, bracket groups, <code>*</code> (zero or more), <code>+</code> (one or more), and an integer repeat suffix. <a class="el" href="classeve_1_1Module.html">Module</a> symbols do not contain decimal digits, which are reserved for exact repetition. Repetitions fill available spline length without crossing its end. </p>
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8h_source.html">ShapeGrammar.h</a> 第 <a class="el" href="ShapeGrammar_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa9ab4ae1c3aef590902654e59da59406" name="aa9ab4ae1c3aef590902654e59da59406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9ab4ae1c3aef590902654e59da59406">&#9670;&#160;</a></span>addModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::ShapeGrammar::addModule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a weighted asset variant for a symbol. </p>
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a32feee88cd39a5286ed44e1e9fee5897" name="a32feee88cd39a5286ed44e1e9fee5897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32feee88cd39a5286ed44e1e9fee5897">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ShapeGrammar::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every registered symbol and diagnostic. </p>
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="af8659ca7cd8ccd9b593ce2b00e263d61" name="af8659ca7cd8ccd9b593ce2b00e263d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8659ca7cd8ccd9b593ce2b00e263d61">&#9670;&#160;</a></span>debugReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ShapeGrammar::debugReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="ac4bb658843490ca9572a7fe26fb43b95" name="ac4bb658843490ca9572a7fe26fb43b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4bb658843490ca9572a7fe26fb43b95">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> * eve::procgen::ShapeGrammar::generate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>grammar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td>
+          <td class="paramname"><em>controlPoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>acceptIncomplete</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand grammar along control points. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">acceptIncomplete</td><td>Keep a final module only when it fully fits; when false, generation fails if mandatory grammar cannot fit the spline. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="PointSet_8cpp_source.html#l00045">eve::procgen::PointSet::getCount()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="PointSet_8h_source.html#l00033">eve::procgen::ProcgenPoint::seed</a>, <a class="el" href="ShapeGrammar_8cpp_source.html#l00105">validate()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l00063">variant</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a563a96f781dbb6bc4d9f28ad74395022" name="a563a96f781dbb6bc4d9f28ad74395022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a563a96f781dbb6bc4d9f28ad74395022">&#9670;&#160;</a></span>getError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ShapeGrammar::getError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a4147bd0ebeb0ee8b10b6c4beb0f1aa1c" name="a4147bd0ebeb0ee8b10b6c4beb0f1aa1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">&#9670;&#160;</a></span>getModuleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::ShapeGrammar::getModuleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a05cdcab39f74c3d7a1e6ad40e6c1865c" name="a05cdcab39f74c3d7a1e6ad40e6c1865c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05cdcab39f74c3d7a1e6ad40e6c1865c">&#9670;&#160;</a></span>getModuleSymbol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ShapeGrammar::getModuleSymbol </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="ab3358b748472e2659292c7813129e4d7" name="ab3358b748472e2659292c7813129e4d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3358b748472e2659292c7813129e4d7">&#9670;&#160;</a></span>getVariantAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ShapeGrammar::getVariantAsset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="aa2920560579a2b2873822fa966d67d67" name="aa2920560579a2b2873822fa966d67d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2920560579a2b2873822fa966d67d67">&#9670;&#160;</a></span>getVariantCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::ShapeGrammar::getVariantCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a431ad22d7c850e1e92965ea99cb9fb03" name="a431ad22d7c850e1e92965ea99cb9fb03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a431ad22d7c850e1e92965ea99cb9fb03">&#9670;&#160;</a></span>getVariantLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ShapeGrammar::getVariantLength </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a9819f06b213edb742d2a427c93790a71" name="a9819f06b213edb742d2a427c93790a71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9819f06b213edb742d2a427c93790a71">&#9670;&#160;</a></span>hasModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::ShapeGrammar::hasModule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a> , 以及 <a class="el" href="ShapeGrammar_8cpp_source.html#l00105">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a278f37a1eb333f81261e1a0f279763ca" name="a278f37a1eb333f81261e1a0f279763ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278f37a1eb333f81261e1a0f279763ca">&#9670;&#160;</a></span>removeModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::ShapeGrammar::removeModule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a>.</p>
+
+</div>
+</div>
+<a id="a6accc3129f2ada8fe915ad2c6a9e16e4" name="a6accc3129f2ada8fe915ad2c6a9e16e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6accc3129f2ada8fe915ad2c6a9e16e4">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::ShapeGrammar::validate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>grammar</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and validate grammar without generating output. </p>
+
+<p class="definition">在文件 <a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a> 第 <a class="el" href="ShapeGrammar_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShapeGrammar_8cpp_source.html#l00083">hasModule()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShapeGrammarScript_8cpp_source.html#l00011">eve::procgen::exposeShapeGrammar()</a> , 以及 <a class="el" href="ShapeGrammar_8cpp_source.html#l00131">generate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="ShapeGrammar_8h_source.html">ShapeGrammar.h</a></li>
+<li>src/modules/procgen/<a class="el" href="ShapeGrammar_8cpp_source.html">ShapeGrammar.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

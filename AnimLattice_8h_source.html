@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimLattice.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimLattice.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimLattice_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1model3d.html">eve::model3d</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span>ModelData;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>}</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">   43</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a> = 2;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ac89587730e9cb9221a215d302747efed">AnimLattice</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ac89587730e9cb9221a215d302747efed">AnimLattice</a>(<span class="keywordtype">int</span> divX, <span class="keywordtype">int</span> divY, <span class="keywordtype">int</span> divZ);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a2c490b93f741af571051b204f67f2b20">   50</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a2c490b93f741af571051b204f67f2b20">AnimLattice</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a82f8c7f5ebca25aa3a7a03a30ca03089">   51</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a>&amp; <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a82f8c7f5ebca25aa3a7a03a30ca03089">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// ---- lattice frame ----</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a00fc656b771e58819f524f01144a2530">setDivisions</a>(<span class="keywordtype">int</span> divX, <span class="keywordtype">int</span> divY, <span class="keywordtype">int</span> divZ);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a998eb4ebaad1855ab9393bc0902833f3">   57</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a998eb4ebaad1855ab9393bc0902833f3">getDivisionsX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> divX_; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a63ff5e357e16e45a2f1919597a9bb171">   58</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a63ff5e357e16e45a2f1919597a9bb171">getDivisionsY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> divY_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">   59</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">getDivisionsZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> divZ_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ab99a891a59f725265153cb23f23269c9">setSize</a>(<span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy, <span class="keywordtype">float</span> sz);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#af5c2daacd20bbd91cd54f60c9fefd938">   63</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af5c2daacd20bbd91cd54f60c9fefd938">getSizeX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sizeX_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#ab765d47992df2c43f6c14186d7b920b0">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ab765d47992df2c43f6c14186d7b920b0">getSizeY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sizeY_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a1f3d745bfdc33c9bf297d37e37e8ae1b">   65</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a1f3d745bfdc33c9bf297d37e37e8ae1b">getSizeZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sizeZ_; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a7fa2c184cf52d7a928f0faf423bdfdc2">setOrigin</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, <span class="keywordtype">float</span> oz);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#ac17086d2133d64240bed2c87a28ae437">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ac17086d2133d64240bed2c87a28ae437">getOriginX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originX_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a69742e7a1d56da530c2fc71f76665f59">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a69742e7a1d56da530c2fc71f76665f59">getOriginY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originY_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a4cf6313e22a040d5fbd84c748772f8de">   71</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a4cf6313e22a040d5fbd84c748772f8de">getOriginZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originZ_; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a80a901b7273a556c24b3977784cc5537">   77</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a80a901b7273a556c24b3977784cc5537">setClamp</a>(<span class="keywordtype">bool</span> clamp) { clamp_ = clamp; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#a3d1936b778d9846712a483bfadc43cc0">   78</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a3d1936b778d9846712a483bfadc43cc0">getClamp</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> clamp_; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// ---- control points ----</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#aaf90a542a66d03cff6d4706bfac3f052">   83</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aaf90a542a66d03cff6d4706bfac3f052">getPointCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(points_.size()); }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a1333b22b042b10f24863581f5d0a8072">setPointScale</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz, <span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy, <span class="keywordtype">float</span> sz);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#abf2ffeac03ae6a895062868930cfa212">setPointOffset</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ace39b136a38b7fb5ecdca0756d5f0663">setScale</a>(<span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy, <span class="keywordtype">float</span> sz);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af651dfc18b4cc909813d77ba2b652c00">reset</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a914be7b460db6dd8b3ef4d037abc93e6">getPointScaleX</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#acd7c0e6b8cab578ba178fba3276ffec2">getPointScaleY</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af890d766ec09bbaf9e7c773fda501732">getPointScaleZ</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a155c4ff91e97dfa70065c94c6e1040f9">getPointOffsetX</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aa31b0a274bbfa07af17662d803429ed3">getPointOffsetY</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af606ec4b7b6b607331349bbc481c11bf">getPointOffsetZ</a>(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="comment">// ---- binding ----</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a>* <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ae8d8d874e1ec6e5f1a8a70d53cc62d6a">fromModel</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> divX, <span class="keywordtype">int</span> divY, <span class="keywordtype">int</span> divZ);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a8377729034943edefd9269c797c04370">bindModel</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <span class="keywordtype">int</span> meshIndex);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aff29d2b5cf287ed84b14604817afef06">bindPositions</a>(<span class="keyword">const</span> <span class="keywordtype">float</span>* posXYZ, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ab47b17e6770097cf127d323f76055324">clearBind</a>();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">  118</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vertexCount_; }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af2a044f7ad6e539d0904681bb7ef81ad">getBindPositionX</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aff6d7eb051a815a290eeef257089ad09">getBindPositionY</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a7bfaced56d3ebb724a94cbfd7886b05d">getBindPositionZ</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="comment">// ---- deformation ----</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aa29b9cc149dc35a7fdf2a8038c1cff63">deformPositions</a>(<span class="keyword">const</span> <span class="keywordtype">float</span>* inPosXYZ, <span class="keywordtype">float</span>* outPosXYZ, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aee2c94b75bd4c1556bd8ac19a1347a1a">deformPositionsTo</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; inPosXYZ, std::vector&lt;float&gt;&amp; outPosXYZ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a69d06c989e408411e2925c26d1840996">deformNormals</a>(<span class="keyword">const</span> <span class="keywordtype">float</span>* posXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span>* inNrmXYZ, <span class="keywordtype">float</span>* outNrmXYZ, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312">updateDeformedPositions</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; inPosXYZ);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312">updateDeformedPositions</a>();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182">updateDeformedNormals</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; posXYZ, <span class="keyword">const</span> std::vector&lt;float&gt;&amp; inNrmXYZ);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#ac9910eb3e2d111f74bb346afc7c088f0">  157</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#ac9910eb3e2d111f74bb346afc7c088f0">hasDeformedPositions</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> deformedValid_; }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimLattice.html#af6cfd114b4204af8f3eff55da1e6076c">  160</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#af6cfd114b4204af8f3eff55da1e6076c">hasDeformedNormals</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> deformedNrmValid_; }</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a0214340499205c1ec8e244a770897d5d">getDeformedPositionX</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#aa6bc7aee60fb90aa333abd16feb451ad">getDeformedPositionY</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#abb69852d328731d54fdddc03235d5b07">getDeformedPositionZ</a>(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a0dd02fc3d3851dca1ceadea8f83b6e28">getDeformedPositions</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1animation_1_1AnimLattice.html#a0a4c5f95943ed45f5edef85c8b6b9b51">getDeformedNormals</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">struct </span>ControlPoint {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a> = 0.f, <a class="code hl_variable" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a> = 0.f, oz = 0.f;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordtype">float</span> sx = 1.f, sy = 1.f, sz = 1.f;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    };</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">void</span> requirePoint(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordtype">void</span> requireVertex(<span class="keywordtype">int</span> vertexIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordtype">int</span>  pointIndex(<span class="keywordtype">int</span> ix, <span class="keywordtype">int</span> iy, <span class="keywordtype">int</span> iz) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">void</span> computeCell(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">int</span>&amp; <a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, <span class="keywordtype">int</span>&amp; j0, <span class="keywordtype">int</span>&amp; k0, <span class="keywordtype">float</span>&amp; fu, <span class="keywordtype">float</span>&amp; fv, <span class="keywordtype">float</span>&amp; fw) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">int</span>   divX_    = <a class="code hl_variable" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordtype">int</span>   divY_    = <a class="code hl_variable" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">int</span>   divZ_    = <a class="code hl_variable" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordtype">float</span> sizeX_   = 1.f;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordtype">float</span> sizeY_   = 1.f;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordtype">float</span> sizeZ_   = 1.f;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">float</span> originX_ = 0.f;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordtype">float</span> originY_ = 0.f;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">float</span> originZ_ = 0.f;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordtype">bool</span>  clamp_   = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    std::vector&lt;ControlPoint&gt; points_;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    std::vector&lt;float&gt;        bindPos_;  <span class="comment">// xyz packed</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">int</span>                       vertexCount_ = 0;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    std::vector&lt;float&gt; deformedPos_;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    std::vector&lt;float&gt; deformedNrm_;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">bool</span>               deformedValid_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">bool</span>               deformedNrmValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>};</div>
+</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a47ff32291cc26d3b91bb5cb7b45495f7"><div class="ttname"><a href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a></div><div class="ttdeci">uint32_t i0</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00734">RenderSystem3D.cpp:734</a></div></div>
+<div class="ttc" id="aUrbanCrossField_8cpp_html_a19a570f18d48a461a6e612b886dd2925"><div class="ttname"><a href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a></div><div class="ttdeci">double oy</div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00022">UrbanCrossField.cpp:22</a></div></div>
+<div class="ttc" id="aUrbanCrossField_8cpp_html_afc4e3a3e65efe3b49e37f2168bc9295d"><div class="ttname"><a href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a></div><div class="ttdeci">double ox</div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00021">UrbanCrossField.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></div><div class="ttdoc">CPU 3D lattice scale-deformer (晶格缩放变形).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00041">AnimLattice.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a00fc656b771e58819f524f01144a2530"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a00fc656b771e58819f524f01144a2530">eve::animation::AnimLattice::setDivisions</a></div><div class="ttdeci">void setDivisions(int divX, int divY, int divZ)</div><div class="ttdoc">Changes divisions; resets all control points to identity and clears the bind.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00046">AnimLattice.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a0214340499205c1ec8e244a770897d5d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a0214340499205c1ec8e244a770897d5d">eve::animation::AnimLattice::getDeformedPositionX</a></div><div class="ttdeci">float getDeformedPositionX(int vertexIndex) const</div><div class="ttdoc">Cached deformed position component (requires updateDeformedPositions).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00344">AnimLattice.cpp:344</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a0a4c5f95943ed45f5edef85c8b6b9b51"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a0a4c5f95943ed45f5edef85c8b6b9b51">eve::animation::AnimLattice::getDeformedNormals</a></div><div class="ttdeci">std::vector&lt; float &gt; getDeformedNormals() const</div><div class="ttdoc">Copy of the cached deformed normals (xyz packed; empty when not updated).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00370">AnimLattice.cpp:370</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a0dd02fc3d3851dca1ceadea8f83b6e28"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a0dd02fc3d3851dca1ceadea8f83b6e28">eve::animation::AnimLattice::getDeformedPositions</a></div><div class="ttdeci">std::vector&lt; float &gt; getDeformedPositions() const</div><div class="ttdoc">Copy of the cached deformed positions (xyz packed; empty when not updated).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00366">AnimLattice.cpp:366</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a1333b22b042b10f24863581f5d0a8072"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a1333b22b042b10f24863581f5d0a8072">eve::animation::AnimLattice::setPointScale</a></div><div class="ttdeci">void setPointScale(int ix, int iy, int iz, float sx, float sy, float sz)</div><div class="ttdoc">Per-control-point scale (squash / stretch about the lattice origin).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00088">AnimLattice.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a155c4ff91e97dfa70065c94c6e1040f9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a155c4ff91e97dfa70065c94c6e1040f9">eve::animation::AnimLattice::getPointOffsetX</a></div><div class="ttdeci">float getPointOffsetX(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00126">AnimLattice.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a1f3d745bfdc33c9bf297d37e37e8ae1b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a1f3d745bfdc33c9bf297d37e37e8ae1b">eve::animation::AnimLattice::getSizeZ</a></div><div class="ttdeci">float getSizeZ() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00065">AnimLattice.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a2c490b93f741af571051b204f67f2b20"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a2c490b93f741af571051b204f67f2b20">eve::animation::AnimLattice::AnimLattice</a></div><div class="ttdeci">AnimLattice(const AnimLattice &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a3d1936b778d9846712a483bfadc43cc0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a3d1936b778d9846712a483bfadc43cc0">eve::animation::AnimLattice::getClamp</a></div><div class="ttdeci">bool getClamp() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00078">AnimLattice.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a4cf6313e22a040d5fbd84c748772f8de"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a4cf6313e22a040d5fbd84c748772f8de">eve::animation::AnimLattice::getOriginZ</a></div><div class="ttdeci">float getOriginZ() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00071">AnimLattice.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a533425725e4dfb6a47347356a0170312"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312">eve::animation::AnimLattice::updateDeformedPositions</a></div><div class="ttdeci">bool updateDeformedPositions()</div><div class="ttdoc">Deform the bound bind positions into the internal cache.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00321">AnimLattice.cpp:321</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a63ff5e357e16e45a2f1919597a9bb171"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a63ff5e357e16e45a2f1919597a9bb171">eve::animation::AnimLattice::getDivisionsY</a></div><div class="ttdeci">int getDivisionsY() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00058">AnimLattice.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a69742e7a1d56da530c2fc71f76665f59"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a69742e7a1d56da530c2fc71f76665f59">eve::animation::AnimLattice::getOriginY</a></div><div class="ttdeci">float getOriginY() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00070">AnimLattice.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a69d06c989e408411e2925c26d1840996"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a69d06c989e408411e2925c26d1840996">eve::animation::AnimLattice::deformNormals</a></div><div class="ttdeci">bool deformNormals(const float *posXYZ, const float *inNrmXYZ, float *outNrmXYZ, int count) const</div><div class="ttdoc">Transforms normals with the interpolated scale field and renormalizes. posXYZ provides the (deformed)...</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00265">AnimLattice.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a7bfaced56d3ebb724a94cbfd7886b05d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a7bfaced56d3ebb724a94cbfd7886b05d">eve::animation::AnimLattice::getBindPositionZ</a></div><div class="ttdeci">float getBindPositionZ(int vertexIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00197">AnimLattice.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a7fa2c184cf52d7a928f0faf423bdfdc2"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a7fa2c184cf52d7a928f0faf423bdfdc2">eve::animation::AnimLattice::setOrigin</a></div><div class="ttdeci">void setOrigin(float ox, float oy, float oz)</div><div class="ttdoc">Center of the lattice box in model space.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00067">AnimLattice.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a80a901b7273a556c24b3977784cc5537"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a80a901b7273a556c24b3977784cc5537">eve::animation::AnimLattice::setClamp</a></div><div class="ttdeci">void setClamp(bool clamp)</div><div class="ttdoc">When true (default), vertices outside the box are clamped to the boundary cells; when false,...</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00077">AnimLattice.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a82f8c7f5ebca25aa3a7a03a30ca03089"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a82f8c7f5ebca25aa3a7a03a30ca03089">eve::animation::AnimLattice::operator=</a></div><div class="ttdeci">AnimLattice &amp; operator=(const AnimLattice &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a8377729034943edefd9269c797c04370"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a8377729034943edefd9269c797c04370">eve::animation::AnimLattice::bindModel</a></div><div class="ttdeci">void bindModel(const model3d::ModelData *model, int meshIndex)</div><div class="ttdoc">Binds the current lattice to meshIndex of model (uses current divisions).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00155">AnimLattice.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a8f63d667c2813a915fe373fc67ff5182"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182">eve::animation::AnimLattice::updateDeformedNormals</a></div><div class="ttdeci">bool updateDeformedNormals(const std::vector&lt; float &gt; &amp;posXYZ, const std::vector&lt; float &gt; &amp;inNrmXYZ)</div><div class="ttdoc">Deform packed xyz normals (with packed positions for cell lookup) into the internal normal cache.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00329">AnimLattice.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a914be7b460db6dd8b3ef4d037abc93e6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a914be7b460db6dd8b3ef4d037abc93e6">eve::animation::AnimLattice::getPointScaleX</a></div><div class="ttdeci">float getPointScaleX(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00114">AnimLattice.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_a998eb4ebaad1855ab9393bc0902833f3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#a998eb4ebaad1855ab9393bc0902833f3">eve::animation::AnimLattice::getDivisionsX</a></div><div class="ttdeci">int getDivisionsX() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00057">AnimLattice.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aa29b9cc149dc35a7fdf2a8038c1cff63"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aa29b9cc149dc35a7fdf2a8038c1cff63">eve::animation::AnimLattice::deformPositions</a></div><div class="ttdeci">void deformPositions(const float *inPosXYZ, float *outPosXYZ, int count) const</div><div class="ttdoc">Deforms count packed xyz positions into outPosXYZ. Both buffers must hold count * 3 floats; count mus...</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00212">AnimLattice.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aa31b0a274bbfa07af17662d803429ed3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aa31b0a274bbfa07af17662d803429ed3">eve::animation::AnimLattice::getPointOffsetY</a></div><div class="ttdeci">float getPointOffsetY(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00130">AnimLattice.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aa6bc7aee60fb90aa333abd16feb451ad"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aa6bc7aee60fb90aa333abd16feb451ad">eve::animation::AnimLattice::getDeformedPositionY</a></div><div class="ttdeci">float getDeformedPositionY(int vertexIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00351">AnimLattice.cpp:351</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aaf90a542a66d03cff6d4706bfac3f052"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aaf90a542a66d03cff6d4706bfac3f052">eve::animation::AnimLattice::getPointCount</a></div><div class="ttdeci">int getPointCount() const</div><div class="ttdoc">Total control point count (divX * divY * divZ).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00083">AnimLattice.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ab47b17e6770097cf127d323f76055324"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ab47b17e6770097cf127d323f76055324">eve::animation::AnimLattice::clearBind</a></div><div class="ttdeci">void clearBind()</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00182">AnimLattice.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ab765d47992df2c43f6c14186d7b920b0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ab765d47992df2c43f6c14186d7b920b0">eve::animation::AnimLattice::getSizeY</a></div><div class="ttdeci">float getSizeY() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00064">AnimLattice.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ab99a891a59f725265153cb23f23269c9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ab99a891a59f725265153cb23f23269c9">eve::animation::AnimLattice::setSize</a></div><div class="ttdeci">void setSize(float sx, float sy, float sz)</div><div class="ttdoc">World-space size of the lattice box (components must be &gt; 0).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00058">AnimLattice.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_abb69852d328731d54fdddc03235d5b07"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#abb69852d328731d54fdddc03235d5b07">eve::animation::AnimLattice::getDeformedPositionZ</a></div><div class="ttdeci">float getDeformedPositionZ(int vertexIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00358">AnimLattice.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_abf2ffeac03ae6a895062868930cfa212"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#abf2ffeac03ae6a895062868930cfa212">eve::animation::AnimLattice::setPointOffset</a></div><div class="ttdeci">void setPointOffset(int ix, int iy, int iz, float dx, float dy, float dz)</div><div class="ttdoc">Per-control-point translation offset (local bulge / pinch).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00096">AnimLattice.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ac17086d2133d64240bed2c87a28ae437"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ac17086d2133d64240bed2c87a28ae437">eve::animation::AnimLattice::getOriginX</a></div><div class="ttdeci">float getOriginX() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00069">AnimLattice.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ac89587730e9cb9221a215d302747efed"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ac89587730e9cb9221a215d302747efed">eve::animation::AnimLattice::AnimLattice</a></div><div class="ttdeci">AnimLattice()</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00042">AnimLattice.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ac9910eb3e2d111f74bb346afc7c088f0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ac9910eb3e2d111f74bb346afc7c088f0">eve::animation::AnimLattice::hasDeformedPositions</a></div><div class="ttdeci">bool hasDeformedPositions() const</div><div class="ttdoc">True after a successful updateDeformedPositions().</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00157">AnimLattice.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_acd7c0e6b8cab578ba178fba3276ffec2"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#acd7c0e6b8cab578ba178fba3276ffec2">eve::animation::AnimLattice::getPointScaleY</a></div><div class="ttdeci">float getPointScaleY(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00118">AnimLattice.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ace39b136a38b7fb5ecdca0756d5f0663"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ace39b136a38b7fb5ecdca0756d5f0663">eve::animation::AnimLattice::setScale</a></div><div class="ttdeci">void setScale(float sx, float sy, float sz)</div><div class="ttdoc">Applies one scale to every control point (whole-lattice squash &amp; stretch).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00104">AnimLattice.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ad2ffbae11a7b126d72eaddd47cfd16a0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">eve::animation::AnimLattice::kMinDivisions</a></div><div class="ttdeci">static constexpr int kMinDivisions</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00043">AnimLattice.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_adf19b4d0c67e0fabbdb4ef7d2a5fb21c"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">eve::animation::AnimLattice::getDivisionsZ</a></div><div class="ttdeci">int getDivisionsZ() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00059">AnimLattice.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_ae8d8d874e1ec6e5f1a8a70d53cc62d6a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#ae8d8d874e1ec6e5f1a8a70d53cc62d6a">eve::animation::AnimLattice::fromModel</a></div><div class="ttdeci">static AnimLattice * fromModel(const model3d::ModelData *model, int meshIndex, int divX, int divY, int divZ)</div><div class="ttdoc">Builds a lattice bound to meshIndex of model (Assimp vertices). Throws on null model / invalid mesh /...</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00139">AnimLattice.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aee17c8af8bbcfad9afe9c5d55e361105"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">eve::animation::AnimLattice::getVertexCount</a></div><div class="ttdeci">int getVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00118">AnimLattice.h:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aee2c94b75bd4c1556bd8ac19a1347a1a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aee2c94b75bd4c1556bd8ac19a1347a1a">eve::animation::AnimLattice::deformPositionsTo</a></div><div class="ttdeci">bool deformPositionsTo(const std::vector&lt; float &gt; &amp;inPosXYZ, std::vector&lt; float &gt; &amp;outPosXYZ) const</div><div class="ttdoc">Convenience: deform into a vector sized count*3.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00257">AnimLattice.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af2a044f7ad6e539d0904681bb7ef81ad"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af2a044f7ad6e539d0904681bb7ef81ad">eve::animation::AnimLattice::getBindPositionX</a></div><div class="ttdeci">float getBindPositionX(int vertexIndex) const</div><div class="ttdoc">Bind-pose position component for vertex v (0..vertexCount-1).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00189">AnimLattice.cpp:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af5c2daacd20bbd91cd54f60c9fefd938"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af5c2daacd20bbd91cd54f60c9fefd938">eve::animation::AnimLattice::getSizeX</a></div><div class="ttdeci">float getSizeX() const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00063">AnimLattice.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af606ec4b7b6b607331349bbc481c11bf"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af606ec4b7b6b607331349bbc481c11bf">eve::animation::AnimLattice::getPointOffsetZ</a></div><div class="ttdeci">float getPointOffsetZ(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00134">AnimLattice.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af651dfc18b4cc909813d77ba2b652c00"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af651dfc18b4cc909813d77ba2b652c00">eve::animation::AnimLattice::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Resets every control point to identity (offset 0, scale 1).</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00112">AnimLattice.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af6cfd114b4204af8f3eff55da1e6076c"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af6cfd114b4204af8f3eff55da1e6076c">eve::animation::AnimLattice::hasDeformedNormals</a></div><div class="ttdeci">bool hasDeformedNormals() const</div><div class="ttdoc">True after a successful updateDeformedNormals().</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8h_source.html#l00160">AnimLattice.h:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_af890d766ec09bbaf9e7c773fda501732"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#af890d766ec09bbaf9e7c773fda501732">eve::animation::AnimLattice::getPointScaleZ</a></div><div class="ttdeci">float getPointScaleZ(int ix, int iy, int iz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00122">AnimLattice.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aff29d2b5cf287ed84b14604817afef06"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aff29d2b5cf287ed84b14604817afef06">eve::animation::AnimLattice::bindPositions</a></div><div class="ttdeci">void bindPositions(const float *posXYZ, int count)</div><div class="ttdoc">Binds a packed xyz array (count * 3 floats). Uses current divisions/size/origin.</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00169">AnimLattice.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimLattice_html_aff6d7eb051a815a290eeef257089ad09"><div class="ttname"><a href="classeve_1_1animation_1_1AnimLattice.html#aff6d7eb051a815a290eeef257089ad09">eve::animation::AnimLattice::getBindPositionY</a></div><div class="ttdeci">float getBindPositionY(int vertexIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimLattice_8cpp_source.html#l00193">AnimLattice.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></div><div class="ttdoc">CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ...</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8h_source.html#l00037">ModelData.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1model3d_html"><div class="ttname"><a href="namespaceeve_1_1model3d.html">eve::model3d</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00012">Animation.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/definitions_editing/DefinitionFormRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_703c47f957445a6408f187c8855211f2.html">definitions_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DefinitionFormRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DefinitionFormRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DefinitionForm_8h.html">definitions_editing/DefinitionForm.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingValueJson_8h.html">editing/EditingValueJson.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="SchemaTypes_8h.html">schema/SchemaTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1definitions__editing.html">eve::definitions_editing</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">PropertyType</a> propertyType(<span class="keyword">const</span> schema::FieldDefinition&amp; field) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!field.enumValues.empty()) <span class="keywordflow">return</span> PropertyType::Enum;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (!field.ref.empty() || !field.reference.empty()) <span class="keywordflow">return</span> PropertyType::ObjectRef;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">switch</span> (field.type) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27226c864bac7454a8504f8edb15d95b">schema::ValueType::Boolean</a>: <span class="keywordflow">return</span> PropertyType::Bool;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aa0faef0851b4294c06f2b94bb1cb2044">schema::ValueType::Integer</a>: <span class="keywordflow">return</span> PropertyType::Int;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221ab2ee912b91d69b435159c7c3f6df7f5f">schema::ValueType::Number</a>: <span class="keywordflow">return</span> PropertyType::Float;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27118326006d3829667a400ad23d5d98">schema::ValueType::String</a>: <span class="keywordflow">return</span> PropertyType::String;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a4410ec34d9e6c1a68100ca0ce033fb17">schema::ValueType::Array</a>: <span class="keywordflow">return</span> PropertyType::Array;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a497031794414a552435f90151ac3b54b">schema::ValueType::Object</a>: <span class="keywordflow">return</span> PropertyType::Struct;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad">schema::ValueType::Any</a>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221abbb93ef26e3c101ff11cdd21cab08a94">schema::ValueType::Null</a>: <span class="keywordflow">return</span> PropertyType::ReadOnlyText;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> PropertyType::ReadOnlyText;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><a class="code hl_typedef" href="namespaceeve_1_1definitions__editing.html#ae91ddb1ac1d63287bdd559cf0d709dab">EditorValue</a> <a class="code hl_variable" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>(<span class="keyword">const</span> schema::FieldDefinition&amp; field) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!field.defaultJson.empty()) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span> parsed = <a class="code hl_function" href="namespaceeve_1_1editing.html#a77416e35f57243bc237b250db917e4b3">editorValueFromJson</a>(field.defaultJson);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (parsed.ok()) <span class="keywordflow">return</span> parsed.value();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">switch</span> (field.type) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27226c864bac7454a8504f8edb15d95b">schema::ValueType::Boolean</a>: <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aa0faef0851b4294c06f2b94bb1cb2044">schema::ValueType::Integer</a>: <span class="keywordflow">return</span> int64_t{0};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221ab2ee912b91d69b435159c7c3f6df7f5f">schema::ValueType::Number</a>: <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27118326006d3829667a400ad23d5d98">schema::ValueType::String</a>: <span class="keywordflow">return</span> std::string{};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a4410ec34d9e6c1a68100ca0ce033fb17">schema::ValueType::Array</a>: <span class="keywordflow">return</span> <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>{};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a497031794414a552435f90151ac3b54b">schema::ValueType::Object</a>: <span class="keywordflow">return</span> <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad">schema::ValueType::Any</a>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221abbb93ef26e3c101ff11cdd21cab08a94">schema::ValueType::Null</a>: <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>EditorResult&lt;DomainOperation&gt; formError(<a class="code hl_typedef" href="namespaceeve_1_1definitions__editing.html#ad7a89902072574c12e0fea9b790590cb">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;DomainOperation&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#afc377f8e34a589f8c389a54dea5d24a4">   51</a></span><a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#afc377f8e34a589f8c389a54dea5d24a4">DefinitionSchemaFormTarget::DefinitionSchemaFormTarget</a>(<a class="code hl_class" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">DefinitionDocument</a>* document,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1schema_1_1SchemaDefinition.html">schema::SchemaDefinition</a>* schema)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    : document_(document), schema_(schema) {}</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">bool</span> DefinitionSchemaFormTarget::matches(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> document_ &amp;&amp; selection.<a class="code hl_variable" href="structeve_1_1editing_1_1SelectionSnapshot.html#a870bab55af4d7419d3a85524ff853d10">items</a>.size() == 1 &amp;&amp;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>           selection.<a class="code hl_variable" href="structeve_1_1editing_1_1SelectionSnapshot.html#a870bab55af4d7419d3a85524ff853d10">items</a>.front().target == <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">TargetId</a>(document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab72e38e2c3b2639365e08033a11b4f33">targetId</a>());</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aebf9ff6aecbe19ffaf54691df5b0ec0d">   60</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Revision&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aebf9ff6aecbe19ffaf54691df5b0ec0d">DefinitionSchemaFormTarget::currentRevision</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (!matches(selection))</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;eve::Revision&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Definition form selection does not match its document&quot;</span>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="stringliteral">&quot;editor.definition.form-selection&quot;</span>));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;eve::Revision&gt;::success</a>(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::Revision</a>(document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ae631d1f9a264b15e6b5382ebdfeec36c">revision</a>()));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">   69</a></span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">DefinitionSchemaFormTarget::schema</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp;)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> result;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!schema_) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    result.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a90f289676e4f9869039bc1f0c2126457">typeId</a> = <span class="stringliteral">&quot;definition.&quot;</span> + schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#ac404bb54bc24fac96d69f6f7da9c17e5">id</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    result.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a9e2c892bbdbb65f4d58936214970866d">version</a> = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#a14cdd825f4a8ec69c02672c8301ec21f">version</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1schema_1_1FieldDefinition.html">schema::FieldDefinition</a>&amp; field : schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#a6bd66880c424907acbed53cccc4e48b2">fields</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertyDescriptor.html#afeb357a9fc3ae63077778e960f5c1f46">path</a> = <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>(field.name);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.displayNameKey = field.title.empty() ? field.name : field.title;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.descriptionKey = field.description;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.category = <span class="stringliteral">&quot;definition&quot;</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type = propertyType(field);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.defaultValue = <a class="code hl_variable" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>(field);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.minimum = field.minimum;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.maximum = field.maximum;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.enumItems = field.enumValues;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.presenterHint = !field.ref.empty() || !field.reference.empty()</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                       ? <span class="stringliteral">&quot;definition-reference-picker&quot;</span> : <span class="stringliteral">&quot;schema-field&quot;</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type == PropertyType::ReadOnlyText) <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.flags = PropertyFlag::ReadOnly;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">if</span> (field.required) <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.validators.push_back(<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<span class="stringliteral">&quot;editor.definition.required&quot;</span>));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        result.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">properties</a>.push_back(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#abcc9be9ea192395354cf34435758024f">   94</a></span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#abcc9be9ea192395354cf34435758024f">DefinitionSchemaFormTarget::read</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">schema</a>(selection).<a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">find</a>(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (!matches(selection) || !<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">auto</span> parsed = <a class="code hl_function" href="namespaceeve_1_1editing.html#a77416e35f57243bc237b250db917e4b3">editorValueFromJson</a>(document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">json</a>());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = parsed.ok() ? parsed.value().getIf&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) <span class="keywordflow">return</span> {PropertyReadState::Error, {}, parsed.diagnostics()};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = <span class="keywordtype">object</span>-&gt;find(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (found == <a class="code hl_variable" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>-&gt;end()) <span class="keywordflow">return</span> {PropertyReadState::Missing, {}, {}};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;type == PropertyType::Float) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* integer = found-&gt;second.getIf&lt;int64_t&gt;())</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> {PropertyReadState::Value, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(*integer), {}};</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> {PropertyReadState::Value, found-&gt;second, {}};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae685ff09412a413f625d051bac75011c">  110</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae685ff09412a413f625d051bac75011c">DefinitionSchemaFormTarget::makeSet</a>(</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (mode == PropertySetMode::Reset) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#affa1c1ace2a95b3b611284373b49c2a4">makeReset</a>(selection, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!matches(selection) || !schema_)</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> formError(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.definition.form-selection&quot;</span>,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                         <span class="stringliteral">&quot;Definition form selection does not match its document&quot;</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">schema</a>(selection).<a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">find</a>(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">return</span> formError(EditorStatus::Unsupported, <span class="stringliteral">&quot;editor.definition.form-field&quot;</span>,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                         <span class="stringliteral">&quot;Definition schema does not contain field: &quot;</span> + <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editing.html#af7d80cc6f5ba26b9df4cadfe103aaf74">hasPropertyFlag</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;flags, PropertyFlag::ReadOnly))</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">return</span> formError(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.definition.form-read-only&quot;</span>,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                         <span class="stringliteral">&quot;Definition field is not directly editable&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">validatePropertyValue</a>(*<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;DomainOperation&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">return</span> document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a8cd5daa7639fb042c8e345a607b46e5f">makeSetField</a>(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value(), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#affa1c1ace2a95b3b611284373b49c2a4">  129</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#affa1c1ace2a95b3b611284373b49c2a4">DefinitionSchemaFormTarget::makeReset</a>(</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">schema</a>(selection).<a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">find</a>(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (!matches(selection) || !<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">return</span> formError(EditorStatus::Unsupported, <span class="stringliteral">&quot;editor.definition.form-field&quot;</span>,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                         <span class="stringliteral">&quot;Definition schema field is unavailable&quot;</span>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae685ff09412a413f625d051bac75011c">makeSet</a>(selection, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;defaultValue, PropertySetMode::Absolute);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="}">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aa90d1da9ca9a2ac0ff719f8f84498772">  138</a></span>std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aa90d1da9ca9a2ac0ff719f8f84498772">DefinitionSchemaFormTarget::validate</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::vector&lt;EditorDiagnostic&gt; diagnostics;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (!document_ || !schema_ || document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">type</a>() != schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#ac404bb54bc24fac96d69f6f7da9c17e5">id</a> || document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">version</a>() != schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#a14cdd825f4a8ec69c02672c8301ec21f">version</a>) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<span class="stringliteral">&quot;editor.definition.form-schema-mismatch&quot;</span>), DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="stringliteral">&quot;Definition document and exact schema identity do not match&quot;</span>));</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">return</span> diagnostics;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">auto</span> parsed = <a class="code hl_function" href="namespaceeve_1_1editing.html#a77416e35f57243bc237b250db917e4b3">editorValueFromJson</a>(document_-&gt;<a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">json</a>());</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = parsed.ok() ? parsed.value().getIf&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<span class="stringliteral">&quot;editor.definition.form-object-required&quot;</span>), DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <span class="stringliteral">&quot;Schema-driven definition forms require an object payload&quot;</span>));</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">return</span> diagnostics;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> formSchema = <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">schema</a>({});</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1schema_1_1FieldDefinition.html">schema::FieldDefinition</a>&amp; field : schema_-&gt;<a class="code hl_variable" href="structeve_1_1schema_1_1SchemaDefinition.html#a6bd66880c424907acbed53cccc4e48b2">fields</a>) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">const</span> <span class="keyword">auto</span> found = <span class="keywordtype">object</span>-&gt;<a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">find</a>(field.name);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordflow">if</span> (found == <a class="code hl_variable" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>-&gt;end()) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keywordflow">if</span> (field.required)</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<span class="stringliteral">&quot;editor.definition.required-field-missing&quot;</span>), DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                    <span class="stringliteral">&quot;Required definition field is missing: &quot;</span> + field.name));</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = formSchema.<a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">find</a>(<a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>(field.name));</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">validatePropertyValue</a>(*<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, found-&gt;second);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        diagnostics.insert(diagnostics.end(), <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.diagnostics().begin(), <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.diagnostics().end());</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">return</span> diagnostics;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}  <span class="comment">// namespace eve::definitions_editing</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aDefinitionForm_8h_html"><div class="ttname"><a href="DefinitionForm_8h.html">DefinitionForm.h</a></div></div>
+<div class="ttc" id="aEditingValueJson_8h_html"><div class="ttname"><a href="EditingValueJson_8h.html">EditingValueJson.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00549">McpServer.cpp:549</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a7600cb1e54c2a5b89ad934e9fc6f1399"><div class="ttname"><a href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a></div><div class="ttdeci">const char * defaultValue</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00019">PointGraph.cpp:19</a></div></div>
+<div class="ttc" id="aSchemaTypes_8h_html"><div class="ttname"><a href="SchemaTypes_8h.html">SchemaTypes.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a4aa6748beb05520a7015b290be68385b"><div class="ttname"><a href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a></div><div class="ttdeci">Poco::JSON::Object::Ptr object</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00916">TileConfig.cpp:916</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">eve::definitions_editing::DefinitionDocument</a></div><div class="ttdoc">UI-neutral versioned definition asset and cross-reference model.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00032">DefinitionTarget.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a0d50403231013e74d3636fdbf1d3bc32"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">eve::definitions_editing::DefinitionDocument::json</a></div><div class="ttdeci">const std::string &amp; json() const</div><div class="ttdoc">Return JSON payload text.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00073">DefinitionTarget.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a1837b114075166cde823bbec5f54b199"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">eve::definitions_editing::DefinitionDocument::version</a></div><div class="ttdeci">int version() const</div><div class="ttdoc">Return schema version.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00071">DefinitionTarget.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a2dd4ddc9654d71a73116c3ad86653c7b"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">eve::definitions_editing::DefinitionDocument::type</a></div><div class="ttdeci">const std::string &amp; type() const</div><div class="ttdoc">Return definition type/schema id.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00067">DefinitionTarget.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a8cd5daa7639fb042c8e345a607b46e5f"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a8cd5daa7639fb042c8e345a607b46e5f">eve::definitions_editing::DefinitionDocument::makeSetField</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetField(const std::string &amp;field, const EditorValue &amp;value) const</div><div class="ttdoc">Plan a reversible top-level field assignment from a schema form.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00098">DefinitionTarget.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ab72e38e2c3b2639365e08033a11b4f33"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab72e38e2c3b2639365e08033a11b4f33">eve::definitions_editing::DefinitionDocument::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00041">DefinitionTarget.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ae631d1f9a264b15e6b5382ebdfeec36c"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ae631d1f9a264b15e6b5382ebdfeec36c">eve::definitions_editing::DefinitionDocument::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00042">DefinitionTarget.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_aa90d1da9ca9a2ac0ff719f8f84498772"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aa90d1da9ca9a2ac0ff719f8f84498772">eve::definitions_editing::DefinitionSchemaFormTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Diagnose schema/document identity, missing required fields and current value constraints.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00138">DefinitionFormRuntime.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_abcc9be9ea192395354cf34435758024f"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#abcc9be9ea192395354cf34435758024f">eve::definitions_editing::DefinitionSchemaFormTarget::read</a></div><div class="ttdeci">PropertyReadResult read(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path) const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00094">DefinitionFormRuntime.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_ae5253927005da04bb10b17b188b3c947"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">eve::definitions_editing::DefinitionSchemaFormTarget::schema</a></div><div class="ttdeci">PropertySchema schema(const SelectionSnapshot &amp;selection) const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00069">DefinitionFormRuntime.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_ae685ff09412a413f625d051bac75011c"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae685ff09412a413f625d051bac75011c">eve::definitions_editing::DefinitionSchemaFormTarget::makeSet</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSet(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path, const EditorValue &amp;value, PropertySetMode mode) const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00110">DefinitionFormRuntime.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_aebf9ff6aecbe19ffaf54691df5b0ec0d"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aebf9ff6aecbe19ffaf54691df5b0ec0d">eve::definitions_editing::DefinitionSchemaFormTarget::currentRevision</a></div><div class="ttdeci">eve::Result&lt; eve::Revision &gt; currentRevision(const SelectionSnapshot &amp;selection) const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00060">DefinitionFormRuntime.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_afc377f8e34a589f8c389a54dea5d24a4"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#afc377f8e34a589f8c389a54dea5d24a4">eve::definitions_editing::DefinitionSchemaFormTarget::DefinitionSchemaFormTarget</a></div><div class="ttdeci">DefinitionSchemaFormTarget(DefinitionDocument *document, const schema::SchemaDefinition *schema)</div><div class="ttdoc">Bind a document and exact immutable schema; both must outlive this adapter.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00051">DefinitionFormRuntime.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionSchemaFormTarget_html_affa1c1ace2a95b3b611284373b49c2a4"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#affa1c1ace2a95b3b611284373b49c2a4">eve::definitions_editing::DefinitionSchemaFormTarget::makeReset</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeReset(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path) const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionFormRuntime_8cpp_source.html#l00129">DefinitionFormRuntime.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00019">EditingValue.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions__editing_html"><div class="ttname"><a href="namespaceeve_1_1definitions__editing.html">eve::definitions_editing</a></div><div class="ttdef"><b>Definition</b> <a href="DefinitionForm_8h_source.html#l00010">DefinitionForm.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions__editing_html_ad7a89902072574c12e0fea9b790590cb"><div class="ttname"><a href="namespaceeve_1_1definitions__editing.html#ad7a89902072574c12e0fea9b790590cb">eve::definitions_editing::EditorStatus</a></div><div class="ttdeci">eve::editing::Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="DefinitionForm_8h_source.html#l00014">DefinitionForm.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions__editing_html_ae91ddb1ac1d63287bdd559cf0d709dab"><div class="ttname"><a href="namespaceeve_1_1definitions__editing.html#ae91ddb1ac1d63287bdd559cf0d709dab">eve::definitions_editing::EditorValue</a></div><div class="ttdeci">eve::editing::Value EditorValue</div><div class="ttdef"><b>Definition</b> <a href="DefinitionForm_8h_source.html#l00013">DefinitionForm.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::editing::PropertyType</a></div><div class="ttdeci">PropertyType</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00018">EditingProperty.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a642f65bf61b271dc4b599f4069b93060"><div class="ttname"><a href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::editing::PropertySetMode</a></div><div class="ttdeci">PropertySetMode</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00114">EditingProperty.h:114</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a77416e35f57243bc237b250db917e4b3"><div class="ttname"><a href="namespaceeve_1_1editing.html#a77416e35f57243bc237b250db917e4b3">eve::editing::editorValueFromJson</a></div><div class="ttdeci">EditorResult&lt; EditorValue &gt; editorValueFromJson(const std::string &amp;json)</div><div class="ttdoc">Parse JSON into the pointer-free EditorValue protocol tree.</div><div class="ttdef"><b>Definition</b> <a href="EditingValueJson_8cpp_source.html#l00352">EditingValueJson.cpp:352</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ae41b256f9bfb4c63f69c328d47dd0e8c"><div class="ttname"><a href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">eve::editing::validatePropertyValue</a></div><div class="ttdeci">Result&lt; void &gt; validatePropertyValue(const PropertyDescriptor &amp;descriptor, const Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00138">EditingProperty.cpp:138</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_af7d80cc6f5ba26b9df4cadfe103aaf74"><div class="ttname"><a href="namespaceeve_1_1editing.html#af7d80cc6f5ba26b9df4cadfe103aaf74">eve::editing::hasPropertyFlag</a></div><div class="ttdeci">constexpr bool hasPropertyFlag(PropertyFlag value, PropertyFlag flag)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00056">EditingProperty.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27118326006d3829667a400ad23d5d98">eve::schema::ValueType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221a27226c864bac7454a8504f8edb15d95b"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a27226c864bac7454a8504f8edb15d95b">eve::schema::ValueType::Boolean</a></div><div class="ttdeci">@ Boolean</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221a4410ec34d9e6c1a68100ca0ce033fb17"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a4410ec34d9e6c1a68100ca0ce033fb17">eve::schema::ValueType::Array</a></div><div class="ttdeci">@ Array</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221a497031794414a552435f90151ac3b54b"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221a497031794414a552435f90151ac3b54b">eve::schema::ValueType::Object</a></div><div class="ttdeci">@ Object</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221aa0faef0851b4294c06f2b94bb1cb2044"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aa0faef0851b4294c06f2b94bb1cb2044">eve::schema::ValueType::Integer</a></div><div class="ttdeci">@ Integer</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221ab2ee912b91d69b435159c7c3f6df7f5f"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221ab2ee912b91d69b435159c7c3f6df7f5f">eve::schema::ValueType::Number</a></div><div class="ttdeci">@ Number</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221abbb93ef26e3c101ff11cdd21cab08a94"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221abbb93ef26e3c101ff11cdd21cab08a94">eve::schema::ValueType::Null</a></div><div class="ttdeci">@ Null</div></div>
+<div class="ttc" id="anamespaceeve_1_1schema_html_af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad"><div class="ttname"><a href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad">eve::schema::ValueType::Any</a></div><div class="ttdeci">@ Any</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyDescriptor.html">eve::editing::PropertyDescriptor</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00066">EditingProperty.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyDescriptor_html_afeb357a9fc3ae63077778e960f5c1f46"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyDescriptor.html#afeb357a9fc3ae63077778e960f5c1f46">eve::editing::PropertyDescriptor::path</a></div><div class="ttdeci">PropertyPath path</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00067">EditingProperty.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyReadResult_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyReadResult.html">eve::editing::PropertyReadResult</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00108">EditingProperty.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00099">EditingProperty.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a4020b14546fac590b874f3decc6a1e3b"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">eve::editing::PropertySchema::properties</a></div><div class="ttdeci">std::vector&lt; PropertyDescriptor &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00102">EditingProperty.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a90f289676e4f9869039bc1f0c2126457"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a90f289676e4f9869039bc1f0c2126457">eve::editing::PropertySchema::typeId</a></div><div class="ttdeci">std::string typeId</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00100">EditingProperty.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a9e2c892bbdbb65f4d58936214970866d"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a9e2c892bbdbb65f4d58936214970866d">eve::editing::PropertySchema::version</a></div><div class="ttdeci">std::uint32_t version</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00101">EditingProperty.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_adb1650e8152384b2ff5123013b25ccce"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">eve::editing::PropertySchema::find</a></div><div class="ttdeci">PropertyDescriptorLookup find(const PropertyPath &amp;path) const</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00009">EditingProperty.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html_a870bab55af4d7419d3a85524ff853d10"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html#a870bab55af4d7419d3a85524ff853d10">eve::editing::SelectionSnapshot::items</a></div><div class="ttdeci">std::vector&lt; SelectionItem &gt; items</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00018">EditingSelection.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1FieldDefinition_html"><div class="ttname"><a href="structeve_1_1schema_1_1FieldDefinition.html">eve::schema::FieldDefinition</a></div><div class="ttdoc">Metadata and validation constraints for one object member.</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00077">SchemaTypes.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1SchemaDefinition_html"><div class="ttname"><a href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a></div><div class="ttdoc">Versioned runtime schema for a JSON object.</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00093">SchemaTypes.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1SchemaDefinition_html_a14cdd825f4a8ec69c02672c8301ec21f"><div class="ttname"><a href="structeve_1_1schema_1_1SchemaDefinition.html#a14cdd825f4a8ec69c02672c8301ec21f">eve::schema::SchemaDefinition::version</a></div><div class="ttdeci">int version</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00095">SchemaTypes.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1SchemaDefinition_html_a6bd66880c424907acbed53cccc4e48b2"><div class="ttname"><a href="structeve_1_1schema_1_1SchemaDefinition.html#a6bd66880c424907acbed53cccc4e48b2">eve::schema::SchemaDefinition::fields</a></div><div class="ttdeci">std::vector&lt; FieldDefinition &gt; fields</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00099">SchemaTypes.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1SchemaDefinition_html_ac404bb54bc24fac96d69f6f7da9c17e5"><div class="ttname"><a href="structeve_1_1schema_1_1SchemaDefinition.html#ac404bb54bc24fac96d69f6f7da9c17e5">eve::schema::SchemaDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00094">SchemaTypes.h:94</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

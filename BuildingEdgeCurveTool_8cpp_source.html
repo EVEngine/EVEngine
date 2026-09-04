@@ -1,0 +1,493 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building_editor/BuildingEdgeCurveTool.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6a744201a9a7b43104ef4d53421c119b.html">building_editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuildingEdgeCurveTool.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuildingEdgeCurveTool_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditorBuildingTarget_8h.html">building_editor/EditorBuildingTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorSession_8h.html">editor/EditorSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;charconv&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>editing::Result&lt;void&gt; toolFailure(<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                                  std::string message) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> editing::failed&lt;void&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>OverlayStyle styleFor(<span class="keyword">const</span> editing::GizmoPrimitive&amp; primitive) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> <span class="keyword">auto</span> channel = [&amp;](<span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::clamp(primitive.color[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>], 0.0, 1.0) *</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                         255.0 + 0.5);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a> = (channel(3) &lt;&lt; 24U) | (channel(0) &lt;&lt; 16U) |</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                               (channel(1) &lt;&lt; 8U) | channel(2);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> {<a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, primitive.dashed ? 1.f : 2.f, <span class="keyword">false</span>};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a7e5e7882a571d52f10a741f3bed5becd">   30</a></span><a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a7e5e7882a571d52f10a741f3bed5becd">BuildingEdgeCurveTool::BuildingEdgeCurveTool</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">IBuildingViewportAdapter</a>* viewport,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                             <a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a>* authority)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    : viewport_(viewport), authority_(authority) {}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a794d8a02a8836bb7750a8ede0b8251ec">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a794d8a02a8836bb7750a8ede0b8251ec">BuildingEdgeCurveTool::setViewportAdapter</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">IBuildingViewportAdapter</a>* viewport) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (drag_) drag_-&gt;cancelDrag();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    drag_.reset();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    viewport_ = viewport;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a3f3602c34910faa32d753ab1d73f07e9">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a3f3602c34910faa32d753ab1d73f07e9">BuildingEdgeCurveTool::setAuthority</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a>* authority) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (drag_) drag_-&gt;cancelDrag();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    drag_.reset();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    authority_ = authority;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a73a35d1a6d3fd86c62ac5ef2f9d6706a">   46</a></span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a73a35d1a6d3fd86c62ac5ef2f9d6706a">BuildingEdgeCurveTool::setSelection</a>(</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">BuildingEdgeCurveToolSelection</a> selection) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>())</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> toolFailure(editing::Status::Conflict,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                           <span class="stringliteral">&quot;editor.building.curve-tool-gesture-active&quot;</span>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                           <span class="stringliteral">&quot;Cannot replace curve selection during an active drag&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (selection.<a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a87bf8465e234eb957d194aae9bc6b562">buildingId</a>.empty() || selection.<a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#ae6afe705e8b60f3e112778b47e5ad2d6">memberInstanceId</a> &lt;= 0 ||</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        selection.<a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#afd092d369a943a9c5c124000911271d6">controlPoints</a>.size() != 4 || selection.<a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a3f4e38ebcbd24bdddcad509356a6bbdf">subdivisions</a> &lt;= 0)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> toolFailure(editing::Status::Rejected,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                           <span class="stringliteral">&quot;editor.building.curve-tool-selection-invalid&quot;</span>,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                           <span class="stringliteral">&quot;Curve selection requires a building, member, four controls and positive subdivisions&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    selection_ = std::move(selection);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    preview_.reset();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    lastReceipt_.reset();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    diagnostics_.clear();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    lastStatus_ = editing::Status::Applied;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a78b5f36c38307a72f2c5ab6e276b4055">   65</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a78b5f36c38307a72f2c5ab6e276b4055">BuildingEdgeCurveTool::clearSelection</a>() {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (drag_) drag_-&gt;cancelDrag();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    drag_.reset();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    selection_.reset();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    preview_.reset();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    diagnostics_.clear();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    lastStatus_ = editing::Status::NotFound;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">   74</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">BuildingEdgeCurveTool::isDragging</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> drag_ &amp;&amp; drag_-&gt;isDragging(); }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keywordtype">void</span> BuildingEdgeCurveTool::recordFailure(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> std::vector&lt;editing::Diagnostic&gt;&amp; diagnostics) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    lastStatus_ = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    diagnostics_ = <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">diagnostics</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keywordtype">void</span> BuildingEdgeCurveTool::recordPreview(</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview.html">building_editing::BuildingEdgeCurveDragPreview</a> preview) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    lastStatus_ = <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">preview</a>.status;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    diagnostics_ = <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">preview</a>.diagnostics;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    preview_ = std::move(<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">preview</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>ToolResponse BuildingEdgeCurveTool::begin(EditorContext&amp; context,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                          <span class="keyword">const</span> EditorPointerEvent&amp; event) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_typedef" href="namespaceeve_1_1editor.html#a4dcd8ec54e7054726739edd4039c9ff1">BuildingPlacementTarget</a>*<span class="keyword">&gt;</span>(context.target());</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> || !selection_ || !viewport_) <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">auto</span> ray = viewport_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">pointerRay</a>(event);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">if</span> (!ray.ok()) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        recordFailure(ray.code(), ray.diagnostics());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    drag_ = std::make_unique&lt;building_editing::BuildingEdgeCurveDragSession&gt;(</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, selection_-&gt;buildingId, selection_-&gt;memberInstanceId,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        selection_-&gt;controlPoints, selection_-&gt;subdivisions, selection_-&gt;surfaceName);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">const</span> BuildingViewportRay&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = ray.value();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">auto</span> begun = drag_-&gt;beginDrag(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[0], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[1], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[2],</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                                  <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[0], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[1],</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                  <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[2]);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (!begun.ok()) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        recordFailure(begun.code(), begun.diagnostics());</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        drag_.reset();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    recordPreview(std::move(begun.value()));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a7346a7a9a71f98b11c2d92340bbe1300">ToolResponse::capture</a>();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>ToolResponse BuildingEdgeCurveTool::move(<span class="keyword">const</span> EditorPointerEvent&amp; event) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>()) <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (!viewport_) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a> = editing::failed&lt;BuildingViewportRay&gt;(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            editing::Status::Failed,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>(<span class="stringliteral">&quot;editor.building.curve-tool-viewport-missing&quot;</span>),</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="stringliteral">&quot;Curve tool viewport adapter is unavailable&quot;</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        recordFailure(<a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>.code(), <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>.diagnostics());</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#aa9ec49c1f8ad5a226dc27773625fde68">ToolResponse::consumed</a>();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">auto</span> ray = viewport_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">pointerRay</a>(event);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (!ray.ok()) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        recordFailure(ray.code(), ray.diagnostics());</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#aa9ec49c1f8ad5a226dc27773625fde68">ToolResponse::consumed</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">const</span> BuildingViewportRay&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = ray.value();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">auto</span> moved = drag_-&gt;updateDrag(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[0], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[1], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.origin[2],</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                   <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[0], <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[1],</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                                   <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.direction[2]);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (!moved.ok()) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        recordFailure(moved.code(), moved.diagnostics());</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">if</span> (!drag_-&gt;isDragging()) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            drag_.reset();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#aa9ec49c1f8ad5a226dc27773625fde68">ToolResponse::consumed</a>();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    recordPreview(std::move(moved.value()));</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#aa9ec49c1f8ad5a226dc27773625fde68">ToolResponse::consumed</a>();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>ToolResponse BuildingEdgeCurveTool::finish(EditorContext&amp; context,</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                           <span class="keyword">const</span> EditorPointerEvent&amp; event) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>()) <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    (void)move(event);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>()) <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">auto</span> operation = drag_-&gt;finishDrag();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    drag_.reset();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (!operation.ok()) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        recordFailure(operation.code(), operation.diagnostics());</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_typedef" href="namespaceeve_1_1editor.html#a4dcd8ec54e7054726739edd4039c9ff1">BuildingPlacementTarget</a>*<span class="keyword">&gt;</span>(context.target());</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> || !authority_) {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a> = toolFailure(editing::Status::Failed,</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                                   <span class="stringliteral">&quot;editor.building.curve-tool-authority-missing&quot;</span>,</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                                   <span class="stringliteral">&quot;Curve commit requires its selected target and authority&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        recordFailure(<a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>.code(), <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>.diagnostics());</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    editing::TransactionSpec transaction;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    transaction.id = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">editing::TransactionId</a>(</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        descriptor_.<a class="code hl_variable" href="structeve_1_1editor_1_1ToolDescriptor.html#a75df32db07a809cd1b5d5ebd7132ae46">id</a> + <span class="stringliteral">&quot;.&quot;</span> + std::to_string(++transactionSequence_));</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    transaction.label = descriptor_.<a class="code hl_variable" href="structeve_1_1editor_1_1ToolDescriptor.html#aad2e9f5d31f7c1878c805f093a276dd3">label</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    transaction.origin = <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075">editing::ActionOrigin::User</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    transaction.target = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;targetId();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    transaction.baseRevision = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;revision();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    transaction.mergeKey = <span class="stringliteral">&quot;building.edge-curve.handle&quot;</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">const</span> std::array&lt;editing::DomainOperation, 1&gt; operations{std::move(operation.value())};</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">auto</span> plan = authority_-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1IEditAuthority.html#a84f1479eef13fd811e965c481a10bcc1">preflight</a>(transaction, std::span&lt;const editing::DomainOperation&gt;(operations));</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">if</span> (!plan.ok()) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        recordFailure(plan.code(), plan.diagnostics());</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">auto</span> receipt = authority_-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1IEditAuthority.html#ac8888a06ba32268010ecebe8f6d76ef1">commit</a>(plan.value());</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">if</span> (!receipt.ok()) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        recordFailure(receipt.code(), receipt.diagnostics());</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    lastStatus_ = editing::Status::Applied;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    diagnostics_ = receipt.value().diagnostics;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    lastReceipt_ = std::move(receipt.value());</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">if</span> (selection_ &amp;&amp; preview_) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        selection_-&gt;controlPoints = preview_-&gt;curve.controlPoints;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">if</span> (!lastReceipt_-&gt;affectedObjects.empty()) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = lastReceipt_-&gt;affectedObjects.front().object.value();</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1map.html#af75ced4cb3ec8a4ef844406cf6e5ff54">member</a> = 0;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keyword">const</span> <span class="keyword">auto</span> parsed = std::from_chars(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.data(), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.data() + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.size(), member);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keywordflow">if</span> (parsed.ec == std::errc{} &amp;&amp; parsed.ptr == <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.data() + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.size() &amp;&amp;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                member &gt; 0)</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                selection_-&gt;memberInstanceId = <a class="code hl_function" href="namespaceeve_1_1map.html#af75ced4cb3ec8a4ef844406cf6e5ff54">member</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>}</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="foldopen" id="foldopen00201" data-start="{" data-end="}">
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a23274965428384467bb60dd81659bcfc">  201</a></span><a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a23274965428384467bb60dd81659bcfc">BuildingEdgeCurveTool::pointerEvent</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context,</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                                                 <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == <a class="code hl_enumvalue" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a08a38277b0309070706f6652eeae9a53">EditorPointerEvent::Phase::Down</a>)</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordflow">return</span> <span class="keyword">event</span>.button == 0 ? <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(context, event) : <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == <a class="code hl_enumvalue" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a6bc362dbf494c61ea117fe3c71ca48a5">EditorPointerEvent::Phase::Move</a>) <span class="keywordflow">return</span> move(event);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == <a class="code hl_enumvalue" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a258f49887ef8d14ac268c92b02503aaa">EditorPointerEvent::Phase::Up</a>) <span class="keywordflow">return</span> finish(context, event);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>()) <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">ToolResponse::ignored</a>();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">cancel</a>(context);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">ToolResponse::release</a>();</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>}</div>
+</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ae4de99bfbc2795818cf027c04674ce57">  212</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ae4de99bfbc2795818cf027c04674ce57">BuildingEdgeCurveTool::deactivate</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context) { <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">cancel</a>(context); }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">  214</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">BuildingEdgeCurveTool::cancel</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp;) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordflow">if</span> (drag_) drag_-&gt;cancelDrag();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    drag_.reset();</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>}</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="foldopen" id="foldopen00219" data-start="{" data-end="}">
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a2ef6b975df89544309cd21b2e3cab9fd">  219</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a2ef6b975df89544309cd21b2e3cab9fd">BuildingEdgeCurveTool::drawOverlay</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp;, <a class="code hl_class" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a>&amp; overlay) {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordflow">if</span> (!preview_ || !viewport_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoPrimitive.html">editing::GizmoPrimitive</a>&amp; primitive : preview_-&gt;gizmo.primitives) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1OverlayStyle.html">OverlayStyle</a> style = styleFor(primitive);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">if</span> (primitive.kind == <span class="stringliteral">&quot;sphere&quot;</span>) {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a> = viewport_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">projectWorld</a>(primitive.position);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>.ok()) overlay.<a class="code hl_function" href="classeve_1_1editor_1_1IEditorOverlay.html#a7decf33b5af6d0c1b1e7ac55b566d85c">circle</a>(<a class="code hl_variable" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>.value(), 7.f, style);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordflow">if</span> (primitive.kind != <span class="stringliteral">&quot;line&quot;</span>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        std::array&lt;double, 3&gt; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> = primitive.position;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        std::array&lt;double, 3&gt; <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a> = primitive.position;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> axis = 0; axis &lt; 3; ++axis) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> half = primitive.direction[axis] * primitive.length * 0.5;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>[axis] -= half;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>[axis] += half;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keyword">auto</span> projectedFrom = viewport_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">projectWorld</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keyword">auto</span> projectedTo = viewport_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">projectWorld</a>(<a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordflow">if</span> (projectedFrom.ok() &amp;&amp; projectedTo.ok())</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            overlay.<a class="code hl_function" href="classeve_1_1editor_1_1IEditorOverlay.html#aaaa83da59f32b2b311b1775a7038d932">line</a>(projectedFrom.value(), projectedTo.value(), style);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    }</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>}</div>
+</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_ae8299b6e2cd3285a9280125dae748b26"><div class="ttname"><a href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00055">CaveMesh.cpp:55</a></div></div>
+<div class="ttc" id="aEditorBuildingTarget_8h_html"><div class="ttname"><a href="EditorBuildingTarget_8h.html">EditorBuildingTarget.h</a></div></div>
+<div class="ttc" id="aEditorSession_8h_html"><div class="ttname"><a href="EditorSession_8h.html">EditorSession.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_aefa993834f8df4a73caaf0185139b880"><div class="ttname"><a href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a></div><div class="ttdeci">image::ImageData::Colorf color</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditAuthority_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditAuthority.html">eve::editing::IEditAuthority</a></div><div class="ttdoc">Final validation and commit boundary for editor mutations.</div><div class="ttdef"><b>Definition</b> <a href="EditingAuthority_8h_source.html#l00014">EditingAuthority.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditAuthority_html_a84f1479eef13fd811e965c481a10bcc1"><div class="ttname"><a href="classeve_1_1editing_1_1IEditAuthority.html#a84f1479eef13fd811e965c481a10bcc1">eve::editing::IEditAuthority::preflight</a></div><div class="ttdeci">virtual Result&lt; AuthorityPlan &gt; preflight(const TransactionSpec &amp;transaction, std::span&lt; const DomainOperation &gt; operations)=0</div><div class="ttdoc">Validate a transaction without mutating its target.</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditAuthority_html_ac8888a06ba32268010ecebe8f6d76ef1"><div class="ttname"><a href="classeve_1_1editing_1_1IEditAuthority.html#ac8888a06ba32268010ecebe8f6d76ef1">eve::editing::IEditAuthority::commit</a></div><div class="ttdeci">virtual Result&lt; TransactionReceipt &gt; commit(const AuthorityPlan &amp;plan)=0</div><div class="ttdoc">Atomically apply an authority-approved plan when possible.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a23274965428384467bb60dd81659bcfc"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a23274965428384467bb60dd81659bcfc">eve::editor::BuildingEdgeCurveTool::pointerEvent</a></div><div class="ttdeci">ToolResponse pointerEvent(EditorContext &amp;context, const EditorPointerEvent &amp;event) override</div><div class="ttdoc">Handle normalized pointer input.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00201">BuildingEdgeCurveTool.cpp:201</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a2ef6b975df89544309cd21b2e3cab9fd"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a2ef6b975df89544309cd21b2e3cab9fd">eve::editor::BuildingEdgeCurveTool::drawOverlay</a></div><div class="ttdeci">void drawOverlay(EditorContext &amp;context, IEditorOverlay &amp;overlay) override</div><div class="ttdoc">Emit renderer-independent feedback for the active viewport.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00219">BuildingEdgeCurveTool.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a3f3602c34910faa32d753ab1d73f07e9"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a3f3602c34910faa32d753ab1d73f07e9">eve::editor::BuildingEdgeCurveTool::setAuthority</a></div><div class="ttdeci">void setAuthority(editing::IEditAuthority *authority)</div><div class="ttdoc">Replace the transaction authority and cancel any active gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00040">BuildingEdgeCurveTool.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a537e14a2472b1dd428b0af18d59ab055"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">eve::editor::BuildingEdgeCurveTool::diagnostics</a></div><div class="ttdeci">const std::vector&lt; editing::Diagnostic &gt; &amp; diagnostics() const</div><div class="ttdoc">Diagnostics from the latest preview, adapter or authority operation.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00091">EditorBuildingTarget.h:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a58bb3a138b8414bff335b9b7c0e96873"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">eve::editor::BuildingEdgeCurveTool::isDragging</a></div><div class="ttdeci">bool isDragging() const</div><div class="ttdoc">Whether a handle currently owns pointer-drag state.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00074">BuildingEdgeCurveTool.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a73a35d1a6d3fd86c62ac5ef2f9d6706a"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a73a35d1a6d3fd86c62ac5ef2f9d6706a">eve::editor::BuildingEdgeCurveTool::setSelection</a></div><div class="ttdeci">editing::Result&lt; void &gt; setSelection(BuildingEdgeCurveToolSelection selection)</div><div class="ttdoc">Select one authoritative curve group member for handle editing.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00046">BuildingEdgeCurveTool.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a78b5f36c38307a72f2c5ab6e276b4055"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a78b5f36c38307a72f2c5ab6e276b4055">eve::editor::BuildingEdgeCurveTool::clearSelection</a></div><div class="ttdeci">void clearSelection()</div><div class="ttdoc">Clear selection and any uncommitted gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00065">BuildingEdgeCurveTool.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a794d8a02a8836bb7750a8ede0b8251ec"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a794d8a02a8836bb7750a8ede0b8251ec">eve::editor::BuildingEdgeCurveTool::setViewportAdapter</a></div><div class="ttdeci">void setViewportAdapter(IBuildingViewportAdapter *viewport)</div><div class="ttdoc">Replace the host viewport adapter and cancel any active gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00034">BuildingEdgeCurveTool.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a7e5e7882a571d52f10a741f3bed5becd"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a7e5e7882a571d52f10a741f3bed5becd">eve::editor::BuildingEdgeCurveTool::BuildingEdgeCurveTool</a></div><div class="ttdeci">BuildingEdgeCurveTool(IBuildingViewportAdapter *viewport, editing::IEditAuthority *authority)</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00030">BuildingEdgeCurveTool.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_aa1ca8357690d766e9aa71ce747ff66f4"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">eve::editor::BuildingEdgeCurveTool::cancel</a></div><div class="ttdeci">void cancel(EditorContext &amp;context) override</div><div class="ttdoc">Cancel the active gesture while keeping the tool selected.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00214">BuildingEdgeCurveTool.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_ad6311be6359b3efe5495642a7b54a07a"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">eve::editor::BuildingEdgeCurveTool::preview</a></div><div class="ttdeci">const std::optional&lt; building_editing::BuildingEdgeCurveDragPreview &gt; &amp; preview() const</div><div class="ttdoc">Last valid transient preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00081">EditorBuildingTarget.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_ae4de99bfbc2795818cf027c04674ce57"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ae4de99bfbc2795818cf027c04674ce57">eve::editor::BuildingEdgeCurveTool::deactivate</a></div><div class="ttdeci">void deactivate(EditorContext &amp;context) override</div><div class="ttdoc">Called exactly once before this tool stops being active.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00212">BuildingEdgeCurveTool.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html">eve::editor::EditorContext</a></div><div class="ttdoc">Context supplied by EditorSession to tools.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00064">EditorTool.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">eve::editor::IBuildingViewportAdapter</a></div><div class="ttdoc">Host-owned conversion boundary between pointer coordinates and a 2D/3D viewport.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00028">EditorBuildingTarget.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html_a6db2eca30dd3ab04cde064b82eb8b146"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">eve::editor::IBuildingViewportAdapter::projectWorld</a></div><div class="ttdeci">virtual editing::Result&lt; OverlayPoint &gt; projectWorld(const std::array&lt; double, 3 &gt; &amp;world) const =0</div><div class="ttdoc">Project a world position into the coordinate space accepted by IEditorOverlay.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html_af291d043a17c9e31cace126d809da754"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">eve::editor::IBuildingViewportAdapter::pointerRay</a></div><div class="ttdeci">virtual editing::Result&lt; BuildingViewportRay &gt; pointerRay(const EditorPointerEvent &amp;event) const =0</div><div class="ttdoc">Build a world ray for one normalized pointer event.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorOverlay_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorOverlay.html">eve::editor::IEditorOverlay</a></div><div class="ttdoc">Sink implemented by a 2D or 3D viewport to render tool feedback.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00027">EditorPresentation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorOverlay_html_a7decf33b5af6d0c1b1e7ac55b566d85c"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorOverlay.html#a7decf33b5af6d0c1b1e7ac55b566d85c">eve::editor::IEditorOverlay::circle</a></div><div class="ttdeci">virtual void circle(const OverlayPoint &amp;center, float radius, const OverlayStyle &amp;style)=0</div><div class="ttdoc">Draw a circle whose orientation is supplied by the viewport.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorOverlay_html_aaaa83da59f32b2b311b1775a7038d932"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorOverlay.html#aaaa83da59f32b2b311b1775a7038d932">eve::editor::IEditorOverlay::line</a></div><div class="ttdeci">virtual void line(const OverlayPoint &amp;from, const OverlayPoint &amp;to, const OverlayStyle &amp;style)=0</div><div class="ttdoc">Draw a line between two viewport-space points.</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_a4cf204329c882041f2183b19af0c0700"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">eve::asset_import::detail::failure</a></div><div class="ttdeci">Result&lt; T &gt; failure(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00013">ImportCommon.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075">eve::editing::ActionOrigin::User</a></div><div class="ttdeci">@ User</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a574edbcd85274c1df908ce3c43bcf939"><div class="ttname"><a href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">eve::editing::TransactionId</a></div><div class="ttdeci">StrongId&lt; TransactionIdTag &gt; TransactionId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00059">EditingIds.h:59</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a4dcd8ec54e7054726739edd4039c9ff1"><div class="ttname"><a href="namespaceeve_1_1editor.html#a4dcd8ec54e7054726739edd4039c9ff1">eve::editor::BuildingPlacementTarget</a></div><div class="ttdeci">eve::building_editing::BuildingPlacementTarget BuildingPlacementTarget</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00014">EditorBuildingTarget.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_af75ced4cb3ec8a4ef844406cf6e5ff54"><div class="ttname"><a href="namespaceeve_1_1map.html#af75ced4cb3ec8a4ef844406cf6e5ff54">eve::map::member</a></div><div class="ttdeci">const eve::Value * member(const eve::Value::Object &amp;object, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00015">ArtifactProvider.cpp:15</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview.html">eve::building_editing::BuildingEdgeCurveDragPreview</a></div><div class="ttdoc">Immutable result of one curve-handle pointer update.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00249">BuildingTarget.h:249</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoPrimitive_html"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoPrimitive.html">eve::editing::GizmoPrimitive</a></div><div class="ttdoc">Renderer-neutral wire primitive for authoring viewport overlays.</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00012">EditingGizmo.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">eve::editor::BuildingEdgeCurveToolSelection</a></div><div class="ttdoc">Immutable selection/configuration consumed by BuildingEdgeCurveTool.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00041">EditorBuildingTarget.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_a3f4e38ebcbd24bdddcad509356a6bbdf"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a3f4e38ebcbd24bdddcad509356a6bbdf">eve::editor::BuildingEdgeCurveToolSelection::subdivisions</a></div><div class="ttdeci">int subdivisions</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00045">EditorBuildingTarget.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_a87bf8465e234eb957d194aae9bc6b562"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a87bf8465e234eb957d194aae9bc6b562">eve::editor::BuildingEdgeCurveToolSelection::buildingId</a></div><div class="ttdeci">std::string buildingId</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00042">EditorBuildingTarget.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_ae6afe705e8b60f3e112778b47e5ad2d6"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#ae6afe705e8b60f3e112778b47e5ad2d6">eve::editor::BuildingEdgeCurveToolSelection::memberInstanceId</a></div><div class="ttdeci">int memberInstanceId</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00043">EditorBuildingTarget.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_afd092d369a943a9c5c124000911271d6"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#afd092d369a943a9c5c124000911271d6">eve::editor::BuildingEdgeCurveToolSelection::controlPoints</a></div><div class="ttdeci">std::vector&lt; building_editing::BuildingEdgeCurvePoint &gt; controlPoints</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00044">EditorBuildingTarget.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html">eve::editor::EditorPointerEvent</a></div><div class="ttdoc">Pointer input normalized by an editor viewport adapter.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00018">EditorTool.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a1d35d5f23b4edb59a1a2d2a1c85fa516a08a38277b0309070706f6652eeae9a53"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a08a38277b0309070706f6652eeae9a53">eve::editor::EditorPointerEvent::Phase::Down</a></div><div class="ttdeci">@ Down</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a1d35d5f23b4edb59a1a2d2a1c85fa516a258f49887ef8d14ac268c92b02503aaa"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a258f49887ef8d14ac268c92b02503aaa">eve::editor::EditorPointerEvent::Phase::Up</a></div><div class="ttdeci">@ Up</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a1d35d5f23b4edb59a1a2d2a1c85fa516a6bc362dbf494c61ea117fe3c71ca48a5"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a6bc362dbf494c61ea117fe3c71ca48a5">eve::editor::EditorPointerEvent::Phase::Move</a></div><div class="ttdeci">@ Move</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a48dd5c607a1d2e22130b80a94503f15b"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">eve::editor::EditorPointerEvent::phase</a></div><div class="ttdeci">Phase phase</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00021">EditorTool.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1OverlayStyle_html"><div class="ttname"><a href="structeve_1_1editor_1_1OverlayStyle.html">eve::editor::OverlayStyle</a></div><div class="ttdoc">Renderer-independent appearance for an editor overlay primitive.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00015">EditorPresentation.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolDescriptor_html_a75df32db07a809cd1b5d5ebd7132ae46"><div class="ttname"><a href="structeve_1_1editor_1_1ToolDescriptor.html#a75df32db07a809cd1b5d5ebd7132ae46">eve::editor::ToolDescriptor::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00089">EditorTool.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolDescriptor_html_aad2e9f5d31f7c1878c805f093a276dd3"><div class="ttname"><a href="structeve_1_1editor_1_1ToolDescriptor.html#aad2e9f5d31f7c1878c805f093a276dd3">eve::editor::ToolDescriptor::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00090">EditorTool.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html">eve::editor::ToolResponse</a></div><div class="ttdoc">Result returned by a tool after processing input.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00047">EditorTool.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html_a6d307e3c779a389c1d35d774cc349bd6"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html#a6d307e3c779a389c1d35d774cc349bd6">eve::editor::ToolResponse::ignored</a></div><div class="ttdeci">static ToolResponse ignored()</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00052">EditorTool.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html_a7346a7a9a71f98b11c2d92340bbe1300"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html#a7346a7a9a71f98b11c2d92340bbe1300">eve::editor::ToolResponse::capture</a></div><div class="ttdeci">static ToolResponse capture()</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00054">EditorTool.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html_a8a52263a56c66aab844b3d4dcccd6816"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html#a8a52263a56c66aab844b3d4dcccd6816">eve::editor::ToolResponse::release</a></div><div class="ttdeci">static ToolResponse release()</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00055">EditorTool.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html_aa9ec49c1f8ad5a226dc27773625fde68"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html#aa9ec49c1f8ad5a226dc27773625fde68">eve::editor::ToolResponse::consumed</a></div><div class="ttdeci">static ToolResponse consumed()</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00053">EditorTool.h:53</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/StyleInstance.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StyleInstance.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StyleInstance_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="StyleInstance_8h.html">stylize/StyleInstance.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="StylePass_8h.html">stylize/StylePass.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="StyleShaders_8h.html">stylize/StyleShaders.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">const</span> StyleParameterDesc&amp; requireParam(<span class="keyword">const</span> std::string&amp; style, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> StyleParameterDesc* <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#a90aba9f4459f0317730578bd9d559968">findStyleParameter</a>(style, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;StyleInstance: style &#39;%s&#39; has no parameter &#39;%s&#39;&quot;</span>, style.c_str(), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.c_str());</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> *<a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a61c881a7ed9a7e3fdc9bb272a44f4420">   22</a></span><a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a61c881a7ed9a7e3fdc9bb272a44f4420">StyleInstance::StyleInstance</a>(std::string style) : style_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(style)) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1stylize.html#acc75ce96688647c1f05a743e495d7741">findStyleDefinition</a>(style_)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;StyleInstance: unknown style &#39;%s&#39;&quot;</span>, style_.c_str());</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a975004a41c58ccac461080e534b49048">   26</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a975004a41c58ccac461080e534b49048">StyleInstance::getParamCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#affffde647c90fb0cd47c6e7561cc742f">styleParamCount</a>(style_); }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#aabdb02afc4266bd86ec4a1e8266887c8">   28</a></span>std::string <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#aabdb02afc4266bd86ec4a1e8266887c8">StyleInstance::getStage</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#a76bbb8df5ffff23eeabdafda69e1ff60">graphics::postEffectStageName</a>(<a class="code hl_function" href="namespaceeve_1_1stylize.html#acc75ce96688647c1f05a743e495d7741">findStyleDefinition</a>(style_)-&gt;stage);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a83575c664e9f771c8943a3afa3b59ccb">   32</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a83575c664e9f771c8943a3afa3b59ccb">StyleInstance::getPriority</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> priority_.value_or(<a class="code hl_function" href="namespaceeve_1_1stylize.html#acc75ce96688647c1f05a743e495d7741">findStyleDefinition</a>(style_)-&gt;<a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#ad1229f26f8384d70e586ddf774ced990">   36</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#ad1229f26f8384d70e586ddf774ced990">StyleInstance::requiresInput</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleDefinition.html">StyleDefinition</a>* def = <a class="code hl_function" href="namespaceeve_1_1stylize.html#acc75ce96688647c1f05a743e495d7741">findStyleDefinition</a>(style_);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> == <span class="stringliteral">&quot;color&quot;</span>) <span class="keywordflow">return</span> def-&gt;<a class="code hl_variable" href="structeve_1_1stylize_1_1StyleDefinition.html#ad65d72b5700abf20b376b99471cbc4bf">post</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> == <span class="stringliteral">&quot;depth&quot;</span>) <span class="keywordflow">return</span> def-&gt;<a class="code hl_variable" href="structeve_1_1stylize_1_1StyleDefinition.html#a8c6b840d50d8ace0827abfd79d21bc41">depth</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> == <span class="stringliteral">&quot;normal&quot;</span>) <span class="keywordflow">return</span> def-&gt;<a class="code hl_variable" href="structeve_1_1stylize_1_1StyleDefinition.html#ad2e2c90b28d0d4b1dfd8bbc13e56ee39">normal</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a480fefe4ee59fca669057bfa2a1c9e90">   44</a></span>std::string <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a480fefe4ee59fca669057bfa2a1c9e90">StyleInstance::getParamName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#ac3338dd5425891686dace300038f0b37">styleParamName</a>(style_, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#ac07deb0a6dc917dbab6f306175a8090a">   46</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#ac07deb0a6dc917dbab6f306175a8090a">StyleInstance::getParamDefault</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>).defaultValue; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a854b6d2472a3fa7ee44d58907c67c49b">   48</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a854b6d2472a3fa7ee44d58907c67c49b">StyleInstance::getParamMin</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>).minValue; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#af5f492820679898d4b5d17cfe5cd2efe">   50</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#af5f492820679898d4b5d17cfe5cd2efe">StyleInstance::getParamMax</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>).maxValue; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a56f03bbe85e6cbd94a20e97579662778">   52</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a56f03bbe85e6cbd94a20e97579662778">StyleInstance::hasParam</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a90aba9f4459f0317730578bd9d559968">findStyleParameter</a>(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#aca271937f03d0ebf3971a56b92660b94">   54</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#aca271937f03d0ebf3971a56b92660b94">StyleInstance::isOverridden</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> overrides_.find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) != overrides_.end(); }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a865ac6cd34945147adadcfd7ebbd5bd1">   56</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a865ac6cd34945147adadcfd7ebbd5bd1">StyleInstance::setFloat</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a> = requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    overrides_[<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>]               = std::clamp(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>.minValue, <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>.maxValue);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a2baa1f640a54b37b1bad4e7d61704710">   61</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a2baa1f640a54b37b1bad4e7d61704710">StyleInstance::getFloat</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a> = requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">const</span> <span class="keyword">auto</span>                it   = overrides_.find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> it == overrides_.end() ? <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>.defaultValue : it-&gt;second;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a5db997ef8ba832b9736fac4259bb576e">   67</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a5db997ef8ba832b9736fac4259bb576e">StyleInstance::reset</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    requireParam(style_, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    overrides_.erase(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a97b7ad9a48a7094430f0c9a10c1cb189">   72</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a97b7ad9a48a7094430f0c9a10c1cb189">StyleInstance::resetAll</a>() { overrides_.clear(); }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">StyleInstance::applyToShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;StyleInstance: null shader&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>] : overrides_) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;hasUniform(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;sendFloat(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a5d912807874ee06f30c2f2c804577067">   81</a></span><a class="code hl_class" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a>* <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a5d912807874ee06f30c2f2c804577067">StyleInstance::newPass</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* gfx)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#a5cf6772789a297567347a85e23578472">createPostShader</a>(gfx, style_);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">applyToShader</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a>(style_, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1StyleInstance.html#a2af3623d6f610fbf7d121b47bb50329d">   87</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a2af3623d6f610fbf7d121b47bb50329d">StyleInstance::newMeshShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* gfx)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#a5d3743a9464df192f72e7dc8dccbeefb">createMeshShader</a>(gfx, style_);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_function" href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">applyToShader</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aEvpackSceneTemplateLoader_8cpp_html_a756a08fb035410e457b83b4e5c1ce433"><div class="ttname"><a href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a></div><div class="ttdeci">scene::NodeDesc desc</div><div class="ttdef"><b>Definition</b> <a href="EvpackSceneTemplateLoader_8cpp_source.html#l00050">EvpackSceneTemplateLoader.cpp:50</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aStyleInstance_8h_html"><div class="ttname"><a href="StyleInstance_8h.html">StyleInstance.h</a></div></div>
+<div class="ttc" id="aStylePass_8h_html"><div class="ttname"><a href="StylePass_8h.html">StylePass.h</a></div></div>
+<div class="ttc" id="aStyleShaders_8h_html"><div class="ttname"><a href="StyleShaders_8h.html">StyleShaders.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a2af3623d6f610fbf7d121b47bb50329d"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a2af3623d6f610fbf7d121b47bb50329d">eve::stylize::StyleInstance::newMeshShader</a></div><div class="ttdeci">graphics::Shader * newMeshShader(graphics::Graphics *gfx) const</div><div class="ttdoc">Create a mesh technique shader and apply compatible overrides.</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00087">StyleInstance.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a2baa1f640a54b37b1bad4e7d61704710"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a2baa1f640a54b37b1bad4e7d61704710">eve::stylize::StyleInstance::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00061">StyleInstance.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a480fefe4ee59fca669057bfa2a1c9e90"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a480fefe4ee59fca669057bfa2a1c9e90">eve::stylize::StyleInstance::getParamName</a></div><div class="ttdeci">std::string getParamName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00044">StyleInstance.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a56f03bbe85e6cbd94a20e97579662778"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a56f03bbe85e6cbd94a20e97579662778">eve::stylize::StyleInstance::hasParam</a></div><div class="ttdeci">bool hasParam(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00052">StyleInstance.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a5d912807874ee06f30c2f2c804577067"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a5d912807874ee06f30c2f2c804577067">eve::stylize::StyleInstance::newPass</a></div><div class="ttdeci">StylePass * newPass(graphics::Graphics *gfx) const</div><div class="ttdoc">Create a post pass and apply this instance's parameter overrides.</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00081">StyleInstance.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a5db997ef8ba832b9736fac4259bb576e"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a5db997ef8ba832b9736fac4259bb576e">eve::stylize::StyleInstance::reset</a></div><div class="ttdeci">void reset(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00067">StyleInstance.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a61c881a7ed9a7e3fdc9bb272a44f4420"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a61c881a7ed9a7e3fdc9bb272a44f4420">eve::stylize::StyleInstance::StyleInstance</a></div><div class="ttdeci">StyleInstance(std::string style)</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00022">StyleInstance.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a83575c664e9f771c8943a3afa3b59ccb"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a83575c664e9f771c8943a3afa3b59ccb">eve::stylize::StyleInstance::getPriority</a></div><div class="ttdeci">int getPriority() const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00032">StyleInstance.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a854b6d2472a3fa7ee44d58907c67c49b"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a854b6d2472a3fa7ee44d58907c67c49b">eve::stylize::StyleInstance::getParamMin</a></div><div class="ttdeci">float getParamMin(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00048">StyleInstance.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a865ac6cd34945147adadcfd7ebbd5bd1"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a865ac6cd34945147adadcfd7ebbd5bd1">eve::stylize::StyleInstance::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;name, float value)</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00056">StyleInstance.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a8cf22ff1dcbd74d787a3c2164fdd137c"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">eve::stylize::StyleInstance::applyToShader</a></div><div class="ttdeci">void applyToShader(graphics::Shader *shader) const</div><div class="ttdoc">Apply current overrides to an existing compatible shader.</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00074">StyleInstance.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a975004a41c58ccac461080e534b49048"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a975004a41c58ccac461080e534b49048">eve::stylize::StyleInstance::getParamCount</a></div><div class="ttdeci">int getParamCount() const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00026">StyleInstance.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_a97b7ad9a48a7094430f0c9a10c1cb189"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#a97b7ad9a48a7094430f0c9a10c1cb189">eve::stylize::StyleInstance::resetAll</a></div><div class="ttdeci">void resetAll()</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00072">StyleInstance.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_aabdb02afc4266bd86ec4a1e8266887c8"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#aabdb02afc4266bd86ec4a1e8266887c8">eve::stylize::StyleInstance::getStage</a></div><div class="ttdeci">std::string getStage() const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00028">StyleInstance.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_ac07deb0a6dc917dbab6f306175a8090a"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#ac07deb0a6dc917dbab6f306175a8090a">eve::stylize::StyleInstance::getParamDefault</a></div><div class="ttdeci">float getParamDefault(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00046">StyleInstance.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_aca271937f03d0ebf3971a56b92660b94"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#aca271937f03d0ebf3971a56b92660b94">eve::stylize::StyleInstance::isOverridden</a></div><div class="ttdeci">bool isOverridden(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00054">StyleInstance.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_ad1229f26f8384d70e586ddf774ced990"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#ad1229f26f8384d70e586ddf774ced990">eve::stylize::StyleInstance::requiresInput</a></div><div class="ttdeci">bool requiresInput(const std::string &amp;input) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00036">StyleInstance.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html_af5f492820679898d4b5d17cfe5cd2efe"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html#af5f492820679898d4b5d17cfe5cd2efe">eve::stylize::StyleInstance::getParamMax</a></div><div class="ttdeci">float getParamMax(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8cpp_source.html#l00050">StyleInstance.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StylePass_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StylePass.html">eve::stylize::StylePass</a></div><div class="ttdoc">One stylized post-process pass bound to a style id (built-in or custom label). Draws a full-quad of t...</div><div class="ttdef"><b>Definition</b> <a href="StylePass_8h_source.html#l00024">StylePass.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a76bbb8df5ffff23eeabdafda69e1ff60"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a76bbb8df5ffff23eeabdafda69e1ff60">eve::graphics::postEffectStageName</a></div><div class="ttdeci">const char * postEffectStageName(PostEffectStage stage)</div><div class="ttdef"><b>Definition</b> <a href="PostEffect_8h_source.html#l00026">PostEffect.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a5cf6772789a297567347a85e23578472"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a5cf6772789a297567347a85e23578472">eve::stylize::createPostShader</a></div><div class="ttdeci">graphics::Shader * createPostShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00437">StyleShaders.cpp:437</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a5d3743a9464df192f72e7dc8dccbeefb"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a5d3743a9464df192f72e7dc8dccbeefb">eve::stylize::createMeshShader</a></div><div class="ttdeci">graphics::Shader * createMeshShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00474">StyleShaders.cpp:474</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a90aba9f4459f0317730578bd9d559968"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a90aba9f4459f0317730578bd9d559968">eve::stylize::findStyleParameter</a></div><div class="ttdeci">const StyleParameterDesc * findStyleParameter(const std::string &amp;style, const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00257">StyleShaders.cpp:257</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ac3338dd5425891686dace300038f0b37"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ac3338dd5425891686dace300038f0b37">eve::stylize::styleParamName</a></div><div class="ttdeci">std::string styleParamName(const std::string &amp;style, int index)</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00243">StyleShaders.cpp:243</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acc75ce96688647c1f05a743e495d7741"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acc75ce96688647c1f05a743e495d7741">eve::stylize::findStyleDefinition</a></div><div class="ttdeci">const StyleDefinition * findStyleDefinition(const std::string &amp;style)</div><div class="ttdoc">Return a built-in definition, or nullptr when the id is unknown.</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00164">StyleShaders.cpp:164</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_affffde647c90fb0cd47c6e7561cc742f"><div class="ttname"><a href="namespaceeve_1_1stylize.html#affffde647c90fb0cd47c6e7561cc742f">eve::stylize::styleParamCount</a></div><div class="ttdeci">int styleParamCount(const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8cpp_source.html#l00234">StyleShaders.cpp:234</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleDefinition_html"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleDefinition.html">eve::stylize::StyleDefinition</a></div><div class="ttdoc">Immutable capability metadata for one built-in stylization recipe.</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00017">StyleShaders.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleDefinition_html_a8c6b840d50d8ace0827abfd79d21bc41"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleDefinition.html#a8c6b840d50d8ace0827abfd79d21bc41">eve::stylize::StyleDefinition::depth</a></div><div class="ttdeci">bool depth</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00022">StyleShaders.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleDefinition_html_ad2e2c90b28d0d4b1dfd8bbc13e56ee39"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleDefinition.html#ad2e2c90b28d0d4b1dfd8bbc13e56ee39">eve::stylize::StyleDefinition::normal</a></div><div class="ttdeci">bool normal</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00023">StyleShaders.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleDefinition_html_ad65d72b5700abf20b376b99471cbc4bf"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleDefinition.html#ad65d72b5700abf20b376b99471cbc4bf">eve::stylize::StyleDefinition::post</a></div><div class="ttdeci">bool post</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00019">StyleShaders.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleParameterDesc_html"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleParameterDesc.html">eve::stylize::StyleParameterDesc</a></div><div class="ttdoc">Tooling metadata for one user-facing float parameter.</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00029">StyleShaders.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

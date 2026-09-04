@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1daynight.html">daynight</a></li><li class="navelem"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::daynight::DayNight 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a813b7777b6e44c3862b7ea5ad365d119">addFirefly</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a2a93a6e0ab69e6f44d9ab8d611c66073">applyAtmosphere</a>(graphics::Volumetric *fog) const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a1fc3c67e3782b61700a4efda3a839422">applyReflectionProbeSky</a>(graphics::ReflectionProbeCapture *probe) const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a429e7bdef790da7cf63d5311095a3642">clearFireflies</a>()</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a38e0506e4f728d91bb96e45e4d31a752">DayNight</a>()</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a6348601d243ce99083de1c55cea24083">getAmbientB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ac4ff4ada1484faabc2b731fbbd5f54a7">getAmbientBrightness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a997ceb1e681c8d4dcd19effaf4078f1a">getAmbientG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5f135c90218aa94b8903dc575c4242b9">getAmbientR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a177bedd623f1c00c3cf0b8d7e6d72dca">getFireflyCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a84ca5ef929ebe653ae7a05d695bf4197">getMieStrength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a389af79c20e2e07ae1143c8dac574035">getSkyB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7866e0176340c8f667c22eb43047b6c6">getSkyExposure</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a2bafc79a0f240b755d4a6d5ed9784398">getSkyG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a24cc1cc0e976108d04fd4f5689a822b2">getSkyR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a0ba18c6a7fde971466068a45317a420c">getSpeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a71e5c3aa059004764bee883412956ffc">getSunAzimuth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a8528147218f54e64029b2f1a2c9ff634">getSunB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ac5ebddcc45549545b6dcc4054de0ffb1">getSunDirX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a24afd498ce79079edf4761296e545e03">getSunDirY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a3f526434daeb02862f437394049898bc">getSunDirZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ab2098bfe0abffd9c7d9cf78867e98eca">getSunElevation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a18f338924f3eb6f46e07a4ac624125b0">getSunG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5534037c919536060035f37db031f669">getSunIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a145ddaee947bc61d29625d8603ca673d">getSunR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a55f19c686e979c1b91eee65066defb45">getTimeOfDay</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa82fe4d40ac9997cb4e6d7fe025717f4">getTurbidity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ad9bdc50f9f7e390795bb1dff6bcfc0e3">getWeatherCloudiness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a0f3a43b528b7d72edda16ce45351aa80">getWeatherFlash</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a4df5641d851f4ab34a929cb77c21ebb2">init</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a38c1d6e753ea6fd4f806bce83c9d68af">isNight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5f394a311fd934be44603517b2177018">isNightLight</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a14b2087301947bdf6fffd71e848a002a">isPaused</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7e9ad2b8ed3b44a986217940a06bfdd1">isSkyboxEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a51029307965d67e280476ebbb3a72b56">kNamedLightCount</a></td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa2f9218a6284f6090311b10bb54f8963">kNamedLights</a></td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a62e9df834ae5aad412aa8419a11350de">Module_REG</a>(DayNight)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7fa53733888d33442d7930e8311ed412">setFirePosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#abc84436637091f2e162b277ccd7dc851">setMieStrength</a>(float strength)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#abaf293021775b777a2f802522accb896">setNightLight</a>(const std::string &amp;name, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a4035cf82a32ffbd41583bb31e2ec8e91">setPaused</a>(bool paused)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a419997913ef7c5144b55bb5ea7dd0ce9">setSkyboxEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa98e6dfe4901a069954e66625bb70a2f">setSkyExposure</a>(float exposure)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aade679f226ae41358f1f2ba1a46e94e1">setSpeed</a>(float hoursPerRealHour)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#adb2713cd8b6eb60f947e9809e66c0bfa">setTimeOfDay</a>(float hours)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a8b4ffd99a0abe272b630f92fe271fc44">setTurbidity</a>(float turbidity)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa037b4f3fbfcc03fb3ae624bb7bf3b1d">setWeatherInfluence</a>(float cloudiness, float lightningFlash)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#afbf0474ae1f64c97ad6e6fafe46b834a">update</a>(float dt, graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a9c1161f516b7a2f306a7d219b66b958c">~DayNight</a>() override</td><td class="entry"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1038 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::cmd::Cmdline类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cmd.html">cmd</a></li><li class="navelem"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-static-methods">静态 Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="classeve_1_1cmd_1_1Cmdline-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::cmd::Cmdline类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。  
+ <a href="classeve_1_1cmd_1_1Cmdline.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="cmdline_8h_source.html">cmdline.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::cmd::Cmdline 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1cmd_1_1Cmdline.png" usemap="#eve::cmd::Cmdline_map" alt=""/>
+  <map id="eve::cmd::Cmdline_map" name="eve::cmd::Cmdline_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,113,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a62535dfec65ff51ae639c8229d24b519" id="r_a62535dfec65ff51ae639c8229d24b519"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a62535dfec65ff51ae639c8229d24b519">Module_REG</a> (<a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a>)</td></tr>
+<tr class="separator:a62535dfec65ff51ae639c8229d24b519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2375d459a537e9f61de6afa8472327f" id="r_af2375d459a537e9f61de6afa8472327f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#af2375d459a537e9f61de6afa8472327f">Run</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string <a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, bool debug=false, int dapPort=0, int mcpPort=0, std::string devServer=&quot;&quot;)</td></tr>
+<tr class="memdesc:af2375d459a537e9f61de6afa8472327f"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行游戏（debug 时附加 DAP/MCP 端口）。  <br /></td></tr>
+<tr class="separator:af2375d459a537e9f61de6afa8472327f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80b61ce2628bcc727c2f4cb010d0b3f1" id="r_a80b61ce2628bcc727c2f4cb010d0b3f1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a80b61ce2628bcc727c2f4cb010d0b3f1">Build</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string <a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, std::string platform, std::string sdkRoot=&quot;&quot;, bool debug=false)</td></tr>
+<tr class="memdesc:a80b61ce2628bcc727c2f4cb010d0b3f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">构建项目：委托仓库 Makefile 的 build/&lt;platform&gt;[-debug] 目标。  <br /></td></tr>
+<tr class="separator:a80b61ce2628bcc727c2f4cb010d0b3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a906c300510fa3be254f8f17212ff7170" id="r_a906c300510fa3be254f8f17212ff7170"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a906c300510fa3be254f8f17212ff7170">Package</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string <a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, std::string sdk)</td></tr>
+<tr class="memdesc:a906c300510fa3be254f8f17212ff7170"><td class="mdescLeft">&#160;</td><td class="mdescRight">把游戏打包为单个可执行文件 / APK。  <br /></td></tr>
+<tr class="separator:a906c300510fa3be254f8f17212ff7170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4a219c8d27aa47e8e7e60f4bba4c50" id="r_abe4a219c8d27aa47e8e7e60f4bba4c50"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#abe4a219c8d27aa47e8e7e60f4bba4c50">Test</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:abe4a219c8d27aa47e8e7e60f4bba4c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行项目测试。  <br /></td></tr>
+<tr class="separator:abe4a219c8d27aa47e8e7e60f4bba4c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f61e1535d02b69bf41122afc5dfed0b" id="r_a6f61e1535d02b69bf41122afc5dfed0b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a6f61e1535d02b69bf41122afc5dfed0b">McpHost</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, int port)</td></tr>
+<tr class="memdesc:a6f61e1535d02b69bf41122afc5dfed0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">无头 MCP 宿主：stdio（默认）或 TCP，供 AI 代理驱动。  <br /></td></tr>
+<tr class="separator:a6f61e1535d02b69bf41122afc5dfed0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a677538406aea8f34ef4f84b06f004" id="r_a00a677538406aea8f34ef4f84b06f004"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a00a677538406aea8f34ef4f84b06f004">LanguageServer</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a00a677538406aea8f34ef4f84b06f004"><td class="mdescLeft">&#160;</td><td class="mdescRight">EveScript Language Server Protocol stdio host (devtools LanguageServer).  <br /></td></tr>
+<tr class="separator:a00a677538406aea8f34ef4f84b06f004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e40939ef63fc63c58bd80a0aabf355c" id="r_a6e40939ef63fc63c58bd80a0aabf355c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a6e40939ef63fc63c58bd80a0aabf355c">Zip</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a6e40939ef63fc63c58bd80a0aabf355c"><td class="mdescLeft">&#160;</td><td class="mdescRight">把当前目录打成 .eve 压缩包。  <br /></td></tr>
+<tr class="separator:a6e40939ef63fc63c58bd80a0aabf355c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce6d97c8a6243e2318f0772edc2d667" id="r_a2ce6d97c8a6243e2318f0772edc2d667"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a2ce6d97c8a6243e2318f0772edc2d667">DevServer</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, int port=8765)</td></tr>
+<tr class="memdesc:a2ce6d97c8a6243e2318f0772edc2d667"><td class="mdescLeft">&#160;</td><td class="mdescRight">启动热重载开发服务器。  <br /></td></tr>
+<tr class="separator:a2ce6d97c8a6243e2318f0772edc2d667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e27bc79e77bbb976342c9c81e9b058" id="r_a57e27bc79e77bbb976342c9c81e9b058"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a57e27bc79e77bbb976342c9c81e9b058">Get</a> (std::string url)</td></tr>
+<tr class="memdesc:a57e27bc79e77bbb976342c9c81e9b058"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取第三方源码。  <br /></td></tr>
+<tr class="separator:a57e27bc79e77bbb976342c9c81e9b058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f65988c6b923ea5379a4bf496e0add5" id="r_a1f65988c6b923ea5379a4bf496e0add5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a1f65988c6b923ea5379a4bf496e0add5">Clean</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a1f65988c6b923ea5379a4bf496e0add5"><td class="mdescLeft">&#160;</td><td class="mdescRight">清理项目并移除内部产物。  <br /></td></tr>
+<tr class="separator:a1f65988c6b923ea5379a4bf496e0add5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02325a0f0a721b30b3f61d4800d52616" id="r_a02325a0f0a721b30b3f61d4800d52616"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a02325a0f0a721b30b3f61d4800d52616">Doc</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool noOpen=false)</td></tr>
+<tr class="memdesc:a02325a0f0a721b30b3f61d4800d52616"><td class="mdescLeft">&#160;</td><td class="mdescRight">显示模块/函数/类型的文档。  <br /></td></tr>
+<tr class="separator:a02325a0f0a721b30b3f61d4800d52616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30d4b82f2b00988b17fda27167023e5b" id="r_a30d4b82f2b00988b17fda27167023e5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a30d4b82f2b00988b17fda27167023e5b">Create</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a30d4b82f2b00988b17fda27167023e5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建新项目。  <br /></td></tr>
+<tr class="separator:a30d4b82f2b00988b17fda27167023e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a932d5c96989544f21122bb372cba76e2" id="r_a932d5c96989544f21122bb372cba76e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a932d5c96989544f21122bb372cba76e2">runArgs</a> (unsigned argcIn, char **argvIn)</td></tr>
+<tr class="memdesc:a932d5c96989544f21122bb372cba76e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">解析并执行传入的 argv。  <br /></td></tr>
+<tr class="separator:a932d5c96989544f21122bb372cba76e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fcb75e583939ea0a3a273bc8292084a" id="r_a7fcb75e583939ea0a3a273bc8292084a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a7fcb75e583939ea0a3a273bc8292084a">getArgv</a> (unsigned i)</td></tr>
+<tr class="memdesc:a7fcb75e583939ea0a3a273bc8292084a"><td class="mdescLeft">&#160;</td><td class="mdescRight">第 i 个原始 argv（physfs 文件系统用）。  <br /></td></tr>
+<tr class="separator:a7fcb75e583939ea0a3a273bc8292084a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a4175b21e1dc828a78da69878e88985" id="r_a1a4175b21e1dc828a78da69878e88985"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a1a4175b21e1dc828a78da69878e88985">getArgc</a> ()</td></tr>
+<tr class="separator:a1a4175b21e1dc828a78da69878e88985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a16f8f059af1df4763f83d5bb6be11fe8" id="r_a16f8f059af1df4763f83d5bb6be11fe8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a16f8f059af1df4763f83d5bb6be11fe8">get_remaining</a> (CLI::App *sub, std::string default_path=&quot;.&quot;)</td></tr>
+<tr class="memdesc:a16f8f059af1df4763f83d5bb6be11fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">子命令剩余位置参数。  <br /></td></tr>
+<tr class="separator:a16f8f059af1df4763f83d5bb6be11fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6cae1e161340cfee592f343d29a4204a" id="r_a6cae1e161340cfee592f343d29a4204a"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a6cae1e161340cfee592f343d29a4204a">Register</a></td></tr>
+<tr class="separator:a6cae1e161340cfee592f343d29a4204a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:acee281fcc6ca0d624ed2a4d1333b2dda" id="r_acee281fcc6ca0d624ed2a4d1333b2dda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#acee281fcc6ca0d624ed2a4d1333b2dda">Cmdline</a> ()</td></tr>
+<tr class="separator:acee281fcc6ca0d624ed2a4d1333b2dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
+静态 Protected 成员函数</h2></td></tr>
+<tr class="memitem:aa652d7be03a13bd327701aee5680671a" id="r_aa652d7be03a13bd327701aee5680671a"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::function&lt; <a class="el" href="structeve_1_1cmd_1_1Handler.html">Handler</a> *()&gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#aa652d7be03a13bd327701aee5680671a">handers</a> ()</td></tr>
+<tr class="separator:aa652d7be03a13bd327701aee5680671a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc070b6a407654c21d8b2309405a4279" id="r_abc070b6a407654c21d8b2309405a4279"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#abc070b6a407654c21d8b2309405a4279">registerCmd</a> (std::function&lt; <a class="el" href="structeve_1_1cmd_1_1Handler.html">Handler</a> *()&gt; handler)</td></tr>
+<tr class="separator:abc070b6a407654c21d8b2309405a4279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a3fa2b1004bd2d7ea2e26b82eadb84497" id="r_a3fa2b1004bd2d7ea2e26b82eadb84497"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#a3fa2b1004bd2d7ea2e26b82eadb84497">argc</a></td></tr>
+<tr class="separator:a3fa2b1004bd2d7ea2e26b82eadb84497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab86618669edd39a54d06db609aa499f6" id="r_ab86618669edd39a54d06db609aa499f6"><td class="memItemLeft" align="right" valign="top">char **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html#ab86618669edd39a54d06db609aa499f6">argv</a></td></tr>
+<tr class="separator:ab86618669edd39a54d06db609aa499f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。 </p>
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acee281fcc6ca0d624ed2a4d1333b2dda" name="acee281fcc6ca0d624ed2a4d1333b2dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acee281fcc6ca0d624ed2a4d1333b2dda">&#9670;&#160;</a></span>Cmdline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::Cmdline::Cmdline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a> 第 <a class="el" href="cmdline_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a80b61ce2628bcc727c2f4cb010d0b3f1" name="a80b61ce2628bcc727c2f4cb010d0b3f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b61ce2628bcc727c2f4cb010d0b3f1">&#9670;&#160;</a></span>Build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Build </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>platform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sdkRoot</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>debug</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>构建项目：委托仓库 Makefile 的 build/&lt;platform&gt;[-debug] 目标。 </p>
+
+<p class="definition">在文件 <a class="el" href="Build_8cpp_source.html">Build.cpp</a> 第 <a class="el" href="Build_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l00063">variant</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Build_8cpp_source.html#l00076">eve::cmd::BuildArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a1f65988c6b923ea5379a4bf496e0add5" name="a1f65988c6b923ea5379a4bf496e0add5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f65988c6b923ea5379a4bf496e0add5">&#9670;&#160;</a></span>Clean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Clean </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清理项目并移除内部产物。 </p>
+
+<p class="definition">在文件 <a class="el" href="Clean_8cpp_source.html">Clean.cpp</a> 第 <a class="el" href="Clean_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Clean_8cpp_source.html#l00018">eve::cmd::CleanArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a30d4b82f2b00988b17fda27167023e5b" name="a30d4b82f2b00988b17fda27167023e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30d4b82f2b00988b17fda27167023e5b">&#9670;&#160;</a></span>Create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Create </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>创建新项目。 </p>
+
+<p class="definition">在文件 <a class="el" href="Create_8cpp_source.html">Create.cpp</a> 第 <a class="el" href="Create_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="EveFileSystem_8cpp_source.html#l00014">file</a>, <a class="el" href="main_8cpp_source.html#l00045">main()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Create_8cpp_source.html#l00019">eve::cmd::CreateArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a2ce6d97c8a6243e2318f0772edc2d667" name="a2ce6d97c8a6243e2318f0772edc2d667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ce6d97c8a6243e2318f0772edc2d667">&#9670;&#160;</a></span>DevServer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::DevServer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>port</em> = <code>8765</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>启动热重载开发服务器。 </p>
+
+<p class="definition">在文件 <a class="el" href="DevServer_8cpp_source.html">DevServer.cpp</a> 第 <a class="el" href="DevServer_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevServer_8cpp_source.html#l00297">eve::cmd::DevServerArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a02325a0f0a721b30b3f61d4800d52616" name="a02325a0f0a721b30b3f61d4800d52616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02325a0f0a721b30b3f61d4800d52616">&#9670;&#160;</a></span>Doc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Doc </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>noOpen</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>显示模块/函数/类型的文档。 </p>
+
+<p class="definition">在文件 <a class="el" href="Doc_8cpp_source.html">Doc.cpp</a> 第 <a class="el" href="Doc_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Doc_8cpp_source.html#l00027">eve::cmd::DocArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a57e27bc79e77bbb976342c9c81e9b058" name="a57e27bc79e77bbb976342c9c81e9b058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57e27bc79e77bbb976342c9c81e9b058">&#9670;&#160;</a></span>Get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Get </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取第三方源码。 </p>
+
+<p class="definition">在文件 <a class="el" href="Get_8cpp_source.html">Get.cpp</a> 第 <a class="el" href="Get_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Get_8cpp_source.html#l00022">eve::cmd::GetArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a16f8f059af1df4763f83d5bb6be11fe8" name="a16f8f059af1df4763f83d5bb6be11fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16f8f059af1df4763f83d5bb6be11fe8">&#9670;&#160;</a></span>get_remaining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::Cmdline::get_remaining </td>
+          <td>(</td>
+          <td class="paramtype">CLI::App *&#160;</td>
+          <td class="paramname"><em>sub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>default_path</em> = <code>&quot;.&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>子命令剩余位置参数。 </p>
+
+<p class="definition">在文件 <a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a> 第 <a class="el" href="cmdline_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Clean_8cpp_source.html#l00018">eve::cmd::CleanArgs::parse()</a>, <a class="el" href="Create_8cpp_source.html#l00019">eve::cmd::CreateArgs::parse()</a>, <a class="el" href="DevServer_8cpp_source.html#l00297">eve::cmd::DevServerArgs::parse()</a>, <a class="el" href="Doc_8cpp_source.html#l00027">eve::cmd::DocArgs::parse()</a>, <a class="el" href="Get_8cpp_source.html#l00022">eve::cmd::GetArgs::parse()</a>, <a class="el" href="Mcp_8cpp_source.html#l00070">eve::cmd::McpArgs::parse()</a>, <a class="el" href="Package_8cpp_source.html#l00187">eve::cmd::PackageArgs::parse()</a>, <a class="el" href="Run_8cpp_source.html#l00330">eve::cmd::RunArgs::parse()</a>, <a class="el" href="Test_8cpp_source.html#l00018">eve::cmd::TestArgs::parse()</a> , 以及 <a class="el" href="Zip_8cpp_source.html#l00019">eve::cmd::ZipArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a1a4175b21e1dc828a78da69878e88985" name="a1a4175b21e1dc828a78da69878e88985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a4175b21e1dc828a78da69878e88985">&#9670;&#160;</a></span>getArgc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::cmd::Cmdline::getArgc </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="cmdline_8h_source.html#l00089">argc</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00330">eve::cmd::RunArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a7fcb75e583939ea0a3a273bc8292084a" name="a7fcb75e583939ea0a3a273bc8292084a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fcb75e583939ea0a3a273bc8292084a">&#9670;&#160;</a></span>getArgv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::Cmdline::getArgv </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>第 i 个原始 argv（physfs 文件系统用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="cmdline_8h_source.html#l00089">argc</a> , 以及 <a class="el" href="cmdline_8h_source.html#l00090">argv</a>.</p>
+
+</div>
+</div>
+<a id="aa652d7be03a13bd327701aee5680671a" name="aa652d7be03a13bd327701aee5680671a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa652d7be03a13bd327701aee5680671a">&#9670;&#160;</a></span>handers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::function&lt; <a class="el" href="structeve_1_1cmd_1_1Handler.html">Handler</a> *()&gt; &gt; &amp; eve::cmd::Cmdline::handers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a> 第 <a class="el" href="cmdline_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_8cpp_source.html#l00021">registerCmd()</a> , 以及 <a class="el" href="cmdline_8cpp_source.html#l00043">runArgs()</a>.</p>
+
+</div>
+</div>
+<a id="a00a677538406aea8f34ef4f84b06f004" name="a00a677538406aea8f34ef4f84b06f004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00a677538406aea8f34ef4f84b06f004">&#9670;&#160;</a></span>LanguageServer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::LanguageServer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>EveScript Language Server Protocol stdio host (devtools LanguageServer). </p>
+
+<p class="definition">在文件 <a class="el" href="cmdline_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="cmdline_2LanguageServer_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l01279">eve::dev::LanguageServer::runStdio()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_2LanguageServer_8cpp_source.html#l00032">eve::cmd::LanguageServerArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a6f61e1535d02b69bf41122afc5dfed0b" name="a6f61e1535d02b69bf41122afc5dfed0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f61e1535d02b69bf41122afc5dfed0b">&#9670;&#160;</a></span>McpHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::McpHost </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>port</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>无头 MCP 宿主：stdio（默认）或 TCP，供 AI 代理驱动。 </p>
+
+<p class="definition">在文件 <a class="el" href="Mcp_8cpp_source.html">Mcp.cpp</a> 第 <a class="el" href="Mcp_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#abfe140d3ce9fd3454286724a406dd56f">eve::filesystem::Filesystem::getLastWatchPath()</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00212">host</a>, <a class="el" href="FileApi_8cpp_source.html#l00177">eve::filesystem::physfs::installScriptFileApi()</a>, <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="HotReload_8cpp_source.html#l00116">eve::filesystem::HotReload::normalizePath()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a9f888b15c14aa5980aef9f3a43388a86">eve::filesystem::Filesystem::pollWatch()</a>, <a class="el" href="Module_8cpp_source.html#l00200">eve::ModuleManager::requireAll()</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a560ab2f2dbe17f7cb9987a705d754af1">eve::filesystem::Filesystem::setSource()</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975af9f805b30fdb6c23233caaae223ccfaa">eve::dev::McpServer::Stdio</a> , 以及 <a class="el" href="EditorHostHotReload_8cpp_source.html#l00042">watchCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00070">eve::cmd::McpArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a62535dfec65ff51ae639c8229d24b519" name="a62535dfec65ff51ae639c8229d24b519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62535dfec65ff51ae639c8229d24b519">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::Cmdline::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a906c300510fa3be254f8f17212ff7170" name="a906c300510fa3be254f8f17212ff7170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a906c300510fa3be254f8f17212ff7170">&#9670;&#160;</a></span>Package()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Package </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sdk</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>把游戏打包为单个可执行文件 / APK。 </p>
+
+<p class="definition">在文件 <a class="el" href="Package_8cpp_source.html">Package.cpp</a> 第 <a class="el" href="Package_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="zip__writer_8h_source.html#l00181">eve::cmdline::createGameArchive()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Package_8cpp_source.html#l00187">eve::cmd::PackageArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="abc070b6a407654c21d8b2309405a4279" name="abc070b6a407654c21d8b2309405a4279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc070b6a407654c21d8b2309405a4279">&#9670;&#160;</a></span>registerCmd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cmd::Cmdline::registerCmd </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; <a class="el" href="structeve_1_1cmd_1_1Handler.html">Handler</a> *()&gt;&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a> 第 <a class="el" href="cmdline_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="cmdline_8cpp_source.html#l00016">handers()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_8h_source.html#l00102">eve::cmd::Register::Register()</a>.</p>
+
+</div>
+</div>
+<a id="af2375d459a537e9f61de6afa8472327f" name="af2375d459a537e9f61de6afa8472327f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2375d459a537e9f61de6afa8472327f">&#9670;&#160;</a></span>Run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Run </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>debug</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dapPort</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mcpPort</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>devServer</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>运行游戏（debug 时附加 DAP/MCP 端口）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Run_8cpp_source.html">Run.cpp</a> 第 <a class="el" href="Run_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a46eecd0b3a07068f619c081d0a7b99bb">eve::async_content</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00442">eve::script::ScriptModuleResolver::canonicalize()</a>, <a class="el" href="namespaceeve.html#ad57a04b0484d11f7b3cb3ec6179064bd">eve::demo_content</a>, <a class="el" href="DevTool_8cpp_source.html#l00189">eve::dev::DevTool::detach()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Run_8cpp_source.html#l00301">EVE_ANDROID_LOGE</a>, <a class="el" href="FileApi_8cpp_source.html#l00177">eve::filesystem::physfs::installScriptFileApi()</a>, <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a>, <a class="el" href="namespaceeve.html#a736a683bf3975b310f884f8a257b67b5">eve::module_list_content</a>, <a class="el" href="DevTool_8cpp_source.html#l00712">eve::dev::DevTool::notifyError()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="CrashLog_8cpp_source.html#l00070">eve::recordLogEvent()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="namespaceeve.html#a8ac75cda875b82d0f827f52e9dc7dd32">eve::scene_director_content</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00106">eve::boot::startVulkanInstanceWarmup()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00330">eve::cmd::RunArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a932d5c96989544f21122bb372cba76e2" name="a932d5c96989544f21122bb372cba76e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a932d5c96989544f21122bb372cba76e2">&#9670;&#160;</a></span>runArgs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::runArgs </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>argcIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argvIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>解析并执行传入的 argv。 </p>
+
+<p class="definition">在文件 <a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a> 第 <a class="el" href="cmdline_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="cmdline_8h_source.html#l00089">argc</a>, <a class="el" href="cmdline_8h_source.html#l00090">argv</a>, <a class="el" href="Version_8cpp_source.html#l00020">eve::buildInfo()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="cmdline_8cpp_source.html#l00016">handers()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="abe4a219c8d27aa47e8e7e60f4bba4c50" name="abe4a219c8d27aa47e8e7e60f4bba4c50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4a219c8d27aa47e8e7e60f4bba4c50">&#9670;&#160;</a></span>Test()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Test </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>运行项目测试。 </p>
+
+<p class="definition">在文件 <a class="el" href="Test_8cpp_source.html">Test.cpp</a> 第 <a class="el" href="Test_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Test_8cpp_source.html#l00018">eve::cmd::TestArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a6e40939ef63fc63c58bd80a0aabf355c" name="a6e40939ef63fc63c58bd80a0aabf355c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e40939ef63fc63c58bd80a0aabf355c">&#9670;&#160;</a></span>Zip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::Cmdline::Zip </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>把当前目录打成 .eve 压缩包。 </p>
+
+<p class="definition">在文件 <a class="el" href="Zip_8cpp_source.html">Zip.cpp</a> 第 <a class="el" href="Zip_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="zip__writer_8h_source.html#l00181">eve::cmdline::createGameArchive()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Zip_8cpp_source.html#l00019">eve::cmd::ZipArgs::parse()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3fa2b1004bd2d7ea2e26b82eadb84497" name="a3fa2b1004bd2d7ea2e26b82eadb84497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa2b1004bd2d7ea2e26b82eadb84497">&#9670;&#160;</a></span>argc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::cmd::Cmdline::argc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_8h_source.html#l00080">getArgc()</a>, <a class="el" href="cmdline_8h_source.html#l00077">getArgv()</a> , 以及 <a class="el" href="cmdline_8cpp_source.html#l00043">runArgs()</a>.</p>
+
+</div>
+</div>
+<a id="ab86618669edd39a54d06db609aa499f6" name="ab86618669edd39a54d06db609aa499f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab86618669edd39a54d06db609aa499f6">&#9670;&#160;</a></span>argv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char** eve::cmd::Cmdline::argv</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_8h_source.html#l00077">getArgv()</a> , 以及 <a class="el" href="cmdline_8cpp_source.html#l00043">runArgs()</a>.</p>
+
+</div>
+</div>
+<a id="a6cae1e161340cfee592f343d29a4204a" name="a6cae1e161340cfee592f343d29a4204a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cae1e161340cfee592f343d29a4204a">&#9670;&#160;</a></span>Register</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend eve::cmd::Cmdline::Register</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="cmdline_8h_source.html">cmdline.h</a> 第 <a class="el" href="cmdline_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/cmdline/<a class="el" href="cmdline_8h_source.html">cmdline.h</a></li>
+<li>src/engine/cmdline/<a class="el" href="Build_8cpp_source.html">Build.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Clean_8cpp_source.html">Clean.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="cmdline_8cpp_source.html">cmdline.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Create_8cpp_source.html">Create.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="DevServer_8cpp_source.html">DevServer.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Doc_8cpp_source.html">Doc.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Get_8cpp_source.html">Get.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="cmdline_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Mcp_8cpp_source.html">Mcp.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Package_8cpp_source.html">Package.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Run_8cpp_source.html">Run.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Test_8cpp_source.html">Test.cpp</a></li>
+<li>src/engine/cmdline/<a class="el" href="Zip_8cpp_source.html">Zip.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

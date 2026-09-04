@@ -1,0 +1,525 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map::TileLayer::Tileset::Visual结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a></li><li class="navelem"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset.html">Tileset</a></li><li class="navelem"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html">Visual</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map::TileLayer::Tileset::Visual结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Per-GID visual metadata emitted by a project-defined asset pipeline.  
+ <a href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TileLayer_8h_source.html">TileLayer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1CollisionShape.html">CollisionShape</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1Subtile.html">Subtile</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1SubtileFrame.html">SubtileFrame</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a92845d2afd33dba5332f1be359380c4d" id="r_a92845d2afd33dba5332f1be359380c4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a92845d2afd33dba5332f1be359380c4d">gid</a> = 0</td></tr>
+<tr class="separator:a92845d2afd33dba5332f1be359380c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdb1f896d11e54c041f169477032beac" id="r_acdb1f896d11e54c041f169477032beac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#acdb1f896d11e54c041f169477032beac">x</a> = 0</td></tr>
+<tr class="separator:acdb1f896d11e54c041f169477032beac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dbdb509e1f133eb49d4bb0ea4eb1963" id="r_a6dbdb509e1f133eb49d4bb0ea4eb1963"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a6dbdb509e1f133eb49d4bb0ea4eb1963">y</a> = 0</td></tr>
+<tr class="separator:a6dbdb509e1f133eb49d4bb0ea4eb1963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae79955f8972dd3264dcd4eb6a03e5521" id="r_ae79955f8972dd3264dcd4eb6a03e5521"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#ae79955f8972dd3264dcd4eb6a03e5521">width</a> = 0</td></tr>
+<tr class="separator:ae79955f8972dd3264dcd4eb6a03e5521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b22f9efdc78c2c56d6a8baba1b3140" id="r_aa9b22f9efdc78c2c56d6a8baba1b3140"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#aa9b22f9efdc78c2c56d6a8baba1b3140">height</a> = 0</td></tr>
+<tr class="separator:aa9b22f9efdc78c2c56d6a8baba1b3140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ce267cdf58bbf048f9835d4b84a9ec" id="r_a13ce267cdf58bbf048f9835d4b84a9ec"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a13ce267cdf58bbf048f9835d4b84a9ec">pivotX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a13ce267cdf58bbf048f9835d4b84a9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fb19075f1777bdc0aa14d75898cca4e" id="r_a3fb19075f1777bdc0aa14d75898cca4e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a3fb19075f1777bdc0aa14d75898cca4e">pivotY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3fb19075f1777bdc0aa14d75898cca4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca5745e49235d545fd6d20e8c296238" id="r_a1ca5745e49235d545fd6d20e8c296238"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a1ca5745e49235d545fd6d20e8c296238">sortBias</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1ca5745e49235d545fd6d20e8c296238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcafcbaf4ff168f344149301bb2d2629" id="r_abcafcbaf4ff168f344149301bb2d2629"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#abcafcbaf4ff168f344149301bb2d2629">footprintW</a> = 1</td></tr>
+<tr class="separator:abcafcbaf4ff168f344149301bb2d2629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af475d7deea47f97a84b6dee46067faf5" id="r_af475d7deea47f97a84b6dee46067faf5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#af475d7deea47f97a84b6dee46067faf5">footprintH</a> = 1</td></tr>
+<tr class="separator:af475d7deea47f97a84b6dee46067faf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab05153cc1a28fdbdf1fe7ad13fa55556" id="r_ab05153cc1a28fdbdf1fe7ad13fa55556"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#ab05153cc1a28fdbdf1fe7ad13fa55556">walkable</a> = true</td></tr>
+<tr class="separator:ab05153cc1a28fdbdf1fe7ad13fa55556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a025688252ec37e631e991ffb2f63293f" id="r_a025688252ec37e631e991ffb2f63293f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a025688252ec37e631e991ffb2f63293f">opaque</a> = false</td></tr>
+<tr class="separator:a025688252ec37e631e991ffb2f63293f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6db1b8cab21be79dd3b0dfe97e531b1" id="r_ab6db1b8cab21be79dd3b0dfe97e531b1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#ab6db1b8cab21be79dd3b0dfe97e531b1">cost</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab6db1b8cab21be79dd3b0dfe97e531b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31ecd6220dd5021330d0630ac59f281" id="r_af31ecd6220dd5021330d0630ac59f281"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#af31ecd6220dd5021330d0630ac59f281">enterMask</a> = 0xff</td></tr>
+<tr class="separator:af31ecd6220dd5021330d0630ac59f281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a1d631343c7177495f2748c6dfd5cb6" id="r_a1a1d631343c7177495f2748c6dfd5cb6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a1a1d631343c7177495f2748c6dfd5cb6">exitMask</a> = 0xff</td></tr>
+<tr class="separator:a1a1d631343c7177495f2748c6dfd5cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab028f695605251c46b65a3fdd7c8efc0" id="r_ab028f695605251c46b65a3fdd7c8efc0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#ab028f695605251c46b65a3fdd7c8efc0">semanticFlags</a> = 0</td></tr>
+<tr class="separator:ab028f695605251c46b65a3fdd7c8efc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a977a08d07368761c2cae2e3415a3e677" id="r_a977a08d07368761c2cae2e3415a3e677"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1SubtileFrame.html">SubtileFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a977a08d07368761c2cae2e3415a3e677">subtileFrames</a></td></tr>
+<tr class="separator:a977a08d07368761c2cae2e3415a3e677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9c0c7a05682301b96674d4443b4479" id="r_a7f9c0c7a05682301b96674d4443b4479"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1CollisionShape.html">CollisionShape</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual.html#a7f9c0c7a05682301b96674d4443b4479">collisionShapes</a></td></tr>
+<tr class="separator:a7f9c0c7a05682301b96674d4443b4479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Per-GID visual metadata emitted by a project-defined asset pipeline. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00097">97</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a7f9c0c7a05682301b96674d4443b4479" name="a7f9c0c7a05682301b96674d4443b4479"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9c0c7a05682301b96674d4443b4479">&#9670;&#160;</a></span>collisionShapes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1CollisionShape.html">CollisionShape</a>&gt; eve::map::TileLayer::Tileset::Visual::collisionShapes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6db1b8cab21be79dd3b0dfe97e531b1" name="ab6db1b8cab21be79dd3b0dfe97e531b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6db1b8cab21be79dd3b0dfe97e531b1">&#9670;&#160;</a></span>cost</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::Tileset::Visual::cost = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af31ecd6220dd5021330d0630ac59f281" name="af31ecd6220dd5021330d0630ac59f281"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af31ecd6220dd5021330d0630ac59f281">&#9670;&#160;</a></span>enterMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::map::TileLayer::Tileset::Visual::enterMask = 0xff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a1d631343c7177495f2748c6dfd5cb6" name="a1a1d631343c7177495f2748c6dfd5cb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1d631343c7177495f2748c6dfd5cb6">&#9670;&#160;</a></span>exitMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::map::TileLayer::Tileset::Visual::exitMask = 0xff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af475d7deea47f97a84b6dee46067faf5" name="af475d7deea47f97a84b6dee46067faf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af475d7deea47f97a84b6dee46067faf5">&#9670;&#160;</a></span>footprintH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::footprintH = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abcafcbaf4ff168f344149301bb2d2629" name="abcafcbaf4ff168f344149301bb2d2629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcafcbaf4ff168f344149301bb2d2629">&#9670;&#160;</a></span>footprintW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::footprintW = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92845d2afd33dba5332f1be359380c4d" name="a92845d2afd33dba5332f1be359380c4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92845d2afd33dba5332f1be359380c4d">&#9670;&#160;</a></span>gid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::gid = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9b22f9efdc78c2c56d6a8baba1b3140" name="aa9b22f9efdc78c2c56d6a8baba1b3140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b22f9efdc78c2c56d6a8baba1b3140">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::height = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00123">123</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a025688252ec37e631e991ffb2f63293f" name="a025688252ec37e631e991ffb2f63293f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a025688252ec37e631e991ffb2f63293f">&#9670;&#160;</a></span>opaque</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::Tileset::Visual::opaque = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00130">130</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13ce267cdf58bbf048f9835d4b84a9ec" name="a13ce267cdf58bbf048f9835d4b84a9ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ce267cdf58bbf048f9835d4b84a9ec">&#9670;&#160;</a></span>pivotX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::Tileset::Visual::pivotX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3fb19075f1777bdc0aa14d75898cca4e" name="a3fb19075f1777bdc0aa14d75898cca4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fb19075f1777bdc0aa14d75898cca4e">&#9670;&#160;</a></span>pivotY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::Tileset::Visual::pivotY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab028f695605251c46b65a3fdd7c8efc0" name="ab028f695605251c46b65a3fdd7c8efc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab028f695605251c46b65a3fdd7c8efc0">&#9670;&#160;</a></span>semanticFlags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::map::TileLayer::Tileset::Visual::semanticFlags = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ca5745e49235d545fd6d20e8c296238" name="a1ca5745e49235d545fd6d20e8c296238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca5745e49235d545fd6d20e8c296238">&#9670;&#160;</a></span>sortBias</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::Tileset::Visual::sortBias = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a977a08d07368761c2cae2e3415a3e677" name="a977a08d07368761c2cae2e3415a3e677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a977a08d07368761c2cae2e3415a3e677">&#9670;&#160;</a></span>subtileFrames</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset_1_1Visual_1_1SubtileFrame.html">SubtileFrame</a>&gt; eve::map::TileLayer::Tileset::Visual::subtileFrames</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab05153cc1a28fdbdf1fe7ad13fa55556" name="ab05153cc1a28fdbdf1fe7ad13fa55556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab05153cc1a28fdbdf1fe7ad13fa55556">&#9670;&#160;</a></span>walkable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::Tileset::Visual::walkable = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae79955f8972dd3264dcd4eb6a03e5521" name="ae79955f8972dd3264dcd4eb6a03e5521"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae79955f8972dd3264dcd4eb6a03e5521">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::width = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdb1f896d11e54c041f169477032beac" name="acdb1f896d11e54c041f169477032beac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdb1f896d11e54c041f169477032beac">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::x = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6dbdb509e1f133eb49d4bb0ea4eb1963" name="a6dbdb509e1f133eb49d4bb0ea4eb1963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dbdb509e1f133eb49d4bb0ea4eb1963">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::Tileset::Visual::y = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/map/<a class="el" href="TileLayer_8h_source.html">TileLayer.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

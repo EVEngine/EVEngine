@@ -1,0 +1,318 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/VolumeDensityGraph.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VolumeDensityGraph.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VolumeDensityGraph_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="VolumeDensityGraph_8h.html">graphics/VolumeDensityGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/common.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">float</span> hash3(<span class="keyword">const</span> glm::ivec3 &amp;<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, std::uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    std::uint32_t <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> ^ (std::uint32_t(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x) * 0x8da6b343u) ^</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        (std::uint32_t(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y) * 0xd8163841u) ^ (std::uint32_t(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z) * 0xcb1ab31fu);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> ^= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &gt;&gt; 16;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> *= 0x7feb352du;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> ^= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &gt;&gt; 15;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> float(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &amp; 0x00ffffffu) / float(0x01000000u);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a17a768b6e460d6d80a78af2d0341d0bb">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a17a768b6e460d6d80a78af2d0341d0bb">VolumeDensityGraph::clear</a>() {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    nodes_.clear();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    output_ = -1;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#aa38ac75ee20b159488ce853abd43c414">   28</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#aa38ac75ee20b159488ce853abd43c414">VolumeDensityGraph::addNode</a>(<a class="code hl_enumeration" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66">Op</a> op, <span class="keywordtype">int</span> inputA, <span class="keywordtype">int</span> inputB, <span class="keyword">const</span> glm::vec4 &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> next = int(nodes_.size());</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VolumeDensityGraph_1_1Node.html">Node</a> node;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    node.op = op;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    node.inputA = inputA &gt;= 0 &amp;&amp; inputA &lt; next ? inputA : -1;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    node.inputB = inputB &gt;= 0 &amp;&amp; inputB &lt; next ? inputB : -1;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    node.params = <a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    nodes_.push_back(node);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    output_ = next;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">return</span> next;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a5096de85c2c336434affe5354a623d8c">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a5096de85c2c336434affe5354a623d8c">VolumeDensityGraph::setOutput</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#aff0d62fe47891e971ee7161fb743726a">nodeIndex</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    output_ = <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#aff0d62fe47891e971ee7161fb743726a">nodeIndex</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#aff0d62fe47891e971ee7161fb743726a">nodeIndex</a> &lt; int(nodes_.size()) ? <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#aff0d62fe47891e971ee7161fb743726a">nodeIndex</a></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                               : int(nodes_.size()) - 1;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keywordtype">float</span> VolumeDensityGraph::valueNoise(<span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, std::uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> glm::ivec3 <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = glm::ivec3(glm::floor(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> = glm::fract(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> * <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> * (3.f - 2.f * <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span> corners[2][2][2];</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt; 2; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt; 2; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; 2; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                corners[<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>][<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>][<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>] = hash3(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> + glm::ivec3(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> z0 = glm::mix(glm::mix(corners[0][0][0], corners[0][0][1], <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.x),</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                              glm::mix(corners[0][1][0], corners[0][1][1], <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.x), <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.y);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> z1 = glm::mix(glm::mix(corners[1][0][0], corners[1][0][1], <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.x),</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                              glm::mix(corners[1][1][0], corners[1][1][1], <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.x), <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.y);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> glm::mix(z0, z1, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.z);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a302946d1dadbaf613e69f587fbc64c9a">   61</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a302946d1dadbaf613e69f587fbc64c9a">VolumeDensityGraph::evaluate</a>(<span class="keyword">const</span> glm::vec3 &amp;worldPosition, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (nodes_.empty()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;float&gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>(nodes_.size(), 0.f);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nodes_.size(); ++i) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1VolumeDensityGraph_1_1Node.html">Node</a> &amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = nodes_[i];</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.inputA &gt;= 0 ? <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[std::size_t(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.inputA)] : 0.f;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.inputB &gt;= 0 ? <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[std::size_t(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.inputB)] : 0.f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">switch</span> (<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.op) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a617ac08757d38a5a7ed91c224f0e90a0">Op::constant</a>: <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.x; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66ab435e227d5dd201e1768b2bcb2e0aa81">Op::height</a>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = std::exp(-std::max(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.y, 0.f) *</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                     std::max(worldPosition.y - <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.x, 0.f));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34248a9bfcbd589d9b5fccb6a0ac6963">Op::sphere</a>: {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = std::max(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.w, 1e-4f);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = std::clamp(1.f - glm::length(worldPosition - glm::vec3(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params)) /</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                      <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34be958a921e43d813a2075297d8e862">Op::box</a>: {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                <span class="keyword">const</span> glm::vec3 q = glm::abs(worldPosition - glm::vec3(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> extent = std::max(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.w, 1e-4f);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = std::clamp(1.f - std::max(std::max(q.x, q.y), q.z) / extent,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                       0.f, 1.f);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66aaaddc3454ccbefbb2d8d8461f8f7f481">Op::noise</a>: {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a> = std::max(std::fabs(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.x), 1e-4f);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keyword">const</span> glm::vec3 wind(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.y, 0.f, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.z);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = valueNoise((worldPosition + wind * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) / <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                       std::uint32_t(std::max(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.w, 0.f)));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34ec78fcc91ffb1e54cd85e4a0924332">Op::add</a>: <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a0fbe41b549bb236aabadebd7924379fd">Op::multiply</a>: <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a97f415c180230ce76bafa74bc058ef5f">Op::subtract</a>: <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66aa597a055c00d084069e4bb23dc789ac9">Op::clamp</a>: <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[i] = std::clamp(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.x, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.params.y); <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> selected = output_ &gt;= 0 ? output_ : int(nodes_.size()) - 1;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[std::size_t(selected)];</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a8b8dfe2335a5bf90695960dc6a1c5d3b"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a551d430cf2ccceca90f2f17e1921dc6a"><div class="ttname"><a href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a></div><div class="ttdeci">std::vector&lt; OperationParam &gt; params</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00019">TacticsPath.cpp:19</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_aff0d62fe47891e971ee7161fb743726a"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#aff0d62fe47891e971ee7161fb743726a">nodeIndex</a></div><div class="ttdeci">int nodeIndex</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00213">UIAutomationCapabilities.cpp:213</a></div></div>
+<div class="ttc" id="aVolumeDensityGraph_8h_html"><div class="ttname"><a href="VolumeDensityGraph_8h.html">VolumeDensityGraph.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_a17a768b6e460d6d80a78af2d0341d0bb"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a17a768b6e460d6d80a78af2d0341d0bb">eve::graphics::VolumeDensityGraph::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove every node and reset the output.</div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8cpp_source.html#l00023">VolumeDensityGraph.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_a302946d1dadbaf613e69f587fbc64c9a"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a302946d1dadbaf613e69f587fbc64c9a">eve::graphics::VolumeDensityGraph::evaluate</a></div><div class="ttdeci">float evaluate(const glm::vec3 &amp;worldPosition, float time=0.f) const</div><div class="ttdoc">Evaluate signed density at a world position and time.</div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8cpp_source.html#l00061">VolumeDensityGraph.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_a5096de85c2c336434affe5354a623d8c"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#a5096de85c2c336434affe5354a623d8c">eve::graphics::VolumeDensityGraph::setOutput</a></div><div class="ttdeci">void setOutput(int nodeIndex)</div><div class="ttdoc">Select the node returned by evaluate; invalid indices select the last node.</div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8cpp_source.html#l00040">VolumeDensityGraph.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_aa38ac75ee20b159488ce853abd43c414"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#aa38ac75ee20b159488ce853abd43c414">eve::graphics::VolumeDensityGraph::addNode</a></div><div class="ttdeci">int addNode(Op op, int inputA=-1, int inputB=-1, const glm::vec4 &amp;params=glm::vec4(0.f))</div><div class="ttdoc">Append a node and return its stable index. Inputs must precede the node.</div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8cpp_source.html#l00028">VolumeDensityGraph.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66">eve::graphics::VolumeDensityGraph::Op</a></div><div class="ttdeci">Op</div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8h_source.html#l00014">VolumeDensityGraph.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a0fbe41b549bb236aabadebd7924379fd"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a0fbe41b549bb236aabadebd7924379fd">eve::graphics::VolumeDensityGraph::Op::multiply</a></div><div class="ttdeci">@ multiply</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a34248a9bfcbd589d9b5fccb6a0ac6963"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34248a9bfcbd589d9b5fccb6a0ac6963">eve::graphics::VolumeDensityGraph::Op::sphere</a></div><div class="ttdeci">@ sphere</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a34be958a921e43d813a2075297d8e862"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34be958a921e43d813a2075297d8e862">eve::graphics::VolumeDensityGraph::Op::box</a></div><div class="ttdeci">@ box</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a34ec78fcc91ffb1e54cd85e4a0924332"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a34ec78fcc91ffb1e54cd85e4a0924332">eve::graphics::VolumeDensityGraph::Op::add</a></div><div class="ttdeci">@ add</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a617ac08757d38a5a7ed91c224f0e90a0"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a617ac08757d38a5a7ed91c224f0e90a0">eve::graphics::VolumeDensityGraph::Op::constant</a></div><div class="ttdeci">@ constant</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66a97f415c180230ce76bafa74bc058ef5f"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66a97f415c180230ce76bafa74bc058ef5f">eve::graphics::VolumeDensityGraph::Op::subtract</a></div><div class="ttdeci">@ subtract</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66aa597a055c00d084069e4bb23dc789ac9"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66aa597a055c00d084069e4bb23dc789ac9">eve::graphics::VolumeDensityGraph::Op::clamp</a></div><div class="ttdeci">@ clamp</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66aaaddc3454ccbefbb2d8d8461f8f7f481"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66aaaddc3454ccbefbb2d8d8461f8f7f481">eve::graphics::VolumeDensityGraph::Op::noise</a></div><div class="ttdeci">@ noise</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VolumeDensityGraph_html_af05670fe454ac36b22a6e6c510e64e66ab435e227d5dd201e1768b2bcb2e0aa81"><div class="ttname"><a href="classeve_1_1graphics_1_1VolumeDensityGraph.html#af05670fe454ac36b22a6e6c510e64e66ab435e227d5dd201e1768b2bcb2e0aa81">eve::graphics::VolumeDensityGraph::Op::height</a></div><div class="ttdeci">@ height</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VolumeDensityGraph_1_1Node_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VolumeDensityGraph_1_1Node.html">eve::graphics::VolumeDensityGraph::Node</a></div><div class="ttdef"><b>Definition</b> <a href="VolumeDensityGraph_8h_source.html#l00016">VolumeDensityGraph.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

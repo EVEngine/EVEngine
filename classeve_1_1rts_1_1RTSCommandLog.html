@@ -1,0 +1,406 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::RTSCommandLog类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html">RTSCommandLog</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rts_1_1RTSCommandLog-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::RTSCommandLog类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic lockstep input buffer and portable command log.  
+ <a href="classeve_1_1rts_1_1RTSCommandLog.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSReplay_8h_source.html">RTSReplay.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad2dfbb3a1d96477886611f349315d073" id="r_ad2dfbb3a1d96477886611f349315d073"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#ad2dfbb3a1d96477886611f349315d073">queue</a> (<a class="el" href="structeve_1_1rts_1_1RTSReplayCommand.html">RTSReplayCommand</a> command, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> currentTick={})</td></tr>
+<tr class="memdesc:ad2dfbb3a1d96477886611f349315d073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate, normalize, queue, and retain one future command.  <br /></td></tr>
+<tr class="separator:ad2dfbb3a1d96477886611f349315d073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a482be1ab3ab9702f64f8fd12aa3520d4" id="r_a482be1ab3ab9702f64f8fd12aa3520d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#a482be1ab3ab9702f64f8fd12aa3520d4">apply</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html">RTS</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a482be1ab3ab9702f64f8fd12aa3520d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply all commands for one tick through the existing <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> order boundary.  <br /></td></tr>
+<tr class="separator:a482be1ab3ab9702f64f8fd12aa3520d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade15514a025738d3acebfc0b4f5e7fd1" id="r_ade15514a025738d3acebfc0b4f5e7fd1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#ade15514a025738d3acebfc0b4f5e7fd1">exportText</a> () const</td></tr>
+<tr class="memdesc:ade15514a025738d3acebfc0b4f5e7fd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export retained commands in a locale-independent text format.  <br /></td></tr>
+<tr class="separator:ade15514a025738d3acebfc0b4f5e7fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b2d9bdd462e8ae052bcff0992bddf2d" id="r_a1b2d9bdd462e8ae052bcff0992bddf2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#a1b2d9bdd462e8ae052bcff0992bddf2d">importText</a> (std::string_view <a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> currentTick={}, bool clearExisting=true)</td></tr>
+<tr class="memdesc:a1b2d9bdd462e8ae052bcff0992bddf2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and atomically import a command log.  <br /></td></tr>
+<tr class="separator:a1b2d9bdd462e8ae052bcff0992bddf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b7088f2a41876977507ed24c91eaf1" id="r_a61b7088f2a41876977507ed24c91eaf1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#a61b7088f2a41876977507ed24c91eaf1">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a61b7088f2a41876977507ed24c91eaf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove queued and retained commands.  <br /></td></tr>
+<tr class="separator:a61b7088f2a41876977507ed24c91eaf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc1767fb16ab91946c3c1f0f3ad79cae" id="r_acc1767fb16ab91946c3c1f0f3ad79cae"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSCommandLog.html#acc1767fb16ab91946c3c1f0f3ad79cae">size</a> () const noexcept</td></tr>
+<tr class="memdesc:acc1767fb16ab91946c3c1f0f3ad79cae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of retained commands.  <br /></td></tr>
+<tr class="separator:acc1767fb16ab91946c3c1f0f3ad79cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic lockstep input buffer and portable command log. </p>
+<p>This class owns only input history. Simulation state and order execution remain authoritative in <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> and the generic orders module. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8h_source.html">RTSReplay.h</a> 第 <a class="el" href="RTSReplay_8h_source.html#l00059">59</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a482be1ab3ab9702f64f8fd12aa3520d4" name="a482be1ab3ab9702f64f8fd12aa3520d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a482be1ab3ab9702f64f8fd12aa3520d4">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt; eve::rts::RTSCommandLog::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rts_1_1RTS.html">RTS</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply all commands for one tick through the existing <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> order boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a> 第 <a class="el" href="RTSReplay_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a698dcef315bbeccaa57c333577736370">eve::rts::Ability</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628ac940b063ecf0e6afcbe904193b19e99a">eve::rts::CancelAbility</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628aedf8206d1cfd3a12ee4ea25c2d3adfc0">eve::rts::CancelConstruction</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a1ac41b2ad9d38a5cab4e09a74a771fc9">eve::rts::CancelFireSupport</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a5994596d47c576efd5a33abf6d0f7398">eve::rts::CancelProduction</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a2a0d30cb1153031c3dfc239c6e0407ea">eve::rts::Construction</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a354a48d83bee6c11cca5402bf943be6f">eve::rts::Escort</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a756d97bb256b8580d4d71ee0c547804e">eve::rts::Production</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628adc27c8e5d353b6ecc54ca84051299c19">eve::rts::ReinforcementProduction</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a229b63bbd29b001b34e863647f0cfd2f">eve::rts::RequestFireSupport</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628af027f27d0d548351e4d362e9b90678a9">eve::rts::Research</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a7bd9282d839a417d01d2b054d0af97a7">eve::rts::SellBuilding</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628ac83a842878f19ca919e3ba58ae4e95d9">eve::rts::SuppressArea</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSReplay_8cpp_source.html#l00389">eve::rts::RTSLockstep::step()</a>.</p>
+
+</div>
+</div>
+<a id="a61b7088f2a41876977507ed24c91eaf1" name="a61b7088f2a41876977507ed24c91eaf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61b7088f2a41876977507ed24c91eaf1">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rts::RTSCommandLog::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove queued and retained commands. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a> 第 <a class="el" href="RTSReplay_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSReplay_8cpp_source.html#l00293">importText()</a>.</p>
+
+</div>
+</div>
+<a id="ade15514a025738d3acebfc0b4f5e7fd1" name="ade15514a025738d3acebfc0b4f5e7fd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade15514a025738d3acebfc0b4f5e7fd1">&#9670;&#160;</a></span>exportText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::RTSCommandLog::exportText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Export retained commands in a locale-independent text format. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a> 第 <a class="el" href="RTSReplay_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a1b2d9bdd462e8ae052bcff0992bddf2d" name="a1b2d9bdd462e8ae052bcff0992bddf2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b2d9bdd462e8ae052bcff0992bddf2d">&#9670;&#160;</a></span>importText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::RTSCommandLog::importText </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clearExisting</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and atomically import a command log. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a> 第 <a class="el" href="RTSReplay_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00372">clear()</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a354a48d83bee6c11cca5402bf943be6f">eve::rts::Escort</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">queue()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884af0fbb31eee4ed28df45c944acd79969b">eve::rts::SupplyRelay</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126aa0e9bb3a0eff96690b1e9badd73b99219">eve::rts::Wedge</a>.</p>
+
+</div>
+</div>
+<a id="ad2dfbb3a1d96477886611f349315d073" name="ad2dfbb3a1d96477886611f349315d073"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2dfbb3a1d96477886611f349315d073">&#9670;&#160;</a></span>queue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::RTSCommandLog::queue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1RTSReplayCommand.html">RTSReplayCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate, normalize, queue, and retain one future command. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a> 第 <a class="el" href="RTSReplay_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a698dcef315bbeccaa57c333577736370">eve::rts::Ability</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628ac940b063ecf0e6afcbe904193b19e99a">eve::rts::CancelAbility</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628aedf8206d1cfd3a12ee4ea25c2d3adfc0">eve::rts::CancelConstruction</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a1ac41b2ad9d38a5cab4e09a74a771fc9">eve::rts::CancelFireSupport</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a5994596d47c576efd5a33abf6d0f7398">eve::rts::CancelProduction</a>, <a class="el" href="RTSReplay_8h_source.html#l00040">eve::rts::RTSReplayCommand::command</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a2a0d30cb1153031c3dfc239c6e0407ea">eve::rts::Construction</a>, <a class="el" href="RTSReplay_8h_source.html#l00046">eve::rts::RTSReplayCommand::definition</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a354a48d83bee6c11cca5402bf943be6f">eve::rts::Escort</a>, <a class="el" href="RTSReplay_8h_source.html#l00044">eve::rts::RTSReplayCommand::faction</a>, <a class="el" href="RTSReplay_8h_source.html#l00042">eve::rts::RTSReplayCommand::formation</a>, <a class="el" href="Identity_8h_source.html#l00435">eve::LogicalId::isValid()</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="RTSReplay_8h_source.html#l00038">eve::rts::RTSReplayCommand::operation</a>, <a class="el" href="RTSReplay_8h_source.html#l00050">eve::rts::RTSReplayCommand::point</a>, <a class="el" href="RTSReplay_8h_source.html#l00048">eve::rts::RTSReplayCommand::priority</a>, <a class="el" href="RTSReplay_8h_source.html#l00043">eve::rts::RTSReplayCommand::producer</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a756d97bb256b8580d4d71ee0c547804e">eve::rts::Production</a>, <a class="el" href="RTSTypes_8h_source.html#l00107">eve::rts::CommandSpec::radius</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628adc27c8e5d353b6ecc54ca84051299c19">eve::rts::ReinforcementProduction</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a229b63bbd29b001b34e863647f0cfd2f">eve::rts::RequestFireSupport</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628af027f27d0d548351e4d362e9b90678a9">eve::rts::Research</a>, <a class="el" href="RTSReplay_8h_source.html#l00045">eve::rts::RTSReplayCommand::resultSubject</a>, <a class="el" href="RTSTypes_8h_source.html#l00106">eve::rts::CommandSpec::secondaryTarget</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628a7bd9282d839a417d01d2b054d0af97a7">eve::rts::SellBuilding</a>, <a class="el" href="RTSSystems_8h_source.html#l00032">eve::rts::FormationSpec::spacing</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628ac83a842878f19ca919e3ba58ae4e95d9">eve::rts::SuppressArea</a>, <a class="el" href="RTSTypes_8h_source.html#l00101">eve::rts::CommandSpec::target</a>, <a class="el" href="RTSReplay_8h_source.html#l00041">eve::rts::RTSReplayCommand::targetEntity</a>, <a class="el" href="RTSTypes_8h_source.html#l00105">eve::rts::CommandSpec::targetEntity</a>, <a class="el" href="RTSReplay_8h_source.html#l00037">eve::rts::RTSReplayCommand::tick</a>, <a class="el" href="namespaceeve_1_1rts.html#a793dbe03e35e951724f885dbd677a628affaa61766d8ba4f855542a28567463fb">eve::rts::UnitCommand</a>, <a class="el" href="RTSReplay_8h_source.html#l00039">eve::rts::RTSReplayCommand::units</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00397">eve::rts::FormationSpec::validate()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00215">eve::rts::CommandSpec::validate()</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="RTSReplay_8h_source.html#l00047">eve::rts::RTSReplayCommand::value</a>, <a class="el" href="RTSTypes_8h_source.html#l00047">eve::rts::WorldPosition::x</a> , 以及 <a class="el" href="RTSTypes_8h_source.html#l00048">eve::rts::WorldPosition::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSReplay_8cpp_source.html#l00293">importText()</a> , 以及 <a class="el" href="RTSReplay_8h_source.html#l00094">eve::rts::RTSLockstep::queue()</a>.</p>
+
+</div>
+</div>
+<a id="acc1767fb16ab91946c3c1f0f3ad79cae" name="acc1767fb16ab91946c3c1f0f3ad79cae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1767fb16ab91946c3c1f0f3ad79cae">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::rts::RTSCommandLog::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of retained commands. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSReplay_8h_source.html">RTSReplay.h</a> 第 <a class="el" href="RTSReplay_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSReplay_8h_source.html">RTSReplay.h</a></li>
+<li>src/modules/rts/<a class="el" href="RTSReplay_8cpp_source.html">RTSReplay.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

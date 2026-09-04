@@ -1,0 +1,681 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainStreamingCache类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html">TerrainStreamingCache</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainStreamingCache-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainStreamingCache类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> decoded-chunk cache for an EVTR terrain asset.  
+ <a href="classeve_1_1procgen_1_1TerrainStreamingCache.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainStreaming_8h_source.html">TerrainStreaming.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa1e3960de9abda4cc8eb87c088571f6a" id="r_aa1e3960de9abda4cc8eb87c088571f6a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#aa1e3960de9abda4cc8eb87c088571f6a">open</a> (const uint8_t *data, size_t size, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:aa1e3960de9abda4cc8eb87c088571f6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that opens EVTR and clears decoded chunks.  <br /></td></tr>
+<tr class="separator:aa1e3960de9abda4cc8eb87c088571f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97b343187b45a4b397298f6539686de8" id="r_a97b343187b45a4b397298f6539686de8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#a97b343187b45a4b397298f6539686de8">clear</a> ()</td></tr>
+<tr class="separator:a97b343187b45a4b397298f6539686de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcdf5196ba31172f56c634c04edc1c23" id="r_adcdf5196ba31172f56c634c04edc1c23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">TerrainStreamStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#adcdf5196ba31172f56c634c04edc1c23">streamAround</a> (int worldX, int worldY, int radiusChunks, int maxLoads=0, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:adcdf5196ba31172f56c634c04edc1c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stream chunks around a world-space sample coordinate.  <br /></td></tr>
+<tr class="separator:adcdf5196ba31172f56c634c04edc1c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11a3fd4f2bb46b2bcb019e5ee1e5af5d" id="r_a11a3fd4f2bb46b2bcb019e5ee1e5af5d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#a11a3fd4f2bb46b2bcb019e5ee1e5af5d">getChunk</a> (int chunkX, int chunkY) const</td></tr>
+<tr class="memdesc:a11a3fd4f2bb46b2bcb019e5ee1e5af5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a resident chunk. @lifetime Pointer remains valid until cache mutation.  <br /></td></tr>
+<tr class="separator:a11a3fd4f2bb46b2bcb019e5ee1e5af5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7b964de03fe82cbaa30cb47d599b416" id="r_ae7b964de03fe82cbaa30cb47d599b416"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#ae7b964de03fe82cbaa30cb47d599b416">sampleCell</a> (int worldX, int worldY, <a class="el" href="structeve_1_1procgen_1_1TerrainSample.html">TerrainSample</a> &amp;out) const</td></tr>
+<tr class="memdesc:ae7b964de03fe82cbaa30cb47d599b416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that reads a resident integer world cell.  <br /></td></tr>
+<tr class="separator:ae7b964de03fe82cbaa30cb47d599b416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace8808bb5c46d796fa89b65d17170daf" id="r_ace8808bb5c46d796fa89b65d17170daf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#ace8808bb5c46d796fa89b65d17170daf">sampleHeight</a> (float worldX, float worldY, float &amp;out) const</td></tr>
+<tr class="memdesc:ace8808bb5c46d796fa89b65d17170daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation for cross-chunk bilinear height sampling.  <br /></td></tr>
+<tr class="separator:ace8808bb5c46d796fa89b65d17170daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a277b887ca4d2577763ffe7f9809b3fae" id="r_a277b887ca4d2577763ffe7f9809b3fae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#a277b887ca4d2577763ffe7f9809b3fae">getReceiver</a> (int worldX, int worldY, int &amp;receiverX, int &amp;receiverY) const</td></tr>
+<tr class="memdesc:a277b887ca4d2577763ffe7f9809b3fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a cell's D8 receiver in global coordinates, including an adjacent chunk.  <br /></td></tr>
+<tr class="separator:a277b887ca4d2577763ffe7f9809b3fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac935b1c8f057876e3983112ceca7aee0" id="r_ac935b1c8f057876e3983112ceca7aee0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#ac935b1c8f057876e3983112ceca7aee0">traceFlow</a> (int worldX, int worldY, int maxSteps, std::vector&lt; std::pair&lt; int, int &gt; &gt; &amp;out) const</td></tr>
+<tr class="memdesc:ac935b1c8f057876e3983112ceca7aee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that follows D8 receivers across chunks.  <br /></td></tr>
+<tr class="separator:ac935b1c8f057876e3983112ceca7aee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ef0cae04e70da907547149e334544f8" id="r_a9ef0cae04e70da907547149e334544f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#a9ef0cae04e70da907547149e334544f8">buildWindow</a> (int originX, int originY, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <a class="el" href="structeve_1_1procgen_1_1TerrainStreamingWindow.html">TerrainStreamingWindow</a> &amp;out) const</td></tr>
+<tr class="memdesc:a9ef0cae04e70da907547149e334544f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that assembles a dense hydrology window.  <br /></td></tr>
+<tr class="separator:a9ef0cae04e70da907547149e334544f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fcbbb6cf739f7b6d5291e59bea5c33d" id="r_a6fcbbb6cf739f7b6d5291e59bea5c33d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#a6fcbbb6cf739f7b6d5291e59bea5c33d">getResidentCount</a> () const</td></tr>
+<tr class="separator:a6fcbbb6cf739f7b6d5291e59bea5c33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8524b540b6ed036560b59fec919e009" id="r_af8524b540b6ed036560b59fec919e009"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html">TerrainAsset</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#af8524b540b6ed036560b59fec919e009">asset</a> () const</td></tr>
+<tr class="separator:af8524b540b6ed036560b59fec919e009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> decoded-chunk cache for an EVTR terrain asset. </p>
+<p>Requests are ordered nearest-first and may be limited per call with <code>maxLoads</code>, allowing a game to spread decompression across frames. Chunks outside the requested circular radius are evicted before new chunks load. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8h_source.html">TerrainStreaming.h</a> 第 <a class="el" href="TerrainStreaming_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="af8524b540b6ed036560b59fec919e009" name="af8524b540b6ed036560b59fec919e009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8524b540b6ed036560b59fec919e009">&#9670;&#160;</a></span>asset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html">TerrainAsset</a> &amp; eve::procgen::TerrainStreamingCache::asset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8h_source.html">TerrainStreaming.h</a> 第 <a class="el" href="TerrainStreaming_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">eve::voxel::VoxelWorld::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a9ef0cae04e70da907547149e334544f8" name="a9ef0cae04e70da907547149e334544f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ef0cae04e70da907547149e334544f8">&#9670;&#160;</a></span>buildWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::buildWindow </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1TerrainStreamingWindow.html">TerrainStreamingWindow</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that assembles a dense hydrology window. </p>
+<p>Requesting one extra cell on each side provides the halo needed for seam-stable river ribbons, normals, and bank calculations. Coordinates are global cells. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8h_source.html#l00028">eve::procgen::TerrainSample::biome</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00047">eve::procgen::ClimateMap::biomes</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00036">eve::procgen::TerrainStreamingWindow::climate</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00038">eve::procgen::HydrologyMap::flowAccumulation</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::flowAccumulation</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00036">eve::procgen::HydrologyMap::flowDirection</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00026">eve::procgen::TerrainSample::flowDirection</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00037">eve::procgen::HydrologyMap::flowVectorX</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00024">eve::procgen::TerrainSample::flowVectorX</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00037">eve::procgen::HydrologyMap::flowVectorY</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00024">eve::procgen::TerrainSample::flowVectorY</a>, <a class="el" href="TerrainAsset_8h_source.html#l00057">eve::procgen::TerrainAsset::getHeight()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00056">eve::procgen::TerrainAsset::getWidth()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00035">eve::procgen::HydrologyMap::height</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00045">eve::procgen::ClimateMap::height</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::height</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00034">eve::procgen::TerrainStreamingWindow::heights</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00035">eve::procgen::TerrainStreamingWindow::hydrology</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00039">eve::procgen::HydrologyMap::lakeDepth</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::lakeDepth</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00046">eve::procgen::ClimateMap::moisture</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00025">eve::procgen::TerrainSample::moisture</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00033">eve::procgen::TerrainStreamingWindow::originX</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00033">eve::procgen::TerrainStreamingWindow::originY</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00027">eve::procgen::TerrainSample::river</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00040">eve::procgen::HydrologyMap::rivers</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">sampleCell()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00023">eve::procgen::Heightmap::setHeight()</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00041">eve::procgen::HydrologyMap::streamOrder</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00026">eve::procgen::TerrainSample::streamOrder</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00046">eve::procgen::ClimateMap::temperature</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00025">eve::procgen::TerrainSample::temperature</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00035">eve::procgen::HydrologyMap::width</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00045">eve::procgen::ClimateMap::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a97b343187b45a4b397298f6539686de8" name="a97b343187b45a4b397298f6539686de8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97b343187b45a4b397298f6539686de8">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainStreamingCache::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8h_source.html#l00107">eve::voxel::VoxelWorld::disableTerrain()</a>.</p>
+
+</div>
+</div>
+<a id="a11a3fd4f2bb46b2bcb019e5ee1e5af5d" name="a11a3fd4f2bb46b2bcb019e5ee1e5af5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a3fd4f2bb46b2bcb019e5ee1e5af5d">&#9670;&#160;</a></span>getChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> * eve::procgen::TerrainStreamingCache::getChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow a resident chunk. @lifetime Pointer remains valid until cache mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">sampleCell()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a277b887ca4d2577763ffe7f9809b3fae" name="a277b887ca4d2577763ffe7f9809b3fae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a277b887ca4d2577763ffe7f9809b3fae">&#9670;&#160;</a></span>getReceiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::getReceiver </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>receiverX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>receiverY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a cell's D8 receiver in global coordinates, including an adjacent chunk. </p>
+<dl class="section return"><dt>返回</dt><dd>False for outlets, invalid directions, or when either required chunk is absent. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">sampleCell()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00105">traceFlow()</a>.</p>
+
+</div>
+</div>
+<a id="a6fcbbb6cf739f7b6d5291e59bea5c33d" name="a6fcbbb6cf739f7b6d5291e59bea5c33d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fcbbb6cf739f7b6d5291e59bea5c33d">&#9670;&#160;</a></span>getResidentCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainStreamingCache::getResidentCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8h_source.html">TerrainStreaming.h</a> 第 <a class="el" href="TerrainStreaming_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8h_source.html#l00118">eve::voxel::VoxelWorld::getTerrainAssetResidentCount()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="aa1e3960de9abda4cc8eb87c088571f6a" name="aa1e3960de9abda4cc8eb87c088571f6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1e3960de9abda4cc8eb87c088571f6a">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::open </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that opens EVTR and clears decoded chunks. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="TerrainAsset_8cpp_source.html#l00164">eve::procgen::TerrainAsset::open()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00144">eve::voxel::VoxelWorld::loadTerrainAsset()</a>.</p>
+
+</div>
+</div>
+<a id="ae7b964de03fe82cbaa30cb47d599b416" name="ae7b964de03fe82cbaa30cb47d599b416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7b964de03fe82cbaa30cb47d599b416">&#9670;&#160;</a></span>sampleCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::sampleCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1TerrainSample.html">TerrainSample</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that reads a resident integer world cell. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8h_source.html#l00028">eve::procgen::TerrainSample::biome</a>, <a class="el" href="TerrainAsset_8h_source.html#l00021">eve::procgen::TerrainChunkData::biomes</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowAccumulation</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::flowAccumulation</a>, <a class="el" href="TerrainAsset_8h_source.html#l00019">eve::procgen::TerrainChunkData::flowDirection</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00026">eve::procgen::TerrainSample::flowDirection</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowVectorX</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00024">eve::procgen::TerrainSample::flowVectorX</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowVectorY</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00024">eve::procgen::TerrainSample::flowVectorY</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00069">getChunk()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00058">eve::procgen::TerrainAsset::getChunkSize()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00057">eve::procgen::TerrainAsset::getHeight()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00056">eve::procgen::TerrainAsset::getWidth()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00015">eve::procgen::TerrainChunkData::height</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::height</a>, <a class="el" href="TerrainAsset_8h_source.html#l00016">eve::procgen::TerrainChunkData::heights</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00027">eve::procgen::TerrainSample::lake</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::lakeDepth</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00023">eve::procgen::TerrainSample::lakeDepth</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::moisture</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00025">eve::procgen::TerrainSample::moisture</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00027">eve::procgen::TerrainSample::river</a>, <a class="el" href="TerrainAsset_8h_source.html#l00020">eve::procgen::TerrainChunkData::rivers</a>, <a class="el" href="TerrainAsset_8h_source.html#l00020">eve::procgen::TerrainChunkData::streamOrder</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00026">eve::procgen::TerrainSample::streamOrder</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::temperature</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00025">eve::procgen::TerrainSample::temperature</a> , 以及 <a class="el" href="TerrainAsset_8h_source.html#l00015">eve::procgen::TerrainChunkData::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00126">buildWindow()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00092">getReceiver()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">sampleHeight()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00105">traceFlow()</a>.</p>
+
+</div>
+</div>
+<a id="ace8808bb5c46d796fa89b65d17170daf" name="ace8808bb5c46d796fa89b65d17170daf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace8808bb5c46d796fa89b65d17170daf">&#9670;&#160;</a></span>sampleHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::sampleHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation for cross-chunk bilinear height sampling. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="TerrainAsset_8h_source.html#l00057">eve::procgen::TerrainAsset::getHeight()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00056">eve::procgen::TerrainAsset::getWidth()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">sampleCell()</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00171">eve::voxel::VoxelWorld::terrainHeightAt()</a>.</p>
+
+</div>
+</div>
+<a id="adcdf5196ba31172f56c634c04edc1c23" name="adcdf5196ba31172f56c634c04edc1c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdf5196ba31172f56c634c04edc1c23">&#9670;&#160;</a></span>streamAround()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">TerrainStreamStats</a> eve::procgen::TerrainStreamingCache::streamAround </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radiusChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxLoads</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stream chunks around a world-space sample coordinate. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radiusChunks</td><td>Circular residency radius in chunks; negative is a no-op. </td></tr>
+    <tr><td class="paramname">maxLoads</td><td>Maximum new chunks decoded this call; zero means unlimited. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="TerrainAsset_8h_source.html#l00061">eve::procgen::TerrainAsset::chunks()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00016">eve::procgen::TerrainStreamStats::evicted</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00018">eve::procgen::TerrainStreamStats::failed</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00069">getChunk()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00058">eve::procgen::TerrainAsset::getChunkSize()</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00088">getResidentCount()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00222">eve::procgen::TerrainAsset::loadChunk()</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00015">eve::procgen::TerrainStreamStats::loaded</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00017">eve::procgen::TerrainStreamStats::pending</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TerrainStreaming_8h_source.html#l00019">eve::procgen::TerrainStreamStats::resident</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">eve::voxel::VoxelWorld::streamAround()</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00155">eve::voxel::VoxelWorld::streamTerrainAssetAround()</a>.</p>
+
+</div>
+</div>
+<a id="ac935b1c8f057876e3983112ceca7aee0" name="ac935b1c8f057876e3983112ceca7aee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac935b1c8f057876e3983112ceca7aee0">&#9670;&#160;</a></span>traceFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainStreamingCache::traceFlow </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxSteps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::pair&lt; int, int &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that follows D8 receivers across chunks. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maxSteps</td><td>Safety limit; must be positive. </td></tr>
+    <tr><td class="paramname">out</td><td>Global cell coordinates, including the starting cell. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>False if tracing reaches a non-resident chunk or an invalid/cyclic receiver. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a> 第 <a class="el" href="TerrainStreaming_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8h_source.html#l00026">eve::procgen::TerrainSample::flowDirection</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00092">getReceiver()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">sampleCell()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainStreaming_8h_source.html">TerrainStreaming.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainStreaming_8cpp_source.html">TerrainStreaming.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

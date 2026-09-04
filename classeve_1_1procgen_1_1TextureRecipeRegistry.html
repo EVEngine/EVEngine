@@ -1,0 +1,543 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TextureRecipeRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TextureRecipeRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TextureRecipeRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="TextureRecipe_8h_source.html">TextureRecipe.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa861d72cf900025b075031eac50a62d4" id="r_aa861d72cf900025b075031eac50a62d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#aa861d72cf900025b075031eac50a62d4">registerRecipe</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:aa861d72cf900025b075031eac50a62d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a recipe without metadata.  <br /></td></tr>
+<tr class="separator:aa861d72cf900025b075031eac50a62d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d94ad796b7cc45b841201449e281327" id="r_a7d94ad796b7cc45b841201449e281327"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a7d94ad796b7cc45b841201449e281327">registerRecipe</a> (<a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> <a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a80c1e948e322d35a4cf401a7617cf55c">descriptor</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:a7d94ad796b7cc45b841201449e281327"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a texture recipe with reusable metadata.  <br /></td></tr>
+<tr class="separator:a7d94ad796b7cc45b841201449e281327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15a752d2cc717c2c666908adaea8d487" id="r_a15a752d2cc717c2c666908adaea8d487"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a15a752d2cc717c2c666908adaea8d487">has</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a15a752d2cc717c2c666908adaea8d487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether a recipe exists.  <br /></td></tr>
+<tr class="separator:a15a752d2cc717c2c666908adaea8d487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b1804a9d83ca71e7f5d34f3093c072" id="r_a71b1804a9d83ca71e7f5d34f3093c072"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a71b1804a9d83ca71e7f5d34f3093c072">generate</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) const</td></tr>
+<tr class="memdesc:a71b1804a9d83ca71e7f5d34f3093c072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates an image and transfers its unique ownership to the caller.  <br /></td></tr>
+<tr class="separator:a71b1804a9d83ca71e7f5d34f3093c072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf3ec1d581528e114fe13afcfdc8a6cd" id="r_abf3ec1d581528e114fe13afcfdc8a6cd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#abf3ec1d581528e114fe13afcfdc8a6cd">list</a> () const</td></tr>
+<tr class="memdesc:abf3ec1d581528e114fe13afcfdc8a6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">List registered recipe ids.  <br /></td></tr>
+<tr class="separator:abf3ec1d581528e114fe13afcfdc8a6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80c1e948e322d35a4cf401a7617cf55c" id="r_a80c1e948e322d35a4cf401a7617cf55c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a80c1e948e322d35a4cf401a7617cf55c">descriptor</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a80c1e948e322d35a4cf401a7617cf55c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up recipe metadata.  <br /></td></tr>
+<tr class="separator:a80c1e948e322d35a4cf401a7617cf55c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6f528b013971342cafb48baf05aa0d" id="r_a2f6f528b013971342cafb48baf05aa0d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a2f6f528b013971342cafb48baf05aa0d">applyDefaults</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>) const</td></tr>
+<tr class="memdesc:a2f6f528b013971342cafb48baf05aa0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill missing values from metadata.  <br /></td></tr>
+<tr class="separator:a2f6f528b013971342cafb48baf05aa0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4c5e73786fe368f1890f8d9ab3e83db" id="r_ae4c5e73786fe368f1890f8d9ab3e83db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#ae4c5e73786fe368f1890f8d9ab3e83db">registerBuiltins</a> ()</td></tr>
+<tr class="memdesc:ae4c5e73786fe368f1890f8d9ab3e83db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register engine-provided recipes once.  <br /></td></tr>
+<tr class="separator:ae4c5e73786fe368f1890f8d9ab3e83db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:af87db9b8047f8d463e0ba9a307ca871a" id="r_af87db9b8047f8d463e0ba9a307ca871a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#af87db9b8047f8d463e0ba9a307ca871a">instance</a> ()</td></tr>
+<tr class="memdesc:af87db9b8047f8d463e0ba9a307ca871a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the process-wide texture recipe registry.  <br /></td></tr>
+<tr class="separator:af87db9b8047f8d463e0ba9a307ca871a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8h_source.html">TextureRecipe.h</a> 第 <a class="el" href="TextureRecipe_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a2f6f528b013971342cafb48baf05aa0d" name="a2f6f528b013971342cafb48baf05aa0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f6f528b013971342cafb48baf05aa0d">&#9670;&#160;</a></span>applyDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TextureRecipeRegistry::applyDefaults </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill missing values from metadata. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Recipe id.</td></tr>
+    <tr><td class="paramname">params</td><td>Values to update. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>False for an unknown recipe. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8cpp_source.html#l00091">eve::procgen::RecipeDescriptor::applyDefaults()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>.</p>
+
+</div>
+</div>
+<a id="a80c1e948e322d35a4cf401a7617cf55c" name="a80c1e948e322d35a4cf401a7617cf55c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80c1e948e322d35a4cf401a7617cf55c">&#9670;&#160;</a></span>descriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> * eve::procgen::TextureRecipeRegistry::descriptor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Look up recipe metadata. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Recipe id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registry-owned schema or nullptr. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01922">eve::procgen::Procgen::getTextureRecipeSchema()</a>.</p>
+
+</div>
+</div>
+<a id="a71b1804a9d83ca71e7f5d34f3093c072" name="a71b1804a9d83ca71e7f5d34f3093c072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b1804a9d83ca71e7f5d34f3093c072">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt; eve::procgen::TextureRecipeRegistry::generate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generates an image and transfers its unique ownership to the caller. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable recipe id. </td></tr>
+    <tr><td class="paramname">params</td><td>Validated recipe parameters. </td></tr>
+    <tr><td class="paramname">error</td><td>Receives a human-readable failure description when generation fails. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly owned image, or null when the recipe is unknown or generation fails. @ownership The returned image is owned by the caller. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00224">eve::procgen_editing::TextureRecipePreviewRuntime::generate()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l01793">eve::procgen::Procgen::generateImageHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a15a752d2cc717c2c666908adaea8d487" name="a15a752d2cc717c2c666908adaea8d487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15a752d2cc717c2c666908adaea8d487">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TextureRecipeRegistry::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether a recipe exists. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Recipe id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when registered. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01917">eve::procgen::Procgen::hasTextureRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="af87db9b8047f8d463e0ba9a307ca871a" name="af87db9b8047f8d463e0ba9a307ca871a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af87db9b8047f8d463e0ba9a307ca871a">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp; eve::procgen::TextureRecipeRegistry::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the process-wide texture recipe registry. </p>
+<dl class="section return"><dt>返回</dt><dd>Registry instance. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01931">eve::procgen::Procgen::applyTextureRecipeDefaults()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00224">eve::procgen_editing::TextureRecipePreviewRuntime::generate()</a>, <a class="el" href="Procgen_8cpp_source.html#l01793">eve::procgen::Procgen::generateImageHandle()</a>, <a class="el" href="Procgen_8cpp_source.html#l01902">eve::procgen::Procgen::getTextureRecipeCount()</a>, <a class="el" href="Procgen_8cpp_source.html#l01908">eve::procgen::Procgen::getTextureRecipeId()</a>, <a class="el" href="Procgen_8cpp_source.html#l01922">eve::procgen::Procgen::getTextureRecipeSchema()</a>, <a class="el" href="Procgen_8cpp_source.html#l01917">eve::procgen::Procgen::hasTextureRecipe()</a>, <a class="el" href="Procgen_8cpp_source.html#l00326">eve::procgen::Procgen::Procgen()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00093">eve::procgen_editing::TextureRecipeTarget::schema()</a> , 以及 <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00153">eve::procgen_editing::TextureRecipeTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="abf3ec1d581528e114fe13afcfdc8a6cd" name="abf3ec1d581528e114fe13afcfdc8a6cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf3ec1d581528e114fe13afcfdc8a6cd">&#9670;&#160;</a></span>list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::procgen::TextureRecipeRegistry::list </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>List registered recipe ids. </p>
+<dl class="section return"><dt>返回</dt><dd>Sorted ids. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01902">eve::procgen::Procgen::getTextureRecipeCount()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l01908">eve::procgen::Procgen::getTextureRecipeId()</a>.</p>
+
+</div>
+</div>
+<a id="ae4c5e73786fe368f1890f8d9ab3e83db" name="ae4c5e73786fe368f1890f8d9ab3e83db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4c5e73786fe368f1890f8d9ab3e83db">&#9670;&#160;</a></span>registerBuiltins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TextureRecipeRegistry::registerBuiltins </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register engine-provided recipes once. </p>
+
+<p class="definition">在文件 <a class="el" href="BuiltinTextures_8cpp_source.html">BuiltinTextures.cpp</a> 第 <a class="el" href="BuiltinTextures_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8cpp_source.html#l00047">eve::procgen::ParamDescriptor::boolean()</a>, <a class="el" href="BuiltinTextures_8cpp_source.html#l00481">eve::procgen::builtinTextureDefs()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00033">eve::procgen::ParamDescriptor::floating()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00073">eve::procgen::RecipeDescriptor::grid()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00019">eve::procgen::ParamDescriptor::integer()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00088">eve::procgen::makeTextureRecipeDescriptor()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="ParamSchema_8h_source.html#l00056">eve::procgen::RecipeDescriptor::params</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00286">eve::procgen::registerPrototypeTextureRecipes()</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">registerRecipe()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01931">eve::procgen::Procgen::applyTextureRecipeDefaults()</a>, <a class="el" href="Procgen_8cpp_source.html#l01793">eve::procgen::Procgen::generateImageHandle()</a>, <a class="el" href="Procgen_8cpp_source.html#l01902">eve::procgen::Procgen::getTextureRecipeCount()</a>, <a class="el" href="Procgen_8cpp_source.html#l01908">eve::procgen::Procgen::getTextureRecipeId()</a>, <a class="el" href="Procgen_8cpp_source.html#l01922">eve::procgen::Procgen::getTextureRecipeSchema()</a>, <a class="el" href="Procgen_8cpp_source.html#l01917">eve::procgen::Procgen::hasTextureRecipe()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l00326">eve::procgen::Procgen::Procgen()</a>.</p>
+
+</div>
+</div>
+<a id="aa861d72cf900025b075031eac50a62d4" name="aa861d72cf900025b075031eac50a62d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa861d72cf900025b075031eac50a62d4">&#9670;&#160;</a></span>registerRecipe() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TextureRecipeRegistry::registerRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a recipe without metadata. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable recipe id.</td></tr>
+    <tr><td class="paramname">fn</td><td>Generator callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="ParamSchema_8h_source.html#l00053">eve::procgen::RecipeDescriptor::id</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">registerRecipe()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuiltinTextures_8cpp_source.html#l00486">registerBuiltins()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00286">eve::procgen::registerPrototypeTextureRecipes()</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">registerRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="a7d94ad796b7cc45b841201449e281327" name="a7d94ad796b7cc45b841201449e281327"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d94ad796b7cc45b841201449e281327">&#9670;&#160;</a></span>registerRecipe() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TextureRecipeRegistry::registerRecipe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a texture recipe with reusable metadata. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">descriptor</td><td>Recipe schema.</td></tr>
+    <tr><td class="paramname">fn</td><td>Generator callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a> 第 <a class="el" href="TextureRecipe_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/texture/<a class="el" href="TextureRecipe_8h_source.html">TextureRecipe.h</a></li>
+<li>src/modules/procgen/texture/<a class="el" href="BuiltinTextures_8cpp_source.html">BuiltinTextures.cpp</a></li>
+<li>src/modules/procgen/texture/<a class="el" href="TextureRecipe_8cpp_source.html">TextureRecipe.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

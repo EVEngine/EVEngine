@@ -1,0 +1,846 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::card::CardDefinitionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1card.html">card</a></li><li class="navelem"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1card_1_1CardDefinitionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::card::CardDefinitionRuntime类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Binds a typed card runtime to one Definitions registry incarnation.  
+ <a href="classeve_1_1card_1_1CardDefinitionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CardDefinitionRuntime_8h_source.html">CardDefinitionRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a862e16815563d4e853edd7ddf215ec06" id="r_a862e16815563d4e853edd7ddf215ec06"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a862e16815563d4e853edd7ddf215ec06">CardDefinitionRuntime</a> (<a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:a862e16815563d4e853edd7ddf215ec06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move a card runtime while retaining its borrowed registry binding.  <br /></td></tr>
+<tr class="separator:a862e16815563d4e853edd7ddf215ec06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff84c2143a94ea2bdb194154e19aa411" id="r_aff84c2143a94ea2bdb194154e19aa411"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#aff84c2143a94ea2bdb194154e19aa411">operator=</a> (<a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:aff84c2143a94ea2bdb194154e19aa411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign a card runtime.  <br /></td></tr>
+<tr class="separator:aff84c2143a94ea2bdb194154e19aa411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc6f83436c46b7a38c7ccd0637cf1066" id="r_afc6f83436c46b7a38c7ccd0637cf1066"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#afc6f83436c46b7a38c7ccd0637cf1066">CardDefinitionRuntime</a> (const <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="memdesc:afc6f83436c46b7a38c7ccd0637cf1066"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1card_1_1Card.html" title="卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。">Card</a> runtimes are not implicitly copyable.  <br /></td></tr>
+<tr class="separator:afc6f83436c46b7a38c7ccd0637cf1066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eb53a370e80dc9f6767a457d17edd54" id="r_a3eb53a370e80dc9f6767a457d17edd54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3eb53a370e80dc9f6767a457d17edd54">operator=</a> (const <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a3eb53a370e80dc9f6767a457d17edd54"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1card_1_1Card.html" title="卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。">Card</a> runtimes are not implicitly copy-assignable.  <br /></td></tr>
+<tr class="separator:a3eb53a370e80dc9f6767a457d17edd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15f22bcfafb181f3a0c8f4e7434f3f3c" id="r_a15f22bcfafb181f3a0c8f4e7434f3f3c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a15f22bcfafb181f3a0c8f4e7434f3f3c">~CardDefinitionRuntime</a> ()=default</td></tr>
+<tr class="memdesc:a15f22bcfafb181f3a0c8f4e7434f3f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the card runtime; the registry remains caller-owned.  <br /></td></tr>
+<tr class="separator:a15f22bcfafb181f3a0c8f4e7434f3f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32cb411c70ed865c5185e60f9ea9c874" id="r_a32cb411c70ed865c5185e60f9ea9c874"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a32cb411c70ed865c5185e60f9ea9c874">identity</a> () const noexcept</td></tr>
+<tr class="memdesc:a32cb411c70ed865c5185e60f9ea9c874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the unified instance identity.  <br /></td></tr>
+<tr class="separator:a32cb411c70ed865c5185e60f9ea9c874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30bba1ed6cb29c5bbfd5dd8f490afdf1" id="r_a30bba1ed6cb29c5bbfd5dd8f490afdf1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a30bba1ed6cb29c5bbfd5dd8f490afdf1">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a30bba1ed6cb29c5bbfd5dd8f490afdf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the strongly typed card runtime state.  <br /></td></tr>
+<tr class="separator:a30bba1ed6cb29c5bbfd5dd8f490afdf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22316dfce2c824cf2622e820a5e71fb6" id="r_a22316dfce2c824cf2622e820a5e71fb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a22316dfce2c824cf2622e820a5e71fb6">state</a> () noexcept</td></tr>
+<tr class="memdesc:a22316dfce2c824cf2622e820a5e71fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutate the strongly typed card runtime state on the owner thread.  <br /></td></tr>
+<tr class="separator:a22316dfce2c824cf2622e820a5e71fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80fae1e905a02cdcdf4d0e76c789f4e" id="r_ad80fae1e905a02cdcdf4d0e76c789f4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#ad80fae1e905a02cdcdf4d0e76c789f4e">definitionHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:ad80fae1e905a02cdcdf4d0e76c789f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the exact generation-qualified definition handle.  <br /></td></tr>
+<tr class="separator:ad80fae1e905a02cdcdf4d0e76c789f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a985d44db6e1b17e60895397b1ca2cc" id="r_a3a985d44db6e1b17e60895397b1ca2cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3a985d44db6e1b17e60895397b1ca2cc">reloadPolicy</a> () const noexcept</td></tr>
+<tr class="memdesc:a3a985d44db6e1b17e60895397b1ca2cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the policy used by the next reload call.  <br /></td></tr>
+<tr class="separator:a3a985d44db6e1b17e60895397b1ca2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9049ebf64c5ba78f8e6d7a08586fe5e1" id="r_a9049ebf64c5ba78f8e6d7a08586fe5e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a9049ebf64c5ba78f8e6d7a08586fe5e1">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) noexcept</td></tr>
+<tr class="memdesc:a9049ebf64c5ba78f8e6d7a08586fe5e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark the instance active/inactive for RejectWhileActive.  <br /></td></tr>
+<tr class="separator:a9049ebf64c5ba78f8e6d7a08586fe5e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67671b75c46a01114044482d90e54005" id="r_a67671b75c46a01114044482d90e54005"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a67671b75c46a01114044482d90e54005">isActive</a> () const noexcept</td></tr>
+<tr class="memdesc:a67671b75c46a01114044482d90e54005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether RejectWhileActive currently treats the instance as active.  <br /></td></tr>
+<tr class="separator:a67671b75c46a01114044482d90e54005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f091ca5666f73cb0202c2ea19a8f39" id="r_a63f091ca5666f73cb0202c2ea19a8f39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a63f091ca5666f73cb0202c2ea19a8f39">applyTo</a> (<a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> *card) const</td></tr>
+<tr class="memdesc:a63f091ca5666f73cb0202c2ea19a8f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the typed state and common identity to an ECS <a class="el" href="classeve_1_1card_1_1CardData.html" title="单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。">CardData</a>.  <br /></td></tr>
+<tr class="separator:a63f091ca5666f73cb0202c2ea19a8f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a148a5baf8bf7fa533fb049655b1bb317" id="r_a148a5baf8bf7fa533fb049655b1bb317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a148a5baf8bf7fa533fb049655b1bb317">reload</a> (<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a148a5baf8bf7fa533fb049655b1bb317"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reload from the registry's current generation and execute policy.  <br /></td></tr>
+<tr class="separator:a148a5baf8bf7fa533fb049655b1bb317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf21f2f988eb17b5b864d171b1134f81" id="r_acf21f2f988eb17b5b864d171b1134f81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81">snapshot</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:acf21f2f988eb17b5b864d171b1134f81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture card instance state in the common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>.  <br /></td></tr>
+<tr class="separator:acf21f2f988eb17b5b864d171b1134f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f7df1bc8b4980ce7053f3491c32c7f9" id="r_a5f7df1bc8b4980ce7053f3491c32c7f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a5f7df1bc8b4980ce7053f3491c32c7f9">snapshotJson</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a5f7df1bc8b4980ce7053f3491c32c7f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81" title="Capture card instance state in the common SnapshotEnvelope.">snapshot()</a> as canonical JSON.  <br /></td></tr>
+<tr class="separator:a5f7df1bc8b4980ce7053f3491c32c7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdd6afd85e1c9f4c9cfcf33c1a77937f" id="r_afdd6afd85e1c9f4c9cfcf33c1a77937f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#afdd6afd85e1c9f4c9cfcf33c1a77937f">restore</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:afdd6afd85e1c9f4c9cfcf33c1a77937f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify and atomically restore a same-generation card snapshot.  <br /></td></tr>
+<tr class="separator:afdd6afd85e1c9f4c9cfcf33c1a77937f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7546e308d2fa29c2109994742c69b0fe" id="r_a7546e308d2fa29c2109994742c69b0fe"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a7546e308d2fa29c2109994742c69b0fe">create</a> (<a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;registry, <a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> definition, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a>)</td></tr>
+<tr class="memdesc:a7546e308d2fa29c2109994742c69b0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a card runtime from the current typed definition.  <br /></td></tr>
+<tr class="separator:a7546e308d2fa29c2109994742c69b0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Binds a typed card runtime to one Definitions registry incarnation. </p>
+<p>The registry is borrowed and must outlive this adapter. <code><a class="el" href="classeve_1_1card_1_1CardData.html" title="单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。">CardData</a></code> remains the ECS/presentation object; this adapter owns the definition-bound typed state and projects it into <a class="el" href="classeve_1_1card_1_1CardData.html" title="单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。">CardData</a> through <code>applyTo</code>. All methods are owner-thread affine and synchronous. Reload prepares the complete typed state before changing its identity; a failure leaves both unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8h_source.html">CardDefinitionRuntime.h</a> 第 <a class="el" href="CardDefinitionRuntime_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a862e16815563d4e853edd7ddf215ec06" name="a862e16815563d4e853edd7ddf215ec06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a862e16815563d4e853edd7ddf215ec06">&#9670;&#160;</a></span>CardDefinitionRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::CardDefinitionRuntime::CardDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move a card runtime while retaining its borrowed registry binding. </p>
+
+</div>
+</div>
+<a id="afc6f83436c46b7a38c7ccd0637cf1066" name="afc6f83436c46b7a38c7ccd0637cf1066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6f83436c46b7a38c7ccd0637cf1066">&#9670;&#160;</a></span>CardDefinitionRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::CardDefinitionRuntime::CardDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1card_1_1Card.html" title="卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。">Card</a> runtimes are not implicitly copyable. </p>
+
+</div>
+</div>
+<a id="a15f22bcfafb181f3a0c8f4e7434f3f3c" name="a15f22bcfafb181f3a0c8f4e7434f3f3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15f22bcfafb181f3a0c8f4e7434f3f3c">&#9670;&#160;</a></span>~CardDefinitionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::CardDefinitionRuntime::~CardDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy the card runtime; the registry remains caller-owned. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a63f091ca5666f73cb0202c2ea19a8f39" name="a63f091ca5666f73cb0202c2ea19a8f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63f091ca5666f73cb0202c2ea19a8f39">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::card::CardDefinitionRuntime::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> *&#160;</td>
+          <td class="paramname"><em>card</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply the typed state and common identity to an ECS <a class="el" href="classeve_1_1card_1_1CardData.html" title="单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。">CardData</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">card</td><td>Borrowed <a class="el" href="classeve_1_1card_1_1CardData.html" title="单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。">CardData</a>; it remains owned by ECS. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for a null card. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8h_source.html#l00162">eve::card::CardData::DefinitionBinding::active</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00030">eve::card::CardRuntimeState::attack</a>, <a class="el" href="CardTypes_8h_source.html#l00110">eve::card::CardData::Stats::attack</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00029">eve::card::CardRuntimeState::cost</a>, <a class="el" href="CardTypes_8h_source.html#l00109">eve::card::CardData::Stats::cost</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00032">eve::card::CardRuntimeState::currentHealth</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00088">eve::definition::InstanceIdentity::definition</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CardTypes_8h_source.html#l00111">eve::card::CardData::Stats::health</a>, <a class="el" href="ResourceRef_8h_source.html#l00095">eve::DefinitionRef::id()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00200">identity()</a>, <a class="el" href="CardTypes_8h_source.html#l00160">eve::card::CardData::DefinitionBinding::identity</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00214">isActive()</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00028">eve::card::CardRuntimeState::kind</a>, <a class="el" href="Identity_8cpp_source.html#l00063">eve::LogicalId::name()</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00027">eve::card::CardRuntimeState::name</a>, <a class="el" href="CardTypes_8h_source.html#l00104">eve::card::CardData::Identity::name</a>, <a class="el" href="CardTypes_8h_source.html#l00161">eve::card::CardData::DefinitionBinding::reloadPolicy</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00204">state()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00033">eve::card::CardRuntimeState::tint</a> , 以及 <a class="el" href="CardTypes_8h_source.html#l00131">eve::card::CardData::Visual::tint</a>.</p>
+
+</div>
+</div>
+<a id="a7546e308d2fa29c2109994742c69b0fe" name="a7546e308d2fa29c2109994742c69b0fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7546e308d2fa29c2109994742c69b0fe">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &gt; eve::card::CardDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a card runtime from the current typed definition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Registry whose lifetime exceeds this adapter. </td></tr>
+    <tr><td class="paramname">definition</td><td>Logical <code>card:&lt;name&gt;</code> reference. </td></tr>
+    <tr><td class="paramname">instanceId</td><td>Non-nil persistent identity for this card instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A typed runtime or a structured resolution/parse failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00199">eve::definition::RuntimeInstance&lt; State &gt;::create()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00204">state()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad80fae1e905a02cdcdf4d0e76c789f4e" name="ad80fae1e905a02cdcdf4d0e76c789f4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad80fae1e905a02cdcdf4d0e76c789f4e">&#9670;&#160;</a></span>definitionHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a> eve::card::CardDefinitionRuntime::definitionHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the exact generation-qualified definition handle. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00282">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a32cb411c70ed865c5185e60f9ea9c874" name="a32cb411c70ed865c5185e60f9ea9c874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32cb411c70ed865c5185e60f9ea9c874">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp; eve::card::CardDefinitionRuntime::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the unified instance identity. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">applyTo()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00246">reload()</a> , 以及 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00282">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a67671b75c46a01114044482d90e54005" name="a67671b75c46a01114044482d90e54005"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67671b75c46a01114044482d90e54005">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::card::CardDefinitionRuntime::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether RejectWhileActive currently treats the instance as active. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="aff84c2143a94ea2bdb194154e19aa411" name="aff84c2143a94ea2bdb194154e19aa411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff84c2143a94ea2bdb194154e19aa411">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp; eve::card::CardDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move-assign a card runtime. </p>
+
+</div>
+</div>
+<a id="a3eb53a370e80dc9f6767a457d17edd54" name="a3eb53a370e80dc9f6767a457d17edd54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eb53a370e80dc9f6767a457d17edd54">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp; eve::card::CardDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1card_1_1Card.html" title="卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。">Card</a> runtimes are not implicitly copy-assignable. </p>
+
+</div>
+</div>
+<a id="a148a5baf8bf7fa533fb049655b1bb317" name="a148a5baf8bf7fa533fb049655b1bb317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a148a5baf8bf7fa533fb049655b1bb317">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt; eve::card::CardDefinitionRuntime::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reload from the registry's current generation and execute policy. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">policy</td><td>Policy to execute for this card instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A typed reload outcome, or a stale/parse/policy failure. On failure the adapter state and generation remain unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardDefinitionRuntime_8h_source.html#l00032">eve::card::CardRuntimeState::currentHealth</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00200">identity()</a>, <a class="el" href="CardDefinitionRuntime_8h_source.html#l00031">eve::card::CardRuntimeState::maxHealth</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3a985d44db6e1b17e60895397b1ca2cc" name="a3a985d44db6e1b17e60895397b1ca2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a985d44db6e1b17e60895397b1ca2cc">&#9670;&#160;</a></span>reloadPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> eve::card::CardDefinitionRuntime::reloadPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the policy used by the next reload call. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8h_source.html">CardDefinitionRuntime.h</a> 第 <a class="el" href="CardDefinitionRuntime_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdd6afd85e1c9f4c9cfcf33c1a77937f" name="afdd6afd85e1c9f4c9cfcf33c1a77937f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdd6afd85e1c9f4c9cfcf33c1a77937f">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::card::CardDefinitionRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify and atomically restore a same-generation card snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00208">definitionHandle()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00200">identity()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00117">eve::definition::restoreRuntimeInstance()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a9049ebf64c5ba78f8e6d7a08586fe5e1" name="a9049ebf64c5ba78f8e6d7a08586fe5e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9049ebf64c5ba78f8e6d7a08586fe5e1">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::CardDefinitionRuntime::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark the instance active/inactive for RejectWhileActive. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>.</p>
+
+</div>
+</div>
+<a id="acf21f2f988eb17b5b864d171b1134f81" name="acf21f2f988eb17b5b864d171b1134f81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf21f2f988eb17b5b864d171b1134f81">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::card::CardDefinitionRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture card instance state in the common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00083">eve::definition::snapshotRuntimeInstance()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00274">snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5f7df1bc8b4980ce7053f3491c32c7f9" name="a5f7df1bc8b4980ce7053f3491c32c7f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f7df1bc8b4980ce7053f3491c32c7f9">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::card::CardDefinitionRuntime::snapshotJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize <a class="el" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81" title="Capture card instance state in the common SnapshotEnvelope.">snapshot()</a> as canonical JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00265">snapshot()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a30bba1ed6cb29c5bbfd5dd8f490afdf1" name="a30bba1ed6cb29c5bbfd5dd8f490afdf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30bba1ed6cb29c5bbfd5dd8f490afdf1">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a> &amp; eve::card::CardDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the strongly typed card runtime state. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">applyTo()</a> , 以及 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00184">create()</a>.</p>
+
+</div>
+</div>
+<a id="a22316dfce2c824cf2622e820a5e71fb6" name="a22316dfce2c824cf2622e820a5e71fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22316dfce2c824cf2622e820a5e71fb6">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a> &amp; eve::card::CardDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutate the strongly typed card runtime state on the owner thread. </p>
+
+<p class="definition">在文件 <a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a> 第 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/card/<a class="el" href="CardDefinitionRuntime_8h_source.html">CardDefinitionRuntime.h</a></li>
+<li>src/modules/card/<a class="el" href="CardDefinitionRuntime_8cpp_source.html">CardDefinitionRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/MeshEffect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshEffect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshEffect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeHandle_8h.html">common/RuntimeHandle.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="StyleInstance_8h.html">stylize/StyleInstance.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">struct </span>MeshEffectTargetTag;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">   16</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MeshEffectTargetHandle</a> = <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt;MeshEffectTargetTag&gt;</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">Stopped</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba6830a6bcb5563d6b8ba7bafda3eda348">FadingIn</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba4d3d769b812b6faa6b76e1a8abaece2d">Active</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba2ddb22b5f505aaafbe118c502a5a56ac">FadingOut</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">Finished</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aa2f31e9a3b5dc7ab0b6dc046b2b8e6f7">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aa2f31e9a3b5dc7ab0b6dc046b2b8e6f7">fadeIn</a> = 0.08f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#acb8c4c1f02b3f3acbb7e9e562a145aca">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#acb8c4c1f02b3f3acbb7e9e562a145aca">duration</a> = 0.25f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aaafe12b34a450d200693b415f7bbbb06">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aaafe12b34a450d200693b415f7bbbb06">fadeOut</a> = 0.12f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#ae95d31529d10cf53dd65b1f90f714e7c">   26</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectPlayback.html#ae95d31529d10cf53dd65b1f90f714e7c">loop</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html">   38</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>(std::string <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">style</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad7b7ecbb2d9731ec66322bf0601fc623">   43</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad7b7ecbb2d9731ec66322bf0601fc623">MeshEffectInstance</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a76b766c405c6ebff75f9a1ba07121d84">   44</a></span>    <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a76b766c405c6ebff75f9a1ba07121d84">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a795eccfce9f3a85491cde0c2004ed145">bindTarget</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MeshEffectTargetHandle</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">target</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a22b818f24a8e895dfe0edf28ef1825f7">unbindTarget</a>() noexcept;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">   51</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MeshEffectTargetHandle</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">target</a>() const noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad1e562f6847e02a4f1c1e2e57445139d">   53</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad1e562f6847e02a4f1c1e2e57445139d">isBound</a>() const noexcept { <span class="keywordflow">return</span> target_.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>(); }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a79dc161ba3416bd0cd4b3c8e7e8bf1b6">setPlayback</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">playback</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">   58</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">playback</a>() const noexcept { <span class="keywordflow">return</span> playback_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a0b966f3a332886b7a11e9e21cae8bbf6">play</a>() noexcept;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac3f57e6977fa94474d659f5441114644">stop</a>(<span class="keywordtype">float</span> fadeOutSeconds = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">update</a>(<span class="keywordtype">float</span> dtSeconds);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a82fa2b8553d45f1c4e1303d23779242d">   67</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a82fa2b8553d45f1c4e1303d23779242d">state</a>() const noexcept { <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a51fc264f14d352215452afa06387e4e3">   69</a></span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a51fc264f14d352215452afa06387e4e3">elapsed</a>() const noexcept { <span class="keywordflow">return</span> elapsed_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a9ae9858108e5f10e2ca9b4d7ffe3dbeb">intensity</a>() const noexcept;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">   73</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">style</a>() noexcept { <span class="keywordflow">return</span> style_; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a309eedfbc700bd37f534ec9506969e07">   75</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a309eedfbc700bd37f534ec9506969e07">style</a>() const noexcept { <span class="keywordflow">return</span> style_; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a496956b00683c4e1b083ccd2aafaf80b">newMeshShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* gfx);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> updateTimelineState() noexcept;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    static <span class="keywordtype">void</span> validateDuration(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const <span class="keywordtype">char</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> style_;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MeshEffectTargetHandle</a> target_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> playback_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a> state_ = <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a>::<a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">Stopped</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">float</span> elapsed_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">float</span> stopElapsed_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">float</span> stopDuration_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">float</span> stopStartIntensity_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>};</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aRuntimeHandle_8h_html"><div class="ttname"><a href="RuntimeHandle_8h.html">RuntimeHandle.h</a></div><div class="ttdoc">Strong generation-qualified handles for non-ECS runtime registries.</div></div>
+<div class="ttc" id="aStyleInstance_8h_html"><div class="ttname"><a href="StyleInstance_8h.html">StyleInstance.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; MeshEffectTargetTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a3af61a1aadfc37cdd8611cc5c57526e2"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">eve::RuntimeHandle::isValid</a></div><div class="ttdeci">constexpr bool isValid() const noexcept</div><div class="ttdoc">Returns whether both coordinates are usable handle values.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00067">RuntimeHandle.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html">eve::stylize::MeshEffectInstance</a></div><div class="ttdoc">Runtime state for a shader effect attached to a renderable mesh.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00038">MeshEffect.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a0b966f3a332886b7a11e9e21cae8bbf6"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a0b966f3a332886b7a11e9e21cae8bbf6">eve::stylize::MeshEffectInstance::play</a></div><div class="ttdeci">void play() noexcept</div><div class="ttdoc">Restart playback from time zero.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00040">MeshEffect.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a22b818f24a8e895dfe0edf28ef1825f7"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a22b818f24a8e895dfe0edf28ef1825f7">eve::stylize::MeshEffectInstance::unbindTarget</a></div><div class="ttdeci">void unbindTarget() noexcept</div><div class="ttdoc">Remove the observed target identity.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00023">MeshEffect.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a309eedfbc700bd37f534ec9506969e07"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a309eedfbc700bd37f534ec9506969e07">eve::stylize::MeshEffectInstance::style</a></div><div class="ttdeci">const StyleInstance &amp; style() const noexcept</div><div class="ttdoc">Access the owned immutable style parameter instance.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00075">MeshEffect.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a496956b00683c4e1b083ccd2aafaf80b"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a496956b00683c4e1b083ccd2aafaf80b">eve::stylize::MeshEffectInstance::newMeshShader</a></div><div class="ttdeci">graphics::Shader * newMeshShader(graphics::Graphics *gfx)</div><div class="ttdoc">Create a shader owned by gfx with current overrides and time.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00106">MeshEffect.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a4c84e5cfb4197f41fc7fcd8c3bdf5f14"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">eve::stylize::MeshEffectInstance::update</a></div><div class="ttdeci">void update(float dtSeconds)</div><div class="ttdoc">Advance playback using caller-provided simulation time.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00061">MeshEffect.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a51fc264f14d352215452afa06387e4e3"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a51fc264f14d352215452afa06387e4e3">eve::stylize::MeshEffectInstance::elapsed</a></div><div class="ttdeci">float elapsed() const noexcept</div><div class="ttdoc">Return elapsed playback time in seconds.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00069">MeshEffect.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a53736f6a0d6395764825a7cd45106c3e"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">eve::stylize::MeshEffectInstance::target</a></div><div class="ttdeci">MeshEffectTargetHandle target() const noexcept</div><div class="ttdoc">Return the observed target identity, possibly invalid.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00051">MeshEffect.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a76b766c405c6ebff75f9a1ba07121d84"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a76b766c405c6ebff75f9a1ba07121d84">eve::stylize::MeshEffectInstance::operator=</a></div><div class="ttdeci">MeshEffectInstance &amp; operator=(const MeshEffectInstance &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a795eccfce9f3a85491cde0c2004ed145"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a795eccfce9f3a85491cde0c2004ed145">eve::stylize::MeshEffectInstance::bindTarget</a></div><div class="ttdeci">void bindTarget(MeshEffectTargetHandle target)</div><div class="ttdoc">Bind a process-local target identity without taking ownership.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00018">MeshEffect.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a79dc161ba3416bd0cd4b3c8e7e8bf1b6"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a79dc161ba3416bd0cd4b3c8e7e8bf1b6">eve::stylize::MeshEffectInstance::setPlayback</a></div><div class="ttdeci">void setPlayback(MeshEffectPlayback playback)</div><div class="ttdoc">Replace timing after validating finite non-negative durations.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00030">MeshEffect.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a82fa2b8553d45f1c4e1303d23779242d"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a82fa2b8553d45f1c4e1303d23779242d">eve::stylize::MeshEffectInstance::state</a></div><div class="ttdeci">MeshEffectState state() const noexcept</div><div class="ttdoc">Return the current playback phase.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00067">MeshEffect.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a9ae9858108e5f10e2ca9b4d7ffe3dbeb"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a9ae9858108e5f10e2ca9b4d7ffe3dbeb">eve::stylize::MeshEffectInstance::intensity</a></div><div class="ttdeci">float intensity() const noexcept</div><div class="ttdoc">Return the normalized lifecycle envelope in [0, 1].</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00094">MeshEffect.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ac3f57e6977fa94474d659f5441114644"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac3f57e6977fa94474d659f5441114644">eve::stylize::MeshEffectInstance::stop</a></div><div class="ttdeci">void stop(float fadeOutSeconds=0.f)</div><div class="ttdoc">Stop immediately or fade from the current envelope intensity.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00048">MeshEffect.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ac45d633d4781445f68a00b6fb3bfeda6"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">eve::stylize::MeshEffectInstance::playback</a></div><div class="ttdeci">MeshEffectPlayback playback() const noexcept</div><div class="ttdoc">Return a value snapshot of the timing configuration.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00058">MeshEffect.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ad1e562f6847e02a4f1c1e2e57445139d"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad1e562f6847e02a4f1c1e2e57445139d">eve::stylize::MeshEffectInstance::isBound</a></div><div class="ttdeci">bool isBound() const noexcept</div><div class="ttdoc">Return whether a target identity is currently bound.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00053">MeshEffect.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ad7b7ecbb2d9731ec66322bf0601fc623"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad7b7ecbb2d9731ec66322bf0601fc623">eve::stylize::MeshEffectInstance::MeshEffectInstance</a></div><div class="ttdeci">MeshEffectInstance(const MeshEffectInstance &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ad99eac7e3a2e73737a3a50dc7d46d131"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">eve::stylize::MeshEffectInstance::style</a></div><div class="ttdeci">StyleInstance &amp; style() noexcept</div><div class="ttdoc">Access the owned mutable style parameter instance.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00073">MeshEffect.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html">eve::stylize::StyleInstance</a></div><div class="ttdoc">Mutable parameter instance of an immutable built-in style definition.</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8h_source.html#l00022">StyleInstance.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244b"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">eve::stylize::MeshEffectState</a></div><div class="ttdeci">MeshEffectState</div><div class="ttdoc">Playback phase of a mesh-attached visual effect.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00019">MeshEffect.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244ba2ddb22b5f505aaafbe118c502a5a56ac"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba2ddb22b5f505aaafbe118c502a5a56ac">eve::stylize::MeshEffectState::FadingOut</a></div><div class="ttdeci">@ FadingOut</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244ba4d3d769b812b6faa6b76e1a8abaece2d"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba4d3d769b812b6faa6b76e1a8abaece2d">eve::stylize::MeshEffectState::Active</a></div><div class="ttdeci">@ Active</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244ba6830a6bcb5563d6b8ba7bafda3eda348"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba6830a6bcb5563d6b8ba7bafda3eda348">eve::stylize::MeshEffectState::FadingIn</a></div><div class="ttdeci">@ FadingIn</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">eve::stylize::MeshEffectState::Finished</a></div><div class="ttdeci">@ Finished</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::stylize::MeshEffectState::Stopped</a></div><div class="ttdeci">@ Stopped</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectPlayback_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectPlayback.html">eve::stylize::MeshEffectPlayback</a></div><div class="ttdoc">Deterministic timing configuration for one mesh effect playback.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00022">MeshEffect.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectPlayback_html_aa2f31e9a3b5dc7ab0b6dc046b2b8e6f7"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aa2f31e9a3b5dc7ab0b6dc046b2b8e6f7">eve::stylize::MeshEffectPlayback::fadeIn</a></div><div class="ttdeci">float fadeIn</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00023">MeshEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectPlayback_html_aaafe12b34a450d200693b415f7bbbb06"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectPlayback.html#aaafe12b34a450d200693b415f7bbbb06">eve::stylize::MeshEffectPlayback::fadeOut</a></div><div class="ttdeci">float fadeOut</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00025">MeshEffect.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectPlayback_html_acb8c4c1f02b3f3acbb7e9e562a145aca"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectPlayback.html#acb8c4c1f02b3f3acbb7e9e562a145aca">eve::stylize::MeshEffectPlayback::duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00024">MeshEffect.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectPlayback_html_ae95d31529d10cf53dd65b1f90f714e7c"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectPlayback.html#ae95d31529d10cf53dd65b1f90f714e7c">eve::stylize::MeshEffectPlayback::loop</a></div><div class="ttdeci">bool loop</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00026">MeshEffect.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

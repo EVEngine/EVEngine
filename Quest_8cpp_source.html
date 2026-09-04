@@ -1,0 +1,603 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/Quest.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Quest.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Quest_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Quest_8h.html">rpg/Quest.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Json_8h.html">common/Json.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;climits&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1json_1_1Value.html">eve::json::Value</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1QuestDefinition.html#a0b7ac9c77d46655dfe7dccd8d6fb616d">   15</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1rpg_1_1QuestDefinition.html#a0b7ac9c77d46655dfe7dccd8d6fb616d">QuestDefinition::hasTag</a>(<span class="keyword">const</span> std::string &amp;tag)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> std::find(<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a1678fe2032cf4155db3b1cc879797313">tags</a>.begin(), <a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a1678fe2032cf4155db3b1cc879797313">tags</a>.end(), tag) != <a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a1678fe2032cf4155db3b1cc879797313">tags</a>.end();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1QuestDefinition.html#af65447fb969e2452a3ec210b0846f4f2">   19</a></span>std::string <a class="code hl_function" href="structeve_1_1rpg_1_1QuestDefinition.html#af65447fb969e2452a3ec210b0846f4f2">QuestDefinition::getExtra</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keyword">const</span> std::string &amp;fallback)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">auto</span> it = <a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a1fef7a777149ddb12861835afdf5f05d">extra</a>.find(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> it == <a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a1fef7a777149ddb12861835afdf5f05d">extra</a>.end() ? fallback : it-&gt;second;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">   24</a></span>std::unordered_map&lt;std::string, QuestDefinition&gt; &amp;<a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>() {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, QuestDefinition&gt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>std::string normalizeStart(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> == <span class="stringliteral">&quot;auto&quot;</span> ? <span class="stringliteral">&quot;auto&quot;</span> : <span class="stringliteral">&quot;manual&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>std::string normalizeComplete(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> == <span class="stringliteral">&quot;claim&quot;</span> ? <span class="stringliteral">&quot;claim&quot;</span> : <span class="stringliteral">&quot;auto&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// 环检测：图的边是 id -&gt; requires[i]；未在表中的前置 id 不算环。自依赖是环。</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keywordtype">bool</span> idOnCycle(<span class="keyword">const</span> std::unordered_map&lt;std::string, QuestDefinition&gt; &amp;<a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::unordered_set&lt;std::string&gt; visiting;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::unordered_set&lt;std::string&gt; visited;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::function&lt;bool(<span class="keyword">const</span> std::string &amp;)&gt; dfs = [&amp;](<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (visiting.count(<span class="keywordtype">id</span>)) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (visited.count(<span class="keywordtype">id</span>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">auto</span> it = <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>.find(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">if</span> (it == <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        visiting.insert(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;req : it-&gt;second.requiresIds) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">if</span> (dfs(req)) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        visiting.erase(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        visited.insert(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> dfs(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bdaf9e92dbf047b5b6f9ec17ab749009dd2">QuestObjective</a> parseObjective(Value o) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bdaf9e92dbf047b5b6f9ec17ab749009dd2">QuestObjective</a> obj;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (!o.isObject()) <span class="keywordflow">return</span> obj;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    obj.id = o.getString(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    obj.topic = o.getString(<span class="stringliteral">&quot;topic&quot;</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    obj.target = o.getString(<span class="stringliteral">&quot;target&quot;</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    obj.count = o.getInt(<span class="stringliteral">&quot;count&quot;</span>, 1);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (obj.count &lt;= 0) obj.count = 1;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> obj;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>RewardSpec parseReward(Value o) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    RewardSpec reward;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (!o.isObject()) <span class="keywordflow">return</span> reward;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    reward.type = o.getString(<span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    reward.id = o.getString(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    reward.amount = o.getDouble(<span class="stringliteral">&quot;amount&quot;</span>, 0.0);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> reward;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">// 返回 id 为空的定义表示该 JSON 对象被拒绝（缺 id / 缺目标 id / 目标 id 重复）。</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>QuestDefinition parseQuestObject(Value o) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    QuestDefinition def;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (!o.isObject()) <span class="keywordflow">return</span> def;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    def.id = o.getString(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    def.startPolicy = normalizeStart(o.getString(<span class="stringliteral">&quot;startPolicy&quot;</span>, <span class="stringliteral">&quot;manual&quot;</span>));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    def.completePolicy = normalizeComplete(o.getString(<span class="stringliteral">&quot;completePolicy&quot;</span>, <span class="stringliteral">&quot;auto&quot;</span>));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    def.requiresIds = o.getStringArray(<span class="stringliteral">&quot;requires&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    def.tags = o.getStringArray(<span class="stringliteral">&quot;tags&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    def.extra = o.getStringMap(<span class="stringliteral">&quot;extra&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a> = o.get(<span class="stringliteral">&quot;objectives&quot;</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::unordered_set&lt;std::string&gt; seen;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">bool</span> invalid = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a>.size(); ++i) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bdaf9e92dbf047b5b6f9ec17ab749009dd2">QuestObjective</a> obj = parseObjective(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a>.at(i));</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (obj.id.empty() || !seen.insert(obj.id).second) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            invalid = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        def.objectives.push_back(std::move(obj));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (invalid) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        def.id.clear();  <span class="comment">// 拒绝整条定义</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">return</span> def;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> rewards = o.get(<span class="stringliteral">&quot;rewards&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; rewards.size(); ++i) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        RewardSpec reward = parseReward(rewards.at(i));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        def.rewards.push_back(std::move(reward));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> def;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> strictFailure(std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::DiagnosticCode::ParseError</a>, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), {}, <span class="stringliteral">&quot;rpg.quest-content&quot;</span>));</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keywordtype">bool</span> validContentId(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">if</span> (<span class="keywordtype">id</span>.empty() || <span class="keywordtype">id</span>.size() &gt; 256) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> std::none_of(<span class="keywordtype">id</span>.<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(), <span class="keywordtype">id</span>.<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>(), [](<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> &lt; 0x20 || <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> == 0x7f; });</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="keywordtype">bool</span> stringArrayIsStrict(Value <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.isArray()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.size(); ++i)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.at(i).isString()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="keywordtype">bool</span> stringMapIsStrict(Value <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.isObject()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> : <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.keys())</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        if (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.get(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>.c_str()).isString()) return false;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a5cf6ce8814be93694f68f1f5cd382e05">  140</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a5cf6ce8814be93694f68f1f5cd382e05">QuestRegistry::registerQuest</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;def) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">auto</span>  old = <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.find(def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">auto</span>  saved = old != <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.end() ? old-&gt;second : <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a>{};</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">bool</span>  hadOld = old != <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.end();</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> normalized = def;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    normalized.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a91755b1503a9ff591afe32bb91b287e8">startPolicy</a> = normalizeStart(def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#a91755b1503a9ff591afe32bb91b287e8">startPolicy</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    normalized.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ad51713d01965c6651235e339080f2d96">completePolicy</a> = normalizeComplete(def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ad51713d01965c6651235e339080f2d96">completePolicy</a>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>[def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>] = normalized;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (idOnCycle(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>)) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">if</span> (hadOld) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>[def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>] = saved;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.erase(def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>}</div>
+</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="foldopen" id="foldopen00160" data-start="{" data-end="}">
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#aeb2b43bba7a64c6278b27e12d3266674">  160</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#aeb2b43bba7a64c6278b27e12d3266674">QuestRegistry::find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">auto</span> it = <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.find(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">return</span> it == <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.end() ? nullptr : &amp;it-&gt;second;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}</div>
+</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#aaa56a270be61246f410be3f9c37cccc8">  166</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#aaa56a270be61246f410be3f9c37cccc8">QuestRegistry::remove</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>().erase(<span class="keywordtype">id</span>) &gt; 0; }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a8519d6892b496abae5d1d06fdfd9503c">  168</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a8519d6892b496abae5d1d06fdfd9503c">QuestRegistry::clear</a>() { <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>().clear(); }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">  170</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">QuestRegistry::count</a>() { <span class="keywordflow">return</span> int(<a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>().size()); }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a65d523f80fbd3f99c61546221c895a50">  172</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a65d523f80fbd3f99c61546221c895a50">QuestRegistry::ids</a>() {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    std::vector&lt;std::string&gt; out;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[<span class="keywordtype">id</span>, unused] : <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>()) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        (void)unused;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        out.push_back(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>}</div>
+</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#ab11df8d479d4ad27036597945209d895">  181</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#ab11df8d479d4ad27036597945209d895">QuestRegistry::contains</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>().count(<span class="keywordtype">id</span>) != 0; }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="foldopen" id="foldopen00183" data-start="{" data-end="}">
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a04c4faef9ebde76612c285be7eff5ae5">  183</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a04c4faef9ebde76612c285be7eff5ae5">QuestRegistry::loadFromJson</a>(<span class="keyword">const</span> std::string &amp;json, std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::string err;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Document.html">eve::json::Document</a> doc = <a class="code hl_function" href="classeve_1_1json_1_1Document.html#acdc53c6204e9e091bdff29afd52e8da2">eve::json::Document::parse</a>(json, &amp;err);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">if</span> (!doc.<a class="code hl_function" href="classeve_1_1json_1_1Document.html#a0b9fa2a18dbb8cae05b8740958710af6">valid</a>()) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = err.empty() ? <span class="stringliteral">&quot;invalid json&quot;</span> : err;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a> = doc.<a class="code hl_function" href="classeve_1_1json_1_1Document.html#afdd3eec39a97293ceb9bd1499d46c08e">root</a>();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    std::vector&lt;Value&gt; objects;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.isArray()) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.size(); ++i) objects.push_back(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.at(i));</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.isObject()) {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        objects.push_back(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    std::vector&lt;QuestDefinition&gt; parsed;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    std::vector&lt;std::string&gt;     candidateIds;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;o : objects) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> def = parseQuestObject(o);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordflow">if</span> (def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>.empty()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        parsed.push_back(def);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        candidateIds.push_back(def.<a class="code hl_variable" href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">id</a>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="comment">// proposed = 当前表 + 本批候选；对本批候选在 proposed 上做环检测。</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">auto</span> proposed = <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;def : parsed) proposed[def.id] = def;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    std::unordered_set&lt;std::string&gt; rejected;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<span class="keywordtype">id</span> : candidateIds) {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">if</span> (idOnCycle(proposed, <span class="keywordtype">id</span>)) rejected.insert(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = 0;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;def : parsed) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">if</span> (rejected.count(def.id)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>[def.id] = def;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        ++<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>}</div>
+</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="foldopen" id="foldopen00226" data-start="{" data-end="}">
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestRegistry.html#a887b63826b8650591553b4b55ce98b2e">  226</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a887b63826b8650591553b4b55ce98b2e">QuestRegistry::replaceFromJsonStrict</a>(<span class="keyword">const</span> std::string &amp;json) {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    std::string               parseError;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Document.html">eve::json::Document</a> doc = <a class="code hl_function" href="classeve_1_1json_1_1Document.html#acdc53c6204e9e091bdff29afd52e8da2">eve::json::Document::parse</a>(json, &amp;parseError);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordflow">if</span> (!doc.<a class="code hl_function" href="classeve_1_1json_1_1Document.html#a0b9fa2a18dbb8cae05b8740958710af6">valid</a>()) <span class="keywordflow">return</span> strictFailure(parseError.empty() ? <span class="stringliteral">&quot;invalid JSON&quot;</span> : parseError, <span class="stringliteral">&quot;$&quot;</span>);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a> = doc.<a class="code hl_function" href="classeve_1_1json_1_1Document.html#afdd3eec39a97293ceb9bd1499d46c08e">root</a>();</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.isArray() &amp;&amp; !<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.isObject())</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;quest catalogue must be an object or array&quot;</span>, <span class="stringliteral">&quot;$&quot;</span>);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    std::vector&lt;Value&gt; objects;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.isArray()) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.size() == 0) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;quest catalogue must not be empty&quot;</span>, <span class="stringliteral">&quot;$&quot;</span>);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.size(); ++i) objects.push_back(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>.at(i));</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        objects.push_back(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    }</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    std::unordered_map&lt;std::string, QuestDefinition&gt; proposed;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> questIndex = 0; questIndex &lt; objects.size(); ++questIndex) {</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>       <span class="keywordtype">object</span> = objects[questIndex];</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keyword">const</span> std::string base = <span class="stringliteral">&quot;$[&quot;</span> + std::to_string(questIndex) + <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>.isObject()) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;quest entry must be an object&quot;</span>, base);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> idValue = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">if</span> (!idValue.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a>() || !validContentId(idValue.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>()))</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;quest id must be a non-empty stable id of at most 256 bytes&quot;</span>, base + <span class="stringliteral">&quot;.id&quot;</span>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> definition;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        definition.id = idValue.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>();</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="keywordflow">if</span> (proposed.count(definition.id) != 0)</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;duplicate quest id&quot;</span>, base + <span class="stringliteral">&quot;.id&quot;</span>);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> startPolicy = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;startPolicy&quot;</span>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordflow">if</span> (startPolicy &amp;&amp; (!startPolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a>() ||</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                            (startPolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() != <span class="stringliteral">&quot;manual&quot;</span> &amp;&amp; startPolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() != <span class="stringliteral">&quot;auto&quot;</span>)))</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;startPolicy must be &#39;manual&#39; or &#39;auto&#39;&quot;</span>, base + <span class="stringliteral">&quot;.startPolicy&quot;</span>);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        definition.startPolicy = startPolicy ? startPolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() : <span class="stringliteral">&quot;manual&quot;</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> completePolicy = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;completePolicy&quot;</span>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <span class="keywordflow">if</span> (completePolicy &amp;&amp; (!completePolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a>() ||</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                               (completePolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() != <span class="stringliteral">&quot;auto&quot;</span> &amp;&amp; completePolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() != <span class="stringliteral">&quot;claim&quot;</span>)))</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;completePolicy must be &#39;auto&#39; or &#39;claim&#39;&quot;</span>, base + <span class="stringliteral">&quot;.completePolicy&quot;</span>);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        definition.completePolicy = completePolicy ? completePolicy.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>() : <span class="stringliteral">&quot;auto&quot;</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> prerequisites = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;requires&quot;</span>);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keywordflow">if</span> (prerequisites &amp;&amp; !stringArrayIsStrict(prerequisites))</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;requires must be an array of quest ids&quot;</span>, base + <span class="stringliteral">&quot;.requires&quot;</span>);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        std::unordered_set&lt;std::string&gt; seenRequirements;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        definition.requiresIds = prerequisites ? prerequisites.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#afb4326e8495d1cbc358d3ac06eed457c">toStringArray</a>() : std::vector&lt;std::string&gt;{};</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; definition.requiresIds.size(); ++i) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a> = definition.requiresIds[i];</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="keywordflow">if</span> (!validContentId(<a class="code hl_variable" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a>) || !seenRequirements.insert(<a class="code hl_variable" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a>).second)</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;requires contains an invalid or duplicate quest id&quot;</span>,</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                                     base + <span class="stringliteral">&quot;.requires[&quot;</span> + std::to_string(i) + <span class="stringliteral">&quot;]&quot;</span>);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        }</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a> = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;objectives&quot;</span>);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a> &amp;&amp; !<a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a>.isArray())</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objectives must be an array&quot;</span>, base + <span class="stringliteral">&quot;.objectives&quot;</span>);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        std::unordered_set&lt;std::string&gt; seenObjectives;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a>.size(); ++i) {</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> item = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a4a5e8df6017be47cd59ce02413eb91d0">at</a>(i);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = base + <span class="stringliteral">&quot;.objectives[&quot;</span> + std::to_string(i) + <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            <span class="keywordflow">if</span> (!item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a160d4ef6354c4ce50d082713f765f7b1">isObject</a>()) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objective must be an object&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> objectiveId = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> topic = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;topic&quot;</span>);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="keywordflow">if</span> (!objectiveId.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a>() || !validContentId(objectiveId.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>()) ||</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                !seenObjectives.insert(objectiveId.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>()).second)</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objective id must be unique and stable&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.id&quot;</span>);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            <span class="keywordflow">if</span> (!topic.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a>() || !validContentId(topic.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>()))</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objective topic must be a stable id&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.topic&quot;</span>);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;target&quot;</span>);</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> &amp;&amp; (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.isString() || (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.asString().empty() &amp;&amp; !validContentId(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.asString()))))</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objective target must be empty or a stable id&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.target&quot;</span>);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a> = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;count&quot;</span>);</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a> &amp;&amp; (!<a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a>.isInt64() || <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a>.asInt64() &lt;= 0 || <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a>.asInt64() &gt; INT_MAX))</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;objective count must be a positive integer&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.count&quot;</span>);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            definition.objectives.push_back(</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                {objectiveId.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>(), topic.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a>(), <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> ? <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.asString() : std::string{},</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                 <a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a> ? int(<a class="code hl_function" href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">count</a>.asInt64()) : 1});</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> rewards = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;rewards&quot;</span>);</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordflow">if</span> (rewards &amp;&amp; !rewards.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a440dafbb98ed79ac46e027ea76db21c6">isArray</a>()) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;rewards must be an array&quot;</span>, base + <span class="stringliteral">&quot;.rewards&quot;</span>);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; rewards.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a3e94f9421a7d2fb33eae471930ea1022">size</a>(); ++i) {</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> item = rewards.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a4a5e8df6017be47cd59ce02413eb91d0">at</a>(i);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = base + <span class="stringliteral">&quot;.rewards[&quot;</span> + std::to_string(i) + <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            <span class="keywordflow">if</span> (!item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a160d4ef6354c4ce50d082713f765f7b1">isObject</a>()) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;reward must be an object&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <span class="keywordtype">id</span> = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> amount = item.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;amount&quot;</span>);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>.isString() || !validContentId(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>.asString()))</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;reward type must be a stable id&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.type&quot;</span>);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">id</span>.isString() || !validContentId(<span class="keywordtype">id</span>.asString()))</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;reward id must be a stable id&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.id&quot;</span>);</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            <span class="keywordflow">if</span> (!amount.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a6c8675fa24590abc0b8f56a123e833dc">isNumber</a>() || !std::isfinite(amount.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a20364170242b383eaa33659f91d46746">asDouble</a>()) || amount.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a20364170242b383eaa33659f91d46746">asDouble</a>() &lt;= 0.0)</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;reward amount must be finite and positive&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> + <span class="stringliteral">&quot;.amount&quot;</span>);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            definition.rewards.push_back({<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>.asString(), <span class="keywordtype">id</span>.asString(), amount.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a20364170242b383eaa33659f91d46746">asDouble</a>()});</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        }</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> tags = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;tags&quot;</span>);</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keywordflow">if</span> (tags &amp;&amp; !stringArrayIsStrict(tags))</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;tags must be an array of strings&quot;</span>, base + <span class="stringliteral">&quot;.tags&quot;</span>);</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        definition.tags = tags ? tags.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#afb4326e8495d1cbc358d3ac06eed457c">toStringArray</a>() : std::vector&lt;std::string&gt;{};</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; definition.tags.size(); ++i)</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            <span class="keywordflow">if</span> (!validContentId(definition.tags[i]))</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;tag must be a stable id&quot;</span>, base + <span class="stringliteral">&quot;.tags[&quot;</span> + std::to_string(i) + <span class="stringliteral">&quot;]&quot;</span>);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> extra = <span class="keywordtype">object</span>.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<span class="stringliteral">&quot;extra&quot;</span>);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">if</span> (extra &amp;&amp; !stringMapIsStrict(extra))</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;extra must be an object containing only string values&quot;</span>, base + <span class="stringliteral">&quot;.extra&quot;</span>);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">if</span> (extra) {</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> : extra.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#ad65f4097065cebbc372989b69ddfb9a4">keys</a>()) definition.extra[<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>] = extra.<a class="code hl_function" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a>(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>.c_str()).asString();</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        }</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        proposed.emplace(definition.id, std::move(definition));</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    }</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[<span class="keywordtype">id</span>, definition] : proposed) {</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a> : definition.requiresIds)</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            <span class="keywordflow">if</span> (proposed.count(<a class="code hl_variable" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a>) == 0)</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;required quest is missing from replacement catalogue&quot;</span>, <span class="keywordtype">id</span> + <span class="stringliteral">&quot;.requires&quot;</span>);</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        <span class="keywordflow">if</span> (idOnCycle(proposed, <span class="keywordtype">id</span>)) <span class="keywordflow">return</span> strictFailure(<span class="stringliteral">&quot;quest prerequisite cycle detected&quot;</span>, <span class="keywordtype">id</span> + <span class="stringliteral">&quot;.requires&quot;</span>);</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    }</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>() = std::move(proposed);</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;int&gt;::success</a>(<span class="keywordtype">int</span>(<a class="code hl_function" href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">questTable</a>().size()));</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>}</div>
+</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aee43da4e9117b04a03d47cfb325445d4"><div class="ttname"><a href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a></div><div class="ttdeci">Value root</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00039">GltfImporter.cpp:39</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aJson_8h_html"><div class="ttname"><a href="Json_8h.html">Json.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aMapObjectContract_8cpp_html_a89ebe0265f74c9919a622df7dccbfe5c"><div class="ttname"><a href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a></div><div class="ttdeci">bool required</div><div class="ttdef"><b>Definition</b> <a href="MapObjectContract_8cpp_source.html#l00069">MapObjectContract.cpp:69</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aQuest_8h_html"><div class="ttname"><a href="Quest_8h.html">Quest.h</a></div><div class="ttdoc">任务 / 成就 / 教程的通用定义模板与进程级注册表。</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_acf2b94100c4f85436360308ffec198cc"><div class="ttname"><a href="TacticsPersistence_8cpp.html#acf2b94100c4f85436360308ffec198cc">objectives</a></div><div class="ttdeci">Battle::Objectives objectives</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00138">TacticsPersistence.cpp:138</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Document_html"><div class="ttname"><a href="classeve_1_1json_1_1Document.html">eve::json::Document</a></div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00107">Json.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Document_html_a0b9fa2a18dbb8cae05b8740958710af6"><div class="ttname"><a href="classeve_1_1json_1_1Document.html#a0b9fa2a18dbb8cae05b8740958710af6">eve::json::Document::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00122">Json.h:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Document_html_acdc53c6204e9e091bdff29afd52e8da2"><div class="ttname"><a href="classeve_1_1json_1_1Document.html#acdc53c6204e9e091bdff29afd52e8da2">eve::json::Document::parse</a></div><div class="ttdeci">static Document parse(const std::string &amp;text, std::string *error=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00581">Json.cpp:581</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Document_html_afdd3eec39a97293ceb9bd1499d46c08e"><div class="ttname"><a href="classeve_1_1json_1_1Document.html#afdd3eec39a97293ceb9bd1499d46c08e">eve::json::Document::root</a></div><div class="ttdeci">Value root() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00123">Json.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html"><div class="ttname"><a href="classeve_1_1json_1_1Value.html">eve::json::Value</a></div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00037">Json.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a160d4ef6354c4ce50d082713f765f7b1"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a160d4ef6354c4ce50d082713f765f7b1">eve::json::Value::isObject</a></div><div class="ttdeci">bool isObject() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00331">Json.cpp:331</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a20364170242b383eaa33659f91d46746"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a20364170242b383eaa33659f91d46746">eve::json::Value::asDouble</a></div><div class="ttdeci">double asDouble(double fallback=0.0) const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00377">Json.cpp:377</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a2d38b8a1288cf4abea73258ee8cb4088"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">eve::json::Value::get</a></div><div class="ttdeci">Value get(const char *key) const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00336">Json.cpp:336</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a3e94f9421a7d2fb33eae471930ea1022"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a3e94f9421a7d2fb33eae471930ea1022">eve::json::Value::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00351">Json.cpp:351</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a440dafbb98ed79ac46e027ea76db21c6"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a440dafbb98ed79ac46e027ea76db21c6">eve::json::Value::isArray</a></div><div class="ttdeci">bool isArray() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00332">Json.cpp:332</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a4a5e8df6017be47cd59ce02413eb91d0"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a4a5e8df6017be47cd59ce02413eb91d0">eve::json::Value::at</a></div><div class="ttdeci">Value at(size_t index) const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00358">Json.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a50421ef4724b705aa82d7bd12f63b0a8"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">eve::json::Value::isString</a></div><div class="ttdeci">bool isString() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00330">Json.cpp:330</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_a6c8675fa24590abc0b8f56a123e833dc"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#a6c8675fa24590abc0b8f56a123e833dc">eve::json::Value::isNumber</a></div><div class="ttdeci">bool isNumber() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00327">Json.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_ad65f4097065cebbc372989b69ddfb9a4"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#ad65f4097065cebbc372989b69ddfb9a4">eve::json::Value::keys</a></div><div class="ttdeci">std::vector&lt; std::string &gt; keys() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00343">Json.cpp:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_ae2ca732c1eb360785f569912ed68e921"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">eve::json::Value::asString</a></div><div class="ttdeci">std::string asString(const std::string &amp;fallback={}) const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00411">Json.cpp:411</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html_afb4326e8495d1cbc358d3ac06eed457c"><div class="ttname"><a href="classeve_1_1json_1_1Value.html#afb4326e8495d1cbc358d3ac06eed457c">eve::json::Value::toStringArray</a></div><div class="ttdeci">std::vector&lt; std::string &gt; toStringArray() const</div><div class="ttdef"><b>Definition</b> <a href="Json_8cpp_source.html#l00431">Json.cpp:431</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a04c4faef9ebde76612c285be7eff5ae5"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a04c4faef9ebde76612c285be7eff5ae5">eve::rpg::QuestRegistry::loadFromJson</a></div><div class="ttdeci">static int loadFromJson(const std::string &amp;json, std::string *error=nullptr)</div><div class="ttdoc">从 JSON 数组/对象批量注册；缺 id、重复 objective id、环形 requires 的定义被拒绝。</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00183">Quest.cpp:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a5cf6ce8814be93694f68f1f5cd382e05"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a5cf6ce8814be93694f68f1f5cd382e05">eve::rpg::QuestRegistry::registerQuest</a></div><div class="ttdeci">static void registerQuest(const QuestDefinition &amp;def)</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00140">Quest.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a65d523f80fbd3f99c61546221c895a50"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a65d523f80fbd3f99c61546221c895a50">eve::rpg::QuestRegistry::ids</a></div><div class="ttdeci">static std::vector&lt; std::string &gt; ids()</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00172">Quest.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a71baed3d38115aa9c1ec2dcfce43e536"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a71baed3d38115aa9c1ec2dcfce43e536">eve::rpg::QuestRegistry::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00170">Quest.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a8519d6892b496abae5d1d06fdfd9503c"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a8519d6892b496abae5d1d06fdfd9503c">eve::rpg::QuestRegistry::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00168">Quest.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_a887b63826b8650591553b4b55ce98b2e"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#a887b63826b8650591553b4b55ce98b2e">eve::rpg::QuestRegistry::replaceFromJsonStrict</a></div><div class="ttdeci">static eve::Result&lt; int &gt; replaceFromJsonStrict(const std::string &amp;json)</div><div class="ttdoc">Strictly validate and atomically replace every registered quest definition.</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00226">Quest.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_aaa56a270be61246f410be3f9c37cccc8"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#aaa56a270be61246f410be3f9c37cccc8">eve::rpg::QuestRegistry::remove</a></div><div class="ttdeci">static bool remove(const std::string &amp;id)</div><div class="ttdoc">Remove a quest by id (compatibility facade returning whether it was present).</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00166">Quest.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_ab11df8d479d4ad27036597945209d895"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#ab11df8d479d4ad27036597945209d895">eve::rpg::QuestRegistry::contains</a></div><div class="ttdeci">static bool contains(const std::string &amp;id)</div><div class="ttdoc">Return whether one exact stable quest id is registered.</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00181">Quest.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestRegistry_html_aeb2b43bba7a64c6278b27e12d3266674"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestRegistry.html#aeb2b43bba7a64c6278b27e12d3266674">eve::rpg::QuestRegistry::find</a></div><div class="ttdeci">static const QuestDefinition * find(const std::string &amp;id)</div><div class="ttdoc">Find a registered quest definition by id.</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00160">Quest.cpp:160</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1database_html_a75dfba93933e5172c94376060426f2f4"><div class="ttname"><a href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">eve::database::Value</a></div><div class="ttdeci">std::variant&lt; std::monostate, std::int64_t, double, std::string, bool &gt; Value</div><div class="ttdef"><b>Definition</b> <a href="Database_8h_source.html#l00024">Database.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a5cc04deb08385c5dadd993a557ab7513"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a5cc04deb08385c5dadd993a557ab7513">eve::rpg::questTable</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestDefinition &gt; &amp; questTable()</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00024">Quest.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a8261c3c248dc4c3e1a10ace305c196bdaf9e92dbf047b5b6f9ec17ab749009dd2"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bdaf9e92dbf047b5b6f9ec17ab749009dd2">eve::rpg::RPGSaveIdDomain::QuestObjective</a></div><div class="ttdeci">@ QuestObjective</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae33307d84fd0b94d2d0ef89255b4405b"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">eve::rpg::table</a></div><div class="ttdeci">std::unordered_map&lt; std::string, SkillDefinition &gt; &amp; table()</div><div class="ttdef"><b>Definition</b> <a href="Skill_8cpp_source.html#l00065">Skill.cpp:65</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::DiagnosticCode::ParseError</a></div><div class="ttdeci">@ ParseError</div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html">eve::rpg::QuestDefinition</a></div><div class="ttdoc">数据驱动的任务模板。</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00022">Quest.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_a0b7ac9c77d46655dfe7dccd8d6fb616d"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#a0b7ac9c77d46655dfe7dccd8d6fb616d">eve::rpg::QuestDefinition::hasTag</a></div><div class="ttdeci">bool hasTag(const std::string &amp;tag) const</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00015">Quest.cpp:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_a1678fe2032cf4155db3b1cc879797313"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#a1678fe2032cf4155db3b1cc879797313">eve::rpg::QuestDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00032">Quest.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_a1fef7a777149ddb12861835afdf5f05d"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#a1fef7a777149ddb12861835afdf5f05d">eve::rpg::QuestDefinition::extra</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::string &gt; extra</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00033">Quest.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_a91755b1503a9ff591afe32bb91b287e8"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#a91755b1503a9ff591afe32bb91b287e8">eve::rpg::QuestDefinition::startPolicy</a></div><div class="ttdeci">std::string startPolicy</div><div class="ttdoc">&quot;manual&quot; | &quot;auto&quot;，缺省 &quot;manual&quot;。</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00025">Quest.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_ad51713d01965c6651235e339080f2d96"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#ad51713d01965c6651235e339080f2d96">eve::rpg::QuestDefinition::completePolicy</a></div><div class="ttdeci">std::string completePolicy</div><div class="ttdoc">&quot;auto&quot; | &quot;claim&quot;，缺省 &quot;auto&quot;。</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00027">Quest.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_ae4e1a0407305d4fdd385fd0bc18f47ed"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#ae4e1a0407305d4fdd385fd0bc18f47ed">eve::rpg::QuestDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00023">Quest.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html_af65447fb969e2452a3ec210b0846f4f2"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html#af65447fb969e2452a3ec210b0846f4f2">eve::rpg::QuestDefinition::getExtra</a></div><div class="ttdeci">std::string getExtra(const std::string &amp;key, const std::string &amp;fallback={}) const</div><div class="ttdef"><b>Definition</b> <a href="Quest_8cpp_source.html#l00019">Quest.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

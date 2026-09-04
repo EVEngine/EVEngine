@@ -1,0 +1,1270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::SpatialData类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1SpatialData-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::SpatialData类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Queryable spatial input for procedural pipelines.  
+ <a href="classeve_1_1procgen_1_1SpatialData.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpatialData_8h_source.html">SpatialData.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aef6e9c32daf7a0202c33773271621057" id="r_aef6e9c32daf7a0202c33773271621057"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057">Kind</a> { <br />
+&#160;&#160;<a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057ace2c8aed9c2fa0cfbed56cbda4d8bf07">Empty</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3">Points</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a">Box</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd">Sphere</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263">Polygon</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392">Spline</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244">TextureMask</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c">Union</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24">Intersection</a>
+, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a">Difference</a>
+<br />
+ }</td></tr>
+<tr class="separator:aef6e9c32daf7a0202c33773271621057"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a19d8c38a6dce6f4a408588fb5f1e4073" id="r_a19d8c38a6dce6f4a408588fb5f1e4073"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a19d8c38a6dce6f4a408588fb5f1e4073">SpatialData</a> ()=default</td></tr>
+<tr class="memdesc:a19d8c38a6dce6f4a408588fb5f1e4073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct empty spatial data.  <br /></td></tr>
+<tr class="separator:a19d8c38a6dce6f4a408588fb5f1e4073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf46beae9c135a7cb74a4068e68aa0c6" id="r_abf46beae9c135a7cb74a4068e68aa0c6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#abf46beae9c135a7cb74a4068e68aa0c6">getKind</a> () const</td></tr>
+<tr class="memdesc:abf46beae9c135a7cb74a4068e68aa0c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable textual kind used by scripts and diagnostics.  <br /></td></tr>
+<tr class="separator:abf46beae9c135a7cb74a4068e68aa0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafaa3e25888b8392b9a030d45d5c87a1" id="r_aafaa3e25888b8392b9a030d45d5c87a1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aafaa3e25888b8392b9a030d45d5c87a1">contains</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:aafaa3e25888b8392b9a030d45d5c87a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this domain contains a world-space position.  <br /></td></tr>
+<tr class="separator:aafaa3e25888b8392b9a030d45d5c87a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46240121149e572402bbbb8f639d4e5d" id="r_a46240121149e572402bbbb8f639d4e5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1SpatialBounds.html">SpatialBounds</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a46240121149e572402bbbb8f639d4e5d">bounds</a> () const</td></tr>
+<tr class="memdesc:a46240121149e572402bbbb8f639d4e5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative world-space bounds, or invalid bounds for an empty domain.  <br /></td></tr>
+<tr class="separator:a46240121149e572402bbbb8f639d4e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac97e6d357e40ed614e0c1e918c0ca95" id="r_aac97e6d357e40ed614e0c1e918c0ca95"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aac97e6d357e40ed614e0c1e918c0ca95">hasBounds</a> () const</td></tr>
+<tr class="separator:aac97e6d357e40ed614e0c1e918c0ca95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76fd1fbcf511136181a610b9fd2ed3d8" id="r_a76fd1fbcf511136181a610b9fd2ed3d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a76fd1fbcf511136181a610b9fd2ed3d8">getMinX</a> () const</td></tr>
+<tr class="separator:a76fd1fbcf511136181a610b9fd2ed3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afca3b7e03134ed76ed267d91e231ed58" id="r_afca3b7e03134ed76ed267d91e231ed58"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#afca3b7e03134ed76ed267d91e231ed58">getMinY</a> () const</td></tr>
+<tr class="separator:afca3b7e03134ed76ed267d91e231ed58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5de367218f22ff2505dce2b5122d4750" id="r_a5de367218f22ff2505dce2b5122d4750"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a5de367218f22ff2505dce2b5122d4750">getMinZ</a> () const</td></tr>
+<tr class="separator:a5de367218f22ff2505dce2b5122d4750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e173e63795f099ec38313e34db33797" id="r_a9e173e63795f099ec38313e34db33797"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a9e173e63795f099ec38313e34db33797">getMaxX</a> () const</td></tr>
+<tr class="separator:a9e173e63795f099ec38313e34db33797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72f1cfd1b83fd28d28e2b67e1568b303" id="r_a72f1cfd1b83fd28d28e2b67e1568b303"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a72f1cfd1b83fd28d28e2b67e1568b303">getMaxY</a> () const</td></tr>
+<tr class="separator:a72f1cfd1b83fd28d28e2b67e1568b303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab38e67c955f188a1d94b83f35db5377a" id="r_ab38e67c955f188a1d94b83f35db5377a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#ab38e67c955f188a1d94b83f35db5377a">getMaxZ</a> () const</td></tr>
+<tr class="separator:ab38e67c955f188a1d94b83f35db5377a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae173c138bb428a98b1641ce736262cf4" id="r_ae173c138bb428a98b1641ce736262cf4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#ae173c138bb428a98b1641ce736262cf4">sample</a> (float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float jitter) const</td></tr>
+<tr class="memdesc:ae173c138bb428a98b1641ce736262cf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically sample a 3D lattice inside the domain.  <br /></td></tr>
+<tr class="separator:ae173c138bb428a98b1641ce736262cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ae0d7626804839355d0d0206190fdbc" id="r_a0ae0d7626804839355d0d0206190fdbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a0ae0d7626804839355d0d0206190fdbc">filter</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, bool invert=false) const</td></tr>
+<tr class="memdesc:a0ae0d7626804839355d0d0206190fdbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter attributed points by this domain.  <br /></td></tr>
+<tr class="separator:a0ae0d7626804839355d0d0206190fdbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6b2eb23e37a1373ea4ccd0423c502d9" id="r_af6b2eb23e37a1373ea4ccd0423c502d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#af6b2eb23e37a1373ea4ccd0423c502d9">project</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) const</td></tr>
+<tr class="memdesc:af6b2eb23e37a1373ea4ccd0423c502d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project points onto a heightfield surface; other kinds return an unchanged copy.  <br /></td></tr>
+<tr class="separator:af6b2eb23e37a1373ea4ccd0423c502d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a6286223a241cc05bdc766e066e054869" id="r_a6286223a241cc05bdc766e066e054869"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a6286223a241cc05bdc766e066e054869">fromPoints</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)</td></tr>
+<tr class="memdesc:a6286223a241cc05bdc766e066e054869"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create spatial data whose domain is the bounds of attributed points.  <br /></td></tr>
+<tr class="separator:a6286223a241cc05bdc766e066e054869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c5fad0a397ab9d6e0721e903e632789" id="r_a6c5fad0a397ab9d6e0721e903e632789"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a6c5fad0a397ab9d6e0721e903e632789">box</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="memdesc:a6c5fad0a397ab9d6e0721e903e632789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an axis-aligned volume; unordered endpoints are normalized.  <br /></td></tr>
+<tr class="separator:a6c5fad0a397ab9d6e0721e903e632789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8207867245a9c4c15c6e57f3af7cb43b" id="r_a8207867245a9c4c15c6e57f3af7cb43b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a8207867245a9c4c15c6e57f3af7cb43b">sphere</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a8207867245a9c4c15c6e57f3af7cb43b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a spherical volume. A non-positive radius produces an empty domain.  <br /></td></tr>
+<tr class="separator:a8207867245a9c4c15c6e57f3af7cb43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb7abeef8c61c315e2c9178d0ed301d9" id="r_acb7abeef8c61c315e2c9178d0ed301d9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#acb7abeef8c61c315e2c9178d0ed301d9">polygon</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;controlPoints, float minY, float maxY)</td></tr>
+<tr class="memdesc:acb7abeef8c61c315e2c9178d0ed301d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an XZ polygon prism between two world-space heights.  <br /></td></tr>
+<tr class="separator:acb7abeef8c61c315e2c9178d0ed301d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a2935babc241cea1855f5d1226b52e" id="r_a28a2935babc241cea1855f5d1226b52e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a28a2935babc241cea1855f5d1226b52e">spline</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;controlPoints, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a28a2935babc241cea1855f5d1226b52e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a polyline domain with a radial influence width.  <br /></td></tr>
+<tr class="separator:a28a2935babc241cea1855f5d1226b52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af26250775d189de64ce1f47f182b442b" id="r_af26250775d189de64ce1f47f182b442b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#af26250775d189de64ce1f47f182b442b">heightfield</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, float originX, float originZ, float cellSize, float heightScale)</td></tr>
+<tr class="memdesc:af26250775d189de64ce1f47f182b442b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a sampled heightfield surface in world space.  <br /></td></tr>
+<tr class="separator:af26250775d189de64ce1f47f182b442b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b5b6b287282eeac8210243cb54c0b15" id="r_a7b5b6b287282eeac8210243cb54c0b15"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a7b5b6b287282eeac8210243cb54c0b15">textureMask</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, float originX, float originZ, float cellSize, float minValue, float maxValue, float minY, float maxY)</td></tr>
+<tr class="memdesc:a7b5b6b287282eeac8210243cb54c0b15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an extruded spatial mask from scalar texture data.  <br /></td></tr>
+<tr class="separator:a7b5b6b287282eeac8210243cb54c0b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029b81be0e775af09b238d57fdb4c045" id="r_a029b81be0e775af09b238d57fdb4c045"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a029b81be0e775af09b238d57fdb4c045">meshSurface</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, float tolerance)</td></tr>
+<tr class="memdesc:a029b81be0e775af09b238d57fdb4c045"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a queryable triangle surface from CPU mesh data.  <br /></td></tr>
+<tr class="separator:a029b81be0e775af09b238d57fdb4c045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a4b09a9178b649e9f1ca98966fddaf3" id="r_a2a4b09a9178b649e9f1ca98966fddaf3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a2a4b09a9178b649e9f1ca98966fddaf3">unite</a> (const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a2a4b09a9178b649e9f1ca98966fddaf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the union of two domains.  <br /></td></tr>
+<tr class="separator:a2a4b09a9178b649e9f1ca98966fddaf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb25db214774d9eb35a563a04bf6316c" id="r_aeb25db214774d9eb35a563a04bf6316c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aeb25db214774d9eb35a563a04bf6316c">intersect</a> (const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:aeb25db214774d9eb35a563a04bf6316c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the intersection of two domains.  <br /></td></tr>
+<tr class="separator:aeb25db214774d9eb35a563a04bf6316c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0d6b17f5d8a8e345688268246d13b7" id="r_a7d0d6b17f5d8a8e345688268246d13b7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html#a7d0d6b17f5d8a8e345688268246d13b7">subtract</a> (const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a7d0d6b17f5d8a8e345688268246d13b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the part of a outside b.  <br /></td></tr>
+<tr class="separator:a7d0d6b17f5d8a8e345688268246d13b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Queryable spatial input for procedural pipelines. </p>
+<p><a class="el" href="classeve_1_1procgen_1_1SpatialData.html" title="Queryable spatial input for procedural pipelines.">SpatialData</a> mirrors the data-oriented role of UE PCG spatial data without coupling the procgen module to scene or rendering types. Values are cheap to copy and composite operations retain immutable copies of their operands. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8h_source.html">SpatialData.h</a> 第 <a class="el" href="SpatialData_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="aef6e9c32daf7a0202c33773271621057" name="aef6e9c32daf7a0202c33773271621057"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef6e9c32daf7a0202c33773271621057">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057">eve::procgen::SpatialData::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057ace2c8aed9c2fa0cfbed56cbda4d8bf07" name="aef6e9c32daf7a0202c33773271621057ace2c8aed9c2fa0cfbed56cbda4d8bf07"></a>Empty&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3" name="aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3"></a>Points&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a" name="aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a"></a>Box&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd" name="aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd"></a>Sphere&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263" name="aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263"></a>Polygon&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392" name="aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392"></a>Spline&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8" name="aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8"></a>Heightfield&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244" name="aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244"></a>TextureMask&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c" name="aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c"></a>MeshSurface&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c" name="aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c"></a>Union&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24" name="aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24"></a>Intersection&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a" name="aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a"></a>Difference&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8h_source.html">SpatialData.h</a> 第 <a class="el" href="SpatialData_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a19d8c38a6dce6f4a408588fb5f1e4073" name="a19d8c38a6dce6f4a408588fb5f1e4073"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d8c38a6dce6f4a408588fb5f1e4073">&#9670;&#160;</a></span>SpatialData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::SpatialData::SpatialData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct empty spatial data. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a46240121149e572402bbbb8f639d4e5d" name="a46240121149e572402bbbb8f639d4e5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46240121149e572402bbbb8f639d4e5d">&#9670;&#160;</a></span>bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1SpatialBounds.html">SpatialBounds</a> eve::procgen::SpatialData::bounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Conservative world-space bounds, or invalid bounds for an empty domain. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialData_8cpp_source.html#l00130">fromPoints()</a> , 以及 <a class="el" href="SpatialData_8cpp_source.html#l00245">meshSurface()</a>.</p>
+
+</div>
+</div>
+<a id="a6c5fad0a397ab9d6e0721e903e632789" name="a6c5fad0a397ab9d6e0721e903e632789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c5fad0a397ab9d6e0721e903e632789">&#9670;&#160;</a></span>box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::box </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an axis-aligned volume; unordered endpoints are normalized. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a">Box</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01127">eve::procgen::Procgen::boxVolumeHandle()</a>.</p>
+
+</div>
+</div>
+<a id="aafaa3e25888b8392b9a030d45d5c87a1" name="aafaa3e25888b8392b9a030d45d5c87a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafaa3e25888b8392b9a030d45d5c87a1">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SpatialData::contains </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether this domain contains a world-space position. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a">Box</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a">Difference</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24">Intersection</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PointSet_8h_source.html#l00184">eve::procgen::PointSet::points()</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3">Points</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263">Polygon</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd">Sphere</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392">Spline</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244">TextureMask</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c">Union</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialData_8cpp_source.html#l00406">filter()</a> , 以及 <a class="el" href="SpatialData_8cpp_source.html#l00368">sample()</a>.</p>
+
+</div>
+</div>
+<a id="a0ae0d7626804839355d0d0206190fdbc" name="a0ae0d7626804839355d0d0206190fdbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ae0d7626804839355d0d0206190fdbc">&#9670;&#160;</a></span>filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> eve::procgen::SpatialData::filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>invert</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Filter attributed points by this domain. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00312">contains()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a> , 以及 <a class="el" href="PointSet_8h_source.html#l00184">eve::procgen::PointSet::points()</a>.</p>
+
+</div>
+</div>
+<a id="a6286223a241cc05bdc766e066e054869" name="a6286223a241cc05bdc766e066e054869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6286223a241cc05bdc766e066e054869">&#9670;&#160;</a></span>fromPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::fromPoints </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>points</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create spatial data whose domain is the bounds of attributed points. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00359">bounds()</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3">Points</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01119">eve::procgen::Procgen::pointDataHandle()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00175">polygon()</a> , 以及 <a class="el" href="SpatialData_8cpp_source.html#l00184">spline()</a>.</p>
+
+</div>
+</div>
+<a id="abf46beae9c135a7cb74a4068e68aa0c6" name="abf46beae9c135a7cb74a4068e68aa0c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf46beae9c135a7cb74a4068e68aa0c6">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::SpatialData::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable textual kind used by scripts and diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a3cfce651e667ab85486dd42a8185f98a">Box</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a">Difference</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24">Intersection</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a75dd5f1160a3f02b6fae89c54361a1b3">Points</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263">Polygon</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd">Sphere</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392">Spline</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244">TextureMask</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c">Union</a>.</p>
+
+</div>
+</div>
+<a id="a9e173e63795f099ec38313e34db33797" name="a9e173e63795f099ec38313e34db33797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e173e63795f099ec38313e34db33797">&#9670;&#160;</a></span>getMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMaxX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="a72f1cfd1b83fd28d28e2b67e1568b303" name="a72f1cfd1b83fd28d28e2b67e1568b303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f1cfd1b83fd28d28e2b67e1568b303">&#9670;&#160;</a></span>getMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMaxY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="ab38e67c955f188a1d94b83f35db5377a" name="ab38e67c955f188a1d94b83f35db5377a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab38e67c955f188a1d94b83f35db5377a">&#9670;&#160;</a></span>getMaxZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMaxZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="a76fd1fbcf511136181a610b9fd2ed3d8" name="a76fd1fbcf511136181a610b9fd2ed3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76fd1fbcf511136181a610b9fd2ed3d8">&#9670;&#160;</a></span>getMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMinX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="afca3b7e03134ed76ed267d91e231ed58" name="afca3b7e03134ed76ed267d91e231ed58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afca3b7e03134ed76ed267d91e231ed58">&#9670;&#160;</a></span>getMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMinY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="a5de367218f22ff2505dce2b5122d4750" name="a5de367218f22ff2505dce2b5122d4750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5de367218f22ff2505dce2b5122d4750">&#9670;&#160;</a></span>getMinZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SpatialData::getMinZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="aac97e6d357e40ed614e0c1e918c0ca95" name="aac97e6d357e40ed614e0c1e918c0ca95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac97e6d357e40ed614e0c1e918c0ca95">&#9670;&#160;</a></span>hasBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SpatialData::hasBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+</div>
+</div>
+<a id="af26250775d189de64ce1f47f182b442b" name="af26250775d189de64ce1f47f182b442b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af26250775d189de64ce1f47f182b442b">&#9670;&#160;</a></span>heightfield()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::heightfield </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a sampled heightfield surface in world space. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00028">eve::procgen::Heightmap::height()</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01159">eve::procgen::Procgen::heightfieldDataHandle()</a> , 以及 <a class="el" href="EvpackTerrainLoader_8cpp_source.html#l00042">eve::asset_procgen::EvpackTerrainLoader::load()</a>.</p>
+
+</div>
+</div>
+<a id="aeb25db214774d9eb35a563a04bf6316c" name="aeb25db214774d9eb35a563a04bf6316c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb25db214774d9eb35a563a04bf6316c">&#9670;&#160;</a></span>intersect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::intersect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create the intersection of two domains. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aa06d31c2ee920b4d53e8c9c06d90ba24">Intersection</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01203">eve::procgen::Procgen::intersectSpatialHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a029b81be0e775af09b238d57fdb4c045" name="a029b81be0e775af09b238d57fdb4c045"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a029b81be0e775af09b238d57fdb4c045">&#9670;&#160;</a></span>meshSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::meshSurface </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tolerance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a queryable triangle surface from CPU mesh data. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00359">bounds()</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a> , 以及 <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01183">eve::procgen::Procgen::meshSurfaceDataHandle()</a>.</p>
+
+</div>
+</div>
+<a id="acb7abeef8c61c315e2c9178d0ed301d9" name="acb7abeef8c61c315e2c9178d0ed301d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb7abeef8c61c315e2c9178d0ed301d9">&#9670;&#160;</a></span>polygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::polygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>controlPoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an XZ polygon prism between two world-space heights. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00130">fromPoints()</a>, <a class="el" href="PointSet_8cpp_source.html#l00045">eve::procgen::PointSet::getCount()</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4c0a11247d92f73fb84baa51e37a3263">Polygon</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01139">eve::procgen::Procgen::polygonVolumeHandle()</a>.</p>
+
+</div>
+</div>
+<a id="af6b2eb23e37a1373ea4ccd0423c502d9" name="af6b2eb23e37a1373ea4ccd0423c502d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6b2eb23e37a1373ea4ccd0423c502d9">&#9670;&#160;</a></span>project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> eve::procgen::SpatialData::project </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project points onto a heightfield surface; other kinds return an unchanged copy. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a>, <a class="el" href="PointSet_8cpp_source.html#l00088">eve::procgen::PointSet::mutablePoint()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="PointSet_8h_source.html#l00019">eve::procgen::ProcgenPoint::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialData_8cpp_source.html#l00368">sample()</a>.</p>
+
+</div>
+</div>
+<a id="ae173c138bb428a98b1641ce736262cf4" name="ae173c138bb428a98b1641ce736262cf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae173c138bb428a98b1641ce736262cf4">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> eve::procgen::SpatialData::sample </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deterministically sample a 3D lattice inside the domain. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spacing</td><td>Distance between candidates on all axes. </td></tr>
+    <tr><td class="paramname">seed</td><td>Root seed used for stable point seeds and jitter. </td></tr>
+    <tr><td class="paramname">jitter</td><td>Fraction of spacing used for position jitter, clamped to [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Attributed samples inside the domain. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00312">contains()</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aca50cda7d9cabd11781b626e5fdddee8">Heightfield</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a5bc5702796551bb118097c608033a23c">MeshSurface</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="SpatialData_8cpp_source.html#l00416">project()</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="SpatialData_8h_source.html#l00022">eve::procgen::SpatialBounds::valid</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Biome_8cpp_source.html#l00087">eve::procgen::BiomeRules::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a8207867245a9c4c15c6e57f3af7cb43b" name="a8207867245a9c4c15c6e57f3af7cb43b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8207867245a9c4c15c6e57f3af7cb43b">&#9670;&#160;</a></span>sphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::sphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a spherical volume. A non-positive radius produces an empty domain. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057ab7095f057db3fefa7325ad93a04e14fd">Sphere</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01132">eve::procgen::Procgen::sphereVolumeHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a28a2935babc241cea1855f5d1226b52e" name="a28a2935babc241cea1855f5d1226b52e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28a2935babc241cea1855f5d1226b52e">&#9670;&#160;</a></span>spline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::spline </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>controlPoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a polyline domain with a radial influence width. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialData_8cpp_source.html#l00130">fromPoints()</a>, <a class="el" href="PointSet_8cpp_source.html#l00045">eve::procgen::PointSet::getCount()</a>, <a class="el" href="SpatialData_8h_source.html#l00019">eve::procgen::SpatialBounds::maxX</a>, <a class="el" href="SpatialData_8h_source.html#l00020">eve::procgen::SpatialBounds::maxY</a>, <a class="el" href="SpatialData_8h_source.html#l00021">eve::procgen::SpatialBounds::maxZ</a>, <a class="el" href="SpatialData_8h_source.html#l00016">eve::procgen::SpatialBounds::minX</a>, <a class="el" href="SpatialData_8h_source.html#l00017">eve::procgen::SpatialBounds::minY</a>, <a class="el" href="SpatialData_8h_source.html#l00018">eve::procgen::SpatialBounds::minZ</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a4cff6afc4963881749f7742fbb4d1392">Spline</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01149">eve::procgen::Procgen::splineDataHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a7d0d6b17f5d8a8e345688268246d13b7" name="a7d0d6b17f5d8a8e345688268246d13b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d0d6b17f5d8a8e345688268246d13b7">&#9670;&#160;</a></span>subtract()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::subtract </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create the part of a outside b. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a28ed2ac6c29f64a3692c956004b8ff7a">Difference</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01213">eve::procgen::Procgen::differenceSpatialHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a7b5b6b287282eeac8210243cb54c0b15" name="a7b5b6b287282eeac8210243cb54c0b15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b5b6b287282eeac8210243cb54c0b15">&#9670;&#160;</a></span>textureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::textureMask </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an extruded spatial mask from scalar texture data. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057a568643a7a6491cf58e650813e7528244">TextureMask</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01171">eve::procgen::Procgen::textureMaskDataHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a2a4b09a9178b649e9f1ca98966fddaf3" name="a2a4b09a9178b649e9f1ca98966fddaf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a4b09a9178b649e9f1ca98966fddaf3">&#9670;&#160;</a></span>unite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> eve::procgen::SpatialData::unite </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create the union of two domains. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a> 第 <a class="el" href="SpatialData_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="classeve_1_1procgen_1_1SpatialData.html#aef6e9c32daf7a0202c33773271621057aaef12e903e606a4895a16b393bfdec8c">Union</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01193">eve::procgen::Procgen::unionSpatialHandle()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="SpatialData_8h_source.html">SpatialData.h</a></li>
+<li>src/modules/procgen/<a class="el" href="SpatialData_8cpp_source.html">SpatialData.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

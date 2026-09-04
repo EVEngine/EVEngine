@@ -1,0 +1,726 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::effects::EffectDefinitionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1effects.html">effects</a></li><li class="navelem"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1effects_1_1EffectDefinitionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::effects::EffectDefinitionRuntime类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Binds a typed effect runtime to a generation-qualified definition.  
+ <a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EffectDefinitionRuntime_8h_source.html">EffectDefinitionRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac1539ca92dc994a6faefd777adfd92bc" id="r_ac1539ca92dc994a6faefd777adfd92bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac1539ca92dc994a6faefd777adfd92bc">EffectDefinitionRuntime</a> (<a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:ac1539ca92dc994a6faefd777adfd92bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move an effect runtime while retaining its borrowed registry binding.  <br /></td></tr>
+<tr class="separator:ac1539ca92dc994a6faefd777adfd92bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d10a1e10d6e0741b26b04248169f67e" id="r_a8d10a1e10d6e0741b26b04248169f67e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a8d10a1e10d6e0741b26b04248169f67e">operator=</a> (<a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:a8d10a1e10d6e0741b26b04248169f67e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign an effect runtime.  <br /></td></tr>
+<tr class="separator:a8d10a1e10d6e0741b26b04248169f67e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaccb8a05885d7e0bd36bab0025c2167e" id="r_aaccb8a05885d7e0bd36bab0025c2167e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aaccb8a05885d7e0bd36bab0025c2167e">EffectDefinitionRuntime</a> (const <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="memdesc:aaccb8a05885d7e0bd36bab0025c2167e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effect runtimes are not implicitly copyable.  <br /></td></tr>
+<tr class="separator:aaccb8a05885d7e0bd36bab0025c2167e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa10929d0898b915bfa20f82ae7aa812" id="r_aaa10929d0898b915bfa20f82ae7aa812"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aaa10929d0898b915bfa20f82ae7aa812">operator=</a> (const <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="memdesc:aaa10929d0898b915bfa20f82ae7aa812"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effect runtimes are not implicitly copy-assignable.  <br /></td></tr>
+<tr class="separator:aaa10929d0898b915bfa20f82ae7aa812"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7adb09d92c9fbb73449aef71e3f85251" id="r_a7adb09d92c9fbb73449aef71e3f85251"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a7adb09d92c9fbb73449aef71e3f85251">~EffectDefinitionRuntime</a> ()=default</td></tr>
+<tr class="memdesc:a7adb09d92c9fbb73449aef71e3f85251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the effect runtime; the registry remains caller-owned.  <br /></td></tr>
+<tr class="separator:a7adb09d92c9fbb73449aef71e3f85251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79f117e236efe38e403f8b48f5698c05" id="r_a79f117e236efe38e403f8b48f5698c05"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a79f117e236efe38e403f8b48f5698c05">identity</a> () const noexcept</td></tr>
+<tr class="memdesc:a79f117e236efe38e403f8b48f5698c05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the unified instance identity.  <br /></td></tr>
+<tr class="separator:a79f117e236efe38e403f8b48f5698c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6f5e6975e1294227e1956614cf5afbf" id="r_ac6f5e6975e1294227e1956614cf5afbf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac6f5e6975e1294227e1956614cf5afbf">state</a> () const noexcept</td></tr>
+<tr class="memdesc:ac6f5e6975e1294227e1956614cf5afbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the strongly typed effect runtime state.  <br /></td></tr>
+<tr class="separator:ac6f5e6975e1294227e1956614cf5afbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02fa84f22f273b7e48911b1fc4eb84be" id="r_a02fa84f22f273b7e48911b1fc4eb84be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a02fa84f22f273b7e48911b1fc4eb84be">state</a> () noexcept</td></tr>
+<tr class="memdesc:a02fa84f22f273b7e48911b1fc4eb84be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutate the strongly typed effect runtime state on the owner thread.  <br /></td></tr>
+<tr class="separator:a02fa84f22f273b7e48911b1fc4eb84be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed35bfe482a4b135316cb23fe02b754e" id="r_aed35bfe482a4b135316cb23fe02b754e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aed35bfe482a4b135316cb23fe02b754e">definitionHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:aed35bfe482a4b135316cb23fe02b754e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the current generation-qualified definition handle.  <br /></td></tr>
+<tr class="separator:aed35bfe482a4b135316cb23fe02b754e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac053c0b0a5300f0874c913377256ee7b" id="r_ac053c0b0a5300f0874c913377256ee7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac053c0b0a5300f0874c913377256ee7b">reloadPolicy</a> () const noexcept</td></tr>
+<tr class="memdesc:ac053c0b0a5300f0874c913377256ee7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the configured reload policy.  <br /></td></tr>
+<tr class="separator:ac053c0b0a5300f0874c913377256ee7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5cb2869093fc902cfe24a3790126bbc" id="r_ae5cb2869093fc902cfe24a3790126bbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ae5cb2869093fc902cfe24a3790126bbc">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) noexcept</td></tr>
+<tr class="memdesc:ae5cb2869093fc902cfe24a3790126bbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark this effect active/inactive for RejectWhileActive.  <br /></td></tr>
+<tr class="separator:ae5cb2869093fc902cfe24a3790126bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c4b0bc107de46916be30893cbc0b6b6" id="r_a2c4b0bc107de46916be30893cbc0b6b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a2c4b0bc107de46916be30893cbc0b6b6">isActive</a> () const noexcept</td></tr>
+<tr class="memdesc:a2c4b0bc107de46916be30893cbc0b6b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the effect is active for reload policy decisions.  <br /></td></tr>
+<tr class="separator:a2c4b0bc107de46916be30893cbc0b6b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6a57dd14e5247402662806dc63e2ff8" id="r_aa6a57dd14e5247402662806dc63e2ff8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aa6a57dd14e5247402662806dc63e2ff8">applyTo</a> (<a class="el" href="structeve_1_1effects_1_1EffectInstance.html">EffectInstance</a> *effect) const</td></tr>
+<tr class="memdesc:aa6a57dd14e5247402662806dc63e2ff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically project the typed runtime into an <a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">EffectInstance</a>.  <br /></td></tr>
+<tr class="separator:aa6a57dd14e5247402662806dc63e2ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0063ab6399a86e77def5aef9fcc87f08" id="r_a0063ab6399a86e77def5aef9fcc87f08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a0063ab6399a86e77def5aef9fcc87f08">reload</a> (<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a0063ab6399a86e77def5aef9fcc87f08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve the registry's current generation and execute a policy.  <br /></td></tr>
+<tr class="separator:a0063ab6399a86e77def5aef9fcc87f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a58be02d34fb7682d2be37901d781c2a7" id="r_a58be02d34fb7682d2be37901d781c2a7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a58be02d34fb7682d2be37901d781c2a7">create</a> (<a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;registry, <a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> definition, std::string subject, std::string <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a>)</td></tr>
+<tr class="memdesc:a58be02d34fb7682d2be37901d781c2a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a typed effect runtime from a registry definition.  <br /></td></tr>
+<tr class="separator:a58be02d34fb7682d2be37901d781c2a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Binds a typed effect runtime to a generation-qualified definition. </p>
+<p><code>DefinitionRegistry</code> and the target <code><a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">EffectInstance</a></code> are borrowed. They must outlive each synchronous call. Reload uses the common four-policy contract and is atomic with respect to this adapter's typed state; callers explicitly call <code>applyTo</code> to update the container-owned instance. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8h_source.html">EffectDefinitionRuntime.h</a> 第 <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac1539ca92dc994a6faefd777adfd92bc" name="ac1539ca92dc994a6faefd777adfd92bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1539ca92dc994a6faefd777adfd92bc">&#9670;&#160;</a></span>EffectDefinitionRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::effects::EffectDefinitionRuntime::EffectDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move an effect runtime while retaining its borrowed registry binding. </p>
+
+</div>
+</div>
+<a id="aaccb8a05885d7e0bd36bab0025c2167e" name="aaccb8a05885d7e0bd36bab0025c2167e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaccb8a05885d7e0bd36bab0025c2167e">&#9670;&#160;</a></span>EffectDefinitionRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::effects::EffectDefinitionRuntime::EffectDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Effect runtimes are not implicitly copyable. </p>
+
+</div>
+</div>
+<a id="a7adb09d92c9fbb73449aef71e3f85251" name="a7adb09d92c9fbb73449aef71e3f85251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7adb09d92c9fbb73449aef71e3f85251">&#9670;&#160;</a></span>~EffectDefinitionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::effects::EffectDefinitionRuntime::~EffectDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy the effect runtime; the registry remains caller-owned. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa6a57dd14e5247402662806dc63e2ff8" name="aa6a57dd14e5247402662806dc63e2ff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6a57dd14e5247402662806dc63e2ff8">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::effects::EffectDefinitionRuntime::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html">EffectInstance</a> *&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically project the typed runtime into an <a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">EffectInstance</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">effect</td><td>Borrowed container-owned instance; it is not retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for a null destination. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00088">eve::definition::InstanceIdentity::definition</a>, <a class="el" href="EffectTypes_8h_source.html#l00152">eve::effects::EffectInstance::definitionIdentity</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00025">eve::effects::EffectRuntimeState::duration</a>, <a class="el" href="EffectTypes_8h_source.html#l00132">eve::effects::EffectInstance::duration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8h_source.html#l00122">eve::detail::Id128&lt; Tag &gt;::format()</a>, <a class="el" href="Identity_8h_source.html#l00066">eve::detail::Id128&lt; Tag &gt;::fromUuid()</a>, <a class="el" href="ResourceRef_8h_source.html#l00095">eve::DefinitionRef::id()</a>, <a class="el" href="EffectTypes_8h_source.html#l00126">eve::effects::EffectInstance::id</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00221">identity()</a>, <a class="el" href="EffectTypes_8h_source.html#l00145">eve::effects::EffectInstance::identity</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00087">eve::definition::InstanceIdentity::instanceId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00027">eve::effects::EffectRuntimeState::magnitude</a>, <a class="el" href="EffectTypes_8h_source.html#l00138">eve::effects::EffectInstance::magnitude</a>, <a class="el" href="Identity_8cpp_source.html#l00063">eve::LogicalId::name()</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00031">eve::effects::EffectRuntimeState::payload</a>, <a class="el" href="EffectTypes_8h_source.html#l00140">eve::effects::EffectInstance::payload</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00030">eve::effects::EffectRuntimeState::policy</a>, <a class="el" href="EffectTypes_8h_source.html#l00143">eve::effects::EffectInstance::policy</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00024">eve::effects::EffectRuntimeState::priority</a>, <a class="el" href="EffectTypes_8h_source.html#l00131">eve::effects::EffectInstance::priority</a>, <a class="el" href="EffectTypes_8h_source.html#l00153">eve::effects::EffectInstance::reloadPolicy</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00026">eve::effects::EffectRuntimeState::remaining</a>, <a class="el" href="EffectTypes_8h_source.html#l00133">eve::effects::EffectInstance::remaining</a>, <a class="el" href="EffectTypes_8h_source.html#l00129">eve::effects::EffectInstance::source</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00028">eve::effects::EffectRuntimeState::stackCount</a>, <a class="el" href="EffectTypes_8h_source.html#l00139">eve::effects::EffectInstance::stackCount</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00023">eve::effects::EffectRuntimeState::stackKey</a>, <a class="el" href="EffectTypes_8h_source.html#l00130">eve::effects::EffectInstance::stackKey</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00225">state()</a>, <a class="el" href="EffectTypes_8h_source.html#l00127">eve::effects::EffectInstance::subject</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00032">eve::effects::EffectRuntimeState::tags</a>, <a class="el" href="EffectTypes_8h_source.html#l00141">eve::effects::EffectInstance::tags</a> , 以及 <a class="el" href="EffectTypes_8h_source.html#l00128">eve::effects::EffectInstance::type</a>.</p>
+
+</div>
+</div>
+<a id="a58be02d34fb7682d2be37901d781c2a7" name="a58be02d34fb7682d2be37901d781c2a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58be02d34fb7682d2be37901d781c2a7">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &gt; eve::effects::EffectDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a typed effect runtime from a registry definition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Registry whose lifetime exceeds this adapter. </td></tr>
+    <tr><td class="paramname">definition</td><td>Logical <code>effect:&lt;name&gt;</code> reference. </td></tr>
+    <tr><td class="paramname">subject</td><td>Non-empty owner/target projection for the <a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">EffectInstance</a>. </td></tr>
+    <tr><td class="paramname">source</td><td>Optional source projection. </td></tr>
+    <tr><td class="paramname">instanceId</td><td>Non-nil persistent identity for this runtime instance. </td></tr>
+    <tr><td class="paramname">policy</td><td>Policy used by later reload calls. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A typed runtime or a structured parse/resolution failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00199">eve::definition::RuntimeInstance&lt; State &gt;::create()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00225">state()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aed35bfe482a4b135316cb23fe02b754e" name="aed35bfe482a4b135316cb23fe02b754e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed35bfe482a4b135316cb23fe02b754e">&#9670;&#160;</a></span>definitionHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a> eve::effects::EffectDefinitionRuntime::definitionHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the current generation-qualified definition handle. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79f117e236efe38e403f8b48f5698c05" name="a79f117e236efe38e403f8b48f5698c05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f117e236efe38e403f8b48f5698c05">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp; eve::effects::EffectDefinitionRuntime::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the unified instance identity. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">applyTo()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00264">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a2c4b0bc107de46916be30893cbc0b6b6" name="a2c4b0bc107de46916be30893cbc0b6b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c4b0bc107de46916be30893cbc0b6b6">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::effects::EffectDefinitionRuntime::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the effect is active for reload policy decisions. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa10929d0898b915bfa20f82ae7aa812" name="aaa10929d0898b915bfa20f82ae7aa812"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa10929d0898b915bfa20f82ae7aa812">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp; eve::effects::EffectDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Effect runtimes are not implicitly copy-assignable. </p>
+
+</div>
+</div>
+<a id="a8d10a1e10d6e0741b26b04248169f67e" name="a8d10a1e10d6e0741b26b04248169f67e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d10a1e10d6e0741b26b04248169f67e">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp; eve::effects::EffectDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move-assign an effect runtime. </p>
+
+</div>
+</div>
+<a id="a0063ab6399a86e77def5aef9fcc87f08" name="a0063ab6399a86e77def5aef9fcc87f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0063ab6399a86e77def5aef9fcc87f08">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt; eve::effects::EffectDefinitionRuntime::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve the registry's current generation and execute a policy. </p>
+<dl class="section return"><dt>返回</dt><dd>Reload outcome, or a failure leaving typed state and identity unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00025">eve::effects::EffectRuntimeState::duration</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00221">identity()</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00029">eve::effects::EffectRuntimeState::maxStacks</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00026">eve::effects::EffectRuntimeState::remaining</a>, <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00028">eve::effects::EffectRuntimeState::stackCount</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac053c0b0a5300f0874c913377256ee7b" name="ac053c0b0a5300f0874c913377256ee7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac053c0b0a5300f0874c913377256ee7b">&#9670;&#160;</a></span>reloadPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> eve::effects::EffectDefinitionRuntime::reloadPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the configured reload policy. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8h_source.html">EffectDefinitionRuntime.h</a> 第 <a class="el" href="EffectDefinitionRuntime_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5cb2869093fc902cfe24a3790126bbc" name="ae5cb2869093fc902cfe24a3790126bbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5cb2869093fc902cfe24a3790126bbc">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::effects::EffectDefinitionRuntime::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark this effect active/inactive for RejectWhileActive. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>.</p>
+
+</div>
+</div>
+<a id="ac6f5e6975e1294227e1956614cf5afbf" name="ac6f5e6975e1294227e1956614cf5afbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6f5e6975e1294227e1956614cf5afbf">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a> &amp; eve::effects::EffectDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the strongly typed effect runtime state. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">applyTo()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00204">create()</a>.</p>
+
+</div>
+</div>
+<a id="a02fa84f22f273b7e48911b1fc4eb84be" name="a02fa84f22f273b7e48911b1fc4eb84be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02fa84f22f273b7e48911b1fc4eb84be">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a> &amp; eve::effects::EffectDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutate the strongly typed effect runtime state on the owner thread. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a> 第 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/effects/<a class="el" href="EffectDefinitionRuntime_8h_source.html">EffectDefinitionRuntime.h</a></li>
+<li>src/modules/effects/<a class="el" href="EffectDefinitionRuntime_8cpp_source.html">EffectDefinitionRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/ObjectRegistry.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ObjectRegistry.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ObjectRegistry_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectRegistry_8h.html">ui/ObjectRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Runtime_8h.html">common/Runtime.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelOwnership_8h.html">common/SquirrelOwnership.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;T&gt;</a> registryFailure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, std::string message) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(code, std::move(message)));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">   21</a></span><a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">ObjectRegistry::instance</a>() {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> registry;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> registry;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>ObjectRegistry::Slot* ObjectRegistry::slot(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.isValid() || <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.index() &gt;= slots_.size()) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> &amp;slots_[<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.index()];</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">const</span> ObjectRegistry::Slot* ObjectRegistry::slot(<a class="code hl_typedef" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.isValid() || <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.index() &gt;= slots_.size()) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> &amp;slots_[<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.index()];</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a01f7ee718d80f9bee1922a45cf8647a5">   36</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ObjectHandle&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a01f7ee718d80f9bee1922a45cf8647a5">ObjectRegistry::create</a>(<span class="keyword">const</span> std::string&amp; className) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (className.empty()) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                             <span class="stringliteral">&quot;UI object class name must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1Runtime.html">Runtime</a>* runtime = <a class="code hl_function" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">ModuleManager::runtime</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!runtime) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                             <span class="stringliteral">&quot;UI object registry requires an active Runtime&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628">registerObject</a>(className, runtime-&gt;createInstance(className));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                             std::string(<span class="stringliteral">&quot;UI object construction failed: &quot;</span>) + <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;UI object construction failed&quot;</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628">   58</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ObjectHandle&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628">ObjectRegistry::registerObject</a>(<span class="keyword">const</span> std::string&amp; className, <span class="keyword">const</span> ssq::Object&amp; <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                         <span class="keyword">const</span> std::string&amp; label) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::uint32_t allocatedIndex = <a class="code hl_variable" href="classeve_1_1RuntimeHandle.html#a8689f8e4367cbfb67bda4e6dbcfe8b5a">ObjectHandle::invalidIndex</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span>          appendedSlot   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">if</span> (<span class="keywordtype">object</span>.getType() != ssq::Type::INSTANCE) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                                 <span class="stringliteral">&quot;UI object registry accepts only script instances&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        std::string <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a> = className;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.empty()) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <a class="code hl_class" href="classeve_1_1Runtime.html">Runtime</a>* runtime = <a class="code hl_function" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">ModuleManager::runtime</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">if</span> (!runtime) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;UI object registry requires an active Runtime to derive the class&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a> = runtime-&gt;classNameOf(<span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.empty()) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                                     <span class="stringliteral">&quot;UI object registry could not derive a script class name&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (!freeSlots_.empty()) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            allocatedIndex = freeSlots_.back();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (slots_.size() &gt;= <a class="code hl_variable" href="classeve_1_1RuntimeHandle.html#a8689f8e4367cbfb67bda4e6dbcfe8b5a">ObjectHandle::invalidIndex</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                                     <span class="stringliteral">&quot;UI object registry exhausted its slot index space&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            allocatedIndex = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(slots_.size());</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            slots_.emplace_back();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            appendedSlot = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        Slot&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = slots_[allocatedIndex];</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.retired || <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.entry.has_value()) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (appendedSlot) slots_.pop_back();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                                 <span class="stringliteral">&quot;UI object registry selected an occupied or retired slot&quot;</span>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>(allocatedIndex, <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.generation);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">auto</span>               ownedObject = <a class="code hl_function" href="namespaceeve_1_1script.html#a1c74972321b36da5d39d12f8a7ee9c4f">eve::script::ownSquirrelObject</a>(<a class="code hl_function" href="namespaceeve_1_1script.html#a64a6103e6fdbd240e7a9420df3fe8eb2">eve::script::borrowSquirrelObject</a>(<span class="keywordtype">object</span>));</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">if</span> (!ownedObject) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;ObjectHandle&gt;::failure</a>(ownedObject.status());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> candidate;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        candidate.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#afb18b299868d22a807f6acb84aaa1500">handle</a>    = <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        candidate.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">className</a> = <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        candidate.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">object</a>    = std::move(ownedObject).takeValue().release();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        candidate.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">label</a>     = label.empty() ? <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a> + <span class="stringliteral">&quot; #&quot;</span> + std::to_string(<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>) + 1) : label;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.entry.emplace(std::move(candidate));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">bool</span> insertedClass = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keyword">auto</span> [classIt, inserted] = byClass_.try_emplace(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            insertedClass            = inserted;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            classIt-&gt;second.push_back(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordflow">if</span> (insertedClass) byClass_.erase(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.entry.reset();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="comment">// The free-list entry is consumed only after all potentially-throwing</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="comment">// registration work has completed.</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">if</span> (!freeSlots_.empty() &amp;&amp; freeSlots_.back() == allocatedIndex) freeSlots_.pop_back();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;ObjectHandle&gt;::success</a>(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">if</span> (appendedSlot &amp;&amp; !slots_.empty() &amp;&amp; allocatedIndex + 1 == slots_.size() &amp;&amp;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            !slots_.back().entry.has_value()) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            slots_.pop_back();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                             std::string(<span class="stringliteral">&quot;UI object registration failed: &quot;</span>) + <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (appendedSlot &amp;&amp; !slots_.empty() &amp;&amp; allocatedIndex + 1 == slots_.size() &amp;&amp;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            !slots_.back().entry.has_value()) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            slots_.pop_back();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">return</span> registryFailure&lt;ObjectHandle&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;UI object registration failed&quot;</span>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
+</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="foldopen" id="foldopen00142" data-start="{" data-end="}">
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">  142</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">ObjectRegistry::unregister</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.isValid()) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                                     <span class="stringliteral">&quot;cannot unregister an invalid UI object handle&quot;</span>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    Slot* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = slot(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;UI object handle index is outside the registry&quot;</span>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry.has_value() || <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;generation != <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.generation()) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;UI object handle is stale&quot;</span>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">auto</span> classIt = byClass_.find(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry-&gt;className);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">if</span> (classIt == byClass_.end()) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a>, <span class="stringliteral">&quot;UI object class index is missing&quot;</span>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">auto</span>&amp;      classEntries = classIt-&gt;second;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">const</span> <span class="keyword">auto</span> handleIt     = std::find(classEntries.begin(), classEntries.end(), <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (handleIt == classEntries.end()) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                                     <span class="stringliteral">&quot;UI object class index does not contain its handle&quot;</span>);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> <span class="keyword">auto</span> next = <a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a598704261bd2411b38d66ff1202894d5">ObjectHandle::nextGeneration</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;generation);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (next) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="comment">// Reserve the reusable-slot bookkeeping before making the live</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            <span class="comment">// entry unreachable. The remaining operations are noexcept.</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            freeSlots_.push_back(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.index());</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                                         std::string(<span class="stringliteral">&quot;UI object slot release failed: &quot;</span>) + <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;UI object slot release failed&quot;</span>);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    classEntries.erase(handleIt);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">if</span> (classEntries.empty()) byClass_.erase(classIt);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry.reset();</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (next) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;generation = *next;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;retired = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>}</div>
+</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">  192</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">ObjectRegistry::clear</a>(<span class="keyword">const</span> std::string&amp; className) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = byClass_.find(className);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">if</span> (found == byClass_.end()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keyword">const</span> std::vector&lt;ObjectHandle&gt; handles = found-&gt;second;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a> : handles) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">unregister</a>(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>).<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(<span class="stringliteral">&quot;clear UI object class&quot;</span>);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
+</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="foldopen" id="foldopen00202" data-start="{" data-end="}">
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">  202</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">ObjectRegistry::clearAll</a>() {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    std::vector&lt;ObjectHandle&gt; handles;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [className, classHandles] : byClass_) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        (void)className;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        handles.insert(handles.end(), classHandles.begin(), classHandles.end());</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a> : handles) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">unregister</a>(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>).<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(<span class="stringliteral">&quot;clear all UI objects&quot;</span>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="foldopen" id="foldopen00213" data-start="{" data-end="}">
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">  213</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">ObjectRegistry::classNames</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    std::vector&lt;std::string&gt; names;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    names.reserve(byClass_.size());</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pair : byClass_) names.push_back(pair.first);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">return</span> names;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>}</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="foldopen" id="foldopen00220" data-start="{" data-end="}">
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">  220</a></span>std::vector&lt;ObjectEntry&gt; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">ObjectRegistry::entries</a>(<span class="keyword">const</span> std::string&amp; className)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = byClass_.find(className);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">if</span> (found == byClass_.end()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    std::vector&lt;ObjectEntry&gt; result;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    result.reserve(found-&gt;second.size());</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a> : found-&gt;second) {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a0c95b4ec31826465f5828df17e41133e">entry</a>(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)) result.push_back(*<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>}</div>
+</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="foldopen" id="foldopen00232" data-start="{" data-end="}">
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a0c95b4ec31826465f5828df17e41133e">  232</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>* <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a0c95b4ec31826465f5828df17e41133e">ObjectRegistry::entry</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">const</span> Slot* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = slot(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> || !<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry.has_value() || <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;generation != <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.generation()) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">return</span> &amp;*<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>}</div>
+</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="foldopen" id="foldopen00238" data-start="{" data-end="}">
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#af983b8979154bca655ecbd0316fe4091">  238</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#af983b8979154bca655ecbd0316fe4091">ObjectRegistry::isStale</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">ObjectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.isValid()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">const</span> Slot* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = slot(<a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">return</span> !<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> || !<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;entry.has_value() || <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;generation != <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.generation();</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>}</div>
+</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="foldopen" id="foldopen00244" data-start="{" data-end="}">
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">  244</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">ObjectRegistry::count</a>(<span class="keyword">const</span> std::string&amp; className)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = byClass_.find(className);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordflow">return</span> found == byClass_.end() ? 0 : found-&gt;second.size();</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>}</div>
+</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBuildingTarget_8cpp_html_a7c1559cdaf08cadb03946cf9675af2d8"><div class="ttname"><a href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a></div><div class="ttdeci">building::EdgeCurveGroup group</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00254">BuildingTarget.cpp:254</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aObjectRegistry_8h_html"><div class="ttname"><a href="ObjectRegistry_8h.html">ObjectRegistry.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aRuntime_8h_html"><div class="ttname"><a href="Runtime_8h.html">Runtime.h</a></div></div>
+<div class="ttc" id="aSquirrelOwnership_8h_html"><div class="ttname"><a href="SquirrelOwnership_8h.html">SquirrelOwnership.h</a></div><div class="ttdoc">Explicit Value/Owned/Borrowed semantics at the Squirrel boundary.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1ModuleManager_html_a4d5e99add5d64228d6098297913690f5"><div class="ttname"><a href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">eve::ModuleManager::runtime</a></div><div class="ttdeci">static Runtime * runtime()</div><div class="ttdoc">Active runtime associated with the last expose() call, or nullptr. @ownership Borrowed; the embedding...</div><div class="ttdef"><b>Definition</b> <a href="Module_8cpp_source.html#l00292">Module.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa25a474a0e9b02d286999f1e9a50e10a"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">eve::Result&lt; void &gt;::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00466">Result.h:466</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; UiObjectHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a598704261bd2411b38d66ff1202894d5"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a598704261bd2411b38d66ff1202894d5">eve::RuntimeHandle&lt; UiObjectHandleTag &gt;::nextGeneration</a></div><div class="ttdeci">constexpr std::optional&lt; RuntimeHandle &gt; nextGeneration() const noexcept</div><div class="ttdoc">Returns this slot at its next generation.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00094">RuntimeHandle.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a8689f8e4367cbfb67bda4e6dbcfe8b5a"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a8689f8e4367cbfb67bda4e6dbcfe8b5a">eve::RuntimeHandle&lt; UiObjectHandleTag &gt;::invalidIndex</a></div><div class="ttdeci">static constexpr index_type invalidIndex</div><div class="ttdoc">Reserved index value shared by all invalid handles.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00045">RuntimeHandle.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Runtime_html"><div class="ttname"><a href="classeve_1_1Runtime.html">eve::Runtime</a></div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00173">Runtime.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html">eve::ui::ObjectRegistry</a></div><div class="ttdoc">Reflectable script-object registry backing the database panel.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00055">ObjectRegistry.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a01f7ee718d80f9bee1922a45cf8647a5"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a01f7ee718d80f9bee1922a45cf8647a5">eve::ui::ObjectRegistry::create</a></div><div class="ttdeci">eve::Result&lt; ObjectHandle &gt; create(const std::string &amp;className)</div><div class="ttdoc">Creates a class instance through the active Runtime and registers it.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00036">ObjectRegistry.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a0c95b4ec31826465f5828df17e41133e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a0c95b4ec31826465f5828df17e41133e">eve::ui::ObjectRegistry::entry</a></div><div class="ttdeci">const ObjectEntry * entry(ObjectHandle handle) const noexcept</div><div class="ttdoc">Looks up a live entry without transferring ownership.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00232">ObjectRegistry.cpp:232</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a25013d406a8b0c60ed8431921df48afd"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">eve::ui::ObjectRegistry::clearAll</a></div><div class="ttdeci">void clearAll()</div><div class="ttdoc">Removes every entry.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00202">ObjectRegistry.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a5b290e894ddd623bbded199a7f40987e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">eve::ui::ObjectRegistry::count</a></div><div class="ttdeci">size_t count(const std::string &amp;className) const</div><div class="ttdoc">Number of entries of a class.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00244">ObjectRegistry.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a7b6721c7536edf4dd51bade916c8a6c2"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">eve::ui::ObjectRegistry::instance</a></div><div class="ttdeci">static ObjectRegistry &amp; instance()</div><div class="ttdoc">Returns the process-local singleton owned by the UI module.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00021">ObjectRegistry.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a88e3f5db4b3737e94992c77eb8fbaa5e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">eve::ui::ObjectRegistry::classNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; classNames() const</div><div class="ttdoc">Class names with at least one entry, sorted.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00213">ObjectRegistry.cpp:213</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a937c17f4f453b5a7391a4a3a283848c5"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">eve::ui::ObjectRegistry::clear</a></div><div class="ttdeci">void clear(const std::string &amp;className)</div><div class="ttdoc">Removes every entry of a class.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00192">ObjectRegistry.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a9aad852b1c6f071c781f16cbba3a3a70"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">eve::ui::ObjectRegistry::unregister</a></div><div class="ttdeci">eve::Result&lt; void &gt; unregister(ObjectHandle handle)</div><div class="ttdoc">Removes a live entry and advances its slot generation.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00142">ObjectRegistry.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_aa71d9a6cffbc00c9d1997a6d18d0e87e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">eve::ui::ObjectRegistry::entries</a></div><div class="ttdeci">std::vector&lt; ObjectEntry &gt; entries(const std::string &amp;className) const</div><div class="ttdoc">Entries of a class, in registration order.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00220">ObjectRegistry.cpp:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_ad353642549bc6c790066300dd8368628"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628">eve::ui::ObjectRegistry::registerObject</a></div><div class="ttdeci">eve::Result&lt; ObjectHandle &gt; registerObject(const std::string &amp;className, const ssq::Object &amp;object, const std::string &amp;label={})</div><div class="ttdoc">Registers an existing live script instance.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00058">ObjectRegistry.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_af983b8979154bca655ecbd0316fe4091"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#af983b8979154bca655ecbd0316fe4091">eve::ui::ObjectRegistry::isStale</a></div><div class="ttdeci">bool isStale(ObjectHandle handle) const noexcept</div><div class="ttdoc">Reports whether a valid handle is stale in this registry.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00238">ObjectRegistry.cpp:238</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a1c74972321b36da5d39d12f8a7ee9c4f"><div class="ttname"><a href="namespaceeve_1_1script.html#a1c74972321b36da5d39d12f8a7ee9c4f">eve::script::ownSquirrelObject</a></div><div class="ttdeci">eve::Result&lt; OwnedSquirrelObject &gt; ownSquirrelObject(BorrowedSquirrelObject borrowed)</div><div class="ttdoc">Promotes a borrowed VM object to an explicit rooted owner.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00181">SquirrelOwnership.h:181</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a64a6103e6fdbd240e7a9420df3fe8eb2"><div class="ttname"><a href="namespaceeve_1_1script.html#a64a6103e6fdbd240e7a9420df3fe8eb2">eve::script::borrowSquirrelObject</a></div><div class="ttdeci">BorrowedSquirrelObject borrowSquirrelObject(const ssq::Object &amp;object) noexcept</div><div class="ttdoc">Creates a one-call Borrowed view without retaining a VM reference.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00143">SquirrelOwnership.h:143</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aa52e4072fb4efb017bf04cf36ce140a5"><div class="ttname"><a href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">eve::ui::ObjectHandle</a></div><div class="ttdeci">eve::RuntimeHandle&lt; UiObjectHandleTag &gt; ObjectHandle</div><div class="ttdoc">Generation-qualified identity for one live UI database object.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00028">ObjectRegistry.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html">eve::ui::ObjectEntry</a></div><div class="ttdoc">One registered live script instance.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00031">ObjectRegistry.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a0602f7a53d5d58d573558bf0b9861f26"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">eve::ui::ObjectEntry::object</a></div><div class="ttdeci">ssq::Object object</div><div class="ttdoc">Rooted script instance owned by the registry while live.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00039">ObjectRegistry.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a14921272ecc5808ed6ec1fe6d0d22645"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">eve::ui::ObjectEntry::className</a></div><div class="ttdeci">std::string className</div><div class="ttdoc">Reflected script class used to group this entry.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00035">ObjectRegistry.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_adaf5a5e8bfaab49334ecd06738a63550"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">eve::ui::ObjectEntry::label</a></div><div class="ttdeci">std::string label</div><div class="ttdoc">Optional display label shown by the database panel.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00037">ObjectRegistry.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_afb18b299868d22a807f6acb84aaa1500"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#afb18b299868d22a807f6acb84aaa1500">eve::ui::ObjectEntry::handle</a></div><div class="ttdeci">ObjectHandle handle</div><div class="ttdoc">Generation-qualified handle for the live registry slot.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00033">ObjectRegistry.h:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

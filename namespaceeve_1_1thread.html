@@ -1,0 +1,326 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::thread 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1thread.html">thread</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::thread 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1Channel.html">Channel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe message queue (love2d-style <a class="el" href="classeve_1_1thread_1_1Channel.html" title="Thread-safe message queue (love2d-style Channel). Values are strings so the API stays overload-free f...">Channel</a>). Values are strings so the API stays overload-free for Squirrel bindings. Exposed to scripts as "ThreadChannel" (network already owns "Channel").  <a href="classeve_1_1thread_1_1Channel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle to a single job inside a <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a>.  <a href="classeve_1_1thread_1_1Job.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract job scheduler: dependencies, parallel_for, task_group, arena.  <a href="classeve_1_1thread_1_1JobSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> backend: a dependency-aware scheduler over the existing <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> worker pool.  <a href="classeve_1_1thread_1_1JobSystemThreadPool.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1Task.html">Task</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A job executed by a <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> worker. <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> strings (no enums): "pending" | "running" | "done" | "failed".  <a href="classeve_1_1thread_1_1Task.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fork/join group: <a class="el" href="classeve_1_1thread_1_1TaskGroup.html#ada233ab3c5dcc1e5095a74c365dda75f" title="Spawn a scheduled child job and add it to this group.">fork()</a> spawns scheduled children, <a class="el" href="classeve_1_1thread_1_1TaskGroup.html#a6790a64987ee02d829f40bed29366a95" title="Join every forked child: block until all of them finish. Safe from a worker thread.">wait()</a> joins them.  <a href="classeve_1_1thread_1_1TaskGroup.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1Thread.html">Thread</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1thread_1_1Thread.html" title="Thread module: default pool, named channels, pool factory. Script: eve.Thread() → getPool / newThread...">Thread</a> module: default pool, named channels, pool factory. Script: eve.Thread() → getPool / newThreadPool / getChannel / newChannel.  <a href="classeve_1_1thread_1_1Thread.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1ThreadPool.html">ThreadPool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do not call into scripts from workers.  <a href="classeve_1_1thread_1_1ThreadPool.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a72440c2fdea246250a70fe10068a3843" id="r_a72440c2fdea246250a70fe10068a3843"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> = std::function&lt; void()&gt;</td></tr>
+<tr class="memdesc:a72440c2fdea246250a70fe10068a3843"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unit of work executed by a <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> worker.  <br /></td></tr>
+<tr class="separator:a72440c2fdea246250a70fe10068a3843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14691c1abafc5bfafee50439d04baa07" id="r_a14691c1abafc5bfafee50439d04baa07"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> = std::function&lt; void(int <a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, int <a class="el" href="NinePatch_8cpp.html#a72e27dee31b1c4c6a504fbed29542d97">last</a>)&gt;</td></tr>
+<tr class="memdesc:a14691c1abafc5bfafee50439d04baa07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Body of a parallel_for subrange.  <br /></td></tr>
+<tr class="separator:a14691c1abafc5bfafee50439d04baa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af52a6b5e3f7ad0dc47ba9e1380555d31" id="r_af52a6b5e3f7ad0dc47ba9e1380555d31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html#af52a6b5e3f7ad0dc47ba9e1380555d31">createJobSystem</a> (int workerCount=0)</td></tr>
+<tr class="memdesc:af52a6b5e3f7ad0dc47ba9e1380555d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> with the configured backend.  <br /></td></tr>
+<tr class="separator:af52a6b5e3f7ad0dc47ba9e1380555d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811e25e8d960cad8e813301064131f33" id="r_a811e25e8d960cad8e813301064131f33"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html#a811e25e8d960cad8e813301064131f33">Module_IMPL</a> (<a class="el" href="classeve_1_1thread_1_1Thread.html">Thread</a>, new <a class="el" href="classeve_1_1thread_1_1Thread.html">Thread</a>())</td></tr>
+<tr class="separator:a811e25e8d960cad8e813301064131f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a72440c2fdea246250a70fe10068a3843" name="a72440c2fdea246250a70fe10068a3843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72440c2fdea246250a70fe10068a3843">&#9670;&#160;</a></span>JobFunc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">eve::thread::JobFunc</a> = typedef std::function&lt;void()&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A unit of work executed by a <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> worker. </p>
+
+<p class="definition">在文件 <a class="el" href="JobSystem_8h_source.html">JobSystem.h</a> 第 <a class="el" href="JobSystem_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14691c1abafc5bfafee50439d04baa07" name="a14691c1abafc5bfafee50439d04baa07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14691c1abafc5bfafee50439d04baa07">&#9670;&#160;</a></span>ParallelForBody</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">eve::thread::ParallelForBody</a> = typedef std::function&lt;void(int <a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, int <a class="el" href="NinePatch_8cpp.html#a72e27dee31b1c4c6a504fbed29542d97">last</a>)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Body of a parallel_for subrange. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">first</td><td>First index of the subrange (inclusive). </td></tr>
+    <tr><td class="paramname">last</td><td>One past the last index of the subrange (exclusive). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="JobSystem_8h_source.html">JobSystem.h</a> 第 <a class="el" href="JobSystem_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="af52a6b5e3f7ad0dc47ba9e1380555d31" name="af52a6b5e3f7ad0dc47ba9e1380555d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52a6b5e3f7ad0dc47ba9e1380555d31">&#9670;&#160;</a></span>createJobSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a> * eve::thread::createJobSystem </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>workerCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> with the configured backend. </p>
+<p>Backend switch point: the engine's scheduler is selected here. The default implementation schedules on top of the existing <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> worker pool. A TBB backend only needs to implement the JobSystem/Job/TaskGroup interfaces and be returned from this factory.</p>
+<p>This factory is the only place that knows which backend is compiled in; swapping the scheduler (custom vs TBB) is a change to <a class="el" href="JobSystem_8cpp.html">JobSystem.cpp</a> alone.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">workerCount</td><td>Worker thread count; &lt;= 0 means hardware concurrency. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a>; the caller owns it and must delete it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="JobSystem_8cpp_source.html">JobSystem.cpp</a> 第 <a class="el" href="JobSystem_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Thread_8cpp_source.html#l00077">eve::thread::Thread::getJobSystem()</a>.</p>
+
+</div>
+</div>
+<a id="a811e25e8d960cad8e813301064131f33" name="a811e25e8d960cad8e813301064131f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a811e25e8d960cad8e813301064131f33">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::thread::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1thread_1_1Thread.html">Thread</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Thread</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

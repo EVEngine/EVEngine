@@ -1,0 +1,341 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/economy/Collector.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6a909474890af3f60e8bc556ae1af9f1.html">economy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Collector.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Collector_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Collector_8h.html">economy/Collector.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EconomySystem_8h.html">economy/EconomySystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="GatherNode_8h.html">economy/GatherNode.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1economy.html">eve::economy</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#ac3877cb13b52594c01771643afa6f591">   11</a></span><a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#ac3877cb13b52594c01771643afa6f591">Collector::Collector</a>(<span class="keywordtype">int</span> carryCapacity, <span class="keywordtype">int</span> gatherRatePerTick, <span class="keywordtype">int</span> travelTicks)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    : carryCapacity_(carryCapacity), gatherRatePerTick_(gatherRatePerTick),</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>      travelTicks_(travelTicks) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(<a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a58da40bdf3bb039a037abde07be284b1">carryCapacity</a> &gt; 0, <span class="stringliteral">&quot;carry capacity must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(gatherRatePerTick &gt; 0, <span class="stringliteral">&quot;gather rate must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(travelTicks &gt;= 0, <span class="stringliteral">&quot;travel ticks must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a63be4b653c0b0cf30087d8a1bc0d4f2e">   19</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a63be4b653c0b0cf30087d8a1bc0d4f2e">Collector::assign</a>(<a class="code hl_class" href="classeve_1_1economy_1_1GatherNode.html">GatherNode</a>* node) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (node == node_) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (node_) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#a9307dc0c0d6f782ffc891cc5d02cfc3a">releaseSlot</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        node_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (node == <span class="keyword">nullptr</span> || !node-&gt;tryOccupySlot()) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    node_   = node;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    type_   = node-&gt;resourceType();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    cargo_  = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    startMoveToNode();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#ae3bb4eb3c88512da8430094685b3eff0">   36</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#ae3bb4eb3c88512da8430094685b3eff0">Collector::clearAssignment</a>() {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (node_) node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#a9307dc0c0d6f782ffc891cc5d02cfc3a">releaseSlot</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    node_  = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a0e69191496d811c38ac64ae0147d7bf8">   42</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a0e69191496d811c38ac64ae0147d7bf8">Collector::tick</a>(<span class="keywordtype">int</span> player) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (state_ == <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (node_ == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">switch</span> (state_) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da0720cafbe987c5ced0ac078eadb5f60b">State::MovingToNode</a>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">if</span> (--travelRemaining_ &lt;= 0) state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da778d7f55795e848b6fdef0cd2c8ae7d6">State::Gathering</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da778d7f55795e848b6fdef0cd2c8ae7d6">State::Gathering</a>: {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> freeSpace = carryCapacity_ - cargo_;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> take = std::min({freeSpace, node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#a4a4605f42f137e7ba2159b147026f5da">amount</a>(), gatherRatePerTick_});</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">if</span> (take &gt; 0) cargo_ += node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#a51d76108390008e8f6b97f216f3862b8">extract</a>(take);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">if</span> (cargo_ &gt;= carryCapacity_ || node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#aef45888c1418362348908810dd0f8f64">depleted</a>()) startMoveToDrop();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dac8340df218c608dc5ea5cb6cffcc9ea1">State::MovingToDrop</a>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">if</span> (--travelRemaining_ &lt;= 0) state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da75eb8b27b9ac82a580e20a57888190bd">State::Depositing</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da75eb8b27b9ac82a580e20a57888190bd">State::Depositing</a>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            deposit(player);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#af99bc98e712835def17cd02ef589735c">   70</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#af99bc98e712835def17cd02ef589735c">Collector::isIdle</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> state_ == <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a7c7ccb62c912f2dd639c16f9a8b8f82d">   72</a></span><a class="code hl_enumeration" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140d">Collector::State</a> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a7c7ccb62c912f2dd639c16f9a8b8f82d">Collector::state</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#af6b8470a02a8808cf020360bb452be50">   74</a></span>std::string <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#af6b8470a02a8808cf020360bb452be50">Collector::stateName</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">switch</span> (state_) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;idle&quot;</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da0720cafbe987c5ced0ac078eadb5f60b">State::MovingToNode</a>:</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;moving_to_node&quot;</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da778d7f55795e848b6fdef0cd2c8ae7d6">State::Gathering</a>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;gathering&quot;</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dac8340df218c608dc5ea5cb6cffcc9ea1">State::MovingToDrop</a>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;moving_to_drop&quot;</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da75eb8b27b9ac82a580e20a57888190bd">State::Depositing</a>:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;depositing&quot;</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;idle&quot;</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a77806a12d333e92c9472e77419bdc381">   90</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a77806a12d333e92c9472e77419bdc381">Collector::cargo</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cargo_; }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a58da40bdf3bb039a037abde07be284b1">   92</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a58da40bdf3bb039a037abde07be284b1">Collector::carryCapacity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> carryCapacity_; }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a85bbc302db01d0528e27a83238991564">   94</a></span>std::string <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a85bbc302db01d0528e27a83238991564">Collector::resourceType</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#acb5f52245d70b0ba6dd8b7a606a3d8f7">   96</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#acb5f52245d70b0ba6dd8b7a606a3d8f7">Collector::totalGathered</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> totalGathered_; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#adda5c0fb60a84bd419460ca4972570bf">   98</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#adda5c0fb60a84bd419460ca4972570bf">Collector::trips</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> trips_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keywordtype">void</span> Collector::startMoveToNode() {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    state_           = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da0720cafbe987c5ced0ac078eadb5f60b">State::MovingToNode</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    travelRemaining_ = travelTicks_;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keywordtype">void</span> Collector::startMoveToDrop() {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    state_           = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dac8340df218c608dc5ea5cb6cffcc9ea1">State::MovingToDrop</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    travelRemaining_ = travelTicks_;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keywordtype">void</span> Collector::deposit(<span class="keywordtype">int</span> player) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (cargo_ &gt; 0) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        totalGathered_ += <a class="code hl_function" href="classeve_1_1economy_1_1EconomySystem.html#a0df7acdae5b78021cf3cfe50ddfcdf7b">EconomySystem::credit</a>(player, type_, cargo_);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        ++trips_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        cargo_ = 0;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">if</span> (node_ &amp;&amp; !node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#aef45888c1418362348908810dd0f8f64">depleted</a>()) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        startMoveToNode();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">if</span> (node_) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            node_-&gt;<a class="code hl_function" href="classeve_1_1economy_1_1GatherNode.html#a9307dc0c0d6f782ffc891cc5d02cfc3a">releaseSlot</a>();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            node_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        state_ = <a class="code hl_enumvalue" href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">State::Idle</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1Collector.html#a2c83cbbb7de536c78278c21f6326c5b5">  127</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1economy_1_1Collector.html#a2c83cbbb7de536c78278c21f6326c5b5">Collector::destroy</a>() { <span class="keyword">delete</span> <span class="keyword">this</span>; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::economy</span></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_aea3f8f4629b6e05814f9228e022d10fd"><div class="ttname"><a href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a></div><div class="ttdeci">#define EV_PARAM_CHECK(cond,...)</div><div class="ttdoc">Validate a function parameter / public API precondition.</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00030">Assert.h:30</a></div></div>
+<div class="ttc" id="aCollector_8h_html"><div class="ttname"><a href="Collector_8h.html">Collector.h</a></div></div>
+<div class="ttc" id="aEconomySystem_8h_html"><div class="ttname"><a href="EconomySystem_8h.html">EconomySystem.h</a></div></div>
+<div class="ttc" id="aGatherNode_8h_html"><div class="ttname"><a href="GatherNode_8h.html">GatherNode.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a0e69191496d811c38ac64ae0147d7bf8"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a0e69191496d811c38ac64ae0147d7bf8">eve::economy::Collector::tick</a></div><div class="ttdeci">void tick(int player)</div><div class="ttdoc">推进一个 tick；卸货时入账到指定玩家的账本。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00042">Collector.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140d"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140d">eve::economy::Collector::State</a></div><div class="ttdeci">State</div><div class="ttdoc">采集状态机的相位。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8h_source.html#l00016">Collector.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140da0720cafbe987c5ced0ac078eadb5f60b"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da0720cafbe987c5ced0ac078eadb5f60b">eve::economy::Collector::State::MovingToNode</a></div><div class="ttdeci">@ MovingToNode</div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140da75eb8b27b9ac82a580e20a57888190bd"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da75eb8b27b9ac82a580e20a57888190bd">eve::economy::Collector::State::Depositing</a></div><div class="ttdeci">@ Depositing</div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140da778d7f55795e848b6fdef0cd2c8ae7d6"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140da778d7f55795e848b6fdef0cd2c8ae7d6">eve::economy::Collector::State::Gathering</a></div><div class="ttdeci">@ Gathering</div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140dac8340df218c608dc5ea5cb6cffcc9ea1"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dac8340df218c608dc5ea5cb6cffcc9ea1">eve::economy::Collector::State::MovingToDrop</a></div><div class="ttdeci">@ MovingToDrop</div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a1db84639c80ef89af8258633b565140dae599161956d626eda4cb0a5ffb85271c">eve::economy::Collector::State::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a2c83cbbb7de536c78278c21f6326c5b5"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a2c83cbbb7de536c78278c21f6326c5b5">eve::economy::Collector::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdoc">脚本生命周期入口。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00127">Collector.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a58da40bdf3bb039a037abde07be284b1"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a58da40bdf3bb039a037abde07be284b1">eve::economy::Collector::carryCapacity</a></div><div class="ttdeci">int carryCapacity() const</div><div class="ttdoc">单次最大携带量。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00092">Collector.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a63be4b653c0b0cf30087d8a1bc0d4f2e"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a63be4b653c0b0cf30087d8a1bc0d4f2e">eve::economy::Collector::assign</a></div><div class="ttdeci">bool assign(GatherNode *node)</div><div class="ttdoc">指派目标节点并占用其采集槽位；无空位时保持待命并返回 false。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00019">Collector.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a77806a12d333e92c9472e77419bdc381"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a77806a12d333e92c9472e77419bdc381">eve::economy::Collector::cargo</a></div><div class="ttdeci">int cargo() const</div><div class="ttdoc">当前携带量。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00090">Collector.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a7c7ccb62c912f2dd639c16f9a8b8f82d"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a7c7ccb62c912f2dd639c16f9a8b8f82d">eve::economy::Collector::state</a></div><div class="ttdeci">State state() const</div><div class="ttdoc">当前相位。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00072">Collector.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_a85bbc302db01d0528e27a83238991564"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#a85bbc302db01d0528e27a83238991564">eve::economy::Collector::resourceType</a></div><div class="ttdeci">std::string resourceType() const</div><div class="ttdoc">正在采集的资源类型 id。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00094">Collector.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_ac3877cb13b52594c01771643afa6f591"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#ac3877cb13b52594c01771643afa6f591">eve::economy::Collector::Collector</a></div><div class="ttdeci">Collector(int carryCapacity, int gatherRatePerTick, int travelTicks)</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00011">Collector.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_acb5f52245d70b0ba6dd8b7a606a3d8f7"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#acb5f52245d70b0ba6dd8b7a606a3d8f7">eve::economy::Collector::totalGathered</a></div><div class="ttdeci">int totalGathered() const</div><div class="ttdoc">累计入账量（不含浪费）。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00096">Collector.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_adda5c0fb60a84bd419460ca4972570bf"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#adda5c0fb60a84bd419460ca4972570bf">eve::economy::Collector::trips</a></div><div class="ttdeci">int trips() const</div><div class="ttdoc">完成的往返次数。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00098">Collector.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_ae3bb4eb3c88512da8430094685b3eff0"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#ae3bb4eb3c88512da8430094685b3eff0">eve::economy::Collector::clearAssignment</a></div><div class="ttdeci">void clearAssignment()</div><div class="ttdoc">取消指派并释放槽位。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00036">Collector.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_af6b8470a02a8808cf020360bb452be50"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#af6b8470a02a8808cf020360bb452be50">eve::economy::Collector::stateName</a></div><div class="ttdeci">std::string stateName() const</div><div class="ttdoc">当前相位的字符串名（脚本友好）。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00074">Collector.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1Collector_html_af99bc98e712835def17cd02ef589735c"><div class="ttname"><a href="classeve_1_1economy_1_1Collector.html#af99bc98e712835def17cd02ef589735c">eve::economy::Collector::isIdle</a></div><div class="ttdeci">bool isIdle() const</div><div class="ttdoc">是否处于待命状态。</div><div class="ttdef"><b>Definition</b> <a href="Collector_8cpp_source.html#l00070">Collector.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1EconomySystem_html_a0df7acdae5b78021cf3cfe50ddfcdf7b"><div class="ttname"><a href="classeve_1_1economy_1_1EconomySystem.html#a0df7acdae5b78021cf3cfe50ddfcdf7b">eve::economy::EconomySystem::credit</a></div><div class="ttdeci">static int credit(int player, const std::string &amp;type, int amount)</div><div class="ttdoc">入账并广播事件。</div><div class="ttdef"><b>Definition</b> <a href="EconomySystem_8cpp_source.html#l00032">EconomySystem.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1GatherNode_html"><div class="ttname"><a href="classeve_1_1economy_1_1GatherNode.html">eve::economy::GatherNode</a></div><div class="ttdoc">地图上的资源节点：储量、再生、采集槽位。</div><div class="ttdef"><b>Definition</b> <a href="GatherNode_8h_source.html#l00010">GatherNode.h:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1GatherNode_html_a4a4605f42f137e7ba2159b147026f5da"><div class="ttname"><a href="classeve_1_1economy_1_1GatherNode.html#a4a4605f42f137e7ba2159b147026f5da">eve::economy::GatherNode::amount</a></div><div class="ttdeci">int amount() const</div><div class="ttdoc">当前储量。</div><div class="ttdef"><b>Definition</b> <a href="GatherNode_8cpp_source.html#l00023">GatherNode.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1GatherNode_html_a51d76108390008e8f6b97f216f3862b8"><div class="ttname"><a href="classeve_1_1economy_1_1GatherNode.html#a51d76108390008e8f6b97f216f3862b8">eve::economy::GatherNode::extract</a></div><div class="ttdeci">int extract(int amount)</div><div class="ttdoc">尝试取出 amount；返回实际取出量（不超过当前储量）。</div><div class="ttdef"><b>Definition</b> <a href="GatherNode_8cpp_source.html#l00029">GatherNode.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1GatherNode_html_a9307dc0c0d6f782ffc891cc5d02cfc3a"><div class="ttname"><a href="classeve_1_1economy_1_1GatherNode.html#a9307dc0c0d6f782ffc891cc5d02cfc3a">eve::economy::GatherNode::releaseSlot</a></div><div class="ttdeci">void releaseSlot()</div><div class="ttdoc">释放一个采集槽位。</div><div class="ttdef"><b>Definition</b> <a href="GatherNode_8cpp_source.html#l00042">GatherNode.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1GatherNode_html_aef45888c1418362348908810dd0f8f64"><div class="ttname"><a href="classeve_1_1economy_1_1GatherNode.html#aef45888c1418362348908810dd0f8f64">eve::economy::GatherNode::depleted</a></div><div class="ttdeci">bool depleted() const</div><div class="ttdoc">是否已采空。</div><div class="ttdef"><b>Definition</b> <a href="GatherNode_8cpp_source.html#l00027">GatherNode.cpp:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html"><div class="ttname"><a href="namespaceeve_1_1economy.html">eve::economy</a></div><div class="ttdef"><b>Definition</b> <a href="IEconomy_8h_source.html#l00005">IEconomy.h:5</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

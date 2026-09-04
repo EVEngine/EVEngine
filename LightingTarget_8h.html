@@ -1,0 +1,271 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/lighting_editing/LightingTarget.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d91d0670efb7db947dc9e4b12d8db63.html">lighting_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a>  </div>
+  <div class="headertitle"><div class="title">LightingTarget.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="EditableTarget_8h_source.html">editing/EditableTarget.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingAuthority_8h_source.html">editing/EditingAuthority.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingProperty_8h_source.html">editing/EditingProperty.h</a>&quot;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="LightingTarget_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html">eve::lighting_editing::LightingPropertyTargetBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared property-document implementation for light and environment targets.  <a href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1lighting__editing_1_1Light3DDocumentTarget.html">eve::lighting_editing::Light3DDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable property target matching <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; (≤15 chars...">graphics::Light3D</a>.  <a href="classeve_1_1lighting__editing_1_1Light3DDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1lighting__editing_1_1EnvironmentDocumentTarget.html">eve::lighting_editing::EnvironmentDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable shared environment target for static, DayNight and Weather modes.  <a href="classeve_1_1lighting__editing_1_1EnvironmentDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1lighting__editing_1_1Light3DRuntimeApplier.html">eve::lighting_editing::Light3DRuntimeApplier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge applying a light document to <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; (≤15 chars...">graphics::Light3D</a>.  <a href="classeve_1_1lighting__editing_1_1Light3DRuntimeApplier.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1lighting__editing_1_1EnvironmentRuntimeApplier.html">eve::lighting_editing::EnvironmentRuntimeApplier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge applying environment properties to DayNight or Weather.  <a href="classeve_1_1lighting__editing_1_1EnvironmentRuntimeApplier.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">eve::graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1daynight" id="r_namespaceeve_1_1daynight"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1daynight.html">eve::daynight</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1weather" id="r_namespaceeve_1_1weather"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weather.html">eve::weather</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1lighting__editing" id="r_namespaceeve_1_1lighting__editing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html">eve::lighting_editing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a234857e00331e771d0b3c3988f7ec352" id="r_a234857e00331e771d0b3c3988f7ec352"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a234857e00331e771d0b3c3988f7ec352">eve::lighting_editing::CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td></tr>
+<tr class="separator:a234857e00331e771d0b3c3988f7ec352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7dfef58ca65839d86a4b0b085c8b237" id="r_ac7dfef58ca65839d86a4b0b085c8b237"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#ac7dfef58ca65839d86a4b0b085c8b237">eve::lighting_editing::DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:ac7dfef58ca65839d86a4b0b085c8b237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a824fe97549a45245e6ba02e304f7572f" id="r_a824fe97549a45245e6ba02e304f7572f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a824fe97549a45245e6ba02e304f7572f">eve::lighting_editing::DomainOperation</a> = <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td></tr>
+<tr class="separator:a824fe97549a45245e6ba02e304f7572f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58e2d683841086c1e1e74bfb7220b100" id="r_a58e2d683841086c1e1e74bfb7220b100"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a58e2d683841086c1e1e74bfb7220b100">eve::lighting_editing::EditRegion</a> = <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td></tr>
+<tr class="separator:a58e2d683841086c1e1e74bfb7220b100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a452c618848c58afc82d2d8b8e3f994bc" id="r_a452c618848c58afc82d2d8b8e3f994bc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a452c618848c58afc82d2d8b8e3f994bc">eve::lighting_editing::EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a452c618848c58afc82d2d8b8e3f994bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace8e9e17ad39a6935924ac5fa9558801" id="r_ace8e9e17ad39a6935924ac5fa9558801"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ace8e9e17ad39a6935924ac5fa9558801"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#ace8e9e17ad39a6935924ac5fa9558801">eve::lighting_editing::EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:ace8e9e17ad39a6935924ac5fa9558801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9fa638ce4cb544bdc40252e71eaaf8b" id="r_ab9fa638ce4cb544bdc40252e71eaaf8b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#ab9fa638ce4cb544bdc40252e71eaaf8b">eve::lighting_editing::EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:ab9fa638ce4cb544bdc40252e71eaaf8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ce2dcfe084e108cc1955e164dfa38e" id="r_a04ce2dcfe084e108cc1955e164dfa38e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a04ce2dcfe084e108cc1955e164dfa38e">eve::lighting_editing::EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:a04ce2dcfe084e108cc1955e164dfa38e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b90faa92b1b9ece7279cd53115ab90c" id="r_a2b90faa92b1b9ece7279cd53115ab90c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a2b90faa92b1b9ece7279cd53115ab90c">eve::lighting_editing::IDomainOperationTarget</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td></tr>
+<tr class="separator:a2b90faa92b1b9ece7279cd53115ab90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f95228029e0344f16e82d58406fe82" id="r_a98f95228029e0344f16e82d58406fe82"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a98f95228029e0344f16e82d58406fe82">eve::lighting_editing::IEditableTarget</a> = <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td></tr>
+<tr class="separator:a98f95228029e0344f16e82d58406fe82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a729027c4859cfe275f2827ab695e3b3c" id="r_a729027c4859cfe275f2827ab695e3b3c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a729027c4859cfe275f2827ab695e3b3c">eve::lighting_editing::IPropertyProvider</a> = <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td></tr>
+<tr class="separator:a729027c4859cfe275f2827ab695e3b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca0be74bc5055fe307ba138796da676" id="r_adca0be74bc5055fe307ba138796da676"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#adca0be74bc5055fe307ba138796da676">eve::lighting_editing::PropertyDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td></tr>
+<tr class="separator:adca0be74bc5055fe307ba138796da676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a932e1db76f30d8e587a9afb04bd343a2" id="r_a932e1db76f30d8e587a9afb04bd343a2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a932e1db76f30d8e587a9afb04bd343a2">eve::lighting_editing::PropertyDescriptorLookup</a> = <a class="el" href="classeve_1_1editing_1_1PropertyDescriptorLookup.html">editing::PropertyDescriptorLookup</a></td></tr>
+<tr class="separator:a932e1db76f30d8e587a9afb04bd343a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9ab21bc758305e6b93eb30828ce2e98" id="r_ac9ab21bc758305e6b93eb30828ce2e98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#ac9ab21bc758305e6b93eb30828ce2e98">eve::lighting_editing::PropertyFlag</a> = <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td></tr>
+<tr class="separator:ac9ab21bc758305e6b93eb30828ce2e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b9dfdea90c57407313989f8b27c5924" id="r_a0b9dfdea90c57407313989f8b27c5924"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a0b9dfdea90c57407313989f8b27c5924">eve::lighting_editing::PropertyPath</a> = <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td></tr>
+<tr class="separator:a0b9dfdea90c57407313989f8b27c5924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a52280567cded03bc4bacb59fd7dfc9" id="r_a2a52280567cded03bc4bacb59fd7dfc9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a2a52280567cded03bc4bacb59fd7dfc9">eve::lighting_editing::PropertyReadResult</a> = <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td></tr>
+<tr class="separator:a2a52280567cded03bc4bacb59fd7dfc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320d3ed9109f83c1703f54b4004fdbbd" id="r_a320d3ed9109f83c1703f54b4004fdbbd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a320d3ed9109f83c1703f54b4004fdbbd">eve::lighting_editing::PropertyReadState</a> = <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td></tr>
+<tr class="separator:a320d3ed9109f83c1703f54b4004fdbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b0f7bd41dfd208e61b8773d3b42d2a" id="r_a52b0f7bd41dfd208e61b8773d3b42d2a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a52b0f7bd41dfd208e61b8773d3b42d2a">eve::lighting_editing::PropertySchema</a> = <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td></tr>
+<tr class="separator:a52b0f7bd41dfd208e61b8773d3b42d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad621cfe7b08f73955e2a6cc63d6ada76" id="r_ad621cfe7b08f73955e2a6cc63d6ada76"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#ad621cfe7b08f73955e2a6cc63d6ada76">eve::lighting_editing::PropertySetMode</a> = <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td></tr>
+<tr class="separator:ad621cfe7b08f73955e2a6cc63d6ada76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172833db3316f6f9f7367ea53c875104" id="r_a172833db3316f6f9f7367ea53c875104"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a172833db3316f6f9f7367ea53c875104">eve::lighting_editing::PropertyType</a> = <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td></tr>
+<tr class="separator:a172833db3316f6f9f7367ea53c875104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec165547e81ae400bf9e40b376731c5" id="r_aeec165547e81ae400bf9e40b376731c5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#aeec165547e81ae400bf9e40b376731c5">eve::lighting_editing::Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:aeec165547e81ae400bf9e40b376731c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96eaaf8e23ef24645c2aeff769dc8dc9" id="r_a96eaaf8e23ef24645c2aeff769dc8dc9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a96eaaf8e23ef24645c2aeff769dc8dc9">eve::lighting_editing::RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:a96eaaf8e23ef24645c2aeff769dc8dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaea072f78f366242633396b84db2f212" id="r_aaea072f78f366242633396b84db2f212"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#aaea072f78f366242633396b84db2f212">eve::lighting_editing::SelectionSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td></tr>
+<tr class="separator:aaea072f78f366242633396b84db2f212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d7cb60989dc129dadc09d8c44d8a9a9" id="r_a3d7cb60989dc129dadc09d8c44d8a9a9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a3d7cb60989dc129dadc09d8c44d8a9a9">eve::lighting_editing::TargetDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td></tr>
+<tr class="separator:a3d7cb60989dc129dadc09d8c44d8a9a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a263b5a8a3b51587632c0d3dd24a11826" id="r_a263b5a8a3b51587632c0d3dd24a11826"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1lighting__editing.html#a263b5a8a3b51587632c0d3dd24a11826">eve::lighting_editing::TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td></tr>
+<tr class="separator:a263b5a8a3b51587632c0d3dd24a11826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

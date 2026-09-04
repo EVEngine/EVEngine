@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Sprite-Stacking 伪 3D</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Sprite-Stacking 伪 3D</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>SpriteStack 2D 叠片渲染</h1>
+<p>SpriteStack 使用一组带透明通道的水平切片，在普通 2D 渲染管线中逐层偏移绘制，形成有体积感的 2.5D 图像。它不创建 3D 网格、3D 相机、深度缓冲或 3D 材质。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local layers = spritestack.slicePrimitive(&quot;cylinder&quot;, 20, 128, 128, &quot;y&quot;, 0.0);</div>
+<div class="line">local stack = spritestack.newStack(gfx);</div>
+<div class="line">stack.setLayerCount(layers.len());</div>
+<div class="line">for (local i = 0; i &lt; layers.len(); i++) stack.setLayerImage(gfx, layers[i], i);</div>
+<div class="line">// 也可逐层加载：stack.setLayerFile(gfx, &quot;assets/layer.png&quot;, 0);</div>
+<div class="line">// 横向图集可一次拆层：stack.setLayersFromAtlas(gfx, atlas, 20);</div>
+<div class="line"> </div>
+<div class="line">stack.setPosition(480.0, 390.0); // 2D 屏幕坐标</div>
+<div class="line">stack.setSize(180.0, 180.0);     // 每张切片的像素尺寸</div>
+<div class="line">stack.setThickness(4.0);         // 相邻切片的像素偏移</div>
+<div class="line">stack.setRotation(25.0);         // 2D 旋转角度，单位为度</div>
+<div class="line">stack.setTint(0.32, 0.82, 0.68, 1.0);</div>
+<div class="line">stack.setVisible(true);</div>
+<div class="line">stack.setShadowEnabled(true);</div>
+<div class="line">stack.setShadowOpacity(0.42);</div>
+<div class="line">stack.setShadowOffset(12.0, 9.0);</div>
+<div class="line">stack.setOutline(2.0, 0.02, 0.03, 0.04);</div>
+<div class="line"> </div>
+<div class="line">function eve_render() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    stack.render(gfx);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>render(gfx)</code> 直接按屏幕像素解释坐标；需要世界坐标时调用 <code>stack.renderWithCamera(gfx, camera)</code>。批对象同样提供 <code>batch.renderWithCamera(gfx, camera)</code>。</p>
+<h2>图层和批处理</h2>
+<div class="fragment"><div class="line">local count = stack.getLayerCount();</div>
+<div class="line">local texture = stack.getLayerTexture(0);</div>
+<div class="line">stack.setLayerTexture(texture, 0);</div>
+<div class="line">stack.setLayerUV(0, 0.0, 0.0, 1.0, 1.0);</div>
+<div class="line">local spacing = stack.getThickness();</div>
+<div class="line"> </div>
+<div class="line">local batch = spritestack.newBatch(gfx);</div>
+<div class="line">batch.add(stack);</div>
+<div class="line">batch.remove(stack);</div>
+<div class="line">batch.add(stack);</div>
+<div class="line">batch.render(gfx);</div>
+<div class="line">batch.clear();</div>
+</div><!-- fragment --><p>批对象提交多个 <code>SpriteStack2D</code>；实际纹理由 Graphics 的 2D texture batch 合并。切片从底层到顶层绘制，因此透明边缘和层间遮挡仍遵循 2D painter order。</p>
+<h2>模型切片</h2>
+<p>如果已有 <code>ModelData</code>，可以离线或加载时生成切片：</p>
+<div class="fragment"><div class="line">local model = model3d.newModelDataFromFile(&quot;assets/rock.obj&quot;);</div>
+<div class="line">local layers = spritestack.sliceModel(model, 24, 128, 128, &quot;y&quot;, 0.0);</div>
+</div><!-- fragment --><h2>切片 API</h2>
+<ul>
+<li><code>slicePrimitive(kind, layerCount, imageW, imageH, axis, thickness)</code>： 程序化几何体切片，<code>kind</code> ∈ <code>"box" | "cylinder" | "sphere" | "cone"</code>； <code>axis</code> ∈ <code>"x" | "y" | "z"</code>；<code>thickness &lt;= 0</code> 时按包围盒自动均分。</li>
+<li><code>sliceModel(modelData, layerCount, imageW, imageH, axis, thickness)</code>： 对 <code>model3d.newModelDataFromFile(...)</code> 的模型切片。</li>
+<li>两者都返回 <code>ImageData</code> 数组（RGBA8），可直接传给 <code>gfx.newTexture</code> 或 <code>stack.setLayerImage</code>。</li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>切片的 <code>ImageData</code> 归脚本持有：传入 <code>setLayerImage</code> 后叠片内部已转为 GPU 纹理，可释放原图。</li>
+<li>叠片使用 alpha 混合 + 深度测试（不写深度）的管线，同堆切片每帧按相机距离 由远到近排序；跨叠片的重叠由绘制顺序决定。</li>
+<li>Vulkan 与原生 WebGPU 均可用；WebGPU 使用专用 WGSL 卡片 shader。当前 Web/WASM 精简模块组仍不包含 SpriteStack。</li>
+<li>不要每帧重新切片或重新上传纹理；只在物体形状变化时重建。</li>
+<li><code>updateMeshVertices</code>（合批内部使用）与 GPU 同步，重建频率越高开销越大。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/spritestack/"><code>src/modules/spritestack/</code></a> <b>示例：</b> <a href="../../../examples/sprite-stack/"><code>examples/sprite-stack/</code></a> <b>相关测试：</b> <a href="../../../test/spritestack.cpp"><code>test/spritestack.cpp</code></a></p>
+<p>这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

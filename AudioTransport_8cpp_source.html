@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/audio_editing/AudioTransport.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e054def7dbc521ffca26c2cf90850a73.html">audio_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AudioTransport.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AudioTransport_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AudioTransport_8h.html">audio_editing/AudioTransport.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>EditorResult&lt;T&gt; transportError(<a class="code hl_typedef" href="namespaceeve_1_1audio__editing.html#a797c32adff155707e9a5fabe58dc0c25">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a60008168b4498f9792ab823b57f0614e">   14</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a60008168b4498f9792ab823b57f0614e">AudioAuditionTransport::bind</a>(StableId asset, Revision <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_class" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html">IAudioTransportBackend</a>* backend) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">if</span> (asset.empty() || <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a> == 0 || !backend)</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.audio.transport-bind&quot;</span>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                    <span class="stringliteral">&quot;Audition requires asset identity, revision and playback backend&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> = backend-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">duration</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>) || <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> &lt;= 0.0)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.audio.transport-duration&quot;</span>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                    <span class="stringliteral">&quot;Audition source requires a finite positive duration&quot;</span>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">unbind</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    asset_    = std::move(asset);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    revision_ = <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    backend_  = backend;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a01eb8075dff391ce2ddd127f2efe2fde">setNativeLooping</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> AudioAuditionTransport::validateRevision(Revision expected)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!backend_)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.audio.transport-unbound&quot;</span>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                    <span class="stringliteral">&quot;No audition source is bound&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (expected != revision_)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.audio.transport-stale&quot;</span>,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                    <span class="stringliteral">&quot;Audition source revision is stale&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#acb5e2e7e8c40ef34ebfe82e2621977af">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#acb5e2e7e8c40ef34ebfe82e2621977af">AudioAuditionTransport::setLoop</a>(Revision expected, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                   <span class="keywordtype">double</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> = backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">duration</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> == 0.0) <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>) || !std::isfinite(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>) || <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> &lt; 0.0 || end &lt;= start || end &gt; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.audio.transport-loop-range&quot;</span>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                    <span class="stringliteral">&quot;Loop range must be finite, ordered and inside the clip&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    loopEnabled_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    loopStart_   = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    loopEnd_     = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a01eb8075dff391ce2ddd127f2efe2fde">setNativeLooping</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a23c0161f4f535557299d781cc33212bb">   53</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a23c0161f4f535557299d781cc33212bb">AudioAuditionTransport::play</a>(Revision expected) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (loopEnabled_ &amp;&amp; (backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">tell</a>() &lt; loopStart_ || backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">tell</a>() &gt;= loopEnd_)) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">auto</span> seekResult = backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">seek</a>(loopStart_);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (!seekResult.ok()) <span class="keywordflow">return</span> seekResult;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a039e125c4ab99349e1a1e974db63c773">play</a>();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    state_ = <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">AudioTransportState::Playing</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aa30d280e4561b4c0f071016556e5c49e">   64</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aa30d280e4561b4c0f071016556e5c49e">AudioAuditionTransport::pause</a>(Revision expected) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (state_ != <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">AudioTransportState::Playing</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a>();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a8c6a44feab034fcc7ec0b609873b91b3">pause</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    state_ = <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ae99180abf47a8b3a856e0bcb2656990a">AudioTransportState::Paused</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a52f9b766b4e14f0e7134ab490d7a542d">   74</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a52f9b766b4e14f0e7134ab490d7a542d">AudioAuditionTransport::stop</a>(Revision expected) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (state_ == <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">AudioTransportState::Stopped</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a9889f072bdf161ca4a223431e8aa9a0b">stop</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    state_ = <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">AudioTransportState::Stopped</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#adc17a5da270a18ec521deba90980a030">   84</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#adc17a5da270a18ec521deba90980a030">AudioAuditionTransport::seek</a>(Revision expected, <span class="keywordtype">double</span> seconds) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> = backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">duration</a>();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (!std::isfinite(seconds) || seconds &lt; 0.0 || seconds &gt; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> transportError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.audio.transport-seek-range&quot;</span>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                                    <span class="stringliteral">&quot;Seek position must be inside the clip&quot;</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">seek</a>(seconds);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">AudioTransportSnapshot</a> AudioAuditionTransport::observe()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> {asset_,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            revision_,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            state_,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            backend_ ? std::clamp(backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">tell</a>(), 0.0, backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">duration</a>()) : 0.0,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            backend_ ? backend_-&gt;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>() : 0.0,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            loopEnabled_,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            loopStart_,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            loopEnd_};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#ac8727f7a955f59df6942487664f80f44">  103</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;AudioTransportSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#ac8727f7a955f59df6942487664f80f44">AudioAuditionTransport::snapshot</a>(Revision expected)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok())</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> transportError&lt;AudioTransportSnapshot&gt;(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.code(), <span class="stringliteral">&quot;editor.audio.transport-stale&quot;</span>,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                                      <span class="stringliteral">&quot;Audition source is absent or stale&quot;</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;AudioTransportSnapshot&gt;(observe());</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aed2b013b59ff30c5b70e9a3410c06342">  110</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;AudioTransportSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aed2b013b59ff30c5b70e9a3410c06342">AudioAuditionTransport::update</a>(Revision expected) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validateRevision(expected);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a> = <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.code();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a> == EditorStatus::Conflict) <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">unbind</a>();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> transportError&lt;AudioTransportSnapshot&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="stringliteral">&quot;editor.audio.transport-stale&quot;</span>,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                                      <span class="stringliteral">&quot;Audition source is absent or stale&quot;</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (state_ == <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">AudioTransportState::Playing</a> &amp;&amp; loopEnabled_ &amp;&amp; backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">tell</a>() &gt;= loopEnd_) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">auto</span> seekResult = backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">seek</a>(loopStart_);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (!seekResult.ok())</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">return</span> transportError&lt;AudioTransportSnapshot&gt;(seekResult.code(),</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                                          <span class="stringliteral">&quot;editor.audio.transport-loop-seek&quot;</span>,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                                          <span class="stringliteral">&quot;Playback backend cannot wrap the loop&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a039e125c4ab99349e1a1e974db63c773">play</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (state_ == <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">AudioTransportState::Playing</a> &amp;&amp; !backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac05bb021690461f4f3f08cf60f57c35c">playing</a>() &amp;&amp;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>               backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">tell</a>() &gt;= backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">duration</a>()) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        state_ = <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">AudioTransportState::Stopped</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;AudioTransportSnapshot&gt;(observe());</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">  131</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">AudioAuditionTransport::unbind</a>() {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (backend_) backend_-&gt;<a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a9889f072bdf161ca4a223431e8aa9a0b">stop</a>();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    backend_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    asset_       = StableId{};</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    revision_    = 0;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    state_       = <a class="code hl_enumvalue" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">AudioTransportState::Stopped</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    loopEnabled_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    loopStart_ = loopEnd_ = 0.0;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}  <span class="comment">// namespace eve::audio_editing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aAudioTransport_8h_html"><div class="ttname"><a href="AudioTransport_8h.html">AudioTransport.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a66625d8d6c0894b4828b43f826a09b8f"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00549">McpServer.cpp:549</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_a23c0161f4f535557299d781cc33212bb"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a23c0161f4f535557299d781cc33212bb">eve::audio_editing::AudioAuditionTransport::play</a></div><div class="ttdeci">EditorResult&lt; void &gt; play(Revision expectedRevision)</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00053">AudioTransport.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_a52f9b766b4e14f0e7134ab490d7a542d"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a52f9b766b4e14f0e7134ab490d7a542d">eve::audio_editing::AudioAuditionTransport::stop</a></div><div class="ttdeci">EditorResult&lt; void &gt; stop(Revision expectedRevision)</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00074">AudioTransport.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_a60008168b4498f9792ab823b57f0614e"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a60008168b4498f9792ab823b57f0614e">eve::audio_editing::AudioAuditionTransport::bind</a></div><div class="ttdeci">EditorResult&lt; void &gt; bind(StableId asset, Revision sourceRevision, IAudioTransportBackend *backend)</div><div class="ttdoc">Bind a borrowed backend and stop any previously bound audition.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00014">AudioTransport.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_a7c74a05058d6f9064828af30a8031942"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">eve::audio_editing::AudioAuditionTransport::unbind</a></div><div class="ttdeci">void unbind()</div><div class="ttdoc">Stop and forget the borrowed backend.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00131">AudioTransport.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_aa30d280e4561b4c0f071016556e5c49e"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aa30d280e4561b4c0f071016556e5c49e">eve::audio_editing::AudioAuditionTransport::pause</a></div><div class="ttdeci">EditorResult&lt; void &gt; pause(Revision expectedRevision)</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00064">AudioTransport.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_ac8727f7a955f59df6942487664f80f44"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#ac8727f7a955f59df6942487664f80f44">eve::audio_editing::AudioAuditionTransport::snapshot</a></div><div class="ttdeci">EditorResult&lt; AudioTransportSnapshot &gt; snapshot(Revision expectedRevision) const</div><div class="ttdoc">Read the current playhead only for the bound source revision.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00103">AudioTransport.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_acb5e2e7e8c40ef34ebfe82e2621977af"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#acb5e2e7e8c40ef34ebfe82e2621977af">eve::audio_editing::AudioAuditionTransport::setLoop</a></div><div class="ttdeci">EditorResult&lt; void &gt; setLoop(Revision expectedRevision, bool enabled, double startSeconds=0.0, double endSeconds=0.0)</div><div class="ttdoc">Configure a bounded loop range; zero end uses the clip duration.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00038">AudioTransport.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_adc17a5da270a18ec521deba90980a030"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#adc17a5da270a18ec521deba90980a030">eve::audio_editing::AudioAuditionTransport::seek</a></div><div class="ttdeci">EditorResult&lt; void &gt; seek(Revision expectedRevision, double seconds)</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00084">AudioTransport.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioAuditionTransport_html_aed2b013b59ff30c5b70e9a3410c06342"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aed2b013b59ff30c5b70e9a3410c06342">eve::audio_editing::AudioAuditionTransport::update</a></div><div class="ttdeci">EditorResult&lt; AudioTransportSnapshot &gt; update(Revision expectedRevision)</div><div class="ttdoc">Poll backend state and wrap the custom loop without changing documents.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8cpp_source.html#l00110">AudioTransport.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html">eve::audio_editing::IAudioTransportBackend</a></div><div class="ttdoc">Minimal playback backend boundary used by the deterministic transport controller.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8h_source.html#l00027">AudioTransport.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_a01eb8075dff391ce2ddd127f2efe2fde"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a01eb8075dff391ce2ddd127f2efe2fde">eve::audio_editing::IAudioTransportBackend::setNativeLooping</a></div><div class="ttdeci">virtual void setNativeLooping(bool enabled)=0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_a039e125c4ab99349e1a1e974db63c773"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a039e125c4ab99349e1a1e974db63c773">eve::audio_editing::IAudioTransportBackend::play</a></div><div class="ttdeci">virtual void play()=0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_a6e64b52094591d21ce9c2f188f097693"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">eve::audio_editing::IAudioTransportBackend::duration</a></div><div class="ttdeci">virtual double duration() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_a8c6a44feab034fcc7ec0b609873b91b3"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a8c6a44feab034fcc7ec0b609873b91b3">eve::audio_editing::IAudioTransportBackend::pause</a></div><div class="ttdeci">virtual void pause()=0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_a9889f072bdf161ca4a223431e8aa9a0b"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a9889f072bdf161ca4a223431e8aa9a0b">eve::audio_editing::IAudioTransportBackend::stop</a></div><div class="ttdeci">virtual void stop()=0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_ac05bb021690461f4f3f08cf60f57c35c"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac05bb021690461f4f3f08cf60f57c35c">eve::audio_editing::IAudioTransportBackend::playing</a></div><div class="ttdeci">virtual bool playing() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_ac44109aa71930e5bd39e92cbd46c8941"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">eve::audio_editing::IAudioTransportBackend::seek</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; seek(double seconds)=0</div><div class="ttdoc">Seek the backend playhead.</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioTransportBackend_html_af89a392d74b9438f0888e4e2e6f29d1a"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">eve::audio_editing::IAudioTransportBackend::tell</a></div><div class="ttdeci">virtual double tell() const =0</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a71149fce33bc9588696b7d54b72f7f92"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00017">SkeletonOverlay.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AudioEditingCommands_8cpp_source.html#l00007">AudioEditingCommands.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html_a797c32adff155707e9a5fabe58dc0c25"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html#a797c32adff155707e9a5fabe58dc0c25">eve::audio_editing::EditorStatus</a></div><div class="ttdeci">editing::Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="AudioEditingTypes_8h_source.html#l00040">AudioEditingTypes.h:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html_aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::audio_editing::AudioTransportState::Stopped</a></div><div class="ttdeci">@ Stopped</div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html_aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">eve::audio_editing::AudioTransportState::Playing</a></div><div class="ttdeci">@ Playing</div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html_aac3f5fa45c05313eda129688099f3087ae99180abf47a8b3a856e0bcb2656990a"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ae99180abf47a8b3a856e0bcb2656990a">eve::audio_editing::AudioTransportState::Paused</a></div><div class="ttdeci">@ Paused</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ac47a05926d5cb9b5531d89b68505abde"><div class="ttname"><a href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a></div><div class="ttdeci">Result&lt; void &gt; noOp(std::vector&lt; Diagnostic &gt; diagnostics={})</div><div class="ttdoc">Construct a successful void result for an operation that made no change.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00053">EditingResult.h:53</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioTransportSnapshot_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">eve::audio_editing::AudioTransportSnapshot</a></div><div class="ttdoc">Immutable revision-tagged audition playhead observation.</div><div class="ttdef"><b>Definition</b> <a href="AudioTransport_8h_source.html#l00015">AudioTransport.h:15</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,2269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editing.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1AuthorityPlan.html">AuthorityPlan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1CommandPlan.html">CommandPlan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1CommandRequest.html">CommandRequest</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1ContextSnapshot.html">ContextSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">EditingCommandDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain-owned metadata for one planned editing command.  <a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditVolume.html">EditVolume</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer axis-aligned volume invalidated by a 3D edit.  <a href="structeve_1_1editing_1_1EditVolume.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1ExtensionDescriptor.html">ExtensionDescriptor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">ExtensionProviderRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe generation-qualified registry for editing extension providers.  <a href="classeve_1_1editing_1_1ExtensionProviderRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1FocusSnapshot.html">FocusSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html">GizmoPrimitive</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer-neutral wire primitive for authoring viewport overlays.  <a href="structeve_1_1editing_1_1GizmoPrimitive.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoSnapshot.html">GizmoSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable revision-tagged overlay snapshot consumed by any viewport renderer.  <a href="structeve_1_1editing_1_1GizmoSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of domain-specific connection validation.  <a href="structeve_1_1editing_1_1GraphConnectionDecision.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1GraphDocument.html">GraphDocument</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic mutable graph model with one authoritative revision clock.  <a href="classeve_1_1editing_1_1GraphDocument.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable graph document value sent to a domain compiler.  <a href="structeve_1_1editing_1_1GraphDocumentData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GraphEdgeRecord.html">GraphEdgeRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directed connection between an output and input pin.  <a href="structeve_1_1editing_1_1GraphEdgeRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic graph node independent of its domain.  <a href="structeve_1_1editing_1_1GraphNodeRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable typed pin owned by a graph node.  <a href="structeve_1_1editing_1_1GraphPinRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable-target capability that applies owning domain operations.  <a href="classeve_1_1editing_1_1IDomainOperationTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">IDomainOperationTargetStaging</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional candidate/publish capability for atomic domain operations.  <a href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditAuthority.html">IEditAuthority</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final validation and commit boundary for editor mutations.  <a href="classeve_1_1editing_1_1IEditAuthority.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">IEditingCommandRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower-layer registration boundary implemented by an editor or runtime editing host.  <a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingExtensionProvider.html">IEditingExtensionProvider</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">IEditingSnapshotProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional capability exposing a deterministic, persistence-safe editing snapshot.  <a href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">IGraphDomainProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain-owned typed connection policy.  <a href="classeve_1_1editing_1_1IGraphDomainProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IGridTarget.html">IGridTarget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IIntFieldTarget.html">IIntFieldTarget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IIntVolumeTarget.html">IIntVolumeTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability for sparse integer volumes.  <a href="classeve_1_1editing_1_1IIntVolumeTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UI-independent property access for an immutable selection snapshot.  <a href="classeve_1_1editing_1_1IPropertyProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IScalarFieldTarget.html">IScalarFieldTarget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1LocalWorldAuthority.html">LocalWorldAuthority</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-process authority for a single editable runtime or document target.  <a href="classeve_1_1editing_1_1LocalWorldAuthority.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1NumericMetadata.html">NumericMetadata</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1ObjectRefValue.html">ObjectRefValue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1PropertyDescriptorLookup.html">PropertyDescriptorLookup</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dotted property path (<code>layout.size</code>) compared and persisted as text.  <a href="classeve_1_1editing_1_1PropertyPath.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1PropertyPathHash.html">PropertyPathHash</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash functor for a dotted property path.  <a href="structeve_1_1editing_1_1PropertyPathHash.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1ProviderHandle.html">ProviderHandle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1ProviderLease.html">ProviderLease</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1ReadOnlyAuthority.html">ReadOnlyAuthority</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authority that permits discovery and dry-run but rejects commits.  <a href="classeve_1_1editing_1_1ReadOnlyAuthority.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1SelectionItem.html">SelectionItem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1StrongIdHash.html">StrongIdHash</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash functor for a strong authoring identifier.  <a href="structeve_1_1editing_1_1StrongIdHash.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable discovery metadata exposed by every editable target.  <a href="structeve_1_1editing_1_1TargetDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1TaskContext.html">TaskContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cooperative cancellation and progress API passed to worker code.  <a href="classeve_1_1editing_1_1TaskContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1TaskOutcome.html">TaskOutcome</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type-erased result produced by a background editor task.  <a href="structeve_1_1editing_1_1TaskOutcome.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1TaskService.html">TaskService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single-worker background queue shared by editor domains.  <a href="classeve_1_1editing_1_1TaskService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1TaskSnapshot.html">TaskSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable status returned to UI, scripts and automation clients.  <a href="structeve_1_1editing_1_1TaskSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">TransactionReceipt</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1TransactionSpec.html">TransactionSpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1Value.html">Value</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic owning value tree shared by authoring hosts.  <a href="classeve_1_1editing_1_1Value.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a3b5cef655231a09cdf9a90d51fd9345e" id="r_a3b5cef655231a09cdf9a90d51fd9345e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">EditingCommandPlanner</a> = std::function&lt; <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1CommandPlan.html">CommandPlan</a> &gt;(<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a> &amp;, const <a class="el" href="structeve_1_1editing_1_1CommandRequest.html">CommandRequest</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a3b5cef655231a09cdf9a90d51fd9345e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Side-effect-free planner invoked with the resolved target.  <br /></td></tr>
+<tr class="separator:a3b5cef655231a09cdf9a90d51fd9345e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83862cc43bb747b66aebdbd7cd6085f5" id="r_a83862cc43bb747b66aebdbd7cd6085f5"><td class="memTemplParams" colspan="2">template&lt;class Tag &gt; </td></tr>
+<tr class="memitem:a83862cc43bb747b66aebdbd7cd6085f5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a> = <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;</td></tr>
+<tr class="memdesc:a83862cc43bb747b66aebdbd7cd6085f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">UUID-backed identifier used by authoring contracts.  <br /></td></tr>
+<tr class="separator:a83862cc43bb747b66aebdbd7cd6085f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1e987167a7524aa0e9fdee20818de5c" id="r_ad1e987167a7524aa0e9fdee20818de5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">SessionId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; SessionIdTag &gt;</td></tr>
+<tr class="separator:ad1e987167a7524aa0e9fdee20818de5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b0f525a0b733bb08ccf8109b114213b" id="r_a2b0f525a0b733bb08ccf8109b114213b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TargetIdTag &gt;</td></tr>
+<tr class="separator:a2b0f525a0b733bb08ccf8109b114213b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab06456c15fc263bb2c585849371eea" id="r_abab06456c15fc263bb2c585849371eea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">CommandId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; CommandIdTag &gt;</td></tr>
+<tr class="separator:abab06456c15fc263bb2c585849371eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dae4cea7066ce4242fe52a567b7e506" id="r_a8dae4cea7066ce4242fe52a567b7e506"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">ToolId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; ToolIdTag &gt;</td></tr>
+<tr class="separator:a8dae4cea7066ce4242fe52a567b7e506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637962b2b7ca12ca9c3416d6fd5f2b1b" id="r_a637962b2b7ca12ca9c3416d6fd5f2b1b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; RuleIdTag &gt;</td></tr>
+<tr class="separator:a637962b2b7ca12ca9c3416d6fd5f2b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e450b5eb4cf0da7c013972cc572568" id="r_a80e450b5eb4cf0da7c013972cc572568"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; CapabilityIdTag &gt;</td></tr>
+<tr class="separator:a80e450b5eb4cf0da7c013972cc572568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a574edbcd85274c1df908ce3c43bcf939" id="r_a574edbcd85274c1df908ce3c43bcf939"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">TransactionId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TransactionIdTag &gt;</td></tr>
+<tr class="separator:a574edbcd85274c1df908ce3c43bcf939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f0133613fc769596fb921d57920a56" id="r_a07f0133613fc769596fb921d57920a56"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">PlanId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; PlanIdTag &gt;</td></tr>
+<tr class="separator:a07f0133613fc769596fb921d57920a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60962f18b15404d7942fbae13fd833be" id="r_a60962f18b15404d7942fbae13fd833be"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; StableIdTag &gt;</td></tr>
+<tr class="separator:a60962f18b15404d7942fbae13fd833be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d916283d8333abd61ff13f34344f5d6" id="r_a2d916283d8333abd61ff13f34344f5d6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; ObjectIdTag &gt;</td></tr>
+<tr class="separator:a2d916283d8333abd61ff13f34344f5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e0554f8a5dce7fdebf1fe770b8c078" id="r_a39e0554f8a5dce7fdebf1fe770b8c078"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">AssetGuid</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; AssetGuidTag &gt;</td></tr>
+<tr class="separator:a39e0554f8a5dce7fdebf1fe770b8c078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb5bcefee9d0ff487dfa0fa12db08013" id="r_aeb5bcefee9d0ff487dfa0fa12db08013"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">DocumentId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; DocumentIdTag &gt;</td></tr>
+<tr class="separator:aeb5bcefee9d0ff487dfa0fa12db08013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90a3849ec29f2fe1ce5c2322b5c1f3f6" id="r_a90a3849ec29f2fe1ce5c2322b5c1f3f6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">GraphNodeId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; GraphNodeIdTag &gt;</td></tr>
+<tr class="separator:a90a3849ec29f2fe1ce5c2322b5c1f3f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81debce673234f46d7ab5705ba7cead2" id="r_a81debce673234f46d7ab5705ba7cead2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">GraphPinId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; GraphPinIdTag &gt;</td></tr>
+<tr class="separator:a81debce673234f46d7ab5705ba7cead2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1406ca4adac6f39880b3e63b1788f3" id="r_aba1406ca4adac6f39880b3e63b1788f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">TaskId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TaskIdTag &gt;</td></tr>
+<tr class="separator:aba1406ca4adac6f39880b3e63b1788f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a016bb7e827fad22a647b2c269348f3e8" id="r_a016bb7e827fad22a647b2c269348f3e8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a> = std::uint64_t</td></tr>
+<tr class="separator:a016bb7e827fad22a647b2c269348f3e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de9e50064aac177e1028e74d948cfc2" id="r_a7de9e50064aac177e1028e74d948cfc2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">Status</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></td></tr>
+<tr class="separator:a7de9e50064aac177e1028e74d948cfc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a011e7c6c3a26ea959d34a63beca22c19" id="r_a011e7c6c3a26ea959d34a63beca22c19"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></td></tr>
+<tr class="separator:a011e7c6c3a26ea959d34a63beca22c19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc4edda3fe2aa99250094310f05eae9" id="r_a2bc4edda3fe2aa99250094310f05eae9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> = <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></td></tr>
+<tr class="separator:a2bc4edda3fe2aa99250094310f05eae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a941124259061002fa1f7ca0b17cb6026" id="r_a941124259061002fa1f7ca0b17cb6026"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a941124259061002fa1f7ca0b17cb6026"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a> = <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:a941124259061002fa1f7ca0b17cb6026"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69c9bf05ec03afaf2b389ee7df89f13e" id="r_a69c9bf05ec03afaf2b389ee7df89f13e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a></td></tr>
+<tr class="separator:a69c9bf05ec03afaf2b389ee7df89f13e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc8e37c960efb4a7997225bab64bb5e" id="r_a0cc8e37c960efb4a7997225bab64bb5e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a0cc8e37c960efb4a7997225bab64bb5e">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a></td></tr>
+<tr class="separator:a0cc8e37c960efb4a7997225bab64bb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0a4032a9ee9adfb533ff1081f983f04" id="r_aa0a4032a9ee9adfb533ff1081f983f04"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aa0a4032a9ee9adfb533ff1081f983f04"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:aa0a4032a9ee9adfb533ff1081f983f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a5893855493636af97030d5d777aa2174" id="r_a5893855493636af97030d5d777aa2174"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174">FieldWriteStatus</a> { <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174a733d43480c8589b1368e5def6b480415">Applied</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174a5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174ad37b1f6c0512e2118cee17fea015b699">Rejected</a>
+ }</td></tr>
+<tr class="separator:a5893855493636af97030d5d777aa2174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa34933b3e28a2294395a900abce32747" id="r_aa34933b3e28a2294395a900abce32747"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747ab61541208db7fa7dba42c85224405911">Menu</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a756210d98ce28018652ca05e1dcaaf3e">Shortcut</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747aef05c8098cdb2b34e39c80515fc037bd">Toolbar</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a765b5c592d27653eb7102ee719640108">ContextMenu</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a386cca7abd81cdd80d0d6f881e02ce87">DragDrop</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a61cf8510205077b6f5491d38cd44c0f7">Pointer</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747ad0fbb743dbd1b34b5a4fbe75578811ef">InlineEdit</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a278f9a3d3077c522e71022e302b9e0e4">Palette</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747af907e651164789346ae0a1e257c462d8">Script</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747acaea8340e2d186a540518d08602aa065">Automation</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747a72664dc0959f3b0c04891f8c7046a9f3">Api</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aa34933b3e28a2294395a900abce32747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source that initiated an authoring command.  <a href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">更多...</a><br /></td></tr>
+<tr class="separator:aa34933b3e28a2294395a900abce32747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa580e23a58d238bc79c4db8a19d259c7" id="r_aa580e23a58d238bc79c4db8a19d259c7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7">ThreadAffinity</a> { <a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7aa02c83a7dbd96295beaefb72c2bee2de">Main</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7a5e520da5341f2fec6d3bbfe7ef357922">Render</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7a62efb9ec331e364b96efe68c8b03ca20">Worker</a>
+, <a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7aed36a1ef76a59ee3f15180e0441188ad">Any</a>
+ }</td></tr>
+<tr class="separator:aa580e23a58d238bc79c4db8a19d259c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a221db3c7c688755f69f7707f6f44b6ea" id="r_a221db3c7c688755f69f7707f6f44b6ea"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">GraphPinDirection</a> { <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5">Input</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54">Output</a>
+ }</td></tr>
+<tr class="memdesc:a221db3c7c688755f69f7707f6f44b6ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direction of a typed graph pin.  <a href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">更多...</a><br /></td></tr>
+<tr class="separator:a221db3c7c688755f69f7707f6f44b6ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6cdd7dff35e738999feb5c8a4df311" id="r_a5e6cdd7dff35e738999feb5c8a4df311"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">PropertyType</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034">Bool</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">Int</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98">String</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c">Enum</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295">Color</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977">Vec3</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66">Vec4</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850">Transform</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e">AssetRef</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d">ObjectRef</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e">Struct</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17">Array</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c">Map</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53">Action</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1">ReadOnlyText</a>
+<br />
+ }</td></tr>
+<tr class="separator:a5e6cdd7dff35e738999feb5c8a4df311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b666ee248ddad9eae1806fb3fc78818" id="r_a6b666ee248ddad9eae1806fb3fc78818"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> : std::uint64_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197">ReadOnly</a> = 1ull &lt;&lt; 0
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b">Advanced</a> = 1ull &lt;&lt; 1
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0">EditorOnly</a> = 1ull &lt;&lt; 2
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">Runtime</a> = 1ull &lt;&lt; 3
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818acde9e6576d2cd1bb93387925d982000d">Replicated</a> = 1ull &lt;&lt; 4
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475">Transient</a> = 1ull &lt;&lt; 5
+, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282">Dangerous</a> = 1ull &lt;&lt; 6
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab">MultiEdit</a> = 1ull &lt;&lt; 7
+<br />
+ }</td></tr>
+<tr class="separator:a6b666ee248ddad9eae1806fb3fc78818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf7f3c9a6b52b9fef00e69977bcc967c" id="r_adf7f3c9a6b52b9fef00e69977bcc967c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">PropertyReadState</a> { <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967ca689202409e48743b914713f96d93947c">Value</a>
+, <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967ca699b4f79215d191584653efebf156e52">Mixed</a>
+, <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967ca2aee0be2678ee90fd327cc186826438e">Missing</a>
+, <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967ca902b0d55fddef6f8d651fe1035b7d4bd">Error</a>
+ }</td></tr>
+<tr class="separator:adf7f3c9a6b52b9fef00e69977bcc967c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a642f65bf61b271dc4b599f4069b93060" id="r_a642f65bf61b271dc4b599f4069b93060"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> { <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8">Absolute</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060a2ca9469819fb0fb61ff98e914a7ccca0">Relative</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060a526d688f37a86d3c3f27d0c5016eb71d">Reset</a>
+ }</td></tr>
+<tr class="separator:a642f65bf61b271dc4b599f4069b93060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add1bde2bf56703377f12a2779142da1f" id="r_add1bde2bf56703377f12a2779142da1f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">HostKind</a> { <a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1fa672caf27f5363dc833bda5099775e891">Developer</a>
+, <a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1fab7ee35933235e82848b444bbdbdbb55f">RuntimeBuilder</a>
+, <a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1fa7247552348e071bc1494c056690e9f8f">RuntimeAdmin</a>
+, <a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1facaea8340e2d186a540518d08602aa065">Automation</a>
+ }</td></tr>
+<tr class="separator:add1bde2bf56703377f12a2779142da1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a981141eded4668311d0ac0e70dbb4fe6" id="r_a981141eded4668311d0ac0e70dbb4fe6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6">TransactionState</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6a21d28aa03f67eb242b1c95a6a0594ff5">Planning</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6a103e469a2540877ac22df9f7e8ec6e17">Previewing</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6abed4bf156a87eadd22496f9313446421">PendingAuthority</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6afd8f656590df4b2d2b217b060b7204d3">Committed</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6ad37b1f6c0512e2118cee17fea015b699">Rejected</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6a1ab4f9805376031c61c6ed4cf6ffbe26">Conflicted</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6ae01daed8f2af5888e53470aff7955d86">RolledBack</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="separator:a981141eded4668311d0ac0e70dbb4fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3adfa0a215e969f78d28dff1c61f09c2" id="r_a3adfa0a215e969f78d28dff1c61f09c2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2">ActionOrigin</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075">User</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2a63d72051e901c069f8aa1b32aa0c43bb">Game</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2af907e651164789346ae0a1e257c462d8">Script</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2acaea8340e2d186a540518d08602aa065">Automation</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2a15ffab04714cffc08a5e91a1fb62e4ee">Importer</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256">Network</a>
+<br />
+ }</td></tr>
+<tr class="separator:a3adfa0a215e969f78d28dff1c61f09c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acad0563ee185b57a7f139690f3b2120d" id="r_acad0563ee185b57a7f139690f3b2120d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120d">SelectionDomain</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>
+, <a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363">Asset</a>
+, <a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da4cdbd2bafa8193091ba09509cedf94fd">Graph</a>
+, <a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da3d1f92a565d3b1a61880236e33c49bf3">Timeline</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da71ff71526d15db86eb50fcac245d183b">UI</a>
+, <a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da90589c47f06eb971d548591f23c285af">Custom</a>
+<br />
+ }</td></tr>
+<tr class="separator:acad0563ee185b57a7f139690f3b2120d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0e39a3e832460065f2432d0193632f" id="r_a8e0e39a3e832460065f2432d0193632f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">TaskState</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3">Queued</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09">Running</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5">Succeeded</a>
+, <a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e">Cancelled</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a8e0e39a3e832460065f2432d0193632f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable lifecycle of a background editor task.  <a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">更多...</a><br /></td></tr>
+<tr class="separator:a8e0e39a3e832460065f2432d0193632f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4cbbffde7099bbcc08c1eea317ed4ec2" id="r_a4cbbffde7099bbcc08c1eea317ed4ec2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1ProviderHandle.html">ProviderHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a4cbbffde7099bbcc08c1eea317ed4ec2">registerStaticProvider</a> (<a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">ExtensionProviderRegistry</a> &amp;registry, <a class="el" href="structeve_1_1editing_1_1ExtensionDescriptor.html">ExtensionDescriptor</a> <a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> capability, std::shared_ptr&lt; void &gt; implementation)</td></tr>
+<tr class="memdesc:a4cbbffde7099bbcc08c1eea317ed4ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register one owned capability behind the standard provider lifecycle.  <br /></td></tr>
+<tr class="separator:a4cbbffde7099bbcc08c1eea317ed4ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b7e1c9d6625a2d65aa65893bd1a3b18" id="r_a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memTemplParams" colspan="2">template&lt;class Tag &gt; </td></tr>
+<tr class="memitem:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">eve::StrongUuid</a>&lt; Tag &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">canonicalUuid</a> (const <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; Tag &gt; &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) noexcept</td></tr>
+<tr class="memdesc:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project an authoring identifier to its canonical UUID value.  <br /></td></tr>
+<tr class="separator:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03da99aae4ebe85ff904496935c1958" id="r_af03da99aae4ebe85ff904496935c1958"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1property__access_1_1PropertyDescriptor.html">property_access::PropertyDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#af03da99aae4ebe85ff904496935c1958">toPresentationDescriptor</a> (const <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:af03da99aae4ebe85ff904496935c1958"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e67d25c77d8df76d66bb7ad69dc14a9" id="r_a2e67d25c77d8df76d66bb7ad69dc14a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a> (const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a2e67d25c77d8df76d66bb7ad69dc14a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae99138c111d4bf768f53884d53267250" id="r_ae99138c111d4bf768f53884d53267250"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editing_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">toEditingValue</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ae99138c111d4bf768f53884d53267250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41b256f9bfb4c63f69c328d47dd0e8c" id="r_ae41b256f9bfb4c63f69c328d47dd0e8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">validatePropertyValue</a> (const <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ae41b256f9bfb4c63f69c328d47dd0e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac46b6e1d2aa691b7833a007cdfbd266" id="r_aac46b6e1d2aa691b7833a007cdfbd266"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aac46b6e1d2aa691b7833a007cdfbd266">operator|</a> (<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>)</td></tr>
+<tr class="separator:aac46b6e1d2aa691b7833a007cdfbd266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a099ac5c26ab987b44a815ac660d25e7b" id="r_a099ac5c26ab987b44a815ac660d25e7b"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a099ac5c26ab987b44a815ac660d25e7b">operator&amp;</a> (<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>)</td></tr>
+<tr class="separator:a099ac5c26ab987b44a815ac660d25e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d80cc6f5ba26b9df4cadfe103aaf74" id="r_af7d80cc6f5ba26b9df4cadfe103aaf74"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#af7d80cc6f5ba26b9df4cadfe103aaf74">hasPropertyFlag</a> (<a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> flag)</td></tr>
+<tr class="separator:af7d80cc6f5ba26b9df4cadfe103aaf74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd028c467432d4237ac086c710da0ac6" id="r_afd028c467432d4237ac086c710da0ac6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">ruleDiagnostic</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> rule, <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a> severity, std::string message)</td></tr>
+<tr class="memdesc:afd028c467432d4237ac086c710da0ac6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a common diagnostic carrying an open editing rule identity.  <br /></td></tr>
+<tr class="separator:afd028c467432d4237ac086c710da0ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada98f06437056d96b464d091304c7709" id="r_ada98f06437056d96b464d091304c7709"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ada98f06437056d96b464d091304c7709">diagnosticRule</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &amp;diagnostic)</td></tr>
+<tr class="memdesc:ada98f06437056d96b464d091304c7709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the projected editing rule, or an empty RuleId when absent.  <br /></td></tr>
+<tr class="separator:ada98f06437056d96b464d091304c7709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83865aba834953a9f457b8e13da9ab1c" id="r_a83865aba834953a9f457b8e13da9ab1c"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a83865aba834953a9f457b8e13da9ab1c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a83865aba834953a9f457b8e13da9ab1c">applied</a> (T <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt; diagnostics={})</td></tr>
+<tr class="memdesc:a83865aba834953a9f457b8e13da9ab1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an Applied result with an owning payload and optional diagnostics.  <br /></td></tr>
+<tr class="separator:a83865aba834953a9f457b8e13da9ab1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5badb132cae2de7b4914a5437ba67e18" id="r_a5badb132cae2de7b4914a5437ba67e18"><td class="memTemplParams" colspan="2">template&lt;class T  = void&gt; <br />
+requires std::is_void_v&lt;T&gt;</td></tr>
+<tr class="memitem:a5badb132cae2de7b4914a5437ba67e18"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a5badb132cae2de7b4914a5437ba67e18">applied</a> (std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt; diagnostics={})</td></tr>
+<tr class="memdesc:a5badb132cae2de7b4914a5437ba67e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an Applied void result with optional diagnostics.  <br /></td></tr>
+<tr class="separator:a5badb132cae2de7b4914a5437ba67e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac47a05926d5cb9b5531d89b68505abde" id="r_ac47a05926d5cb9b5531d89b68505abde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">noOp</a> (std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt; diagnostics={})</td></tr>
+<tr class="memdesc:ac47a05926d5cb9b5531d89b68505abde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a successful void result for an operation that made no change.  <br /></td></tr>
+<tr class="separator:ac47a05926d5cb9b5531d89b68505abde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1a97acfc4cfc5e2e7feec6b92a3cf3" id="r_aba1a97acfc4cfc5e2e7feec6b92a3cf3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aba1a97acfc4cfc5e2e7feec6b92a3cf3">pending</a> (std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt; diagnostics={})</td></tr>
+<tr class="memdesc:aba1a97acfc4cfc5e2e7feec6b92a3cf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a successful void result for accepted asynchronous work.  <br /></td></tr>
+<tr class="separator:aba1a97acfc4cfc5e2e7feec6b92a3cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf81bd551501902ad0e8d2f785db1f5" id="r_a9cf81bd551501902ad0e8d2f785db1f5"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a9cf81bd551501902ad0e8d2f785db1f5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> (<a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a> <a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> rule, std::string message)</td></tr>
+<tr class="memdesc:a9cf81bd551501902ad0e8d2f785db1f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a failed editing result with explicit status and diagnostic categories.  <br /></td></tr>
+<tr class="separator:a9cf81bd551501902ad0e8d2f785db1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132067678e100de6b27f511aed2f5316" id="r_a132067678e100de6b27f511aed2f5316"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a132067678e100de6b27f511aed2f5316">diagnosticCodeForStatus</a> (<a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a> <a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>) noexcept</td></tr>
+<tr class="memdesc:a132067678e100de6b27f511aed2f5316"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coarse default diagnostic category for a failure status.  <br /></td></tr>
+<tr class="separator:a132067678e100de6b27f511aed2f5316"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab41e6494400708d8e09b35ac080da2" id="r_abab41e6494400708d8e09b35ac080da2"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:abab41e6494400708d8e09b35ac080da2"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#abab41e6494400708d8e09b35ac080da2">failed</a> (<a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a> <a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> rule, std::string message)</td></tr>
+<tr class="memdesc:abab41e6494400708d8e09b35ac080da2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Migration convenience using the canonical coarse category for the failure status.  <br /></td></tr>
+<tr class="separator:abab41e6494400708d8e09b35ac080da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8c4cf8e64264dae0004127f56e65ae" id="r_a3d8c4cf8e64264dae0004127f56e65ae"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a3d8c4cf8e64264dae0004127f56e65ae"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a3d8c4cf8e64264dae0004127f56e65ae">rejected</a> (<a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> rule, std::string message, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code=<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>)</td></tr>
+<tr class="memdesc:a3d8c4cf8e64264dae0004127f56e65ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a Rejected result for invalid editing input or preconditions.  <br /></td></tr>
+<tr class="separator:a3d8c4cf8e64264dae0004127f56e65ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71dc1189bf091e448437e1f53bd70839" id="r_a71dc1189bf091e448437e1f53bd70839"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a71dc1189bf091e448437e1f53bd70839">editorValueToJson</a> (const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a71dc1189bf091e448437e1f53bd70839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize an EditorValue to deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:a71dc1189bf091e448437e1f53bd70839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77416e35f57243bc237b250db917e4b3" id="r_a77416e35f57243bc237b250db917e4b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a77416e35f57243bc237b250db917e4b3">editorValueFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a77416e35f57243bc237b250db917e4b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse JSON into the pointer-free EditorValue protocol tree.  <br /></td></tr>
+<tr class="separator:a77416e35f57243bc237b250db917e4b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8279d52b8112368d65428cbddd68b02" id="r_ad8279d52b8112368d65428cbddd68b02"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ad8279d52b8112368d65428cbddd68b02">editorValueContentHash</a> (const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ad8279d52b8112368d65428cbddd68b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable content hash derived from deterministic JSON serialization.  <br /></td></tr>
+<tr class="separator:ad8279d52b8112368d65428cbddd68b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a1529af68ece55e2a133bbc197f007ebc" id="r_a1529af68ece55e2a133bbc197f007ebc"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a1529af68ece55e2a133bbc197f007ebc">kRuleDiagnosticDetail</a> = &quot;rule&quot;</td></tr>
+<tr class="memdesc:a1529af68ece55e2a133bbc197f007ebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserved DiagnosticDetails key containing an editing RuleId projection.  <br /></td></tr>
+<tr class="separator:a1529af68ece55e2a133bbc197f007ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a39e0554f8a5dce7fdebf1fe770b8c078" name="a39e0554f8a5dce7fdebf1fe770b8c078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39e0554f8a5dce7fdebf1fe770b8c078">&#9670;&#160;</a></span>AssetGuid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">eve::editing::AssetGuid</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;AssetGuidTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80e450b5eb4cf0da7c013972cc572568" name="a80e450b5eb4cf0da7c013972cc572568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e450b5eb4cf0da7c013972cc572568">&#9670;&#160;</a></span>CapabilityId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;CapabilityIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abab06456c15fc263bb2c585849371eea" name="abab06456c15fc263bb2c585849371eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab06456c15fc263bb2c585849371eea">&#9670;&#160;</a></span>CommandId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">eve::editing::CommandId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;CommandIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bc4edda3fe2aa99250094310f05eae9" name="a2bc4edda3fe2aa99250094310f05eae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bc4edda3fe2aa99250094310f05eae9">&#9670;&#160;</a></span>Diagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a> = typedef <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a011e7c6c3a26ea959d34a63beca22c19" name="a011e7c6c3a26ea959d34a63beca22c19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a011e7c6c3a26ea959d34a63beca22c19">&#9670;&#160;</a></span>DiagnosticSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::editing::DiagnosticSeverity</a> = typedef <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb5bcefee9d0ff487dfa0fa12db08013" name="aeb5bcefee9d0ff487dfa0fa12db08013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb5bcefee9d0ff487dfa0fa12db08013">&#9670;&#160;</a></span>DocumentId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">eve::editing::DocumentId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;DocumentIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b5cef655231a09cdf9a90d51fd9345e" name="a3b5cef655231a09cdf9a90d51fd9345e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b5cef655231a09cdf9a90d51fd9345e">&#9670;&#160;</a></span>EditingCommandPlanner</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">eve::editing::EditingCommandPlanner</a> = typedef std::function&lt;<a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt;<a class="el" href="structeve_1_1editing_1_1CommandPlan.html">CommandPlan</a>&gt;(<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>&amp;, const <a class="el" href="structeve_1_1editing_1_1CommandRequest.html">CommandRequest</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Side-effect-free planner invoked with the resolved target. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingCommandRegistry_8h_source.html">EditingCommandRegistry.h</a> 第 <a class="el" href="EditingCommandRegistry_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0a4032a9ee9adfb533ff1081f983f04" name="aa0a4032a9ee9adfb533ff1081f983f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0a4032a9ee9adfb533ff1081f983f04">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">eve::editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8h_source.html">EditingValueJson.h</a> 第 <a class="el" href="EditingValueJson_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cc8e37c960efb4a7997225bab64bb5e" name="a0cc8e37c960efb4a7997225bab64bb5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc8e37c960efb4a7997225bab64bb5e">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::editing::EditorStatus</a> = typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8h_source.html">EditingValueJson.h</a> 第 <a class="el" href="EditingValueJson_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69c9bf05ec03afaf2b389ee7df89f13e" name="a69c9bf05ec03afaf2b389ee7df89f13e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c9bf05ec03afaf2b389ee7df89f13e">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">eve::editing::EditorValue</a> = typedef <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8h_source.html">EditingValueJson.h</a> 第 <a class="el" href="EditingValueJson_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90a3849ec29f2fe1ce5c2322b5c1f3f6" name="a90a3849ec29f2fe1ce5c2322b5c1f3f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90a3849ec29f2fe1ce5c2322b5c1f3f6">&#9670;&#160;</a></span>GraphNodeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">eve::editing::GraphNodeId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;GraphNodeIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81debce673234f46d7ab5705ba7cead2" name="a81debce673234f46d7ab5705ba7cead2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81debce673234f46d7ab5705ba7cead2">&#9670;&#160;</a></span>GraphPinId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">eve::editing::GraphPinId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;GraphPinIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d916283d8333abd61ff13f34344f5d6" name="a2d916283d8333abd61ff13f34344f5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d916283d8333abd61ff13f34344f5d6">&#9670;&#160;</a></span>ObjectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::editing::ObjectId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;ObjectIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07f0133613fc769596fb921d57920a56" name="a07f0133613fc769596fb921d57920a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f0133613fc769596fb921d57920a56">&#9670;&#160;</a></span>PlanId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">eve::editing::PlanId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;PlanIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a941124259061002fa1f7ca0b17cb6026" name="a941124259061002fa1f7ca0b17cb6026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941124259061002fa1f7ca0b17cb6026">&#9670;&#160;</a></span>Result</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a> = typedef <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a016bb7e827fad22a647b2c269348f3e8" name="a016bb7e827fad22a647b2c269348f3e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a016bb7e827fad22a647b2c269348f3e8">&#9670;&#160;</a></span>Revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a> = typedef std::uint64_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProtocol_8h_source.html">EditingProtocol.h</a> 第 <a class="el" href="EditingProtocol_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a637962b2b7ca12ca9c3416d6fd5f2b1b" name="a637962b2b7ca12ca9c3416d6fd5f2b1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a637962b2b7ca12ca9c3416d6fd5f2b1b">&#9670;&#160;</a></span>RuleId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;RuleIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1e987167a7524aa0e9fdee20818de5c" name="ad1e987167a7524aa0e9fdee20818de5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1e987167a7524aa0e9fdee20818de5c">&#9670;&#160;</a></span>SessionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">eve::editing::SessionId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;SessionIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a60962f18b15404d7942fbae13fd833be" name="a60962f18b15404d7942fbae13fd833be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60962f18b15404d7942fbae13fd833be">&#9670;&#160;</a></span>StableId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;StableIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7de9e50064aac177e1028e74d948cfc2" name="a7de9e50064aac177e1028e74d948cfc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de9e50064aac177e1028e74d948cfc2">&#9670;&#160;</a></span>Status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::editing::Status</a> = typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a83862cc43bb747b66aebdbd7cd6085f5" name="a83862cc43bb747b66aebdbd7cd6085f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83862cc43bb747b66aebdbd7cd6085f5">&#9670;&#160;</a></span>StrongId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">eve::editing::StrongId</a> = typedef <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt;Tag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>UUID-backed identifier used by authoring contracts. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Tag</td><td>Empty domain tag preventing unrelated identifiers from mixing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b0f525a0b733bb08ccf8109b114213b" name="a2b0f525a0b733bb08ccf8109b114213b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b0f525a0b733bb08ccf8109b114213b">&#9670;&#160;</a></span>TargetId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;TargetIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba1406ca4adac6f39880b3e63b1788f3" name="aba1406ca4adac6f39880b3e63b1788f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1406ca4adac6f39880b3e63b1788f3">&#9670;&#160;</a></span>TaskId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">eve::editing::TaskId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;TaskIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8dae4cea7066ce4242fe52a567b7e506" name="a8dae4cea7066ce4242fe52a567b7e506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dae4cea7066ce4242fe52a567b7e506">&#9670;&#160;</a></span>ToolId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">eve::editing::ToolId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;ToolIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a574edbcd85274c1df908ce3c43bcf939" name="a574edbcd85274c1df908ce3c43bcf939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a574edbcd85274c1df908ce3c43bcf939">&#9670;&#160;</a></span>TransactionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">eve::editing::TransactionId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt;TransactionIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a3adfa0a215e969f78d28dff1c61f09c2" name="a3adfa0a215e969f78d28dff1c61f09c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3adfa0a215e969f78d28dff1c61f09c2">&#9670;&#160;</a></span>ActionOrigin</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2">eve::editing::ActionOrigin</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075" name="a3adfa0a215e969f78d28dff1c61f09c2a8f9bfe9d1345237cb3b2b205864da075"></a>User&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2a63d72051e901c069f8aa1b32aa0c43bb" name="a3adfa0a215e969f78d28dff1c61f09c2a63d72051e901c069f8aa1b32aa0c43bb"></a>Game&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2af907e651164789346ae0a1e257c462d8" name="a3adfa0a215e969f78d28dff1c61f09c2af907e651164789346ae0a1e257c462d8"></a>Script&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2acaea8340e2d186a540518d08602aa065" name="a3adfa0a215e969f78d28dff1c61f09c2acaea8340e2d186a540518d08602aa065"></a>Automation&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2a15ffab04714cffc08a5e91a1fb62e4ee" name="a3adfa0a215e969f78d28dff1c61f09c2a15ffab04714cffc08a5e91a1fb62e4ee"></a>Importer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256" name="a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256"></a>Network&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProtocol_8h_source.html">EditingProtocol.h</a> 第 <a class="el" href="EditingProtocol_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa34933b3e28a2294395a900abce32747" name="aa34933b3e28a2294395a900abce32747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa34933b3e28a2294395a900abce32747">&#9670;&#160;</a></span>CommandSource</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">eve::editing::CommandSource</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Source that initiated an authoring command. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747ab61541208db7fa7dba42c85224405911" name="aa34933b3e28a2294395a900abce32747ab61541208db7fa7dba42c85224405911"></a>Menu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a756210d98ce28018652ca05e1dcaaf3e" name="aa34933b3e28a2294395a900abce32747a756210d98ce28018652ca05e1dcaaf3e"></a>Shortcut&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747aef05c8098cdb2b34e39c80515fc037bd" name="aa34933b3e28a2294395a900abce32747aef05c8098cdb2b34e39c80515fc037bd"></a>Toolbar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a765b5c592d27653eb7102ee719640108" name="aa34933b3e28a2294395a900abce32747a765b5c592d27653eb7102ee719640108"></a>ContextMenu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a386cca7abd81cdd80d0d6f881e02ce87" name="aa34933b3e28a2294395a900abce32747a386cca7abd81cdd80d0d6f881e02ce87"></a>DragDrop&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a61cf8510205077b6f5491d38cd44c0f7" name="aa34933b3e28a2294395a900abce32747a61cf8510205077b6f5491d38cd44c0f7"></a>Pointer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747ad0fbb743dbd1b34b5a4fbe75578811ef" name="aa34933b3e28a2294395a900abce32747ad0fbb743dbd1b34b5a4fbe75578811ef"></a>InlineEdit&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a278f9a3d3077c522e71022e302b9e0e4" name="aa34933b3e28a2294395a900abce32747a278f9a3d3077c522e71022e302b9e0e4"></a>Palette&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747af907e651164789346ae0a1e257c462d8" name="aa34933b3e28a2294395a900abce32747af907e651164789346ae0a1e257c462d8"></a>Script&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747acaea8340e2d186a540518d08602aa065" name="aa34933b3e28a2294395a900abce32747acaea8340e2d186a540518d08602aa065"></a>Automation&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa34933b3e28a2294395a900abce32747a72664dc0959f3b0c04891f8c7046a9f3" name="aa34933b3e28a2294395a900abce32747a72664dc0959f3b0c04891f8c7046a9f3"></a>Api&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingCommandTypes_8h_source.html">EditingCommandTypes.h</a> 第 <a class="el" href="EditingCommandTypes_8h_source.html#l00006">6</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5893855493636af97030d5d777aa2174" name="a5893855493636af97030d5d777aa2174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5893855493636af97030d5d777aa2174">&#9670;&#160;</a></span>FieldWriteStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174">eve::editing::FieldWriteStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a5893855493636af97030d5d777aa2174a733d43480c8589b1368e5def6b480415" name="a5893855493636af97030d5d777aa2174a733d43480c8589b1368e5def6b480415"></a>Applied&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5893855493636af97030d5d777aa2174a5ff3c6978f87d96febfdc8ed3899a97e" name="a5893855493636af97030d5d777aa2174a5ff3c6978f87d96febfdc8ed3899a97e"></a>Unchanged&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5893855493636af97030d5d777aa2174ad37b1f6c0512e2118cee17fea015b699" name="a5893855493636af97030d5d777aa2174ad37b1f6c0512e2118cee17fea015b699"></a>Rejected&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a221db3c7c688755f69f7707f6f44b6ea" name="a221db3c7c688755f69f7707f6f44b6ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a221db3c7c688755f69f7707f6f44b6ea">&#9670;&#160;</a></span>GraphPinDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">eve::editing::GraphPinDirection</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Direction of a typed graph pin. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5" name="a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5"></a>Input&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54" name="a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54"></a>Output&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingGraph_8h_source.html">EditingGraph.h</a> 第 <a class="el" href="EditingGraph_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add1bde2bf56703377f12a2779142da1f" name="add1bde2bf56703377f12a2779142da1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add1bde2bf56703377f12a2779142da1f">&#9670;&#160;</a></span>HostKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">eve::editing::HostKind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="add1bde2bf56703377f12a2779142da1fa672caf27f5363dc833bda5099775e891" name="add1bde2bf56703377f12a2779142da1fa672caf27f5363dc833bda5099775e891"></a>Developer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="add1bde2bf56703377f12a2779142da1fab7ee35933235e82848b444bbdbdbb55f" name="add1bde2bf56703377f12a2779142da1fab7ee35933235e82848b444bbdbdbb55f"></a>RuntimeBuilder&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="add1bde2bf56703377f12a2779142da1fa7247552348e071bc1494c056690e9f8f" name="add1bde2bf56703377f12a2779142da1fa7247552348e071bc1494c056690e9f8f"></a>RuntimeAdmin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="add1bde2bf56703377f12a2779142da1facaea8340e2d186a540518d08602aa065" name="add1bde2bf56703377f12a2779142da1facaea8340e2d186a540518d08602aa065"></a>Automation&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProtocol_8h_source.html">EditingProtocol.h</a> 第 <a class="el" href="EditingProtocol_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b666ee248ddad9eae1806fb3fc78818" name="a6b666ee248ddad9eae1806fb3fc78818"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b666ee248ddad9eae1806fb3fc78818">&#9670;&#160;</a></span>PropertyFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">eve::editing::PropertyFlag</a> : std::uint64_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818a6adf97f83acf6453d4a6a4b1070f3754" name="a6b666ee248ddad9eae1806fb3fc78818a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197" name="a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197"></a>ReadOnly&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b" name="a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b"></a>Advanced&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0" name="a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0"></a>EditorOnly&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de" name="a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de"></a>Runtime&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818acde9e6576d2cd1bb93387925d982000d" name="a6b666ee248ddad9eae1806fb3fc78818acde9e6576d2cd1bb93387925d982000d"></a>Replicated&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475" name="a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475"></a>Transient&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282" name="a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282"></a>Dangerous&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab" name="a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab"></a>MultiEdit&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf7f3c9a6b52b9fef00e69977bcc967c" name="adf7f3c9a6b52b9fef00e69977bcc967c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf7f3c9a6b52b9fef00e69977bcc967c">&#9670;&#160;</a></span>PropertyReadState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">eve::editing::PropertyReadState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="adf7f3c9a6b52b9fef00e69977bcc967ca689202409e48743b914713f96d93947c" name="adf7f3c9a6b52b9fef00e69977bcc967ca689202409e48743b914713f96d93947c"></a>Value&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adf7f3c9a6b52b9fef00e69977bcc967ca699b4f79215d191584653efebf156e52" name="adf7f3c9a6b52b9fef00e69977bcc967ca699b4f79215d191584653efebf156e52"></a>Mixed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adf7f3c9a6b52b9fef00e69977bcc967ca2aee0be2678ee90fd327cc186826438e" name="adf7f3c9a6b52b9fef00e69977bcc967ca2aee0be2678ee90fd327cc186826438e"></a>Missing&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adf7f3c9a6b52b9fef00e69977bcc967ca902b0d55fddef6f8d651fe1035b7d4bd" name="adf7f3c9a6b52b9fef00e69977bcc967ca902b0d55fddef6f8d651fe1035b7d4bd"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a642f65bf61b271dc4b599f4069b93060" name="a642f65bf61b271dc4b599f4069b93060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a642f65bf61b271dc4b599f4069b93060">&#9670;&#160;</a></span>PropertySetMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::editing::PropertySetMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8" name="a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8"></a>Absolute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a642f65bf61b271dc4b599f4069b93060a2ca9469819fb0fb61ff98e914a7ccca0" name="a642f65bf61b271dc4b599f4069b93060a2ca9469819fb0fb61ff98e914a7ccca0"></a>Relative&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a642f65bf61b271dc4b599f4069b93060a526d688f37a86d3c3f27d0c5016eb71d" name="a642f65bf61b271dc4b599f4069b93060a526d688f37a86d3c3f27d0c5016eb71d"></a>Reset&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e6cdd7dff35e738999feb5c8a4df311" name="a5e6cdd7dff35e738999feb5c8a4df311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e6cdd7dff35e738999feb5c8a4df311">&#9670;&#160;</a></span>PropertyType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::editing::PropertyType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034" name="a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52" name="a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52"></a>Int&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b" name="a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b"></a>Float&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98" name="a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c" name="a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c"></a>Enum&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295" name="a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295"></a>Color&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80" name="a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80"></a>Vec2&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977" name="a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977"></a>Vec3&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66" name="a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66"></a>Vec4&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850" name="a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850"></a>Transform&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e" name="a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e"></a>AssetRef&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d" name="a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d"></a>ObjectRef&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e" name="a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e"></a>Struct&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17" name="a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c" name="a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c"></a>Map&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53" name="a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53"></a>Action&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1" name="a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1"></a>ReadOnlyText&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acad0563ee185b57a7f139690f3b2120d" name="acad0563ee185b57a7f139690f3b2120d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acad0563ee185b57a7f139690f3b2120d">&#9670;&#160;</a></span>SelectionDomain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120d">eve::editing::SelectionDomain</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da9ead0d38e06ec253ca0ecbf6ea56e59b" name="acad0563ee185b57a7f139690f3b2120da9ead0d38e06ec253ca0ecbf6ea56e59b"></a>Scene&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363" name="acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363"></a>Asset&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da4cdbd2bafa8193091ba09509cedf94fd" name="acad0563ee185b57a7f139690f3b2120da4cdbd2bafa8193091ba09509cedf94fd"></a>Graph&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da3d1f92a565d3b1a61880236e33c49bf3" name="acad0563ee185b57a7f139690f3b2120da3d1f92a565d3b1a61880236e33c49bf3"></a>Timeline&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da71ff71526d15db86eb50fcac245d183b" name="acad0563ee185b57a7f139690f3b2120da71ff71526d15db86eb50fcac245d183b"></a>UI&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acad0563ee185b57a7f139690f3b2120da90589c47f06eb971d548591f23c285af" name="acad0563ee185b57a7f139690f3b2120da90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingSelection_8h_source.html">EditingSelection.h</a> 第 <a class="el" href="EditingSelection_8h_source.html#l00008">8</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e0e39a3e832460065f2432d0193632f" name="a8e0e39a3e832460065f2432d0193632f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0e39a3e832460065f2432d0193632f">&#9670;&#160;</a></span>TaskState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">eve::editing::TaskState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable lifecycle of a background editor task. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3" name="a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3"></a>Queued&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09" name="a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5" name="a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5"></a>Succeeded&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e0e39a3e832460065f2432d0193632fad7c8c85bf79bbe1b7188497c32c3b0ca" name="a8e0e39a3e832460065f2432d0193632fad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e" name="a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e"></a>Cancelled&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingTaskService_8h_source.html">EditingTaskService.h</a> 第 <a class="el" href="EditingTaskService_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa580e23a58d238bc79c4db8a19d259c7" name="aa580e23a58d238bc79c4db8a19d259c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa580e23a58d238bc79c4db8a19d259c7">&#9670;&#160;</a></span>ThreadAffinity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#aa580e23a58d238bc79c4db8a19d259c7">eve::editing::ThreadAffinity</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa580e23a58d238bc79c4db8a19d259c7aa02c83a7dbd96295beaefb72c2bee2de" name="aa580e23a58d238bc79c4db8a19d259c7aa02c83a7dbd96295beaefb72c2bee2de"></a>Main&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa580e23a58d238bc79c4db8a19d259c7a5e520da5341f2fec6d3bbfe7ef357922" name="aa580e23a58d238bc79c4db8a19d259c7a5e520da5341f2fec6d3bbfe7ef357922"></a>Render&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa580e23a58d238bc79c4db8a19d259c7a62efb9ec331e364b96efe68c8b03ca20" name="aa580e23a58d238bc79c4db8a19d259c7a62efb9ec331e364b96efe68c8b03ca20"></a>Worker&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa580e23a58d238bc79c4db8a19d259c7aed36a1ef76a59ee3f15180e0441188ad" name="aa580e23a58d238bc79c4db8a19d259c7aed36a1ef76a59ee3f15180e0441188ad"></a>Any&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingExtension_8h_source.html">EditingExtension.h</a> 第 <a class="el" href="EditingExtension_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a981141eded4668311d0ac0e70dbb4fe6" name="a981141eded4668311d0ac0e70dbb4fe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a981141eded4668311d0ac0e70dbb4fe6">&#9670;&#160;</a></span>TransactionState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6">eve::editing::TransactionState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6a21d28aa03f67eb242b1c95a6a0594ff5" name="a981141eded4668311d0ac0e70dbb4fe6a21d28aa03f67eb242b1c95a6a0594ff5"></a>Planning&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6a103e469a2540877ac22df9f7e8ec6e17" name="a981141eded4668311d0ac0e70dbb4fe6a103e469a2540877ac22df9f7e8ec6e17"></a>Previewing&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6abed4bf156a87eadd22496f9313446421" name="a981141eded4668311d0ac0e70dbb4fe6abed4bf156a87eadd22496f9313446421"></a>PendingAuthority&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6afd8f656590df4b2d2b217b060b7204d3" name="a981141eded4668311d0ac0e70dbb4fe6afd8f656590df4b2d2b217b060b7204d3"></a>Committed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6ad37b1f6c0512e2118cee17fea015b699" name="a981141eded4668311d0ac0e70dbb4fe6ad37b1f6c0512e2118cee17fea015b699"></a>Rejected&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6a1ab4f9805376031c61c6ed4cf6ffbe26" name="a981141eded4668311d0ac0e70dbb4fe6a1ab4f9805376031c61c6ed4cf6ffbe26"></a>Conflicted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6ae01daed8f2af5888e53470aff7955d86" name="a981141eded4668311d0ac0e70dbb4fe6ae01daed8f2af5888e53470aff7955d86"></a>RolledBack&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca" name="a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EditingProtocol_8h_source.html">EditingProtocol.h</a> 第 <a class="el" href="EditingProtocol_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a5badb132cae2de7b4914a5437ba67e18" name="a5badb132cae2de7b4914a5437ba67e18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5badb132cae2de7b4914a5437ba67e18">&#9670;&#160;</a></span>applied() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T  = void&gt; <br />
+requires std::is_void_v&lt;T&gt;</div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt; eve::editing::applied </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt;&#160;</td>
+          <td class="paramname"><em>diagnostics</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an Applied void result with optional diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a83865aba834953a9f457b8e13da9ab1c" name="a83865aba834953a9f457b8e13da9ab1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83865aba834953a9f457b8e13da9ab1c">&#9670;&#160;</a></span>applied() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt; eve::editing::applied </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt;&#160;</td>
+          <td class="paramname"><em>diagnostics</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an Applied result with an owning payload and optional diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>.</p>
+
+</div>
+</div>
+<a id="a1b7e1c9d6625a2d65aa65893bd1a3b18" name="a1b7e1c9d6625a2d65aa65893bd1a3b18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b7e1c9d6625a2d65aa65893bd1a3b18">&#9670;&#160;</a></span>canonicalUuid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">eve::StrongUuid</a>&lt; Tag &gt; eve::editing::canonicalUuid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Project an authoring identifier to its canonical UUID value. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Tag</td><td>Authoring domain tag. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Compatibility-aware identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Canonical UUID, including a deterministic projection for legacy text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditingIds_8h_source.html">EditingIds.h</a> 第 <a class="el" href="EditingIds_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingIds_8h_source.html#l00033">canonicalUuid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingIds_8h_source.html#l00033">canonicalUuid()</a>.</p>
+
+</div>
+</div>
+<a id="a132067678e100de6b27f511aed2f5316" name="a132067678e100de6b27f511aed2f5316"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132067678e100de6b27f511aed2f5316">&#9670;&#160;</a></span>diagnosticCodeForStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> eve::editing::diagnosticCodeForStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coarse default diagnostic category for a failure status. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">eve::Cancelled</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingAuthority_8cpp_source.html#l00107">eve::editing::LocalWorldAuthority::compensate()</a> , 以及 <a class="el" href="EditingResult_8h_source.html#l00090">failed()</a>.</p>
+
+</div>
+</div>
+<a id="ada98f06437056d96b464d091304c7709" name="ada98f06437056d96b464d091304c7709"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada98f06437056d96b464d091304c7709">&#9670;&#160;</a></span>diagnosticRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a> eve::editing::diagnosticRule </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &amp;&#160;</td>
+          <td class="paramname"><em>diagnostic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the projected editing rule, or an empty RuleId when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00141">eve::Diagnostic::details()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="EditingResult_8h_source.html#l00022">kRuleDiagnosticDetail</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>, <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a>, <a class="el" href="EditorResultProjection_8h_source.html#l00012">eve::editor::editorRuleFrom()</a> , 以及 <a class="el" href="MapIntegration_8cpp_source.html#l00008">eve::map_editing::MapRoadMeshPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ad8279d52b8112368d65428cbddd68b02" name="ad8279d52b8112368d65428cbddd68b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8279d52b8112368d65428cbddd68b02">&#9670;&#160;</a></span>editorValueContentHash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editing::editorValueContentHash </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable content hash derived from deterministic JSON serialization. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8cpp_source.html">EditingValueJson.cpp</a> 第 <a class="el" href="EditingValueJson_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00361">editorValueContentHash()</a>, <a class="el" href="EditingValueJson_8cpp_source.html#l00346">editorValueToJson()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingValueJson_8cpp_source.html#l00361">editorValueContentHash()</a>.</p>
+
+</div>
+</div>
+<a id="a77416e35f57243bc237b250db917e4b3" name="a77416e35f57243bc237b250db917e4b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77416e35f57243bc237b250db917e4b3">&#9670;&#160;</a></span>editorValueFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &gt; eve::editing::editorValueFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse JSON into the pointer-free EditorValue protocol tree. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON text. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Parsed value or a structured parse diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8cpp_source.html">EditingValueJson.cpp</a> 第 <a class="el" href="EditingValueJson_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00352">editorValueFromJson()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionTarget_8cpp_source.html#l00044">eve::definitions_editing::DefinitionDocument::applyDomainOperation()</a>, <a class="el" href="EditingValueJson_8cpp_source.html#l00352">editorValueFromJson()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00098">eve::definitions_editing::DefinitionDocument::makeSetField()</a>, <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00094">eve::definitions_editing::DefinitionSchemaFormTarget::read()</a> , 以及 <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00138">eve::definitions_editing::DefinitionSchemaFormTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a71dc1189bf091e448437e1f53bd70839" name="a71dc1189bf091e448437e1f53bd70839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71dc1189bf091e448437e1f53bd70839">&#9670;&#160;</a></span>editorValueToJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editing::editorValueToJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize an EditorValue to deterministic compact JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingValueJson_8cpp_source.html">EditingValueJson.cpp</a> 第 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">editorValueToJson()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionTarget_8cpp_source.html#l00044">eve::definitions_editing::DefinitionDocument::applyDomainOperation()</a>, <a class="el" href="EditingValueJson_8cpp_source.html#l00361">editorValueContentHash()</a> , 以及 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">editorValueToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a9cf81bd551501902ad0e8d2f785db1f5" name="a9cf81bd551501902ad0e8d2f785db1f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf81bd551501902ad0e8d2f785db1f5">&#9670;&#160;</a></span>failed() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt; eve::editing::failed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>&#160;</td>
+          <td class="paramname"><em>rule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a failed editing result with explicit status and diagnostic categories. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="EditingResult_8h_source.html#l00025">ruleDiagnostic()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="abab41e6494400708d8e09b35ac080da2" name="abab41e6494400708d8e09b35ac080da2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab41e6494400708d8e09b35ac080da2">&#9670;&#160;</a></span>failed() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt; eve::editing::failed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>&#160;</td>
+          <td class="paramname"><em>rule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Migration convenience using the canonical coarse category for the failure status. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingResult_8h_source.html#l00072">diagnosticCodeForStatus()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="af7d80cc6f5ba26b9df4cadfe103aaf74" name="af7d80cc6f5ba26b9df4cadfe103aaf74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7d80cc6f5ba26b9df4cadfe103aaf74">&#9670;&#160;</a></span>hasPropertyFlag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::editing::hasPropertyFlag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>flag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProperty_8h_source.html#l00056">hasPropertyFlag()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8h_source.html#l00056">hasPropertyFlag()</a> , 以及 <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00110">eve::definitions_editing::DefinitionSchemaFormTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="ac47a05926d5cb9b5531d89b68505abde" name="ac47a05926d5cb9b5531d89b68505abde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac47a05926d5cb9b5531d89b68505abde">&#9670;&#160;</a></span>noOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt; eve::editing::noOp </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt;&#160;</td>
+          <td class="paramname"><em>diagnostics</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a successful void result for an operation that made no change. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorProjectSettings_8cpp_source.html#l00073">eve::editor::ProjectSettingsTarget::applyDomainOperation()</a>, <a class="el" href="DecalRuntime_8cpp_source.html#l00087">eve::decal_editing::DecalRuntimeBinding::clear()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00064">eve::audio_editing::AudioAuditionTransport::pause()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00159">eve::editor::ActionTimelineWidget::pointerDown()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00148">eve::editor::EditorTargetCoordinator::registerTarget()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00074">eve::audio_editing::AudioAuditionTransport::stop()</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00169">eve::editor::EditorTargetCoordinator::unregisterTarget()</a>.</p>
+
+</div>
+</div>
+<a id="a099ac5c26ab987b44a815ac660d25e7b" name="a099ac5c26ab987b44a815ac660d25e7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a099ac5c26ab987b44a815ac660d25e7b">&#9670;&#160;</a></span>operator&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> eve::editing::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="EditingProperty_8h_source.html#l00053">operator&amp;()</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8h_source.html#l00053">operator&amp;()</a>.</p>
+
+</div>
+</div>
+<a id="aac46b6e1d2aa691b7833a007cdfbd266" name="aac46b6e1d2aa691b7833a007cdfbd266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac46b6e1d2aa691b7833a007cdfbd266">&#9670;&#160;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> eve::editing::operator| </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="EditingProperty_8h_source.html#l00050">operator|()</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8h_source.html#l00050">operator|()</a>.</p>
+
+</div>
+</div>
+<a id="aba1a97acfc4cfc5e2e7feec6b92a3cf3" name="aba1a97acfc4cfc5e2e7feec6b92a3cf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1a97acfc4cfc5e2e7feec6b92a3cf3">&#9670;&#160;</a></span>pending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt; eve::editing::pending </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> &gt;&#160;</td>
+          <td class="paramname"><em>diagnostics</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a successful void result for accepted asynchronous work. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cbbffde7099bbcc08c1eea317ed4ec2" name="a4cbbffde7099bbcc08c1eea317ed4ec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cbbffde7099bbcc08c1eea317ed4ec2">&#9670;&#160;</a></span>registerStaticProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1ProviderHandle.html">ProviderHandle</a> &gt; eve::editing::registerStaticProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">ExtensionProviderRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editing_1_1ExtensionDescriptor.html">ExtensionDescriptor</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td>
+          <td class="paramname"><em>capability</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; void &gt;&#160;</td>
+          <td class="paramname"><em>implementation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register one owned capability behind the standard provider lifecycle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Destination registry owned by the host. </td></tr>
+    <tr><td class="paramname">descriptor</td><td>Owning extension description; capabilities must contain capability. </td></tr>
+    <tr><td class="paramname">capability</td><td>Capability id returned by the provider. </td></tr>
+    <tr><td class="paramname">implementation</td><td>Type-erased owning capability implementation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Generation-qualified provider handle. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditingExtension_8cpp_source.html">EditingExtension.cpp</a> 第 <a class="el" href="EditingExtension_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a> , 以及 <a class="el" href="EditingExtension_8cpp_source.html#l00043">eve::editing::ExtensionProviderRegistry::registerProvider()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioEditingProvider_8cpp_source.html#l00016">eve::audio_editing::registerEditingProvider()</a> , 以及 <a class="el" href="PhysicsEditingProvider_8cpp_source.html#l00016">eve::physics_editing::registerEditingProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a3d8c4cf8e64264dae0004127f56e65ae" name="a3d8c4cf8e64264dae0004127f56e65ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8c4cf8e64264dae0004127f56e65ae">&#9670;&#160;</a></span>rejected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; T &gt; eve::editing::rejected </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>&#160;</td>
+          <td class="paramname"><em>rule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em> = <code><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a Rejected result for invalid editing input or preconditions. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd028c467432d4237ac086c710da0ac6" name="afd028c467432d4237ac086c710da0ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd028c467432d4237ac086c710da0ac6">&#9670;&#160;</a></span>ruleDiagnostic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> eve::editing::ruleDiagnostic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>&#160;</td>
+          <td class="paramname"><em>rule</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a>&#160;</td>
+          <td class="paramname"><em>severity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a common diagnostic carrying an open editing rule identity. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingResult_8h_source.html#l00022">kRuleDiagnosticDetail</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSimulationPreview_8cpp_source.html#l00067">eve::editor::SimulationPreviewController::bake()</a>, <a class="el" href="SkeletonOverlayRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationSkeletonOverlayAdapter::build()</a>, <a class="el" href="EditorDialoguePreview_8cpp_source.html#l00029">eve::editor::DialogueSubtitlePreviewService::build()</a>, <a class="el" href="DialogueGraphRuntime_8cpp_source.html#l00025">eve::dialogue_editing::DialogueGraphRuntimeBuilder::build()</a>, <a class="el" href="EditorUiSkinPreview_8cpp_source.html#l00023">eve::editor::UiSkinPreviewPlanner::build()</a>, <a class="el" href="UiPreview_8cpp_source.html#l00010">eve::ui_editing::UiDocumentPreviewService::build()</a>, <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="AnimationGraph_8cpp_source.html#l00040">eve::animation_editing::AnimationStateGraphDomain::canConnect()</a>, <a class="el" href="DialogueGraph_8cpp_source.html#l00068">eve::dialogue_editing::DialogueGraphDomain::canConnect()</a>, <a class="el" href="MaterialGraph_8cpp_source.html#l00015">eve::material_editing::MaterialGraphDomain::canConnect()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00082">eve::particles_editing::ParticleGraphDomain::canConnect()</a>, <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>, <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>, <a class="el" href="ProfilerRuntime_8cpp_source.html#l00009">eve::profiler_editing::EditorProfilerCollector::collect()</a>, <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a>, <a class="el" href="EditingAuthority_8cpp_source.html#l00107">eve::editing::LocalWorldAuthority::compensate()</a>, <a class="el" href="MaterialGraph_8cpp_source.html#l00027">eve::material_editing::MaterialGraphDomain::compile()</a>, <a class="el" href="EditingGraph_8cpp_source.html#l00044">eve::editing::GraphDocument::connect()</a>, <a class="el" href="NetworkTelemetry_8cpp_source.html#l00010">eve::network_editing::NetworkTelemetryModel::diagnostics()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00113">eve::profiler_editing::EditorProfilerModel::diagnostics()</a>, <a class="el" href="EditConstraint_8cpp_source.html#l00036">eve::editor::EditConstraintPipeline::evaluateChecked()</a>, <a class="el" href="EditingResult_8h_source.html#l00064">failed()</a>, <a class="el" href="AudioWaveform_8cpp_source.html#l00009">eve::audio_editing::AudioWaveformService::generate()</a>, <a class="el" href="AudioImportDiagnostics_8cpp_source.html#l00009">eve::audio_editing::AudioImportDiagnosticsService::inspect()</a>, <a class="el" href="SceneImportRuntime_8cpp_source.html#l00011">eve::sceneloader_editing::SceneImportPreflightRuntime::inspect()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00283">eve::editor::ScenePrefabService::inspectDependencies()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00209">eve::crowd_editing::CrowdDocumentTarget::overlay()</a>, <a class="el" href="MapIntegration_8cpp_source.html#l00029">eve::map_editing::MapObjectImporter::plan()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00265">eve::particles_editing::ParticleGraphDomain::preview()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00551">eve::building_editing::BuildingPlacementTarget::preview()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00173">eve::editor::EditorCurveDocument::preview()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00941">eve::building_editing::BuildingPlacementTarget::previewEdgeCubicBezier()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00532">eve::map_editing::MapDocumentTarget::previewRoad()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00116">eve::editor::ProjectSettingsTarget::read()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00144">eve::editor::DocumentService::reconcileExternal()</a>, <a class="el" href="EditorMaterialPreview_8cpp_source.html#l00038">eve::editor::MaterialPreviewService::render()</a>, <a class="el" href="EditorMaterialOffscreen_8cpp_source.html#l00005">eve::editor::OffscreenMaterialPreviewRenderer::render()</a>, <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00077">eve::editor::DiskAssetCatalog::scan()</a>, <a class="el" href="AudioEffects_8cpp_source.html#l00176">eve::audio_editing::AudioEffectChainTarget::validate()</a>, <a class="el" href="AudioSerialization_8cpp_source.html#l00057">eve::audio_editing::AudioSourceTarget::validate()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00042">eve::camera_editing::CameraDocumentTarget::validate()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00202">eve::crowd_editing::CrowdDocumentTarget::validate()</a>, <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00138">eve::definitions_editing::DefinitionSchemaFormTarget::validate()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00201">eve::hd2d_editing::Hd2dDocumentTarget::validate()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00446">eve::housegen_editing::HouseGenDocumentTarget::validate()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00216">eve::input_editing::InputMapTarget::validate()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00248">eve::lighting_editing::Light3DDocumentTarget::validate()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00273">eve::lighting_editing::EnvironmentDocumentTarget::validate()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00490">eve::map_editing::MapDocumentTarget::validate()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00195">eve::material_editing::MaterialDocumentTarget::validate()</a>, <a class="el" href="PhysicsSerialization_8cpp_source.html#l00059">eve::physics_editing::PhysicsColliderTarget::validate()</a>, <a class="el" href="PhysicsJointTarget_8cpp_source.html#l00147">eve::physics_editing::PhysicsJointTarget::validate()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00132">eve::sceneloader_editing::SceneImportTarget::validate()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00180">eve::social_editing::SocialDocumentTarget::validate()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00206">eve::spritestack_editing::SpriteStackDocumentTarget::validate()</a>, <a class="el" href="StylizeTarget_8cpp_source.html#l00263">eve::stylize_editing::StylizeRecipeTarget::validate()</a>, <a class="el" href="VirtualGeometryTarget_8cpp_source.html#l00181">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::validate()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00212">eve::voxel_editing::VoxelPaletteTarget::validate()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00124">eve::definitions_editing::DefinitionDocument::validate()</a> , 以及 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00099">eve::scene_editing::SceneComponentPropertyBindings::validateComponent()</a>.</p>
+
+</div>
+</div>
+<a id="ae99138c111d4bf768f53884d53267250" name="ae99138c111d4bf768f53884d53267250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae99138c111d4bf768f53884d53267250">&#9670;&#160;</a></span>toEditingValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> eve::editing::toEditingValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8cpp_source.html">EditingProperty.cpp</a> 第 <a class="el" href="EditingProperty_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00116">toEditingValue()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8cpp_source.html#l00116">toEditingValue()</a> , 以及 <a class="el" href="EditorProperty_8h_source.html#l00029">eve::editor::toEditorValue()</a>.</p>
+
+</div>
+</div>
+<a id="af03da99aae4ebe85ff904496935c1958" name="af03da99aae4ebe85ff904496935c1958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af03da99aae4ebe85ff904496935c1958">&#9670;&#160;</a></span>toPresentationDescriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1property__access_1_1PropertyDescriptor.html">property_access::PropertyDescriptor</a> eve::editing::toPresentationDescriptor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8cpp_source.html">EditingProperty.cpp</a> 第 <a class="el" href="EditingProperty_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PropertyAccess_8h_source.html#l00073">eve::property_access::PropertyDescriptor::category</a>, <a class="el" href="PropertyAccess_8h_source.html#l00078">eve::property_access::PropertyDescriptor::choices</a>, <a class="el" href="PropertyAccess_8h_source.html#l00076">eve::property_access::PropertyDescriptor::defaultValue</a>, <a class="el" href="PropertyAccess_8h_source.html#l00072">eve::property_access::PropertyDescriptor::description</a>, <a class="el" href="PropertyAccess_8h_source.html#l00071">eve::property_access::PropertyDescriptor::displayName</a>, <a class="el" href="PropertyAccess_8h_source.html#l00075">eve::property_access::PropertyDescriptor::flags</a>, <a class="el" href="PropertyAccess_8h_source.html#l00074">eve::property_access::PropertyDescriptor::kind</a>, <a class="el" href="EditingProperty_8h_source.html#l00060">eve::editing::NumericMetadata::maximum</a>, <a class="el" href="EditingProperty_8h_source.html#l00059">eve::editing::NumericMetadata::minimum</a>, <a class="el" href="PropertyAccess_8h_source.html#l00077">eve::property_access::PropertyDescriptor::numeric</a>, <a class="el" href="PropertyAccess_8h_source.html#l00070">eve::property_access::PropertyDescriptor::path</a>, <a class="el" href="EditingProperty_8h_source.html#l00063">eve::editing::NumericMetadata::precision</a>, <a class="el" href="PropertyAccess_8h_source.html#l00079">eve::property_access::PropertyDescriptor::presenterHint</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EditingProperty_8h_source.html#l00061">eve::editing::NumericMetadata::step</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00075">toPresentationDescriptor()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00094">toPresentationValue()</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00062">eve::editing::NumericMetadata::units</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8cpp_source.html#l00075">toPresentationDescriptor()</a> , 以及 <a class="el" href="EditingProperty_8cpp_source.html#l00138">validatePropertyValue()</a>.</p>
+
+</div>
+</div>
+<a id="a2e67d25c77d8df76d66bb7ad69dc14a9" name="a2e67d25c77d8df76d66bb7ad69dc14a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e67d25c77d8df76d66bb7ad69dc14a9">&#9670;&#160;</a></span>toPresentationValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::editing::toPresentationValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8cpp_source.html">EditingProperty.cpp</a> 第 <a class="el" href="EditingProperty_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00094">toPresentationValue()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8cpp_source.html#l00075">toPresentationDescriptor()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00094">toPresentationValue()</a> , 以及 <a class="el" href="EditingProperty_8cpp_source.html#l00138">validatePropertyValue()</a>.</p>
+
+</div>
+</div>
+<a id="ae41b256f9bfb4c63f69c328d47dd0e8c" name="ae41b256f9bfb4c63f69c328d47dd0e8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41b256f9bfb4c63f69c328d47dd0e8c">&#9670;&#160;</a></span>validatePropertyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt; eve::editing::validatePropertyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;&#160;</td>
+          <td class="paramname"><em>descriptor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8cpp_source.html">EditingProperty.cpp</a> 第 <a class="el" href="EditingProperty_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PropertyAccess_8h_source.html#l00094">eve::property_access::WriteResult::accepted</a>, <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53">Action</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="classeve_1_1editing_1_1Value.html#a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94">eve::editing::Value::Null</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00075">toPresentationDescriptor()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00094">toPresentationValue()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00138">validatePropertyValue()</a>, <a class="el" href="PropertyAccess_8cpp_source.html#l00016">eve::property_access::validatePropertyValue()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InputMapTarget_8cpp_source.html#l00142">eve::input_editing::InputMapTarget::makeSet()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00124">eve::procgen_editing::TextureRecipeTarget::makeSet()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00087">eve::sceneloader_editing::SceneImportTarget::makeSet()</a>, <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00110">eve::definitions_editing::DefinitionSchemaFormTarget::makeSet()</a>, <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00138">eve::definitions_editing::DefinitionSchemaFormTarget::validate()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00153">eve::procgen_editing::TextureRecipeTarget::validate()</a> , 以及 <a class="el" href="EditingProperty_8cpp_source.html#l00138">validatePropertyValue()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a1529af68ece55e2a133bbc197f007ebc" name="a1529af68ece55e2a133bbc197f007ebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1529af68ece55e2a133bbc197f007ebc">&#9670;&#160;</a></span>kRuleDiagnosticDetail</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::editing::kRuleDiagnosticDetail = &quot;rule&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserved DiagnosticDetails key containing an editing RuleId projection. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingResult_8h_source.html">EditingResult.h</a> 第 <a class="el" href="EditingResult_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingResult_8h_source.html#l00033">diagnosticRule()</a> , 以及 <a class="el" href="EditingResult_8h_source.html#l00025">ruleDiagnostic()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

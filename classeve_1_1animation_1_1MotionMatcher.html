@@ -1,0 +1,1051 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MotionMatcher类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1MotionMatcher-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MotionMatcher类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> motion matching player: builds a query feature from current pose + desired trajectory, searches <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html" title="Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0....">MotionDatabase</a>, cross-fades to best match. Script type: <code><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html" title="Runtime motion matching player: builds a query feature from current pose + desired trajectory,...">MotionMatcher</a></code>.  
+ <a href="classeve_1_1animation_1_1MotionMatcher.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a11363d1e49c27895ed084feb84cc348e" id="r_a11363d1e49c27895ed084feb84cc348e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a11363d1e49c27895ed084feb84cc348e">MotionMatcher</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton, <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> *database)</td></tr>
+<tr class="separator:a11363d1e49c27895ed084feb84cc348e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada0f457403f4d81cc1cddf7c09a8daa4" id="r_ada0f457403f4d81cc1cddf7c09a8daa4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ada0f457403f4d81cc1cddf7c09a8daa4">~MotionMatcher</a> ()=default</td></tr>
+<tr class="separator:ada0f457403f4d81cc1cddf7c09a8daa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afed4410bd9280d88adbe10a722fba4f7" id="r_afed4410bd9280d88adbe10a722fba4f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#afed4410bd9280d88adbe10a722fba4f7">MotionMatcher</a> (const <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp;)=delete</td></tr>
+<tr class="separator:afed4410bd9280d88adbe10a722fba4f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e9974311b9c496d8baef2b9f2334698" id="r_a9e9974311b9c496d8baef2b9f2334698"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9974311b9c496d8baef2b9f2334698">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp;)=delete</td></tr>
+<tr class="separator:a9e9974311b9c496d8baef2b9f2334698"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f039a607d2b75ff9765917c0e389510" id="r_a0f039a607d2b75ff9765917c0e389510"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a0f039a607d2b75ff9765917c0e389510">getSkeleton</a> () const</td></tr>
+<tr class="separator:a0f039a607d2b75ff9765917c0e389510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e413c76e5dc0f581390c6f513d901f1" id="r_a7e413c76e5dc0f581390c6f513d901f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a7e413c76e5dc0f581390c6f513d901f1">getDatabase</a> () const</td></tr>
+<tr class="separator:a7e413c76e5dc0f581390c6f513d901f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572bf274332e84fd2239c95fafbe6680" id="r_a572bf274332e84fd2239c95fafbe6680"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a572bf274332e84fd2239c95fafbe6680">setDesiredVelocity</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a572bf274332e84fd2239c95fafbe6680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desired planar velocity in character/world XZ (units/sec).  <br /></td></tr>
+<tr class="separator:a572bf274332e84fd2239c95fafbe6680"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554526603eb9c464031c14f4a35a66d4" id="r_a554526603eb9c464031c14f4a35a66d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a554526603eb9c464031c14f4a35a66d4">getDesiredVelocityX</a> () const</td></tr>
+<tr class="separator:a554526603eb9c464031c14f4a35a66d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51a4425fd527e742784a4478173122f" id="r_ae51a4425fd527e742784a4478173122f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ae51a4425fd527e742784a4478173122f">getDesiredVelocityZ</a> () const</td></tr>
+<tr class="separator:ae51a4425fd527e742784a4478173122f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d343a3070abf13a388e00ffa00b677" id="r_a31d343a3070abf13a388e00ffa00b677"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a31d343a3070abf13a388e00ffa00b677">setDesiredYaw</a> (float yaw)</td></tr>
+<tr class="memdesc:a31d343a3070abf13a388e00ffa00b677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desired facing yaw (radians, Y-up).  <br /></td></tr>
+<tr class="separator:a31d343a3070abf13a388e00ffa00b677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e9c6cc6ccc6c91a3343b8c6746f0cab" id="r_a9e9c6cc6ccc6c91a3343b8c6746f0cab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9c6cc6ccc6c91a3343b8c6746f0cab">getDesiredYaw</a> () const</td></tr>
+<tr class="separator:a9e9c6cc6ccc6c91a3343b8c6746f0cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8d1c23c3df02433a2e73cf1d0e22bd6" id="r_ad8d1c23c3df02433a2e73cf1d0e22bd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ad8d1c23c3df02433a2e73cf1d0e22bd6">setSearchInterval</a> (float seconds)</td></tr>
+<tr class="separator:ad8d1c23c3df02433a2e73cf1d0e22bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a902b7ba81acf32cb5af30140030a407f" id="r_a902b7ba81acf32cb5af30140030a407f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a902b7ba81acf32cb5af30140030a407f">getSearchInterval</a> () const</td></tr>
+<tr class="separator:a902b7ba81acf32cb5af30140030a407f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e7e9d60208ee8a469e217b1fafb3028" id="r_a0e7e9d60208ee8a469e217b1fafb3028"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a0e7e9d60208ee8a469e217b1fafb3028">setBlendTime</a> (float seconds)</td></tr>
+<tr class="separator:a0e7e9d60208ee8a469e217b1fafb3028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aace1dc58db0dfab7ab41d8f9ecd8f114" id="r_aace1dc58db0dfab7ab41d8f9ecd8f114"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#aace1dc58db0dfab7ab41d8f9ecd8f114">getBlendTime</a> () const</td></tr>
+<tr class="separator:aace1dc58db0dfab7ab41d8f9ecd8f114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f56c468ce4389b81961ce48e6fc4f5b" id="r_a7f56c468ce4389b81961ce48e6fc4f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a7f56c468ce4389b81961ce48e6fc4f5b">setTrajectoryWeight</a> (float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>)</td></tr>
+<tr class="separator:a7f56c468ce4389b81961ce48e6fc4f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad909c1316085606ceb72b2124c82ad0c" id="r_ad909c1316085606ceb72b2124c82ad0c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ad909c1316085606ceb72b2124c82ad0c">getTrajectoryWeight</a> () const</td></tr>
+<tr class="separator:ad909c1316085606ceb72b2124c82ad0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b7fb260bb67c033977b6a0ca06caa4c" id="r_a7b7fb260bb67c033977b6a0ca06caa4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a7b7fb260bb67c033977b6a0ca06caa4c">setPoseWeight</a> (float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>)</td></tr>
+<tr class="separator:a7b7fb260bb67c033977b6a0ca06caa4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac22bac223297fef3f33ff158863fd758" id="r_ac22bac223297fef3f33ff158863fd758"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ac22bac223297fef3f33ff158863fd758">getPoseWeight</a> () const</td></tr>
+<tr class="separator:ac22bac223297fef3f33ff158863fd758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60ec266eb995ff3e48b9764b8e33a062" id="r_a60ec266eb995ff3e48b9764b8e33a062"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a60ec266eb995ff3e48b9764b8e33a062">setVelocityWeight</a> (float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>)</td></tr>
+<tr class="separator:a60ec266eb995ff3e48b9764b8e33a062"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f9b4f74595d78af3796c40fd2b47948" id="r_a9f9b4f74595d78af3796c40fd2b47948"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a9f9b4f74595d78af3796c40fd2b47948">getVelocityWeight</a> () const</td></tr>
+<tr class="separator:a9f9b4f74595d78af3796c40fd2b47948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919097e9714d533b424789b43cada617" id="r_a919097e9714d533b424789b43cada617"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a919097e9714d533b424789b43cada617">setIgnoreRadius</a> (int frames)</td></tr>
+<tr class="memdesc:a919097e9714d533b424789b43cada617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip rematching the same frame / nearby frames to reduce jitter.  <br /></td></tr>
+<tr class="separator:a919097e9714d533b424789b43cada617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7f26b68c39602ab6ac41deb8147847e" id="r_aa7f26b68c39602ab6ac41deb8147847e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#aa7f26b68c39602ab6ac41deb8147847e">getIgnoreRadius</a> () const</td></tr>
+<tr class="separator:aa7f26b68c39602ab6ac41deb8147847e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed5c8312c20cf53e00408de7570aba2" id="r_a4ed5c8312c20cf53e00408de7570aba2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a4ed5c8312c20cf53e00408de7570aba2">getMatchedFrame</a> () const</td></tr>
+<tr class="separator:a4ed5c8312c20cf53e00408de7570aba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafb0f592d8a42f1493e9581fabbbd801" id="r_aafb0f592d8a42f1493e9581fabbbd801"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#aafb0f592d8a42f1493e9581fabbbd801">getMatchedClipIndex</a> () const</td></tr>
+<tr class="separator:aafb0f592d8a42f1493e9581fabbbd801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29ffc4923ea5e05bbeeea452454512ed" id="r_a29ffc4923ea5e05bbeeea452454512ed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a29ffc4923ea5e05bbeeea452454512ed">getMatchedTime</a> () const</td></tr>
+<tr class="separator:a29ffc4923ea5e05bbeeea452454512ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaa5b59085d7a03a8cfd6249cbd56f49" id="r_abaa5b59085d7a03a8cfd6249cbd56f49"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#abaa5b59085d7a03a8cfd6249cbd56f49">getLastSearchCost</a> () const</td></tr>
+<tr class="separator:abaa5b59085d7a03a8cfd6249cbd56f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aee63a9342240b046e94de03ab51c97" id="r_a8aee63a9342240b046e94de03ab51c97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a8aee63a9342240b046e94de03ab51c97">getPose</a> ()</td></tr>
+<tr class="separator:a8aee63a9342240b046e94de03ab51c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02924aa1d6fc0be68d1e400cdc64fe38" id="r_a02924aa1d6fc0be68d1e400cdc64fe38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a02924aa1d6fc0be68d1e400cdc64fe38">search</a> ()</td></tr>
+<tr class="memdesc:a02924aa1d6fc0be68d1e400cdc64fe38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force an immediate search (also called periodically from update).  <br /></td></tr>
+<tr class="separator:a02924aa1d6fc0be68d1e400cdc64fe38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9effc0028c03baa6f4140b0d106b754" id="r_ae9effc0028c03baa6f4140b0d106b754"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ae9effc0028c03baa6f4140b0d106b754">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:ae9effc0028c03baa6f4140b0d106b754"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance matching and pose blending by one scheduler step.  <br /></td></tr>
+<tr class="separator:ae9effc0028c03baa6f4140b0d106b754"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e284c9c8691f8d81a6999f2b5581cbb" id="r_a0e284c9c8691f8d81a6999f2b5581cbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#a0e284c9c8691f8d81a6999f2b5581cbb">update</a> (float dt)</td></tr>
+<tr class="memdesc:a0e284c9c8691f8d81a6999f2b5581cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ae9effc0028c03baa6f4140b0d106b754" title="Advance matching and pose blending by one scheduler step.">advance()</a>.  <br /></td></tr>
+<tr class="separator:a0e284c9c8691f8d81a6999f2b5581cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> motion matching player: builds a query feature from current pose + desired trajectory, searches <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html" title="Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0....">MotionDatabase</a>, cross-fades to best match. Script type: <code><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html" title="Runtime motion matching player: builds a query feature from current pose + desired trajectory,...">MotionMatcher</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a11363d1e49c27895ed084feb84cc348e" name="a11363d1e49c27895ed084feb84cc348e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11363d1e49c27895ed084feb84cc348e">&#9670;&#160;</a></span>MotionMatcher() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionMatcher::MotionMatcher </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> *&#160;</td>
+          <td class="paramname"><em>database</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00132">eve::animation::AnimSkeleton::applyBindPose()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="MotionDatabase_8h_source.html#l00030">eve::animation::MotionDatabase::getSkeleton()</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00105">eve::animation::AnimPose::resize()</a>.</p>
+
+</div>
+</div>
+<a id="ada0f457403f4d81cc1cddf7c09a8daa4" name="ada0f457403f4d81cc1cddf7c09a8daa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada0f457403f4d81cc1cddf7c09a8daa4">&#9670;&#160;</a></span>~MotionMatcher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionMatcher::~MotionMatcher </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afed4410bd9280d88adbe10a722fba4f7" name="afed4410bd9280d88adbe10a722fba4f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed4410bd9280d88adbe10a722fba4f7">&#9670;&#160;</a></span>MotionMatcher() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionMatcher::MotionMatcher </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae9effc0028c03baa6f4140b0d106b754" name="ae9effc0028c03baa6f4140b0d106b754"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9effc0028c03baa6f4140b0d106b754">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::MotionMatcher::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance matching and pose blending by one scheduler step. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnimation_8cpp_source.html#l00126">eve::climbing::driveClimbingMotionMatching()</a> , 以及 <a class="el" href="MotionMatcher_8cpp_source.html#l00249">update()</a>.</p>
+
+</div>
+</div>
+<a id="aace1dc58db0dfab7ab41d8f9ecd8f114" name="aace1dc58db0dfab7ab41d8f9ecd8f114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aace1dc58db0dfab7ab41d8f9ecd8f114">&#9670;&#160;</a></span>getBlendTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getBlendTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e413c76e5dc0f581390c6f513d901f1" name="a7e413c76e5dc0f581390c6f513d901f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e413c76e5dc0f581390c6f513d901f1">&#9670;&#160;</a></span>getDatabase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> * eve::animation::MotionMatcher::getDatabase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a554526603eb9c464031c14f4a35a66d4" name="a554526603eb9c464031c14f4a35a66d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a554526603eb9c464031c14f4a35a66d4">&#9670;&#160;</a></span>getDesiredVelocityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getDesiredVelocityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae51a4425fd527e742784a4478173122f" name="ae51a4425fd527e742784a4478173122f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51a4425fd527e742784a4478173122f">&#9670;&#160;</a></span>getDesiredVelocityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getDesiredVelocityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e9c6cc6ccc6c91a3343b8c6746f0cab" name="a9e9c6cc6ccc6c91a3343b8c6746f0cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e9c6cc6ccc6c91a3343b8c6746f0cab">&#9670;&#160;</a></span>getDesiredYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getDesiredYaw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7f26b68c39602ab6ac41deb8147847e" name="aa7f26b68c39602ab6ac41deb8147847e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7f26b68c39602ab6ac41deb8147847e">&#9670;&#160;</a></span>getIgnoreRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionMatcher::getIgnoreRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abaa5b59085d7a03a8cfd6249cbd56f49" name="abaa5b59085d7a03a8cfd6249cbd56f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaa5b59085d7a03a8cfd6249cbd56f49">&#9670;&#160;</a></span>getLastSearchCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getLastSearchCost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafb0f592d8a42f1493e9581fabbbd801" name="aafb0f592d8a42f1493e9581fabbbd801"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafb0f592d8a42f1493e9581fabbbd801">&#9670;&#160;</a></span>getMatchedClipIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionMatcher::getMatchedClipIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8cpp_source.html#l00219">eve::animation::MotionDatabase::getFrameClipIndex()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">search()</a>.</p>
+
+</div>
+</div>
+<a id="a4ed5c8312c20cf53e00408de7570aba2" name="a4ed5c8312c20cf53e00408de7570aba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ed5c8312c20cf53e00408de7570aba2">&#9670;&#160;</a></span>getMatchedFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionMatcher::getMatchedFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29ffc4923ea5e05bbeeea452454512ed" name="a29ffc4923ea5e05bbeeea452454512ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29ffc4923ea5e05bbeeea452454512ed">&#9670;&#160;</a></span>getMatchedTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getMatchedTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8aee63a9342240b046e94de03ab51c97" name="a8aee63a9342240b046e94de03ab51c97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aee63a9342240b046e94de03ab51c97">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::MotionMatcher::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac22bac223297fef3f33ff158863fd758" name="ac22bac223297fef3f33ff158863fd758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac22bac223297fef3f33ff158863fd758">&#9670;&#160;</a></span>getPoseWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getPoseWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a902b7ba81acf32cb5af30140030a407f" name="a902b7ba81acf32cb5af30140030a407f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a902b7ba81acf32cb5af30140030a407f">&#9670;&#160;</a></span>getSearchInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getSearchInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f039a607d2b75ff9765917c0e389510" name="a0f039a607d2b75ff9765917c0e389510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f039a607d2b75ff9765917c0e389510">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::MotionMatcher::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad909c1316085606ceb72b2124c82ad0c" name="ad909c1316085606ceb72b2124c82ad0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad909c1316085606ceb72b2124c82ad0c">&#9670;&#160;</a></span>getTrajectoryWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getTrajectoryWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f9b4f74595d78af3796c40fd2b47948" name="a9f9b4f74595d78af3796c40fd2b47948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f9b4f74595d78af3796c40fd2b47948">&#9670;&#160;</a></span>getVelocityWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionMatcher::getVelocityWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a> 第 <a class="el" href="MotionMatcher_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e9974311b9c496d8baef2b9f2334698" name="a9e9974311b9c496d8baef2b9f2334698"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e9974311b9c496d8baef2b9f2334698">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp; eve::animation::MotionMatcher::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a02924aa1d6fc0be68d1e400cdc64fe38" name="a02924aa1d6fc0be68d1e400cdc64fe38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02924aa1d6fc0be68d1e400cdc64fe38">&#9670;&#160;</a></span>search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::search </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Force an immediate search (also called periodically from update). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="AnimPose_8cpp_source.html#l00118">eve::animation::AnimPose::copyFrom()</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00209">eve::animation::MotionDatabase::frameAt()</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00219">eve::animation::MotionDatabase::getFrameClipIndex()</a>, <a class="el" href="MotionDatabase_8h_source.html#l00051">eve::animation::MotionDatabase::getFrameCount()</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00217">eve::animation::MotionDatabase::getFrameTime()</a>, <a class="el" href="MotionMatcher_8cpp_source.html#l00065">getMatchedClipIndex()</a> , 以及 <a class="el" href="MotionDatabase_8h_source.html#l00049">eve::animation::MotionDatabase::isBaked()</a>.</p>
+
+</div>
+</div>
+<a id="a0e7e9d60208ee8a469e217b1fafb3028" name="a0e7e9d60208ee8a469e217b1fafb3028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e7e9d60208ee8a469e217b1fafb3028">&#9670;&#160;</a></span>setBlendTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setBlendTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a572bf274332e84fd2239c95fafbe6680" name="a572bf274332e84fd2239c95fafbe6680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572bf274332e84fd2239c95fafbe6680">&#9670;&#160;</a></span>setDesiredVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setDesiredVelocity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Desired planar velocity in character/world XZ (units/sec). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnimation_8cpp_source.html#l00126">eve::climbing::driveClimbingMotionMatching()</a>.</p>
+
+</div>
+</div>
+<a id="a31d343a3070abf13a388e00ffa00b677" name="a31d343a3070abf13a388e00ffa00b677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31d343a3070abf13a388e00ffa00b677">&#9670;&#160;</a></span>setDesiredYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setDesiredYaw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Desired facing yaw (radians, Y-up). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnimation_8cpp_source.html#l00126">eve::climbing::driveClimbingMotionMatching()</a>.</p>
+
+</div>
+</div>
+<a id="a919097e9714d533b424789b43cada617" name="a919097e9714d533b424789b43cada617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919097e9714d533b424789b43cada617">&#9670;&#160;</a></span>setIgnoreRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setIgnoreRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frames</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skip rematching the same frame / nearby frames to reduce jitter. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b7fb260bb67c033977b6a0ca06caa4c" name="a7b7fb260bb67c033977b6a0ca06caa4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b7fb260bb67c033977b6a0ca06caa4c">&#9670;&#160;</a></span>setPoseWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setPoseWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="ad8d1c23c3df02433a2e73cf1d0e22bd6" name="ad8d1c23c3df02433a2e73cf1d0e22bd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d1c23c3df02433a2e73cf1d0e22bd6">&#9670;&#160;</a></span>setSearchInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setSearchInterval </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f56c468ce4389b81961ce48e6fc4f5b" name="a7f56c468ce4389b81961ce48e6fc4f5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f56c468ce4389b81961ce48e6fc4f5b">&#9670;&#160;</a></span>setTrajectoryWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setTrajectoryWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a60ec266eb995ff3e48b9764b8e33a062" name="a60ec266eb995ff3e48b9764b8e33a062"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60ec266eb995ff3e48b9764b8e33a062">&#9670;&#160;</a></span>setVelocityWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::setVelocityWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a0e284c9c8691f8d81a6999f2b5581cbb" name="a0e284c9c8691f8d81a6999f2b5581cbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e284c9c8691f8d81a6999f2b5581cbb">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionMatcher::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1MotionMatcher.html#ae9effc0028c03baa6f4140b0d106b754" title="Advance matching and pose blending by one scheduler step.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a> 第 <a class="el" href="MotionMatcher_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionMatcher_8cpp_source.html#l00240">advance()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MotionMatcher_8h_source.html">MotionMatcher.h</a></li>
+<li>src/modules/animation/<a class="el" href="MotionMatcher_8cpp_source.html">MotionMatcher.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

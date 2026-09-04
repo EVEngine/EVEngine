@@ -1,0 +1,281 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsBattle.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TacticsBattle.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TacticsBattle_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsTypes_8h.html">tactics/TacticsTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsPath_8h.html">tactics/TacticsPath.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1MoveReceipt.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1MoveReceipt.html#a5ebb842ab96f5041c1bd7b7b2064b6c6">   15</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>        <a class="code hl_variable" href="structeve_1_1tactics_1_1MoveReceipt.html#a5ebb842ab96f5041c1bd7b7b2064b6c6">actor</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1MoveReceipt.html#ad26a736b5a8bd2277afca55e36b88185">   16</a></span>    std::vector&lt;Cell&gt; <a class="code hl_variable" href="structeve_1_1tactics_1_1MoveReceipt.html#ad26a736b5a8bd2277afca55e36b88185">path</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1MoveReceipt.html#abefec63a479f227053cecd54ab7b440f">   17</a></span>    <span class="keywordtype">int</span>               <a class="code hl_variable" href="structeve_1_1tactics_1_1MoveReceipt.html#abefec63a479f227053cecd54ab7b440f">cost</a>                = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1MoveReceipt.html#ae6beee5e76df11d22bb22644d44d9d56">   18</a></span>    <span class="keywordtype">int</span>               <a class="code hl_variable" href="structeve_1_1tactics_1_1MoveReceipt.html#ae6beee5e76df11d22bb22644d44d9d56">remainingMovePoints</a> = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1BattleSystem.html">   31</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1tactics_1_1BattleSystem.html">BattleSystem</a> final {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a72575e8c56f4aeb4a17dc528043ef428">addSide</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, ecs::EntityHandle <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad782eb9c3fff72b8ca9f2fc0b9e52ce8">addUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, ecs::EntityHandle <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, ecs::EntityHandle <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                              <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">TurnPolicyKind</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;BattlePhase&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#acb9e1011cac71a2b7d3613f4e74814ba">advance</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a17160829bed5d0d51f8cf9a3359e230c">endTurn</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MoveReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">moveUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MoveReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">moveUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                                      <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> commandTick);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">faceUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">faceUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                               <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> commandTick);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ab9dad8f8a73c10c01c58647e2ed691d8">previewFace</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">waitUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">waitUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> commandTick);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#adaad624b947099c0608ea76de6482809">previewWait</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MoveReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a562f9232cfa03e06c5e2f73cdeba57ad">previewMove</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a3c57bf0a7bb3e8a6797a86785b61b843">finish</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::size_t&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a1f121d1c82525e475e814e1a44e9e313">openReaction</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, std::uint64_t triggerSequence,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                          std::vector&lt;ReactionCandidate&gt; candidates);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ReactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#aa0ec3478423d2bfc00dd06a89029b13c">acceptReaction</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> reactor,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                                                 <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; action);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a368ce32fd9a58580dd11b59a4f1457d8">declineReaction</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a2d7d6e254584735ecbd1db1f92f51323">addObjective</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_struct" href="structeve_1_1tactics_1_1ObjectiveSpec.html">ObjectiveSpec</a> objective);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a1ce089705a27483c4eff4fc59506fe20">defeatUnit</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::uint64_t&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a2ec10450e74b449cc7a1a03a6ec037c0">roll</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; stream);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;ecs::EntityHandle&gt;</a>&gt; orderedUnits(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>};</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aClimbing_8cpp_html_ad0bb7e03d49f3219f6127ad65596eb89"><div class="ttname"><a href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a></div><div class="ttdeci">bool facing</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00079">Climbing.cpp:79</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00019">TacticsPath.cpp:19</a></div></div>
+<div class="ttc" id="aTacticsPath_8h_html"><div class="ttname"><a href="TacticsPath_8h.html">TacticsPath.h</a></div><div class="ttdoc">Deterministic fixed-cost tactics path queries.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00113">TacticsPersistence.cpp:113</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_af7594145399eb356e6b338bf7d5a5c54"><div class="ttname"><a href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a></div><div class="ttdeci">ecs::EntityHandle side</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00114">TacticsPersistence.cpp:114</a></div></div>
+<div class="ttc" id="aTacticsTypes_8h_html"><div class="ttname"><a href="TacticsTypes_8h.html">TacticsTypes.h</a></div><div class="ttdoc">Deterministic board values and short-root ECS entities for tactics.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html">eve::tactics::BattleSystem</a></div><div class="ttdoc">Stateless systems over the tactics short-root ECS family.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00031">TacticsBattle.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a17160829bed5d0d51f8cf9a3359e230c"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a17160829bed5d0d51f8cf9a3359e230c">eve::tactics::BattleSystem::endTurn</a></div><div class="ttdeci">static Result&lt; void &gt; endTurn(Battle &amp;battle, SubjectRef actor)</div><div class="ttdoc">End the currently acting unit's turn and enter TurnEnd.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00343">TacticsBattle.cpp:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a1ce089705a27483c4eff4fc59506fe20"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a1ce089705a27483c4eff4fc59506fe20">eve::tactics::BattleSystem::defeatUnit</a></div><div class="ttdeci">static Result&lt; void &gt; defeatUnit(Battle &amp;battle, SubjectRef unit)</div><div class="ttdoc">Apply a tactical defeat outcome and evaluate affected objectives atomically.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00727">TacticsBattle.cpp:727</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a1f121d1c82525e475e814e1a44e9e313"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a1f121d1c82525e475e814e1a44e9e313">eve::tactics::BattleSystem::openReaction</a></div><div class="ttdeci">static Result&lt; std::size_t &gt; openReaction(Battle &amp;battle, std::uint64_t triggerSequence, std::vector&lt; ReactionCandidate &gt; candidates)</div><div class="ttdoc">Open a sorted reaction window for an existing battle event sequence.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00551">TacticsBattle.cpp:551</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a2d7d6e254584735ecbd1db1f92f51323"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a2d7d6e254584735ecbd1db1f92f51323">eve::tactics::BattleSystem::addObjective</a></div><div class="ttdeci">static Result&lt; void &gt; addObjective(Battle &amp;battle, ObjectiveSpec objective)</div><div class="ttdoc">Register a validated built-in objective during setup.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00681">TacticsBattle.cpp:681</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a2ec10450e74b449cc7a1a03a6ec037c0"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a2ec10450e74b449cc7a1a03a6ec037c0">eve::tactics::BattleSystem::roll</a></div><div class="ttdeci">static Result&lt; std::uint64_t &gt; roll(Battle &amp;battle, const LogicalId &amp;stream)</div><div class="ttdoc">Consume one value from a battle-owned named deterministic stream.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00767">TacticsBattle.cpp:767</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a368ce32fd9a58580dd11b59a4f1457d8"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a368ce32fd9a58580dd11b59a4f1457d8">eve::tactics::BattleSystem::declineReaction</a></div><div class="ttdeci">static Result&lt; void &gt; declineReaction(Battle &amp;battle)</div><div class="ttdoc">Decline and close the top reaction window without consuming resources.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00659">TacticsBattle.cpp:659</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a3c57bf0a7bb3e8a6797a86785b61b843"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a3c57bf0a7bb3e8a6797a86785b61b843">eve::tactics::BattleSystem::finish</a></div><div class="ttdeci">static Result&lt; void &gt; finish(Battle &amp;battle)</div><div class="ttdoc">End a running battle and enter BattleEnd.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00531">TacticsBattle.cpp:531</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a562f9232cfa03e06c5e2f73cdeba57ad"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a562f9232cfa03e06c5e2f73cdeba57ad">eve::tactics::BattleSystem::previewMove</a></div><div class="ttdeci">static Result&lt; MoveReceipt &gt; previewMove(Battle &amp;battle, SubjectRef actor, Cell destination)</div><div class="ttdoc">Preview movement with the exact validator used by commit, without mutation.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00504">TacticsBattle.cpp:504</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a72575e8c56f4aeb4a17dc528043ef428"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a72575e8c56f4aeb4a17dc528043ef428">eve::tactics::BattleSystem::addSide</a></div><div class="ttdeci">static Result&lt; void &gt; addSide(Battle &amp;battle, ecs::EntityHandle side)</div><div class="ttdoc">Register a side during setup using a generation-checked handle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00147">TacticsBattle.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a922e0f71b51199f87265ef0e9ef11d94"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">eve::tactics::BattleSystem::faceUnit</a></div><div class="ttdeci">static Result&lt; void &gt; faceUnit(Battle &amp;battle, SubjectRef actor, int facing)</div><div class="ttdoc">Change the active unit's logical facing without consuming movement points.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00412">TacticsBattle.cpp:412</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_aa0ec3478423d2bfc00dd06a89029b13c"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#aa0ec3478423d2bfc00dd06a89029b13c">eve::tactics::BattleSystem::acceptReaction</a></div><div class="ttdeci">static Result&lt; ReactionReceipt &gt; acceptReaction(Battle &amp;battle, SubjectRef reactor, const LogicalId &amp;action)</div><div class="ttdoc">Accept one eligible reaction, consume one reaction point and close the top window.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00605">TacticsBattle.cpp:605</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ab9dad8f8a73c10c01c58647e2ed691d8"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ab9dad8f8a73c10c01c58647e2ed691d8">eve::tactics::BattleSystem::previewFace</a></div><div class="ttdeci">static Result&lt; void &gt; previewFace(Battle &amp;battle, SubjectRef actor, int facing)</div><div class="ttdoc">Preview a facing action with the exact validator used by commit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00442">TacticsBattle.cpp:442</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_acb9e1011cac71a2b7d3613f4e74814ba"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#acb9e1011cac71a2b7d3613f4e74814ba">eve::tactics::BattleSystem::advance</a></div><div class="ttdeci">static Result&lt; BattlePhase &gt; advance(Battle &amp;battle, const SimulationStep &amp;step)</div><div class="ttdoc">Advance exactly one observable automatic phase transition.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00243">TacticsBattle.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ad1debba5c88a178763426a8f5cd03f01"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">eve::tactics::BattleSystem::waitUnit</a></div><div class="ttdeci">static Result&lt; void &gt; waitUnit(Battle &amp;battle, SubjectRef actor)</div><div class="ttdoc">Commit a wait action and enter TurnEnd for the active unit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00462">TacticsBattle.cpp:462</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ad58f3643dfa46e40ec68ffd04edd0547"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">eve::tactics::BattleSystem::moveUnit</a></div><div class="ttdeci">static Result&lt; MoveReceipt &gt; moveUnit(Battle &amp;battle, SubjectRef actor, Cell destination)</div><div class="ttdoc">Validate and atomically commit movement for the active unit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00370">TacticsBattle.cpp:370</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ad782eb9c3fff72b8ca9f2fc0b9e52ce8"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ad782eb9c3fff72b8ca9f2fc0b9e52ce8">eve::tactics::BattleSystem::addUnit</a></div><div class="ttdeci">static Result&lt; void &gt; addUnit(Battle &amp;battle, ecs::EntityHandle unit, ecs::EntityHandle side, Cell cell)</div><div class="ttdoc">Register and place a unit during setup atomically.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00171">TacticsBattle.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_adaad624b947099c0608ea76de6482809"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#adaad624b947099c0608ea76de6482809">eve::tactics::BattleSystem::previewWait</a></div><div class="ttdeci">static Result&lt; void &gt; previewWait(Battle &amp;battle, SubjectRef actor)</div><div class="ttdoc">Preview a wait action with the exact validator used by commit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00491">TacticsBattle.cpp:491</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Battle_html"><div class="ttname"><a href="classeve_1_1tactics_1_1Battle.html">eve::tactics::Battle</a></div><div class="ttdoc">Battle short-root and authoritative owner of board and turn state.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00309">TacticsTypes.h:309</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Tactics_8cpp_source.html#l00014">Tactics.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a2768be910195d0312da73547f9d372be"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">eve::tactics::TurnPolicyKind</a></div><div class="ttdeci">TurnPolicyKind</div><div class="ttdoc">Built-in deterministic turn scheduling policy.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00058">TacticsTypes.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1Cell_html"><div class="ttname"><a href="structeve_1_1tactics_1_1Cell.html">eve::tactics::Cell</a></div><div class="ttdoc">Logical board coordinate independent of rendering projection.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00027">TacticsTypes.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1MoveReceipt_html"><div class="ttname"><a href="structeve_1_1tactics_1_1MoveReceipt.html">eve::tactics::MoveReceipt</a></div><div class="ttdoc">Committed tactical movement and remaining resource state.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00014">TacticsBattle.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1MoveReceipt_html_a5ebb842ab96f5041c1bd7b7b2064b6c6"><div class="ttname"><a href="structeve_1_1tactics_1_1MoveReceipt.html#a5ebb842ab96f5041c1bd7b7b2064b6c6">eve::tactics::MoveReceipt::actor</a></div><div class="ttdeci">SubjectRef actor</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00015">TacticsBattle.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1MoveReceipt_html_abefec63a479f227053cecd54ab7b440f"><div class="ttname"><a href="structeve_1_1tactics_1_1MoveReceipt.html#abefec63a479f227053cecd54ab7b440f">eve::tactics::MoveReceipt::cost</a></div><div class="ttdeci">int cost</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00017">TacticsBattle.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1MoveReceipt_html_ad26a736b5a8bd2277afca55e36b88185"><div class="ttname"><a href="structeve_1_1tactics_1_1MoveReceipt.html#ad26a736b5a8bd2277afca55e36b88185">eve::tactics::MoveReceipt::path</a></div><div class="ttdeci">std::vector&lt; Cell &gt; path</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00016">TacticsBattle.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1MoveReceipt_html_ae6beee5e76df11d22bb22644d44d9d56"><div class="ttname"><a href="structeve_1_1tactics_1_1MoveReceipt.html#ae6beee5e76df11d22bb22644d44d9d56">eve::tactics::MoveReceipt::remainingMovePoints</a></div><div class="ttdeci">int remainingMovePoints</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00018">TacticsBattle.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1ObjectiveSpec_html"><div class="ttname"><a href="structeve_1_1tactics_1_1ObjectiveSpec.html">eve::tactics::ObjectiveSpec</a></div><div class="ttdoc">Persistent objective definition using stable side identities.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00291">TacticsTypes.h:291</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

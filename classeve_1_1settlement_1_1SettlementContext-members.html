@@ -1,0 +1,198 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1settlement.html">settlement</a></li><li class="navelem"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">SettlementContext</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::settlement::SettlementContext 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae4a87321de6d2ee2d3ea17f2beaa15bd">absorbed</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a1b88c417a2acc9b9941bd625558f82ca">addAbsorbed</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aac865332accc84d4d3ed09b0eab168c2">addClamped</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#adc0787ed8efb1dd212d327ecb0e17e42">addResisted</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae40ddac5da0aff312c81f541738cc9a4">applyClamp</a>()</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae8cf875d90ceb1fa51da98cd28abdecf">clamped</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ab581fdc5b8e5499b1bf1f59daa13c31d">critical</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a80052fba2b8d8af70c2a33b28686934b">magnitude</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#abc851b16429e3a06fc19f564fa14446c">mutationViolation</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aaab4ee5bd8135f5f18515b80d376d590">pendingApply</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a8d732b790abf0f1def1e4c5d1f47174f">pendingEvent</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae03c17739ec0fb04bb6a862969b1fe3a">policy</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#af546dd5535ff56c03518705836a31556">prepareApply</a>()</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aaa8b01fda29c8183c81247999d3b2c7e">prepareEvent</a>()</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a893003f350cf85ba4be7a80d722bd058">projectedResult</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a7445180309ce3e8630d4bec4696568ba">request</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ad114b3a5d32295d1ede489d84873b5ca">resisted</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a91ca945f3c580813688a47cbbe350d9a">setClampMax</a>(std::optional&lt; double &gt; value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a756d05fb28f399dd027ab749f605c7b1">setCritical</a>(bool value) noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae56e9005038c0453f8ed87d5791c84b0">setMagnitude</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a23407e441e84785025faccd94e28c6fd">setStageDetail</a>(std::string key, Value value)</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aa4908253fa3cf33d52e7872dca1a0ae9">SettlementPipeline</a></td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a20ed3b423c550534738cf9ff7052970e">stageDetails</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#acf236aaa623c39251781a5301d5023f5">synchronizeResult</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">eve::settlement::SettlementContext</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

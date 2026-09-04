@@ -1,0 +1,1421 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Mesh类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1graphics_1_1Mesh-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Mesh类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU mesh handle (+ optional CPU morph targets).  
+ <a href="classeve_1_1graphics_1_1Mesh.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Mesh_8h_source.html">Mesh.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Mesh 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Mesh.png" usemap="#eve::graphics::Mesh_map" alt=""/>
+  <map id="eve::graphics::Mesh_map" name="eve::graphics::Mesh_map">
+<area href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases)." alt="eve::graphics::Drawable" shape="rect" coords="0,0,148,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab4c58ece59e4c5bd12e8531c4cada9a6" id="r_ab4c58ece59e4c5bd12e8531c4cada9a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ab4c58ece59e4c5bd12e8531c4cada9a6">hasGpuSkinning</a> () const</td></tr>
+<tr class="memdesc:ab4c58ece59e4c5bd12e8531c4cada9a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after joint and weight data has been uploaded for GPU skinning.  <br /></td></tr>
+<tr class="separator:ab4c58ece59e4c5bd12e8531c4cada9a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accfb887263584a6b819dc0bded5925e9" id="r_accfb887263584a6b819dc0bded5925e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#accfb887263584a6b819dc0bded5925e9">getSkinPaletteCount</a> () const</td></tr>
+<tr class="memdesc:accfb887263584a6b819dc0bded5925e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of matrices in the current skinning palette.  <br /></td></tr>
+<tr class="separator:accfb887263584a6b819dc0bded5925e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc91f5a6b211c6aa05513ea2029d8170" id="r_acc91f5a6b211c6aa05513ea2029d8170"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#acc91f5a6b211c6aa05513ea2029d8170">setSkinPalette</a> (const float *matrices, int matrixCount)</td></tr>
+<tr class="memdesc:acc91f5a6b211c6aa05513ea2029d8170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the per-draw column-major GPU skinning palette.  <br /></td></tr>
+<tr class="separator:acc91f5a6b211c6aa05513ea2029d8170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379dad0f37df5be968b8315de0e465d7" id="r_a379dad0f37df5be968b8315de0e465d7"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a379dad0f37df5be968b8315de0e465d7">skinPalette</a> () const</td></tr>
+<tr class="memdesc:a379dad0f37df5be968b8315de0e465d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed column-major matrix palette used by graphics backends.  <br /></td></tr>
+<tr class="separator:a379dad0f37df5be968b8315de0e465d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf5d6bccb26a8e0e208e144728b2cb20" id="r_abf5d6bccb26a8e0e208e144728b2cb20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#abf5d6bccb26a8e0e208e144728b2cb20">markGpuSkinned</a> (bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:abf5d6bccb26a8e0e208e144728b2cb20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark whether the backend vertex stream contains skin attributes.  <br /></td></tr>
+<tr class="separator:abf5d6bccb26a8e0e208e144728b2cb20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79c1e9b884eebd5dd1febc0a1f1abfb6" id="r_a79c1e9b884eebd5dd1febc0a1f1abfb6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a79c1e9b884eebd5dd1febc0a1f1abfb6">hasBounds</a> () const</td></tr>
+<tr class="memdesc:a79c1e9b884eebd5dd1febc0a1f1abfb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a valid bounding sphere is available for culling.  <br /></td></tr>
+<tr class="separator:a79c1e9b884eebd5dd1febc0a1f1abfb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f05165a32759bf50000829f23851ec9" id="r_a2f05165a32759bf50000829f23851ec9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a2f05165a32759bf50000829f23851ec9">computeBounds</a> (const float *posXYZ, int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>)</td></tr>
+<tr class="memdesc:a2f05165a32759bf50000829f23851ec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the bounding sphere (centroid + max radius) from positions.  <br /></td></tr>
+<tr class="separator:a2f05165a32759bf50000829f23851ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70e222ad430404b6ef885ac4d41d9c81" id="r_a70e222ad430404b6ef885ac4d41d9c81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a70e222ad430404b6ef885ac4d41d9c81">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *, const glm::mat4 &amp;) const override</td></tr>
+<tr class="memdesc:a70e222ad430404b6ef885ac4d41d9c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object with the specified transformation matrix.  <br /></td></tr>
+<tr class="separator:a70e222ad430404b6ef885ac4d41d9c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6be1fa7819df7db83a3824c2b240568c" id="r_a6be1fa7819df7db83a3824c2b240568c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a6be1fa7819df7db83a3824c2b240568c">drawOcclusion</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const glm::mat4 &amp;matrix) const override</td></tr>
+<tr class="memdesc:a6be1fa7819df7db83a3824c2b240568c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space black proxy for volumetric occlusion. Interprets matrix as 2D affine (translation + scale) and fills a solid rect — callers should pass a pixel-space placement (e.g. projected AABB).  <br /></td></tr>
+<tr class="separator:a6be1fa7819df7db83a3824c2b240568c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc283ad41d05d2b87b7af6e4bb55282" id="r_a2cc283ad41d05d2b87b7af6e4bb55282"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a2cc283ad41d05d2b87b7af6e4bb55282">clearMorphData</a> ()</td></tr>
+<tr class="separator:a2cc283ad41d05d2b87b7af6e4bb55282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c3943e674994c49789dba24183e12fe" id="r_a1c3943e674994c49789dba24183e12fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a1c3943e674994c49789dba24183e12fe">initMorphBase</a> (int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, const float *posXYZ, const float *nrmXYZ=nullptr, const float *uvST=nullptr)</td></tr>
+<tr class="memdesc:a1c3943e674994c49789dba24183e12fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture base pose (xyz packed). Optional normals/uvs (same vertex count).  <br /></td></tr>
+<tr class="separator:a1c3943e674994c49789dba24183e12fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3feeb59137c1fd691ad71f0fc2088498" id="r_a3feeb59137c1fd691ad71f0fc2088498"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a3feeb59137c1fd691ad71f0fc2088498">addMorphTarget</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const float *deltaPosXYZ)</td></tr>
+<tr class="separator:a3feeb59137c1fd691ad71f0fc2088498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78328a141eed161190fdce5c05bad88a" id="r_a78328a141eed161190fdce5c05bad88a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a78328a141eed161190fdce5c05bad88a">addMorphTargetAbsolute</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const float *absPosXYZ)</td></tr>
+<tr class="memdesc:a78328a141eed161190fdce5c05bad88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute morph (Assimp aiAnimMesh style): stored as delta from base.  <br /></td></tr>
+<tr class="separator:a78328a141eed161190fdce5c05bad88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbf822232b174297515415ca28f4dc48" id="r_adbf822232b174297515415ca28f4dc48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#adbf822232b174297515415ca28f4dc48">getVertexCount</a> () const</td></tr>
+<tr class="separator:adbf822232b174297515415ca28f4dc48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5877ae19bdbbd902497fccd0039d85e" id="r_ab5877ae19bdbbd902497fccd0039d85e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">getMorphCount</a> () const</td></tr>
+<tr class="separator:ab5877ae19bdbbd902497fccd0039d85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6fe702b407ef44ed3ece6951c62d509" id="r_ac6fe702b407ef44ed3ece6951c62d509"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">getMorphName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac6fe702b407ef44ed3ece6951c62d509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a402786bed82234767cc571d6f4d1f3f8" id="r_a402786bed82234767cc571d6f4d1f3f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">hasMorph</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a402786bed82234767cc571d6f4d1f3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a7c8746c72d500a7e8e4e756a096cf" id="r_a39a7c8746c72d500a7e8e4e756a096cf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">setMorphWeight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float weight)</td></tr>
+<tr class="separator:a39a7c8746c72d500a7e8e4e756a096cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70f27ea259e68762c14592949549aeaa" id="r_a70f27ea259e68762c14592949549aeaa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a70f27ea259e68762c14592949549aeaa">getMorphWeight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a70f27ea259e68762c14592949549aeaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bc9cbfef14d7ad91fbc7458a6a2d066" id="r_a8bc9cbfef14d7ad91fbc7458a6a2d066"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a8bc9cbfef14d7ad91fbc7458a6a2d066">clearMorphWeights</a> ()</td></tr>
+<tr class="separator:a8bc9cbfef14d7ad91fbc7458a6a2d066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ab8afd06381ccda01b672f397fd3c6" id="r_a23ab8afd06381ccda01b672f397fd3c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a23ab8afd06381ccda01b672f397fd3c6">isMorphDirty</a> () const</td></tr>
+<tr class="separator:a23ab8afd06381ccda01b672f397fd3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca064b5ae2bb66a8fc22ccb2b4af311f" id="r_aca064b5ae2bb66a8fc22ccb2b4af311f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#aca064b5ae2bb66a8fc22ccb2b4af311f">markMorphClean</a> ()</td></tr>
+<tr class="separator:aca064b5ae2bb66a8fc22ccb2b4af311f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a122cab2eb4f7703fcd7d5e7afc8e3620" id="r_a122cab2eb4f7703fcd7d5e7afc8e3620"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a122cab2eb4f7703fcd7d5e7afc8e3620">hasMorphData</a> () const</td></tr>
+<tr class="separator:a122cab2eb4f7703fcd7d5e7afc8e3620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af02e1cf211e40a9dc394f542533cfbb6" id="r_af02e1cf211e40a9dc394f542533cfbb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#af02e1cf211e40a9dc394f542533cfbb6">computeMorphedPositions</a> (std::vector&lt; float &gt; &amp;outPos, std::vector&lt; float &gt; &amp;outNrm) const</td></tr>
+<tr class="memdesc:af02e1cf211e40a9dc394f542533cfbb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake current weights into outPos / outNrm (xyz packed).  <br /></td></tr>
+<tr class="separator:af02e1cf211e40a9dc394f542533cfbb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65e56e4d754f56c4eb207062f593f990" id="r_a65e56e4d754f56c4eb207062f593f990"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a65e56e4d754f56c4eb207062f593f990">baseUv</a> () const</td></tr>
+<tr class="separator:a65e56e4d754f56c4eb207062f593f990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd932e2da2bb720daed7b918729b3cb" id="r_a3dd932e2da2bb720daed7b918729b3cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a3dd932e2da2bb720daed7b918729b3cb">captureImportedAttributes</a> (const ::aiMesh &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</td></tr>
+<tr class="memdesc:a3dd932e2da2bb720daed7b918729b3cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retain imported UV/color/tangent streams for custom pipelines and baking.  <br /></td></tr>
+<tr class="separator:a3dd932e2da2bb720daed7b918729b3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5135f41508fda13c30f78eb861497a5f" id="r_a5135f41508fda13c30f78eb861497a5f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a5135f41508fda13c30f78eb861497a5f">getUvChannelCount</a> () const</td></tr>
+<tr class="separator:a5135f41508fda13c30f78eb861497a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a514bd52b823bea5a48c99d7931ddf107" id="r_a514bd52b823bea5a48c99d7931ddf107"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a514bd52b823bea5a48c99d7931ddf107">getColorChannelCount</a> () const</td></tr>
+<tr class="separator:a514bd52b823bea5a48c99d7931ddf107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad33fee573ae0f9cc2e1fe4ccf043492" id="r_aad33fee573ae0f9cc2e1fe4ccf043492"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#aad33fee573ae0f9cc2e1fe4ccf043492">hasImportedTangents</a> () const</td></tr>
+<tr class="separator:aad33fee573ae0f9cc2e1fe4ccf043492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2660c0ab5ae70945ba377daed07da204" id="r_a2660c0ab5ae70945ba377daed07da204"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a2660c0ab5ae70945ba377daed07da204">importedUv</a> (int channel) const</td></tr>
+<tr class="separator:a2660c0ab5ae70945ba377daed07da204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8eda3578b12b23a658ecced039f1de1" id="r_ae8eda3578b12b23a658ecced039f1de1"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ae8eda3578b12b23a658ecced039f1de1">importedColor</a> (int channel) const</td></tr>
+<tr class="separator:ae8eda3578b12b23a658ecced039f1de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32495b88b0d7f5de559ed639eec5fc8c" id="r_a32495b88b0d7f5de559ed639eec5fc8c"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a32495b88b0d7f5de559ed639eec5fc8c">importedTangents</a> () const</td></tr>
+<tr class="separator:a32495b88b0d7f5de559ed639eec5fc8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad075eeedfd929f9bd472df6e57b770c3" id="r_ad075eeedfd929f9bd472df6e57b770c3"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ad075eeedfd929f9bd472df6e57b770c3">importedBitangents</a> () const</td></tr>
+<tr class="separator:ad075eeedfd929f9bd472df6e57b770c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1graphics_1_1Drawable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1graphics_1_1Drawable')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1graphics_1_1Drawable.html">eve::graphics::Drawable</a></td></tr>
+<tr class="memitem:aceeba99f4da23b12baf616fd57639c5d inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_aceeba99f4da23b12baf616fd57639c5d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aceeba99f4da23b12baf616fd57639c5d">~Drawable</a> ()</td></tr>
+<tr class="separator:aceeba99f4da23b12baf616fd57639c5d inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_a84e1f90d6c78c65e64f2d74b36a3fbf2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2">getCastOcclusion</a> () const</td></tr>
+<tr class="memdesc:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">When false, skipped by <a class="el" href="classeve_1_1graphics_1_1Graphics.html#accadbc9e8f42c43cd11ea78ad32980dc" title="Volumetric occlusion helpers (shadow-pass analogue for light shafts). drawOcclusion skips drawables w...">Graphics::drawOcclusion</a> / volumetric occluder passes.  <br /></td></tr>
+<tr class="separator:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab42dd0f3ecbccdd65fe4accdd924871 inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_aab42dd0f3ecbccdd65fe4accdd924871"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aab42dd0f3ecbccdd65fe4accdd924871">setCastOcclusion</a> (bool cast)</td></tr>
+<tr class="separator:aab42dd0f3ecbccdd65fe4accdd924871 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a475a556c75decb9b4c3fcaea4877d58c" id="r_a475a556c75decb9b4c3fcaea4877d58c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a475a556c75decb9b4c3fcaea4877d58c">indexCount</a> = 0</td></tr>
+<tr class="separator:a475a556c75decb9b4c3fcaea4877d58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a00c94656d3d195d938f7c2097b3761" id="r_a9a00c94656d3d195d938f7c2097b3761"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a9a00c94656d3d195d938f7c2097b3761">gpuHandle</a> = nullptr</td></tr>
+<tr class="separator:a9a00c94656d3d195d938f7c2097b3761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3776de34f20a2e7d703667b990310000" id="r_a3776de34f20a2e7d703667b990310000"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a3776de34f20a2e7d703667b990310000">gpuVertexCount</a> = 0</td></tr>
+<tr class="memdesc:a3776de34f20a2e7d703667b990310000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex count of the GPU buffer (morph CPU base may be empty).  <br /></td></tr>
+<tr class="separator:a3776de34f20a2e7d703667b990310000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a507804eccbf9e53ffea7f7c4f39f7246" id="r_a507804eccbf9e53ffea7f7c4f39f7246"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a507804eccbf9e53ffea7f7c4f39f7246">boundsCx</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a507804eccbf9e53ffea7f7c4f39f7246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Model-space bounding sphere used for view/cascade frustum culling. Computed from vertex positions at upload time (see computeBounds). boundsRadius &lt;= 0 means unknown — callers must treat the mesh as always visible (no culling).  <br /></td></tr>
+<tr class="separator:a507804eccbf9e53ffea7f7c4f39f7246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74150482f73207f1b4f1efce8e006cbf" id="r_a74150482f73207f1b4f1efce8e006cbf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a74150482f73207f1b4f1efce8e006cbf">boundsCy</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a74150482f73207f1b4f1efce8e006cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b584df42325a3f61bce3ed160533d3d" id="r_a6b584df42325a3f61bce3ed160533d3d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#a6b584df42325a3f61bce3ed160533d3d">boundsCz</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6b584df42325a3f61bce3ed160533d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad01386bced1365ed37c833d9cd45c3bb" id="r_ad01386bced1365ed37c833d9cd45c3bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#ad01386bced1365ed37c833d9cd45c3bb">boundsRadius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad01386bced1365ed37c833d9cd45c3bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:aba45a2b624f4ddb14cd8a308bea464a4" id="r_aba45a2b624f4ddb14cd8a308bea464a4"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html#aba45a2b624f4ddb14cd8a308bea464a4">kMaxSkinBones</a> = 128</td></tr>
+<tr class="separator:aba45a2b624f4ddb14cd8a308bea464a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU mesh handle (+ optional CPU morph targets). </p>
+<p>Morph pipeline: initMorphBase / addMorphTarget* → setMorphWeight → <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab21cf68d8790e0b495b27ef571be9b33" title="If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO....">Graphics::bakeMeshMorph</a> (uploads blended positions to the host-visible VBO). </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a3feeb59137c1fd691ad71f0fc2088498" name="a3feeb59137c1fd691ad71f0fc2088498"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3feeb59137c1fd691ad71f0fc2088498">&#9670;&#160;</a></span>addMorphTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::addMorphTarget </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>deltaPosXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Delta morph: target = base + delta * weight. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8cpp_source.html#l00176">hasMorph()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a78328a141eed161190fdce5c05bad88a" name="a78328a141eed161190fdce5c05bad88a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78328a141eed161190fdce5c05bad88a">&#9670;&#160;</a></span>addMorphTargetAbsolute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::addMorphTargetAbsolute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>absPosXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute morph (Assimp aiAnimMesh style): stored as delta from base. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8cpp_source.html#l00176">hasMorph()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a65e56e4d754f56c4eb207062f593f990" name="a65e56e4d754f56c4eb207062f593f990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65e56e4d754f56c4eb207062f593f990">&#9670;&#160;</a></span>baseUv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::baseUv </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3dd932e2da2bb720daed7b918729b3cb" name="a3dd932e2da2bb720daed7b918729b3cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dd932e2da2bb720daed7b918729b3cb">&#9670;&#160;</a></span>captureImportedAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::captureImportedAttributes </td>
+          <td>(</td>
+          <td class="paramtype">const ::aiMesh &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retain imported UV/color/tangent streams for custom pipelines and baking. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="a2cc283ad41d05d2b87b7af6e4bb55282" name="a2cc283ad41d05d2b87b7af6e4bb55282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cc283ad41d05d2b87b7af6e4bb55282">&#9670;&#160;</a></span>clearMorphData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::clearMorphData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00122">initMorphBase()</a>.</p>
+
+</div>
+</div>
+<a id="a8bc9cbfef14d7ad91fbc7458a6a2d066" name="a8bc9cbfef14d7ad91fbc7458a6a2d066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bc9cbfef14d7ad91fbc7458a6a2d066">&#9670;&#160;</a></span>clearMorphWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::clearMorphWeights </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f05165a32759bf50000829f23851ec9" name="a2f05165a32759bf50000829f23851ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f05165a32759bf50000829f23851ec9">&#9670;&#160;</a></span>computeBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::computeBounds </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the bounding sphere (centroid + max radius) from positions. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8h_source.html#l00044">boundsCx</a>, <a class="el" href="Mesh_8h_source.html#l00045">boundsCy</a>, <a class="el" href="Mesh_8h_source.html#l00046">boundsCz</a>, <a class="el" href="Mesh_8h_source.html#l00047">boundsRadius</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00235">vertexCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00209">eve::graphics::vulkan::Graphics::newMeshFromArrays()</a>.</p>
+
+</div>
+</div>
+<a id="af02e1cf211e40a9dc394f542533cfbb6" name="af02e1cf211e40a9dc394f542533cfbb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af02e1cf211e40a9dc394f542533cfbb6">&#9670;&#160;</a></span>computeMorphedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::computeMorphedPositions </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outPos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outNrm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake current weights into outPos / outNrm (xyz packed). </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a70e222ad430404b6ef885ac4d41d9c81" name="a70e222ad430404b6ef885ac4d41d9c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70e222ad430404b6ef885ac4d41d9c81">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Draws the object with the specified transformation matrix. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1c0894d4411b877fd948bbc24ab108f6">eve::graphics::Drawable</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6be1fa7819df7db83a3824c2b240568c" name="a6be1fa7819df7db83a3824c2b240568c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be1fa7819df7db83a3824c2b240568c">&#9670;&#160;</a></span>drawOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::drawOcclusion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Screen-space black proxy for volumetric occlusion. Interprets matrix as 2D affine (translation + scale) and fills a solid rect — callers should pass a pixel-space placement (e.g. projected AABB). </p>
+
+<p>重载 <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1ab585bd5bbc4b9b903001ee28014db5">eve::graphics::Drawable</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l01585">eve::graphics::Graphics::drawOcclusionSolid()</a>, <a class="el" href="Drawable_8h_source.html#l00027">eve::graphics::Drawable::getCastOcclusion()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a514bd52b823bea5a48c99d7931ddf107" name="a514bd52b823bea5a48c99d7931ddf107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a514bd52b823bea5a48c99d7931ddf107">&#9670;&#160;</a></span>getColorChannelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::getColorChannelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5877ae19bdbbd902497fccd0039d85e" name="ab5877ae19bdbbd902497fccd0039d85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5877ae19bdbbd902497fccd0039d85e">&#9670;&#160;</a></span>getMorphCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::getMorphCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00432">eve::avatar::AvatarInstance::setExpression()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l01269">eve::avatar::AvatarInstance::transitionExpression()</a>.</p>
+
+</div>
+</div>
+<a id="ac6fe702b407ef44ed3ece6951c62d509" name="ac6fe702b407ef44ed3ece6951c62d509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6fe702b407ef44ed3ece6951c62d509">&#9670;&#160;</a></span>getMorphName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Mesh::getMorphName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00432">eve::avatar::AvatarInstance::setExpression()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l01269">eve::avatar::AvatarInstance::transitionExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a70f27ea259e68762c14592949549aeaa" name="a70f27ea259e68762c14592949549aeaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70f27ea259e68762c14592949549aeaa">&#9670;&#160;</a></span>getMorphWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Mesh::getMorphWeight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="accfb887263584a6b819dc0bded5925e9" name="accfb887263584a6b819dc0bded5925e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accfb887263584a6b819dc0bded5925e9">&#9670;&#160;</a></span>getSkinPaletteCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::getSkinPaletteCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of matrices in the current skinning palette. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5135f41508fda13c30f78eb861497a5f" name="a5135f41508fda13c30f78eb861497a5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5135f41508fda13c30f78eb861497a5f">&#9670;&#160;</a></span>getUvChannelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::getUvChannelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adbf822232b174297515415ca28f4dc48" name="adbf822232b174297515415ca28f4dc48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbf822232b174297515415ca28f4dc48">&#9670;&#160;</a></span>getVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::getVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8h_source.html#l00026">gpuVertexCount</a>.</p>
+
+</div>
+</div>
+<a id="a79c1e9b884eebd5dd1febc0a1f1abfb6" name="a79c1e9b884eebd5dd1febc0a1f1abfb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79c1e9b884eebd5dd1febc0a1f1abfb6">&#9670;&#160;</a></span>hasBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::hasBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when a valid bounding sphere is available for culling. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8h_source.html#l00047">boundsRadius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ab4c58ece59e4c5bd12e8531c4cada9a6" name="ab4c58ece59e4c5bd12e8531c4cada9a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4c58ece59e4c5bd12e8531c4cada9a6">&#9670;&#160;</a></span>hasGpuSkinning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::hasGpuSkinning </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after joint and weight data has been uploaded for GPU skinning. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad33fee573ae0f9cc2e1fe4ccf043492" name="aad33fee573ae0f9cc2e1fe4ccf043492"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad33fee573ae0f9cc2e1fe4ccf043492">&#9670;&#160;</a></span>hasImportedTangents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::hasImportedTangents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a402786bed82234767cc571d6f4d1f3f8" name="a402786bed82234767cc571d6f4d1f3f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a402786bed82234767cc571d6f4d1f3f8">&#9670;&#160;</a></span>hasMorph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::hasMorph </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00138">addMorphTarget()</a>, <a class="el" href="Mesh_8cpp_source.html#l00150">addMorphTargetAbsolute()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00725">eve::avatar::AvatarInstance::mapViseme()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l00476">eve::avatar::AvatarInstance::setParameter()</a>.</p>
+
+</div>
+</div>
+<a id="a122cab2eb4f7703fcd7d5e7afc8e3620" name="a122cab2eb4f7703fcd7d5e7afc8e3620"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a122cab2eb4f7703fcd7d5e7afc8e3620">&#9670;&#160;</a></span>hasMorphData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::hasMorphData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00432">eve::avatar::AvatarInstance::setExpression()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l01269">eve::avatar::AvatarInstance::transitionExpression()</a>.</p>
+
+</div>
+</div>
+<a id="ad075eeedfd929f9bd472df6e57b770c3" name="ad075eeedfd929f9bd472df6e57b770c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad075eeedfd929f9bd472df6e57b770c3">&#9670;&#160;</a></span>importedBitangents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::importedBitangents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8eda3578b12b23a658ecced039f1de1" name="ae8eda3578b12b23a658ecced039f1de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8eda3578b12b23a658ecced039f1de1">&#9670;&#160;</a></span>importedColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::importedColor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32495b88b0d7f5de559ed639eec5fc8c" name="a32495b88b0d7f5de559ed639eec5fc8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32495b88b0d7f5de559ed639eec5fc8c">&#9670;&#160;</a></span>importedTangents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::importedTangents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2660c0ab5ae70945ba377daed07da204" name="a2660c0ab5ae70945ba377daed07da204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2660c0ab5ae70945ba377daed07da204">&#9670;&#160;</a></span>importedUv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::importedUv </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c3943e674994c49789dba24183e12fe" name="a1c3943e674994c49789dba24183e12fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3943e674994c49789dba24183e12fe">&#9670;&#160;</a></span>initMorphBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::initMorphBase </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>uvST</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture base pose (xyz packed). Optional normals/uvs (same vertex count). </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8cpp_source.html#l00113">clearMorphData()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00235">vertexCount</a>.</p>
+
+</div>
+</div>
+<a id="a23ab8afd06381ccda01b672f397fd3c6" name="a23ab8afd06381ccda01b672f397fd3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ab8afd06381ccda01b672f397fd3c6">&#9670;&#160;</a></span>isMorphDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::isMorphDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l01476">eve::avatar::AvatarInstance::bakeMorphs()</a>.</p>
+
+</div>
+</div>
+<a id="abf5d6bccb26a8e0e208e144728b2cb20" name="abf5d6bccb26a8e0e208e144728b2cb20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5d6bccb26a8e0e208e144728b2cb20">&#9670;&#160;</a></span>markGpuSkinned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::markGpuSkinned </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark whether the backend vertex stream contains skin attributes. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aca064b5ae2bb66a8fc22ccb2b4af311f" name="aca064b5ae2bb66a8fc22ccb2b4af311f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca064b5ae2bb66a8fc22ccb2b4af311f">&#9670;&#160;</a></span>markMorphClean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Mesh::markMorphClean </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39a7c8746c72d500a7e8e4e756a096cf" name="a39a7c8746c72d500a7e8e4e756a096cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a7c8746c72d500a7e8e4e756a096cf">&#9670;&#160;</a></span>setMorphWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::setMorphWeight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00476">eve::avatar::AvatarInstance::setParameter()</a>.</p>
+
+</div>
+</div>
+<a id="acc91f5a6b211c6aa05513ea2029d8170" name="acc91f5a6b211c6aa05513ea2029d8170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc91f5a6b211c6aa05513ea2029d8170">&#9670;&#160;</a></span>setSkinPalette()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Mesh::setSkinPalette </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>matrices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>matrixCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the per-draw column-major GPU skinning palette. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a> 第 <a class="el" href="Mesh_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8h_source.html#l00022">kMaxSkinBones</a>.</p>
+
+</div>
+</div>
+<a id="a379dad0f37df5be968b8315de0e465d7" name="a379dad0f37df5be968b8315de0e465d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379dad0f37df5be968b8315de0e465d7">&#9670;&#160;</a></span>skinPalette()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::graphics::Mesh::skinPalette </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Packed column-major matrix palette used by graphics backends. </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a507804eccbf9e53ffea7f7c4f39f7246" name="a507804eccbf9e53ffea7f7c4f39f7246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a507804eccbf9e53ffea7f7c4f39f7246">&#9670;&#160;</a></span>boundsCx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Mesh::boundsCx = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Model-space bounding sphere used for view/cascade frustum culling. Computed from vertex positions at upload time (see computeBounds). boundsRadius &lt;= 0 means unknown — callers must treat the mesh as always visible (no culling). </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00071">computeBounds()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a74150482f73207f1b4f1efce8e006cbf" name="a74150482f73207f1b4f1efce8e006cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74150482f73207f1b4f1efce8e006cbf">&#9670;&#160;</a></span>boundsCy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Mesh::boundsCy = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00071">computeBounds()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a6b584df42325a3f61bce3ed160533d3d" name="a6b584df42325a3f61bce3ed160533d3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b584df42325a3f61bce3ed160533d3d">&#9670;&#160;</a></span>boundsCz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Mesh::boundsCz = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00071">computeBounds()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ad01386bced1365ed37c833d9cd45c3bb" name="ad01386bced1365ed37c833d9cd45c3bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad01386bced1365ed37c833d9cd45c3bb">&#9670;&#160;</a></span>boundsRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Mesh::boundsRadius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00071">computeBounds()</a>, <a class="el" href="Mesh_8h_source.html#l00050">hasBounds()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a9a00c94656d3d195d938f7c2097b3761" name="a9a00c94656d3d195d938f7c2097b3761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a00c94656d3d195d938f7c2097b3761">&#9670;&#160;</a></span>gpuHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* eve::graphics::Mesh::gpuHandle = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3776de34f20a2e7d703667b990310000" name="a3776de34f20a2e7d703667b990310000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3776de34f20a2e7d703667b990310000">&#9670;&#160;</a></span>gpuVertexCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::gpuVertexCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vertex count of the GPU buffer (morph CPU base may be empty). </p>
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mesh_8cpp_source.html#l00164">getVertexCount()</a>.</p>
+
+</div>
+</div>
+<a id="a475a556c75decb9b4c3fcaea4877d58c" name="a475a556c75decb9b4c3fcaea4877d58c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a475a556c75decb9b4c3fcaea4877d58c">&#9670;&#160;</a></span>indexCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Mesh::indexCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba45a2b624f4ddb14cd8a308bea464a4" name="aba45a2b624f4ddb14cd8a308bea464a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba45a2b624f4ddb14cd8a308bea464a4">&#9670;&#160;</a></span>kMaxSkinBones</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::graphics::Mesh::kMaxSkinBones = 128</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mesh_8h_source.html">Mesh.h</a> 第 <a class="el" href="Mesh_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimSkin_8cpp_source.html#l00224">eve::animation::AnimSkin::bindGpuMesh()</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00574">eve::graphics::vulkan::Graphics::drawMeshShader()</a> , 以及 <a class="el" href="Mesh_8cpp_source.html#l00065">setSkinPalette()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Mesh_8h_source.html">Mesh.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Mesh_8cpp_source.html">Mesh.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

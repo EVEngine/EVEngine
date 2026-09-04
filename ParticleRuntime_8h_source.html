@@ -1,0 +1,245 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/particles/ParticleRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_be2a98047adf0b17748c2ae9b7b0177c.html">particles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ParticleRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ParticleRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1particles.html">eve::particles</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleBudgetConfig.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleBudgetConfig.html">ParticleBudgetConfig</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#ab267df411fa885527e35fd85df4682ce">   12</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#ab267df411fa885527e35fd85df4682ce">maxParticles</a> = 0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a60911417699608eba4f863a525e6be68">   14</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a60911417699608eba4f863a525e6be68">maxSimulatedEmitters</a> = 0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a90a471f68768ee01448868bcc067ed7f">   16</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a90a471f68768ee01448868bcc067ed7f">qualityLevel</a> = 3;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleFrameStats.html">ParticleFrameStats</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a52b23180d52439ad243196a5b4b9f382">   21</a></span>    uint64_t <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a52b23180d52439ad243196a5b4b9f382">frameIndex</a>             = 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a8a3235503a2c63a8c2536c2abff30425">   23</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a8a3235503a2c63a8c2536c2abff30425">simulationTick</a>         = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#ae16ee7f1321a8bfc93039066ae33c81c">   24</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#ae16ee7f1321a8bfc93039066ae33c81c">emittersTotal</a>          = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a186804bc560256b18f84bc7524b83a2e">   25</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a186804bc560256b18f84bc7524b83a2e">emittersSimulated</a>      = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#ab5b365452a49c861fd02ce91e45ddc39">   26</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#ab5b365452a49c861fd02ce91e45ddc39">emittersCulled</a>         = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a3c3c30907ba668de8c79628b1f15ffa9">   27</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a3c3c30907ba668de8c79628b1f15ffa9">emittersQualitySkipped</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a17a4a31a36bbd5235aa05cc6c6f018ce">   28</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a17a4a31a36bbd5235aa05cc6c6f018ce">emittersBudgetSkipped</a>  = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a99ad5a8ed77b6f1dfc0cb41c7ed95173">   29</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a99ad5a8ed77b6f1dfc0cb41c7ed95173">particlesBefore</a>        = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a13d28f382919b3d16f767c3535091813">   30</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a13d28f382919b3d16f767c3535091813">particlesAfter</a>         = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#ab71be0bc649d68a3ff8cd1ba892847f7">   31</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#ab71be0bc649d68a3ff8cd1ba892847f7">particlesSpawned</a>       = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a34220eefbba2437baea3bb5e1cca068c">   32</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a34220eefbba2437baea3bb5e1cca068c">particlesKilled</a>        = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0353fe394b25e027c8b20fcd4881386d">   33</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0353fe394b25e027c8b20fcd4881386d">droppedSpawns</a>          = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a5c223eac9c7448c2259580b2d0714d7d">   34</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a5c223eac9c7448c2259580b2d0714d7d">gpuResidentEmitters</a>    = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a3a291a00beb842f152c55c98c6d70c80">   35</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a3a291a00beb842f152c55c98c6d70c80">gpuResidentParticles</a>   = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0db21c25504da088855a326e40ad9e1e">   36</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0db21c25504da088855a326e40ad9e1e">renderedParticles</a>      = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0bb7183669d8f1d8ae0812d14f53b287">   37</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a0bb7183669d8f1d8ae0812d14f53b287">renderCulledEmitters</a>   = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a13bb76760ddf080d4418bb2ee9203f40">   38</a></span>    <span class="keywordtype">double</span>   <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a13bb76760ddf080d4418bb2ee9203f40">simulationMs</a>           = 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleFrameStats.html#a1a5662147b3dd09abd2f0167ff467ba5">   39</a></span>    <span class="keywordtype">double</span>   <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleFrameStats.html#a1a5662147b3dd09abd2f0167ff467ba5">renderMs</a>               = 0.0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleBudgetConfig.html">ParticleBudgetConfig</a>&amp; <a class="code hl_function" href="namespaceeve_1_1particles.html#a083c8fc46255134d44cfd082bc2ab2aa">particleBudgetConfig</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1particles_1_1ParticleFrameStats.html">ParticleFrameStats</a>&amp; <a class="code hl_function" href="namespaceeve_1_1particles.html#a5667f663a0ac0c264b7d0a19293d62ef">particleFrameStats</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleFrameStats.html">ParticleFrameStats</a>&amp; <a class="code hl_function" href="namespaceeve_1_1particles.html#ab9ada59cdebfb99375446317af5f9d1e">mutableParticleFrameStats</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}  <span class="comment">// namespace eve::particles</span></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html"><div class="ttname"><a href="namespaceeve_1_1particles.html">eve::particles</a></div><div class="ttdef"><b>Definition</b> <a href="ParticleConfig_8cpp_source.html#l00017">ParticleConfig.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_a083c8fc46255134d44cfd082bc2ab2aa"><div class="ttname"><a href="namespaceeve_1_1particles.html#a083c8fc46255134d44cfd082bc2ab2aa">eve::particles::particleBudgetConfig</a></div><div class="ttdeci">ParticleBudgetConfig &amp; particleBudgetConfig()</div><div class="ttdoc">Mutable process-wide scalability configuration.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8cpp_source.html#l00010">ParticleRuntime.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_a5667f663a0ac0c264b7d0a19293d62ef"><div class="ttname"><a href="namespaceeve_1_1particles.html#a5667f663a0ac0c264b7d0a19293d62ef">eve::particles::particleFrameStats</a></div><div class="ttdeci">const ParticleFrameStats &amp; particleFrameStats()</div><div class="ttdoc">Statistics for the most recently processed particle frame.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8cpp_source.html#l00011">ParticleRuntime.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_ab9ada59cdebfb99375446317af5f9d1e"><div class="ttname"><a href="namespaceeve_1_1particles.html#ab9ada59cdebfb99375446317af5f9d1e">eve::particles::mutableParticleFrameStats</a></div><div class="ttdeci">ParticleFrameStats &amp; mutableParticleFrameStats()</div><div class="ttdoc">Internal mutable statistics used by particle systems.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8cpp_source.html#l00012">ParticleRuntime.cpp:12</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleBudgetConfig_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleBudgetConfig.html">eve::particles::ParticleBudgetConfig</a></div><div class="ttdoc">Global particle scalability controls shared by CPU and future GPU backends.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00010">ParticleRuntime.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleBudgetConfig_html_a60911417699608eba4f863a525e6be68"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a60911417699608eba4f863a525e6be68">eve::particles::ParticleBudgetConfig::maxSimulatedEmitters</a></div><div class="ttdeci">int maxSimulatedEmitters</div><div class="ttdoc">Maximum emitters simulated per frame; zero is unlimited.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00014">ParticleRuntime.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleBudgetConfig_html_a90a471f68768ee01448868bcc067ed7f"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleBudgetConfig.html#a90a471f68768ee01448868bcc067ed7f">eve::particles::ParticleBudgetConfig::qualityLevel</a></div><div class="ttdeci">int qualityLevel</div><div class="ttdoc">Runtime VFX quality tier in [0,3].</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00016">ParticleRuntime.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleBudgetConfig_html_ab267df411fa885527e35fd85df4682ce"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleBudgetConfig.html#ab267df411fa885527e35fd85df4682ce">eve::particles::ParticleBudgetConfig::maxParticles</a></div><div class="ttdeci">int maxParticles</div><div class="ttdoc">Soft cap for live particles across all emitters; zero is unlimited.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00012">ParticleRuntime.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html">eve::particles::ParticleFrameStats</a></div><div class="ttdoc">Counters from the most recent particle update and render pass.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00020">ParticleRuntime.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a0353fe394b25e027c8b20fcd4881386d"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a0353fe394b25e027c8b20fcd4881386d">eve::particles::ParticleFrameStats::droppedSpawns</a></div><div class="ttdeci">int droppedSpawns</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00033">ParticleRuntime.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a0bb7183669d8f1d8ae0812d14f53b287"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a0bb7183669d8f1d8ae0812d14f53b287">eve::particles::ParticleFrameStats::renderCulledEmitters</a></div><div class="ttdeci">int renderCulledEmitters</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00037">ParticleRuntime.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a0db21c25504da088855a326e40ad9e1e"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a0db21c25504da088855a326e40ad9e1e">eve::particles::ParticleFrameStats::renderedParticles</a></div><div class="ttdeci">int renderedParticles</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00036">ParticleRuntime.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a13bb76760ddf080d4418bb2ee9203f40"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a13bb76760ddf080d4418bb2ee9203f40">eve::particles::ParticleFrameStats::simulationMs</a></div><div class="ttdeci">double simulationMs</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00038">ParticleRuntime.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a13d28f382919b3d16f767c3535091813"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a13d28f382919b3d16f767c3535091813">eve::particles::ParticleFrameStats::particlesAfter</a></div><div class="ttdeci">int particlesAfter</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00030">ParticleRuntime.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a17a4a31a36bbd5235aa05cc6c6f018ce"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a17a4a31a36bbd5235aa05cc6c6f018ce">eve::particles::ParticleFrameStats::emittersBudgetSkipped</a></div><div class="ttdeci">int emittersBudgetSkipped</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00028">ParticleRuntime.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a186804bc560256b18f84bc7524b83a2e"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a186804bc560256b18f84bc7524b83a2e">eve::particles::ParticleFrameStats::emittersSimulated</a></div><div class="ttdeci">int emittersSimulated</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00025">ParticleRuntime.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a1a5662147b3dd09abd2f0167ff467ba5"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a1a5662147b3dd09abd2f0167ff467ba5">eve::particles::ParticleFrameStats::renderMs</a></div><div class="ttdeci">double renderMs</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00039">ParticleRuntime.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a34220eefbba2437baea3bb5e1cca068c"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a34220eefbba2437baea3bb5e1cca068c">eve::particles::ParticleFrameStats::particlesKilled</a></div><div class="ttdeci">int particlesKilled</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00032">ParticleRuntime.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a3a291a00beb842f152c55c98c6d70c80"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a3a291a00beb842f152c55c98c6d70c80">eve::particles::ParticleFrameStats::gpuResidentParticles</a></div><div class="ttdeci">int gpuResidentParticles</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00035">ParticleRuntime.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a3c3c30907ba668de8c79628b1f15ffa9"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a3c3c30907ba668de8c79628b1f15ffa9">eve::particles::ParticleFrameStats::emittersQualitySkipped</a></div><div class="ttdeci">int emittersQualitySkipped</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00027">ParticleRuntime.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a52b23180d52439ad243196a5b4b9f382"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a52b23180d52439ad243196a5b4b9f382">eve::particles::ParticleFrameStats::frameIndex</a></div><div class="ttdeci">uint64_t frameIndex</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00021">ParticleRuntime.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a5c223eac9c7448c2259580b2d0714d7d"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a5c223eac9c7448c2259580b2d0714d7d">eve::particles::ParticleFrameStats::gpuResidentEmitters</a></div><div class="ttdeci">int gpuResidentEmitters</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00034">ParticleRuntime.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a8a3235503a2c63a8c2536c2abff30425"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a8a3235503a2c63a8c2536c2abff30425">eve::particles::ParticleFrameStats::simulationTick</a></div><div class="ttdeci">eve::SimulationTick simulationTick</div><div class="ttdoc">Simulation tick that produced the latest simulation counters.</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00023">ParticleRuntime.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_a99ad5a8ed77b6f1dfc0cb41c7ed95173"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#a99ad5a8ed77b6f1dfc0cb41c7ed95173">eve::particles::ParticleFrameStats::particlesBefore</a></div><div class="ttdeci">int particlesBefore</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00029">ParticleRuntime.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_ab5b365452a49c861fd02ce91e45ddc39"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#ab5b365452a49c861fd02ce91e45ddc39">eve::particles::ParticleFrameStats::emittersCulled</a></div><div class="ttdeci">int emittersCulled</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00026">ParticleRuntime.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_ab71be0bc649d68a3ff8cd1ba892847f7"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#ab71be0bc649d68a3ff8cd1ba892847f7">eve::particles::ParticleFrameStats::particlesSpawned</a></div><div class="ttdeci">int particlesSpawned</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00031">ParticleRuntime.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleFrameStats_html_ae16ee7f1321a8bfc93039066ae33c81c"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleFrameStats.html#ae16ee7f1321a8bfc93039066ae33c81c">eve::particles::ParticleFrameStats::emittersTotal</a></div><div class="ttdeci">int emittersTotal</div><div class="ttdef"><b>Definition</b> <a href="ParticleRuntime_8h_source.html#l00024">ParticleRuntime.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

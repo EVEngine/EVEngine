@@ -1,0 +1,215 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::AnimTrail 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af8e0c0636dfd5e437bb943bb7eb1a5ba">addPoint</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2ea8fbd1f0ca9651dbf762d446b4437a">addPoint3</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a980bc9c9af1c6aa7352ffc77aecb7ef7">advance</a>(const eve::SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#afdaaee344ea66ab0bc559a08ab66fb0d">AnimTrail</a>(int capacity=64)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ac00f83d85608ac3c0c27cdfdd5c1dca4">AnimTrail</a>(const AnimTrail &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a993bc7e5eaa494f50e0bab72ea8de62f">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a689abc150f802f7cebe69f3254a0b55f">draw</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af8f3917aa418cf1222d933b78c8acf32">getCapacity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#adc0d722ae2be4938e7a0a6b0cbb35328">getColorA</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a12de8051332c2c0fd73bc5d36acb2cdb">getColorB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ad026b78e03a76c0d8d7f93cce5ac862e">getColorG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aa542a1e633484c5ef7f630de61ab9627">getColorR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a7e78467f2af86ccb1e9bb5991a25971d">getDrawOffsetX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ab28c87e15f6fe021b0a998a8cbf7e8dd">getDrawOffsetY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ab3b6f8b7f9c82d8ceff757993a2de71e">getDrawScaleX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a6fb0c13dc489593eaa998470d466ed7d">getDrawScaleY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ae6f816c83883fb60687a8114e4557bf7">getDuration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a1f2c73ef2445bb49eca85f8827e397ad">getFade</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aba7abde8d5e16eaab8d07b39672770f5">getMinDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aeee41e742d3b0876285a90bc7d8567a7">getPointAge</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ac1ec1519ab0023dabee1ea4e43ec113f">getPointAlpha</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a362325e9d65b9d4796be65d3ff8fa732">getPointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#acd7fc7af0165761acc929d30e6ceefcc">getPointX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ae1bf24e22933954d56ca5de40fccce1f">getPointY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a85ac356b58215820b5a337db556a3856">getPointZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a06d5ef5a82952c70f0f238a7aae82e90">getStyle</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a767dad2aac59604a6ef7c86c275ce0a3">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a9734faa1dbfb9a62cf53a2f1e8680d0f">operator=</a>(const AnimTrail &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a97c5d1a4aa3f9ef75618dbfeb7b6fa89">sampleBone</a>(const AnimPose *pose, int boneIndex, const std::string &amp;plane=&quot;xy&quot;)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af564a36f451ecc9ffb10105406608e82">sampleBoneOffset</a>(const AnimPose *pose, int boneIndex, float ox, float oy, float oz, const std::string &amp;plane=&quot;xy&quot;)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2207b9447b1f8ab521e88fb7636a5584">setCapacity</a>(int capacity)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a77e6be898ad9059e6e29e9045af59991">setColor</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2f44a5b6fa194832289f5e2dad1cefee">setDrawOffset</a>(float ox, float oy)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#add0974f719a7108d4fab16c391ea0c33">setDrawScale</a>(float sx, float sy)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a111b4d3514837e039207f2898d8fcfb9">setDuration</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aaff20c69e1cfb4d22baeb3448035eab7">setFade</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a5f1c0aa425d428a5361b777a776d8adb">setMinDistance</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aa8b6ebefb7172564783e48207ae733c0">setStyle</a>(const std::string &amp;style)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a23995c97dbd30712dbf88415edb1db3c">setWidth</a>(float pixels)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a29c44272f42382ad28625792daa7ce6d">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a4fbc7e9ca1a6128422215bac2102695a">~AnimTrail</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">eve::animation::AnimTrail</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1444 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::shaders 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html">shaders</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::shaders 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a9b25ed3076559152d746fe497ae108c0" id="r_a9b25ed3076559152d746fe497ae108c0"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a9b25ed3076559152d746fe497ae108c0">kAoCommon</a></td></tr>
+<tr class="separator:a9b25ed3076559152d746fe497ae108c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b69845eaf9ec26eea6cb0974bb26e9b" id="r_a3b69845eaf9ec26eea6cb0974bb26e9b"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a3b69845eaf9ec26eea6cb0974bb26e9b">kSsao</a></td></tr>
+<tr class="separator:a3b69845eaf9ec26eea6cb0974bb26e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad82abca402965d1b97d715747438a803" id="r_ad82abca402965d1b97d715747438a803"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ad82abca402965d1b97d715747438a803">kHbao</a></td></tr>
+<tr class="separator:ad82abca402965d1b97d715747438a803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cedfb82c8138d463a779a57730b709b" id="r_a5cedfb82c8138d463a779a57730b709b"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a5cedfb82c8138d463a779a57730b709b">kGtao</a></td></tr>
+<tr class="separator:a5cedfb82c8138d463a779a57730b709b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fbc502c65cbb465675be9f62cccc34d" id="r_a4fbc502c65cbb465675be9f62cccc34d"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a4fbc502c65cbb465675be9f62cccc34d">kBlur</a></td></tr>
+<tr class="separator:a4fbc502c65cbb465675be9f62cccc34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a483922e3d7b9763d240dd444f7c18710" id="r_a483922e3d7b9763d240dd444f7c18710"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a483922e3d7b9763d240dd444f7c18710">kOverlay</a></td></tr>
+<tr class="separator:a483922e3d7b9763d240dd444f7c18710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2242835a24a1437c7632ebc5960dbc2" id="r_ae2242835a24a1437c7632ebc5960dbc2"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ae2242835a24a1437c7632ebc5960dbc2">kFromDepth</a></td></tr>
+<tr class="separator:ae2242835a24a1437c7632ebc5960dbc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a283327a8a239d75594031e6ee209f3de" id="r_a283327a8a239d75594031e6ee209f3de"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a283327a8a239d75594031e6ee209f3de">kGrassVertWgsl</a></td></tr>
+<tr class="separator:a283327a8a239d75594031e6ee209f3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905099afe0ab9b4588616b2c2126544b" id="r_a905099afe0ab9b4588616b2c2126544b"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a905099afe0ab9b4588616b2c2126544b">kGrassFragWgsl</a></td></tr>
+<tr class="separator:a905099afe0ab9b4588616b2c2126544b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a230066628572f3108edc90ff3c976e3c" id="r_a230066628572f3108edc90ff3c976e3c"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a230066628572f3108edc90ff3c976e3c">kHairFragWgsl</a></td></tr>
+<tr class="separator:a230066628572f3108edc90ff3c976e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a87e44df5de06ff0e3adf232080ea4b" id="r_a5a87e44df5de06ff0e3adf232080ea4b"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">kPostCommon</a></td></tr>
+<tr class="separator:a5a87e44df5de06ff0e3adf232080ea4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e88e3b0592509e279ee8795819a5d92" id="r_a0e88e3b0592509e279ee8795819a5d92"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">kBloomDownsample</a></td></tr>
+<tr class="separator:a0e88e3b0592509e279ee8795819a5d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ec546775e3f211ba56f19855b16aa4e" id="r_a1ec546775e3f211ba56f19855b16aa4e"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">kBloomUpsample</a></td></tr>
+<tr class="separator:a1ec546775e3f211ba56f19855b16aa4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3daba0218612110801a339aebf74e712" id="r_a3daba0218612110801a339aebf74e712"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a3daba0218612110801a339aebf74e712">kExposureMeter</a></td></tr>
+<tr class="separator:a3daba0218612110801a339aebf74e712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69c42e0740c6c8357e77345a45034ec8" id="r_a69c42e0740c6c8357e77345a45034ec8"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a69c42e0740c6c8357e77345a45034ec8">kExposureAdapt</a></td></tr>
+<tr class="separator:a69c42e0740c6c8357e77345a45034ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec2703e5074098e97e7ef3535dcd5c0" id="r_a6ec2703e5074098e97e7ef3535dcd5c0"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a6ec2703e5074098e97e7ef3535dcd5c0">kExposureApply</a></td></tr>
+<tr class="separator:a6ec2703e5074098e97e7ef3535dcd5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76c1c22b1d9e4505f29acb1032278e8" id="r_af76c1c22b1d9e4505f29acb1032278e8"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#af76c1c22b1d9e4505f29acb1032278e8">kDepthPyramidDownsample</a></td></tr>
+<tr class="separator:af76c1c22b1d9e4505f29acb1032278e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c" id="r_a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">kFxaa</a></td></tr>
+<tr class="separator:a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c607b715d26413492406ecdcfc4911" id="r_aa9c607b715d26413492406ecdcfc4911"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#aa9c607b715d26413492406ecdcfc4911">kNfaa</a></td></tr>
+<tr class="separator:aa9c607b715d26413492406ecdcfc4911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a829ab257b90632a3ce2daec1bfad48a6" id="r_a829ab257b90632a3ce2daec1bfad48a6"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a829ab257b90632a3ce2daec1bfad48a6">kTaa</a></td></tr>
+<tr class="separator:a829ab257b90632a3ce2daec1bfad48a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a290c0f6523bc0b3fd8870380ab4fb63c" id="r_a290c0f6523bc0b3fd8870380ab4fb63c"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a290c0f6523bc0b3fd8870380ab4fb63c">kSmaa</a></td></tr>
+<tr class="separator:a290c0f6523bc0b3fd8870380ab4fb63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e1ff1bcb27f1299557a1c696709e46" id="r_ae5e1ff1bcb27f1299557a1c696709e46"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ae5e1ff1bcb27f1299557a1c696709e46">kSsaa</a></td></tr>
+<tr class="separator:ae5e1ff1bcb27f1299557a1c696709e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12682c96b4cefb7b791aa21a4ddac3a" id="r_af12682c96b4cefb7b791aa21a4ddac3a"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#af12682c96b4cefb7b791aa21a4ddac3a">kOutline</a></td></tr>
+<tr class="separator:af12682c96b4cefb7b791aa21a4ddac3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16fc0c9b62383db5cf0baa45ad31b69a" id="r_a16fc0c9b62383db5cf0baa45ad31b69a"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a16fc0c9b62383db5cf0baa45ad31b69a">kReflectionProbeFilterWgsl</a></td></tr>
+<tr class="separator:a16fc0c9b62383db5cf0baa45ad31b69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc7a7fd11acb7d6b81aae8d17f64169" id="r_aecc7a7fd11acb7d6b81aae8d17f64169"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#aecc7a7fd11acb7d6b81aae8d17f64169">kScreenEffectCommon</a></td></tr>
+<tr class="separator:aecc7a7fd11acb7d6b81aae8d17f64169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf6bcf52aa00607c81a84234c8d15ae4" id="r_adf6bcf52aa00607c81a84234c8d15ae4"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#adf6bcf52aa00607c81a84234c8d15ae4">kSsgi</a></td></tr>
+<tr class="separator:adf6bcf52aa00607c81a84234c8d15ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f52b0fe98d05eddc295fda81bf487a4" id="r_a0f52b0fe98d05eddc295fda81bf487a4"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0f52b0fe98d05eddc295fda81bf487a4">kSsr</a></td></tr>
+<tr class="separator:a0f52b0fe98d05eddc295fda81bf487a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e53f17cf6d6b90a73da06692f6626c3" id="r_a8e53f17cf6d6b90a73da06692f6626c3"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a8e53f17cf6d6b90a73da06692f6626c3">kSsrTemporal</a></td></tr>
+<tr class="separator:a8e53f17cf6d6b90a73da06692f6626c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10858fd5880e30c4c7c7841fc915834d" id="r_a10858fd5880e30c4c7c7841fc915834d"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a10858fd5880e30c4c7c7841fc915834d">kVolCommon</a></td></tr>
+<tr class="separator:a10858fd5880e30c4c7c7841fc915834d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0669d82a8e6766d6ce73fd9431399821" id="r_a0669d82a8e6766d6ce73fd9431399821"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0669d82a8e6766d6ce73fd9431399821">kVolScreen</a></td></tr>
+<tr class="separator:a0669d82a8e6766d6ce73fd9431399821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2adcadb76c3c9c93cfdd0f05b5c9d270" id="r_a2adcadb76c3c9c93cfdd0f05b5c9d270"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a2adcadb76c3c9c93cfdd0f05b5c9d270">kVolRay</a></td></tr>
+<tr class="separator:a2adcadb76c3c9c93cfdd0f05b5c9d270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb9d784fda1ecb288deddb4776d22000" id="r_afb9d784fda1ecb288deddb4776d22000"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#afb9d784fda1ecb288deddb4776d22000">kVolFog</a></td></tr>
+<tr class="separator:afb9d784fda1ecb288deddb4776d22000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94f21b098b2a1add66b32903bf54fe80" id="r_a94f21b098b2a1add66b32903bf54fe80"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a94f21b098b2a1add66b32903bf54fe80">kVolCloud</a></td></tr>
+<tr class="separator:a94f21b098b2a1add66b32903bf54fe80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f1fb19ef9e1c425457e28843ea0bd5" id="r_ab8f1fb19ef9e1c425457e28843ea0bd5"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ab8f1fb19ef9e1c425457e28843ea0bd5">kVolFroxel</a></td></tr>
+<tr class="separator:ab8f1fb19ef9e1c425457e28843ea0bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67efba44f21f59e2564d70fd8ee9aea0" id="r_a67efba44f21f59e2564d70fd8ee9aea0"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a67efba44f21f59e2564d70fd8ee9aea0">kWaterfallFragWgsl</a></td></tr>
+<tr class="separator:a67efba44f21f59e2564d70fd8ee9aea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0ed09ecf18bfab93d495860ba8d4717" id="r_ad0ed09ecf18bfab93d495860ba8d4717"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ad0ed09ecf18bfab93d495860ba8d4717">kWaterFragWgsl</a></td></tr>
+<tr class="separator:ad0ed09ecf18bfab93d495860ba8d4717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a9b25ed3076559152d746fe497ae108c0" name="a9b25ed3076559152d746fe497ae108c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b25ed3076559152d746fe497ae108c0">&#9670;&#160;</a></span>kAoCommon</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kAoCommon</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };</span></div>
+<div class="line"><span class="stringliteral">struct Externals { data: array&lt;vec4f, 8&gt; };</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0) var mainTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(1) var normalTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var mainSamp: sampler;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(4) var&lt;uniform&gt; u: Externals;</span></div>
+<div class="line"><span class="stringliteral">fn p(i: u32) -&gt; f32 { return u.data[i / 4u][i % 4u]; }</span></div>
+<div class="line"><span class="stringliteral">fn inv_vp() -&gt; mat4x4f { return mat4x4f(u.data[0], u.data[1], u.data[2], u.data[3]); }</span></div>
+<div class="line"><span class="stringliteral">fn depth(uv: vec2f) -&gt; f32 { return textureSampleLevel(mainTex, mainSamp, clamp(uv, vec2f(0), vec2f(1)), 0).r; }</span></div>
+<div class="line"><span class="stringliteral">fn normal_load(uv:vec2f)-&gt;vec3f{let d=textureDimensions(normalTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(normalTex,clamp(q,vec2i(0),vec2i(d)-1),0).xyz;}</span></div>
+<div class="line"><span class="stringliteral">fn world(m: mat4x4f, uv: vec2f, z: f32) -&gt; vec3f {</span></div>
+<div class="line"><span class="stringliteral">  let h = m * vec4f(uv * 2 - 1, clamp(z, 0, 1), 1);</span></div>
+<div class="line"><span class="stringliteral">  return h.xyz / max(h.w, 0.000001);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">fn hash12(q: vec2f) -&gt; f32 {</span></div>
+<div class="line"><span class="stringliteral">  var q3 = fract(vec3f(q.x, q.y, q.x) * 0.1031);</span></div>
+<div class="line"><span class="stringliteral">  q3 += dot(q3, q3.yzx + 33.33);</span></div>
+<div class="line"><span class="stringliteral">  return fract((q3.x + q3.y) * q3.z);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e88e3b0592509e279ee8795819a5d92" name="a0e88e3b0592509e279ee8795819a5d92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e88e3b0592509e279ee8795819a5d92">&#9670;&#160;</a></span>kBloomDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kBloomDownsample</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn bloom_luma(c:vec3f)-&gt;f32{return dot(c,vec3f(.2126,.7152,.0722));}</span></div>
+<div class="line"><span class="stringliteral">fn bloom_prefilter(c0:vec3f)-&gt;vec3f{let c=max(c0,vec3f(0));let threshold=max(p(3),0);let knee=max(p(4),.0001);let brightness=max(c.r,max(c.g,c.b));let soft=clamp((brightness-threshold+knee)/(2*knee),0,1);let contribution=max(brightness-threshold,0)+soft*soft*knee;return c*(contribution/max(brightness,.0001));}</span></div>
+<div class="line"><span class="stringliteral">fn bloom_sample(uv:vec2f)-&gt;vec3f{let c=tex(uv).rgb;return select(c,bloom_prefilter(c),p(2)&gt;.5);}</span></div>
+<div class="line"><span class="stringliteral">fn bloom_karis(a:vec3f,b:vec3f,c:vec3f,d:vec3f)-&gt;vec3f{let w=vec4f(1/(1+bloom_luma(a)),1/(1+bloom_luma(b)),1/(1+bloom_luma(c)),1/(1+bloom_luma(d)));return (a*w.x+b*w.y+c*w.z+d*w.w)/max(dot(w,vec4f(1)),.0001);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let center=bloom_sample(i.uv);let inner=bloom_karis(bloom_sample(i.uv+t*vec2f(-1,-1)),bloom_sample(i.uv+t*vec2f(1,-1)),bloom_sample(i.uv+t*vec2f(-1,1)),bloom_sample(i.uv+t*vec2f(1,1)));let outer=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,-2)),bloom_sample(i.uv+t*vec2f(2,-2)),bloom_sample(i.uv+t*vec2f(-2,2)),bloom_sample(i.uv+t*vec2f(2,2)));let axial=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,0)),bloom_sample(i.uv+t*vec2f(2,0)),bloom_sample(i.uv+t*vec2f(0,-2)),bloom_sample(i.uv+t*vec2f(0,2)));return vec4f((center*.25+inner*.5+(outer+axial)*.125)*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bloom_8cpp_source.html#l00035">eve::graphics::Bloom::Bloom()</a>.</p>
+
+</div>
+</div>
+<a id="a1ec546775e3f211ba56f19855b16aa4e" name="a1ec546775e3f211ba56f19855b16aa4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ec546775e3f211ba56f19855b16aa4e">&#9670;&#160;</a></span>kBloomUpsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kBloomUpsample</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1))*max(p(2),.5);var c=tex(i.uv).rgb*4;c+=tex(i.uv+vec2f(-t.x,0)).rgb*2;c+=tex(i.uv+vec2f(t.x,0)).rgb*2;c+=tex(i.uv+vec2f(0,-t.y)).rgb*2;c+=tex(i.uv+vec2f(0,t.y)).rgb*2;c+=tex(i.uv+vec2f(-t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(-t.x,t.y)).rgb;c+=tex(i.uv+vec2f(t.x,t.y)).rgb;return vec4f(c*(1.0/16.0)*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bloom_8cpp_source.html#l00035">eve::graphics::Bloom::Bloom()</a>.</p>
+
+</div>
+</div>
+<a id="a4fbc502c65cbb465675be9f62cccc34d" name="a4fbc502c65cbb465675be9f62cccc34d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fbc502c65cbb465675be9f62cccc34d">&#9670;&#160;</a></span>kBlur</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kBlur</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let tw=max(p(0),.00001);let th=max(p(1),.00001);let ds=max(p(2),.0001);let k=clamp(p(3),1,4);</span></div>
+<div class="line"><span class="stringliteral"> let c=textureSampleLevel(mainTex,mainSamp,i.uv,0);var sum=c.r;var ws=1.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var y=-2;y&lt;=2;y++){for(var x=-2;x&lt;=2;x++){if x==0&amp;&amp;y==0{continue;}let d=length(vec2f(f32(x),f32(y)));if d&gt;k+.1{continue;}</span></div>
+<div class="line"><span class="stringliteral">  let s=textureSampleLevel(mainTex,mainSamp,clamp(i.uv+vec2f(f32(x)*tw,f32(y)*th),vec2f(0),vec2f(1)),0);let dz=abs(s.a-c.a);</span></div>
+<div class="line"><span class="stringliteral">  let w=exp(-d*d/(2*k*k))*exp(-(dz*dz)/(2*ds*ds));sum+=s.r*w;ws+=w;}}</span></div>
+<div class="line"><span class="stringliteral"> let ao=sum/max(ws,.00001);return vec4f(ao,ao,ao,c.a)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af76c1c22b1d9e4505f29acb1032278e8" name="af76c1c22b1d9e4505f29acb1032278e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76c1c22b1d9e4505f29acb1032278e8">&#9670;&#160;</a></span>kDepthPyramidDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kDepthPyramidDownsample</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn depth_range(uv:vec2f)-&gt;vec2f{let v=tex(uv);return select(v.rg,vec2f(v.r),p(2)&gt;.5);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let a=depth_range(i.uv+t*vec2f(-.5,-.5));let b=depth_range(i.uv+t*vec2f(.5,-.5));let c=depth_range(i.uv+t*vec2f(-.5,.5));let d=depth_range(i.uv+t*vec2f(.5,.5));return vec4f(min(min(a.x,b.x),min(c.x,d.x)),max(max(a.y,b.y),max(c.y,d.y)),0,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DepthPyramid_8cpp_source.html#l00026">eve::graphics::DepthPyramid::DepthPyramid()</a>.</p>
+
+</div>
+</div>
+<a id="a69c42e0740c6c8357e77345a45034ec8" name="a69c42e0740c6c8357e77345a45034ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c42e0740c6c8357e77345a45034ec8">&#9670;&#160;</a></span>kExposureAdapt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kExposureAdapt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let target=max(tex(vec2f(.5)).r,.00001);let previous=max(aux_load(vec2f(.5)).r,.00001);let speed=select(max(p(2),0),max(p(1),0),target&gt;previous);let blend=select(1-exp(-speed*max(p(0),0)),1.0,p(3)&gt;.5);let exposure=mix(previous,target,clamp(blend,0,1));return vec4f(exposure,log2(exposure),0,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Exposure_8cpp_source.html#l00037">eve::graphics::Exposure::Exposure()</a>.</p>
+
+</div>
+</div>
+<a id="a6ec2703e5074098e97e7ef3535dcd5c0" name="a6ec2703e5074098e97e7ef3535dcd5c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec2703e5074098e97e7ef3535dcd5c0">&#9670;&#160;</a></span>kExposureApply</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kExposureApply</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let hdr=tex(i.uv);let automatic=select(1.0,aux_load(vec2f(.5)).r,p(1)&gt;.5);return vec4f(hdr.rgb*max(p(0),0)*automatic,hdr.a);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Exposure_8cpp_source.html#l00037">eve::graphics::Exposure::Exposure()</a>.</p>
+
+</div>
+</div>
+<a id="a3daba0218612110801a339aebf74e712" name="a3daba0218612110801a339aebf74e712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3daba0218612110801a339aebf74e712">&#9670;&#160;</a></span>kExposureMeter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kExposureMeter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn exposure_luma(c:vec3f)-&gt;f32{return max(dot(max(c,vec3f(0)),vec3f(.2126,.7152,.0722)),.00001);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{var v:array&lt;f32,16&gt;;var n=0;for(var y=0;y&lt;4;y++){for(var x=0;x&lt;4;x++){let uv=(vec2f(f32(x),f32(y))+.5)*.25;v[n]=log2(exposure_luma(tex(uv).rgb));n++;}}for(var a=1;a&lt;16;a++){let value=v[a];var b=a-1;loop{if b&lt;0||v[b]&lt;=value{break;}v[b+1]=v[b];b--;}v[b+1]=value;}var average=0.0;for(var q=2;q&lt;14;q++){average+=v[q];}average/=12;let ev=clamp(log2(.18)-average,p(0),p(1));return vec4f(exp2(ev),ev,0,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Exposure_8cpp_source.html#l00037">eve::graphics::Exposure::Exposure()</a>.</p>
+
+</div>
+</div>
+<a id="ae2242835a24a1437c7632ebc5960dbc2" name="ae2242835a24a1437c7632ebc5960dbc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2242835a24a1437c7632ebc5960dbc2">&#9670;&#160;</a></span>kFromDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kFromDepth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><span class="stringliteral"> let m=inv_vp();let nz=max(p(16),.001);let fz=max(p(17),nz+.001);let r=max(p(18),.0001);let bias=max(p(19),0);let count=i32(clamp(p(22),4,24));</span></div>
+<div class="line"><span class="stringliteral"> let tw=max(p(23),.00001);let th=max(p(24),.00001);let z=depth(i.uv);if z&gt;=.9999{return vec4f(0);}let pos=world(m,i.uv,z);</span></div>
+<div class="line"><span class="stringliteral"> var n:vec3f;if p(25)&gt;.5{let q=normal_load(i.uv)*2-1;n=normalize(select(vec3f(0,1,0),q,length(q)&gt;.001));}</span></div>
+<div class="line"><span class="stringliteral"> else{n=normalize(cross(world(m,i.uv+vec2f(tw,0),depth(i.uv+vec2f(tw,0)))-pos,world(m,i.uv+vec2f(0,th),depth(i.uv+vec2f(0,th)))-pos));}</span></div>
+<div class="line"><span class="stringliteral"> let eh=m*vec4f(0,0,0,1);if dot(n,eh.xyz/max(eh.w,.000001)-pos)&lt;0{n=-n;}var occ=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var s=1;s&lt;=24;s++){if s&gt;count{break;}let a=f32(s)*2.39996323;let q=f32(s)/f32(count);let uv=clamp(i.uv+vec2f(cos(a),sin(a))*q*r/max(mix(nz,fz,z),.001)*.25,vec2f(0),vec2f(1));</span></div>
+<div class="line"><span class="stringliteral">  let sz=depth(uv);let d=world(m,uv,sz)-pos;let l=length(d);if l&gt;.00001&amp;&amp;l&lt;r&amp;&amp;dot(n,d/l)&gt;bias&amp;&amp;sz&lt;z-bias{occ+=1-l/r;}}</span></div>
+<div class="line"><span class="stringliteral"> var ao=1-occ/f32(max(count,1));ao=clamp(pow(max(ao,0),max(p(21),.01)),0,1);let dark=clamp((1-ao)*max(p(20),0),0,1);return vec4f(0,0,0,dark)*i.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c" name="a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">&#9670;&#160;</a></span>kFxaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kFxaa</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><span class="stringliteral"> let t=vec2f(p(0),p(1));let c=tex(i.uv);let lm=luma(c.rgb);let n=luma(tex(i.uv-vec2f(0,t.y)).rgb);let s=luma(tex(i.uv+vec2f(0,t.y)).rgb);</span></div>
+<div class="line"><span class="stringliteral"> let e=luma(tex(i.uv+vec2f(t.x,0)).rgb);let w=luma(tex(i.uv-vec2f(t.x,0)).rgb);let lo=min(lm,min(min(n,s),min(e,w)));let hi=max(lm,max(max(n,s),max(e,w)));</span></div>
+<div class="line"><span class="stringliteral"> let range=hi-lo;if range&lt;max(max(p(3),0),hi*max(p(2),.0001)){return vec4f(c.rgb*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral"> let gx=e-w;let gy=s-n;let tangent=normalize(vec2f(-gy,gx)+vec2f(.000001));let amount=clamp(range/max(hi,.00001)*clamp(p(4),0,1),0,.75);</span></div>
+<div class="line"><span class="stringliteral"> let a=tex(i.uv-tangent*t*.75).rgb;let b=tex(i.uv+tangent*t*.75).rgb;return vec4f(mix(c.rgb,(a+b)*.5,amount)*i.color.rgb,1);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a905099afe0ab9b4588616b2c2126544b" name="a905099afe0ab9b4588616b2c2126544b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905099afe0ab9b4588616b2c2126544b">&#9670;&#160;</a></span>kGrassFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kGrassFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrassWgsl_8h_source.html">GrassWgsl.h</a> 第 <a class="el" href="GrassWgsl_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00348">eve::graphics::grass::createShader()</a>.</p>
+
+</div>
+</div>
+<a id="a283327a8a239d75594031e6ee209f3de" name="a283327a8a239d75594031e6ee209f3de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a283327a8a239d75594031e6ee209f3de">&#9670;&#160;</a></span>kGrassVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kGrassVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrassWgsl_8h_source.html">GrassWgsl.h</a> 第 <a class="el" href="GrassWgsl_8h_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00348">eve::graphics::grass::createShader()</a>.</p>
+
+</div>
+</div>
+<a id="a5cedfb82c8138d463a779a57730b709b" name="a5cedfb82c8138d463a779a57730b709b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cedfb82c8138d463a779a57730b709b">&#9670;&#160;</a></span>kGtao</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kGtao</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn integrate(a:f32,b:f32)-&gt;f32{return clamp(.25*(-cos(2*b)+cos(2*a)+2*(b-a)),0,1);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><span class="stringliteral"> let m=inv_vp();let nz=max(p(16),.001);let fz=max(p(17),nz+.001);let r=max(p(18),.0001);let bias=max(p(19),0);</span></div>
+<div class="line"><span class="stringliteral"> let dirs=i32(clamp(p(22),2,8));let steps=i32(clamp(p(23),2,8));let tw=max(p(24),.00001);let th=max(p(25),.00001);let thick=max(p(26),r*.5);</span></div>
+<div class="line"><span class="stringliteral"> let z=depth(i.uv);if z&gt;=.999||z&lt;=.00001{return vec4f(1,1,1,z);}let pos=world(m,i.uv,z);</span></div>
+<div class="line"><span class="stringliteral"> var n=normalize(cross(world(m,i.uv+vec2f(tw,0),depth(i.uv+vec2f(tw,0)))-pos,world(m,i.uv+vec2f(0,th),depth(i.uv+vec2f(0,th)))-pos));</span></div>
+<div class="line"><span class="stringliteral"> let eh=m*vec4f(0,0,0,1);if dot(n,eh.xyz/max(eh.w,.000001)-pos)&lt;0{n=-n;}let sr=clamp(r/max(mix(nz,fz,z),.001)*.4,tw*4,.25);</span></div>
+<div class="line"><span class="stringliteral"> let rnd=hash12(i.uv*vec2f(640,480));let hp=-1.5707963+bias;var vis=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var d=0;d&lt;8;d++){if d&gt;=dirs{break;}let a=(f32(d)+rnd)/f32(dirs)*3.14159265;let dir=vec2f(cos(a),sin(a));var h1=hp;var h2=hp;</span></div>
+<div class="line"><span class="stringliteral">  for(var s=1;s&lt;=8;s++){if s&gt;steps{break;}let q=sr*f32(s)/f32(steps);</span></div>
+<div class="line"><span class="stringliteral">   let dp=world(m,i.uv+dir*q,depth(i.uv+dir*q))-pos;let dn=world(m,i.uv-dir*q,depth(i.uv-dir*q))-pos;let lp=length(dp);let ln=length(dn);</span></div>
+<div class="line"><span class="stringliteral">   if lp&gt;.0001&amp;&amp;lp&lt;r{h1=max(h1,mix(-1.5707963,asin(clamp(dot(normalize(dp),n),-1,1)),1-lp/r));}</span></div>
+<div class="line"><span class="stringliteral">   if ln&gt;.0001&amp;&amp;ln&lt;r{h2=max(h2,mix(-1.5707963,asin(clamp(dot(normalize(dn),n),-1,1)),1-ln/r));}}</span></div>
+<div class="line"><span class="stringliteral">  let c=.5*(integrate(-1.5707963,clamp(h1,-1.5707963,1.5707963))+integrate(-1.5707963,clamp(h2,-1.5707963,1.5707963)));</span></div>
+<div class="line"><span class="stringliteral">  let thin=smoothstep(0,1,(h1+h2+3.14159265)/max(thick/max(r,.001),.001));vis+=mix(c,max(c,.85),.2*(1-thin));}</span></div>
+<div class="line"><span class="stringliteral"> vis/=f32(max(dirs,1));var ao=clamp(pow(max(vis,0),max(p(21),.01)),0,1);ao=mix(1,ao,clamp(p(20),0,2));return vec4f(ao,ao,ao,z)*i.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a230066628572f3108edc90ff3c976e3c" name="a230066628572f3108edc90ff3c976e3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a230066628572f3108edc90ff3c976e3c">&#9670;&#160;</a></span>kHairFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kHairFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct Light3D{posRadius:vec4f,color:vec4f};struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array&lt;Light3D,8&gt;,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f};struct Params{data:array&lt;vec4f,8&gt;};</span></div>
+<div class="line"><span class="stringliteral">struct FSIn{@location(0)vNormal:vec3f,@location(1)vUV:vec2f,@location(2)vTint:vec4f,@location(3)vWorldPos:vec3f,@location(4)vCameraPos:vec3f,@location(5)vViewPos:vec3f,@builtin(position)fragCoord:vec4f};</span></div>
+<div class="line"><span class="stringliteral">@group(0)@binding(0)var&lt;uniform&gt;ubo:Frame;@group(0)@binding(1)var albedo:texture_2d&lt;f32&gt;;@group(0)@binding(7)var samp:sampler;@group(0)@binding(15)var&lt;uniform&gt;hp:Params;fn p(i:u32)-&gt;f32{return hp.data[i/4u][i%4u];}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let base=textureSample(albedo,samp,i.vUV)*i.vTint;if base.a&lt;p(4){discard;}let n=normalize(i.vNormal);let v=normalize(i.vCameraPos-i.vWorldPos);let l=normalize(ubo.lightDir.xyz);var t=vec3f(p(6),p(7),p(8));if length(t)&lt;.001{t=normalize(cross(n,vec3f(.001,1,0)));}else{t=normalize(t-n*dot(t,n));}let h=normalize(v+l);let a=normalize(t+n*p(2));let b=normalize(t+n*p(3));let s1=pow(sqrt(max(1-dot(a,h)*dot(a,h),0)),max(p(0),1))*max(p(1),0);let s2=pow(sqrt(max(1-dot(b,h)*dot(b,h),0)),max(p(0)*.5,1))*max(p(1),0)*.5;let diffuse=max(dot(n,l),0)*.65+.35;let rim=pow(1-max(dot(n,v),0),2)*max(p(5),0);let rgb=base.rgb*(ubo.ambient.rgb+ubo.lightColor.rgb*diffuse)+ubo.lightColor.rgb*(s1+s2+rim);return vec4f(rgb,base.a);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="HairWgsl_8h_source.html">HairWgsl.h</a> 第 <a class="el" href="HairWgsl_8h_source.html#l00003">3</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairShader_8cpp_source.html#l00051">eve::graphics::hair::createShader()</a>.</p>
+
+</div>
+</div>
+<a id="ad82abca402965d1b97d715747438a803" name="ad82abca402965d1b97d715747438a803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad82abca402965d1b97d715747438a803">&#9670;&#160;</a></span>kHbao</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kHbao</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral"> let m=inv_vp(); let nz=max(p(16),.001); let fz=max(p(17),nz+.001); let r=max(p(18),.0001);</span></div>
+<div class="line"><span class="stringliteral"> let bias=max(p(19),0); let dirs=i32(clamp(p(22),2,8)); let steps=i32(clamp(p(23),2,8));</span></div>
+<div class="line"><span class="stringliteral"> let tw=max(p(24),.00001); let th=max(p(25),.00001); let z=depth(i.uv); if z&gt;=.999||z&lt;=.00001{return vec4f(1,1,1,z);}</span></div>
+<div class="line"><span class="stringliteral"> let pos=world(m,i.uv,z); var n=normalize(cross(world(m,i.uv+vec2f(tw,0),depth(i.uv+vec2f(tw,0)))-pos,world(m,i.uv+vec2f(0,th),depth(i.uv+vec2f(0,th)))-pos));</span></div>
+<div class="line"><span class="stringliteral"> let eh=m*vec4f(0,0,0,1); if dot(n,eh.xyz/max(eh.w,.000001)-pos)&lt;0{n=-n;}</span></div>
+<div class="line"><span class="stringliteral"> let sr=clamp(r/max(mix(nz,fz,z),.001)*.35,tw*4,.25); let rnd=hash12(i.uv*vec2f(900,700)); var sum=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var d=0;d&lt;8;d++){if d&gt;=dirs{break;} let a=(f32(d)+rnd)/f32(dirs)*6.2831853; let dir=vec2f(cos(a),sin(a)); var h=bias;</span></div>
+<div class="line"><span class="stringliteral">  for(var s=1;s&lt;=8;s++){if s&gt;steps{break;} let uv=i.uv+dir*sr*f32(s)/f32(steps); let delta=world(m,uv,depth(uv))-pos; let dist=length(delta);</span></div>
+<div class="line"><span class="stringliteral">   if dist&gt;.00001&amp;&amp;dist&lt;r {h=max(h,dot(normalize(delta),n)*(1-clamp(dist/r,0,1)));}}</span></div>
+<div class="line"><span class="stringliteral">  sum+=1-clamp(h,0,1);</span></div>
+<div class="line"><span class="stringliteral"> }</span></div>
+<div class="line"><span class="stringliteral"> var ao=sum/f32(max(dirs,1)); ao=clamp(pow(max(ao,0),max(p(21),.01)),0,1); ao=mix(1,ao,clamp(p(20),0,2)); return vec4f(ao,ao,ao,z)*i.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9c607b715d26413492406ecdcfc4911" name="aa9c607b715d26413492406ecdcfc4911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9c607b715d26413492406ecdcfc4911">&#9670;&#160;</a></span>kNfaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kNfaa</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let c=tex(i.uv).rgb;</span></div>
+<div class="line"><span class="stringliteral"> let g=vec2f(luma(tex(i.uv+vec2f(t.x,0)).rgb)-luma(tex(i.uv-vec2f(t.x,0)).rgb),luma(tex(i.uv+vec2f(0,t.y)).rgb)-luma(tex(i.uv-vec2f(0,t.y)).rgb));</span></div>
+<div class="line"><span class="stringliteral"> let gl=length(g);if gl&lt;.00001{return vec4f(c*i.color.rgb,1);}let tangent=vec2f(-g.y,g.x)/gl;let amt=clamp(p(2),0,2)*pow(clamp(gl*4,0,1),max(p(3),.1));let o=tangent*t*clamp(p(4),.5,2.5)*amt;</span></div>
+<div class="line"><span class="stringliteral"> let f=(tex(i.uv-o*1.5).rgb+2*tex(i.uv-o*.5).rgb+2*c+2*tex(i.uv+o*.5).rgb+tex(i.uv+o*1.5).rgb)/8;</span></div>
+<div class="line"><span class="stringliteral"> return vec4f(mix(c,f,clamp(amt,0,1))*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af12682c96b4cefb7b791aa21a4ddac3a" name="af12682c96b4cefb7b791aa21a4ddac3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12682c96b4cefb7b791aa21a4ddac3a">&#9670;&#160;</a></span>kOutline</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kOutline</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn aux(uv:vec2f)-&gt;vec3f{let n=aux_load(uv).xyz*2-1;return select(vec3f(0,0,1),normalize(n),length(n)&gt;.001);}</span></div>
+<div class="line"><span class="stringliteral">fn viewz(z:f32)-&gt;f32{let n=max(p(10),.0001);let f=max(p(11),n+.001);return n*f/max(f-z*(f-n),.000001);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let color=vec3f(p(5),p(6),p(7));let z=tex(i.uv).r;if z&gt;=.9999{return vec4f(color,0);}let t=vec2f(max(p(8),.00001),max(p(9),.00001))*max(p(0),.5);let nc=aux(i.uv);let dc=viewz(z);var de=0.0;var ne=0.0;</span></div>
+<div class="line"><span class="stringliteral"> let offsets=array&lt;vec2f,8&gt;(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1),vec2f(.707,.707),vec2f(-.707,-.707),vec2f(-.707,.707),vec2f(.707,-.707));</span></div>
+<div class="line"><span class="stringliteral"> for(var q=0;q&lt;8;q++){let uv=i.uv+offsets[q]*t;let cut=max(p(1),0)+dc*max(p(2),0);let dd=abs(dc-viewz(tex(uv).r));let soft=clamp(p(4),0,1);de=max(de,smoothstep(cut*(1-soft),cut,dd));ne=max(ne,1-clamp(dot(nc,aux(uv)),-1,1));}</span></div>
+<div class="line"><span class="stringliteral"> let nt=clamp(p(3),0,2);let edge=max(de,smoothstep(nt*(1-clamp(p(4),0,1)),nt+clamp(p(4),0,1),ne));return vec4f(color,clamp(edge,0,1))*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a483922e3d7b9763d240dd444f7c18710" name="a483922e3d7b9763d240dd444f7c18710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a483922e3d7b9763d240dd444f7c18710">&#9670;&#160;</a></span>kOverlay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kOverlay</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{var ao=depth(i.uv);ao=clamp(pow(max(ao,0),max(p(1),.01)),0,1);let d=clamp((1-ao)*max(p(0),0),0,1);return vec4f(0,0,0,d)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a87e44df5de06ff0e3adf232080ea4b" name="a5a87e44df5de06ff0e3adf232080ea4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a87e44df5de06ff0e3adf232080ea4b">&#9670;&#160;</a></span>kPostCommon</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kPostCommon</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };</span></div>
+<div class="line"><span class="stringliteral">struct Externals { data: array&lt;vec4f, 8&gt; };</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0) var mainTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(1) var auxTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var samp: sampler;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(4) var&lt;uniform&gt; u: Externals;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(5) var motionTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(6) var motionSamp: sampler;</span></div>
+<div class="line"><span class="stringliteral">fn p(i:u32)-&gt;f32{return u.data[i/4u][i%4u];}</span></div>
+<div class="line"><span class="stringliteral">fn tex(uv:vec2f)-&gt;vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}</span></div>
+<div class="line"><span class="stringliteral">fn luma(c:vec3f)-&gt;f32{return dot(c,vec3f(.299,.587,.114));}</span></div>
+<div class="line"><span class="stringliteral">fn aux_load(uv:vec2f)-&gt;vec4f{let d=textureDimensions(auxTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(auxTex,clamp(q,vec2i(0),vec2i(d)-1),0);}</span></div>
+<div class="line"><span class="stringliteral">fn motion_load(uv:vec2f)-&gt;vec4f{return textureSampleLevel(motionTex,motionSamp,clamp(uv,vec2f(0),vec2f(1)),0);}</span></div>
+<div class="line"><span class="stringliteral">fn cubic_weights(t:f32)-&gt;vec4f{let t2=t*t;let t3=t2*t;return vec4f(-.5*t+t2-.5*t3,1-2.5*t2+1.5*t3,.5*t+2*t2-1.5*t3,-.5*t2+.5*t3);}</span></div>
+<div class="line"><span class="stringliteral">fn aux_cubic(uv:vec2f)-&gt;vec4f{let size=vec2f(textureDimensions(auxTex));let position=uv*size-.5;let base=floor(position);let f=fract(position);let wx=cubic_weights(f.x);let wy=cubic_weights(f.y);var result=vec4f(0);for(var y=0;y&lt;4;y++){for(var x=0;x&lt;4;x++){let suv=(base+vec2f(f32(x-1),f32(y-1))+.5)/size;result+=textureSampleLevel(auxTex,samp,clamp(suv,vec2f(0),vec2f(1)),0)*wx[x]*wy[y];}}return result;}</span></div>
+<div class="line"><span class="stringliteral">fn rgb_to_ycocg(c:vec3f)-&gt;vec3f{return vec3f(c.r*.25+c.g*.5+c.b*.25,c.r*.5-c.b*.5,-c.r*.25+c.g*.5-c.b*.25);}</span></div>
+<div class="line"><span class="stringliteral">fn ycocg_to_rgb(c:vec3f)-&gt;vec3f{return vec3f(c.x+c.y-c.z,c.x+c.z,c.x-c.y-c.z);}</span></div>
+<div class="line"><span class="stringliteral">fn hdr_ycocg(c:vec3f)-&gt;vec3f{let q=rgb_to_ycocg(max(c,vec3f(0)));let r=1+max(q.x,0);return vec3f(log2(r),q.yz/r);}</span></div>
+<div class="line"><span class="stringliteral">fn hdr_rgb(c:vec3f)-&gt;vec3f{let y=max(exp2(c.x)-1,0);let r=1+y;return max(ycocg_to_rgb(vec3f(y,c.yz*r)),vec3f(0));}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DepthPyramid_8cpp_source.html#l00026">eve::graphics::DepthPyramid::DepthPyramid()</a>.</p>
+
+</div>
+</div>
+<a id="a16fc0c9b62383db5cf0baa45ad31b69a" name="a16fc0c9b62383db5cf0baa45ad31b69a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16fc0c9b62383db5cf0baa45ad31b69a">&#9670;&#160;</a></span>kReflectionProbeFilterWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kReflectionProbeFilterWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeWgsl_8h_source.html">ReflectionProbeWgsl.h</a> 第 <a class="el" href="ReflectionProbeWgsl_8h_source.html#l00006">6</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aecc7a7fd11acb7d6b81aae8d17f64169" name="aecc7a7fd11acb7d6b81aae8d17f64169"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc7a7fd11acb7d6b81aae8d17f64169">&#9670;&#160;</a></span>kScreenEffectCommon</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kScreenEffectCommon</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };</span></div>
+<div class="line"><span class="stringliteral">struct Externals { data: array&lt;vec4f,8&gt; };</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0) var mainTex:texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(1) var depthTex:texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var samp:sampler;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(4) var&lt;uniform&gt; u:Externals;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(5) var normalTex:texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(6) var normalSamp:sampler;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(7) var albedoTex:texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(8) var albedoSamp:sampler;</span></div>
+<div class="line"><span class="stringliteral">fn p(i:u32)-&gt;f32{return u.data[i/4u][i%4u];}</span></div>
+<div class="line"><span class="stringliteral">fn invvp()-&gt;mat4x4f{return mat4x4f(u.data[0],u.data[1],u.data[2],u.data[3]);}</span></div>
+<div class="line"><span class="stringliteral">fn color_at(uv:vec2f)-&gt;vec3f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0).rgb;}</span></div>
+<div class="line"><span class="stringliteral">fn depth_at(uv:vec2f)-&gt;f32{let d=textureDimensions(depthTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(depthTex,clamp(q,vec2i(0),vec2i(d)-1),0).r;}</span></div>
+<div class="line"><span class="stringliteral">fn normal_at(uv:vec2f)-&gt;vec3f{return textureSampleLevel(normalTex,normalSamp,clamp(uv,vec2f(0),vec2f(1)),0).xyz*2-1;}</span></div>
+<div class="line"><span class="stringliteral">fn pbr_at(uv:vec2f)-&gt;u32{return u32(round(textureSampleLevel(normalTex,normalSamp,clamp(uv,vec2f(0),vec2f(1)),0).a*255));}</span></div>
+<div class="line"><span class="stringliteral">fn roughness_at(uv:vec2f)-&gt;f32{return f32(pbr_at(uv)&amp;7u)/7;}</span></div>
+<div class="line"><span class="stringliteral">fn metallic_at(uv:vec2f)-&gt;f32{return f32((pbr_at(uv)&gt;&gt;3u)&amp;7u)/7;}</span></div>
+<div class="line"><span class="stringliteral">fn color_rough(uv:vec2f,r:f32)-&gt;vec3f{let d=vec2f(max(p(21),.00001),max(p(22),.00001))*(1+r*6);return color_at(uv)*.4+(color_at(uv+vec2f(d.x,0))+color_at(uv-vec2f(d.x,0))+color_at(uv+vec2f(0,d.y))+color_at(uv-vec2f(0,d.y)))*.15;}</span></div>
+<div class="line"><span class="stringliteral">fn world(m:mat4x4f,uv:vec2f,z:f32)-&gt;vec3f{let h=m*vec4f(uv*2-1,clamp(z,0,1),1);return h.xyz/max(h.w,.000001);}</span></div>
+<div class="line"><span class="stringliteral">fn history_weights(t:f32)-&gt;vec4f{let t2=t*t;let t3=t2*t;return vec4f(-.5*t+t2-.5*t3,1-2.5*t2+1.5*t3,.5*t+2*t2-1.5*t3,-.5*t2+.5*t3);}</span></div>
+<div class="line"><span class="stringliteral">fn history_cubic(uv:vec2f)-&gt;vec4f{let size=vec2f(textureDimensions(depthTex));let position=uv*size-.5;let base=floor(position);let f=fract(position);let wx=history_weights(f.x);let wy=history_weights(f.y);var result=vec4f(0);for(var y=0;y&lt;4;y++){for(var x=0;x&lt;4;x++){let suv=(base+vec2f(f32(x-1),f32(y-1))+.5)/size;result+=textureSampleLevel(depthTex,samp,clamp(suv,vec2f(0),vec2f(1)),0)*wx[x]*wy[y];}}return result;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="ScreenEffectsWgsl_8h_source.html">ScreenEffectsWgsl.h</a> 第 <a class="el" href="ScreenEffectsWgsl_8h_source.html#l00005">5</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a290c0f6523bc0b3fd8870380ab4fb63c" name="a290c0f6523bc0b3fd8870380ab4fb63c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a290c0f6523bc0b3fd8870380ab4fb63c">&#9670;&#160;</a></span>kSmaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSmaa</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let c=tex(i.uv).rgb;let m=luma(c);</span></div>
+<div class="line"><span class="stringliteral"> let dl=abs(m-luma(tex(i.uv-vec2f(t.x,0)).rgb));let dt=abs(m-luma(tex(i.uv-vec2f(0,t.y)).rgb));let dr=abs(m-luma(tex(i.uv+vec2f(t.x,0)).rgb));let db=abs(m-luma(tex(i.uv+vec2f(0,t.y)).rgb));</span></div>
+<div class="line"><span class="stringliteral"> let threshold=max(p(2),.0001);let mx=max(max(dl,dt),max(dr,db));var rgb=c;if dl&gt;=threshold&amp;&amp;dl&gt;=mx*max(p(3),0){rgb=(c+tex(i.uv-vec2f(t.x,0)).rgb)*.5;}</span></div>
+<div class="line"><span class="stringliteral"> if dt&gt;=threshold&amp;&amp;dt&gt;=mx*max(p(3),0){rgb=(rgb+tex(i.uv-vec2f(0,t.y)).rgb)*.5;}return vec4f(rgb*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5e1ff1bcb27f1299557a1c696709e46" name="ae5e1ff1bcb27f1299557a1c696709e46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5e1ff1bcb27f1299557a1c696709e46">&#9670;&#160;</a></span>kSsaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSsaa</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let radius=clamp(p(4),.5,3);let kind=i32(clamp(p(3),0,2));var sum=vec3f(0);var ws=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var y=-3;y&lt;=3;y++){for(var x=-3;x&lt;=3;x++){if abs(f32(x))&gt;radius||abs(f32(y))&gt;radius{continue;}let d2=f32(x*x+y*y);var w=1.0;if kind==1{w=max(1-abs(f32(x))/(radius+.0001),0)*max(1-abs(f32(y))/(radius+.0001),0);}if kind==2{let s=max(radius*.5,.35);w=exp(-d2/(2*s*s));}sum+=tex(i.uv+vec2f(f32(x)*t.x,f32(y)*t.y)).rgb*w;ws+=w;}}</span></div>
+<div class="line"><span class="stringliteral"> return vec4f(sum/max(ws,.0001)*i.color.rgb,1);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b69845eaf9ec26eea6cb0974bb26e9b" name="a3b69845eaf9ec26eea6cb0974bb26e9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b69845eaf9ec26eea6cb0974bb26e9b">&#9670;&#160;</a></span>kSsao</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSsao</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn kernel(i: i32) -&gt; vec3f {</span></div>
+<div class="line"><span class="stringliteral">  let f = f32(i); let z = fract(f * 0.6180339887); let a = f * 2.3999632297;</span></div>
+<div class="line"><span class="stringliteral">  let r = sqrt(max(1 - z*z, 0)) * mix(0.2, 1.0, (f + 1) / 24.0);</span></div>
+<div class="line"><span class="stringliteral">  return vec3f(cos(a)*r, sin(a)*r, z);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral">  let m=inv_vp(); let nZ=max(p(16),.001); let fZ=max(p(17),nZ+.001);</span></div>
+<div class="line"><span class="stringliteral">  let rad=max(p(18),.0001); let bias=max(p(19),0); let count=i32(clamp(p(22),4,24));</span></div>
+<div class="line"><span class="stringliteral">  let tw=max(p(23),.00001); let th=max(p(24),.00001); let z=depth(i.uv);</span></div>
+<div class="line"><span class="stringliteral">  if z&gt;=.999 || z&lt;=.00001 { return vec4f(1,1,1,z); }</span></div>
+<div class="line"><span class="stringliteral">  let pos=world(m,i.uv,z); let pr=world(m,i.uv+vec2f(tw,0),depth(i.uv+vec2f(tw,0)));</span></div>
+<div class="line"><span class="stringliteral">  let pu=world(m,i.uv+vec2f(0,th),depth(i.uv+vec2f(0,th)));</span></div>
+<div class="line"><span class="stringliteral">  var nor=normalize(cross(pr-pos,pu-pos)); let eh=m*vec4f(0,0,0,1); let cam=eh.xyz/max(eh.w,.000001);</span></div>
+<div class="line"><span class="stringliteral">  if dot(nor,cam-pos)&lt;0 { nor=-nor; }</span></div>
+<div class="line"><span class="stringliteral">  let a=hash12(i.uv*vec2f(1024,768))*6.2831853; let up=select(vec3f(0,1,0),vec3f(1,0,0),abs(nor.y)&gt;=.999);</span></div>
+<div class="line"><span class="stringliteral">  var tan=normalize(up-nor*dot(up,nor)); let bit=cross(nor,tan); tan=tan*cos(a)+bit*sin(a);</span></div>
+<div class="line"><span class="stringliteral">  let tbn=mat3x3f(tan,cross(nor,tan),nor); let rz=mix(nZ,fZ,z);</span></div>
+<div class="line"><span class="stringliteral">  let ur=clamp((rad/max(rz,.001))*.25,tw*2,.2); var occ=0.0;</span></div>
+<div class="line"><span class="stringliteral">  for(var s=0;s&lt;24;s++){ if s&gt;=count {break;} let k=kernel(s); let o=(tbn*k).xy;</span></div>
+<div class="line"><span class="stringliteral">    let uv=clamp(i.uv+normalize(o+vec2f(.00001))*ur*length(k.xy),vec2f(0),vec2f(1));</span></div>
+<div class="line"><span class="stringliteral">    let sz=depth(uv); let sp=world(m,uv,sz); let d=sp-pos; let dist=length(d);</span></div>
+<div class="line"><span class="stringliteral">    if dist&gt;.00001 { let nd=dot(nor,d/dist); let range=1-smoothstep(rad*.5,rad,dist);</span></div>
+<div class="line"><span class="stringliteral">      if nd&gt;bias &amp;&amp; mix(nZ,fZ,sz)&lt;rz-bias { occ+=range; } }</span></div>
+<div class="line"><span class="stringliteral">  }</span></div>
+<div class="line"><span class="stringliteral">  var ao=1-occ/f32(max(count,1))*clamp(p(20),0,2); ao=clamp(pow(max(ao,0),max(p(21),.01)),0,1);</span></div>
+<div class="line"><span class="stringliteral">  return vec4f(ao,ao,ao,z)*i.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="AmbientOcclusionWgsl_8h_source.html">AmbientOcclusionWgsl.h</a> 第 <a class="el" href="AmbientOcclusionWgsl_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf6bcf52aa00607c81a84234c8d15ae4" name="adf6bcf52aa00607c81a84234c8d15ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf6bcf52aa00607c81a84234c8d15ae4">&#9670;&#160;</a></span>kSsgi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSsgi</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn gi_depth(uv:vec2f,use:f32)-&gt;f32{if use&gt;.5{let levels=floor(floor(p(31))/8);let q=select(uv,vec2f(uv.x*.5,uv.y),levels&gt;.5);return depth_at(q);}return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0).a;}</span></div>
+<div class="line"><span class="stringliteral">fn gi_depth_range(uv0:vec2f,requested:i32)-&gt;vec2f{let uv=clamp(uv0,vec2f(0),vec2f(1));let levels=i32(floor(floor(p(31))/8));if levels&lt;=0{return vec2f(depth_at(uv));}let mip=clamp(requested,0,levels-1);let atlas=textureDimensions(depthTex);var width=max(atlas.x/2u,1u);var height=max(atlas.y,1u);var offset=0u;for(var level=0;level&lt;mip;level++){offset+=width;width=max(width/2u,1u);height=max(height/2u,1u);}let pixel=vec2u(clamp(floor(uv*vec2f(f32(width),f32(height))),vec2f(0),vec2f(f32(width-1u),f32(height-1u))));return textureLoad(depthTex,vec2i(offset+pixel.x,pixel.y),0).rg;}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let m=invvp();let radius=max(p(18),.0001);let intensity=max(p(19),0);let count=i32(clamp(p(20),4,32));let tw=max(p(27),.00001);let th=max(p(28),.00001);let use=p(29);let z=gi_depth(i.uv,use);</span></div>
+<div class="line"><span class="stringliteral"> if z&gt;=select(.999,.9999,use&gt;.5)||intensity&lt;.0001{return vec4f(0);}let pos=world(m,i.uv,z);let nh=m*vec4f(0,0,0,1);let fh=m*vec4f(0,0,1,1);let nc=nh.xyz/max(nh.w,.000001);let fc=fh.xyz/max(fh.w,.000001);let cam=nc-normalize(fc-nc)*max(p(16),.0001);</span></div>
+<div class="line"><span class="stringliteral"> let dr=gi_depth(i.uv+vec2f(tw,0),use);let du=gi_depth(i.uv+vec2f(0,th),use);var n=normalize(cross(world(m,i.uv+vec2f(tw,0),dr)-pos,world(m,i.uv+vec2f(0,th),du)-pos));let packed=normal_at(i.uv);let receiverMetal=select(0.0,metallic_at(i.uv),p(30)&gt;.5);if p(30)&gt;.5&amp;&amp;dot(packed,packed)&gt;.25{n=normalize(packed);}if dot(n,cam-pos)&lt;0{n=-n;}</span></div>
+<div class="line"><span class="stringliteral"> let up=select(vec3f(0,1,0),vec3f(1,0,0),abs(n.y)&gt;.999);let tangent=normalize(up-n*dot(up,n));let bit=cross(n,tangent);let vp=inverse(m);let lightDir=normalize(vec3f(p(21),p(22),p(23))+vec3f(.000001));let lightColor=max(vec3f(p(24),p(25),p(26)),vec3f(0));var bounce=vec3f(0);var weight=0.0;var hitCount=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var q=1;q&lt;=32;q++){if q&gt;count{break;}let f=f32(q);let phase=floor(p(31))-floor(floor(p(31))/8)*8;let a=(f+phase*.618033989)*2.39996323;let rr=sqrt(fract((f+phase*.754877666)*.618033989));let dir=normalize(tangent*cos(a)+bit*sin(a)+n*.55);let samplePos=pos+dir*radius*rr;let clip=vp*vec4f(samplePos,1);let suv=clip.xy/max(clip.w,.000001)*.5+.5;if any(suv&lt;vec2f(0))||any(suv&gt;vec2f(1)){continue;}let levels=i32(floor(floor(p(31))/8));if levels&gt;0&amp;&amp;use&gt;.5{let footprint=abs(suv-i.uv)/vec2f(tw,th);let mip=clamp(i32(floor(log2(max(max(footprint.x,footprint.y)*.125,1)))),0,levels-1);let range=gi_depth_range(suv,mip);let padding=max(.0001,max(fract(p(31)),max(radius*.08,.01))/max(p(17),.001));if ndc.z&lt;range.x-padding||ndc.z&gt;range.y+padding{continue;}}let sz=gi_depth(suv,use);let hit=world(m,suv,sz);let mismatch=distance(hit,samplePos);let thick=max(fract(p(31)),max(radius*.08,.01));if mismatch&gt;thick{continue;}var sn=normal_at(suv);if p(30)&lt;.5||dot(sn,sn)&lt;.25{sn=n;}else{sn=normalize(sn);}let toHit=hit-pos;let dist=length(toHit);if dist&lt;.0001||dist&gt;radius{continue;}let l=toHit/dist;let recv=max(dot(n,l),0);let send=max(dot(sn,-l),0);let directional=mix(.35,1,max(dot(sn,lightDir),0));let w=(1-smoothstep(radius*.4,radius,dist))*recv*send*(1-smoothstep(thick*.25,thick,mismatch))*directional;bounce+=color_at(suv)*lightColor*w;weight+=w;hitCount+=1;}</span></div>
+<div class="line"><span class="stringliteral"> if weight&lt;.0001{return vec4f(0);}let coverage=hitCount/max(f32(count),1);let receiverAlbedo=select(color_at(i.uv),textureSampleLevel(albedoTex,albedoSamp,i.uv,0).rgb,p(29)&gt;.5&amp;&amp;p(30)&gt;.5);bounce=bounce/weight*smoothstep(.08,.35,coverage)*intensity*receiverAlbedo*(1-receiverMetal);let alpha=clamp(max(bounce.r,max(bounce.g,bounce.b)),0,1);return vec4f(bounce/max(alpha,.0001),alpha)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="ScreenEffectsWgsl_8h_source.html">ScreenEffectsWgsl.h</a> 第 <a class="el" href="ScreenEffectsWgsl_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f52b0fe98d05eddc295fda81bf487a4" name="a0f52b0fe98d05eddc295fda81bf487a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f52b0fe98d05eddc295fda81bf487a4">&#9670;&#160;</a></span>kSsr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSsr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn ssr_depth_range(uv0:vec2f,requested:i32)-&gt;vec2f{let uv=clamp(uv0,vec2f(0),vec2f(1));if p(31)&lt;.5{return vec2f(depth_at(uv));}let mip=clamp(requested,0,max(i32(floor(p(31)))-1,0));let atlas=textureDimensions(depthTex);var width=max(atlas.x/2u,1u);var height=max(atlas.y,1u);var offset=0u;for(var level=0;level&lt;mip;level++){offset+=width;width=max(width/2u,1u);height=max(height/2u,1u);}let pixel=vec2u(clamp(floor(uv*vec2f(f32(width),f32(height))),vec2f(0),vec2f(f32(width-1u),f32(height-1u))));return textureLoad(depthTex,vec2i(offset+pixel.x,pixel.y),0).rg;}</span></div>
+<div class="line"><span class="stringliteral">fn ssr_depth(uv:vec2f)-&gt;f32{return ssr_depth_range(uv,0).r;}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{if p(28)&lt;.5{return vec4f(0);}let z=ssr_depth(i.uv);if z&gt;.999{return vec4f(0);}let m=invvp();let vp=inverse(m);let pos=world(m,i.uv,z);let tw=max(p(21),.00001);let th=max(p(22),.00001);let rough=roughness_at(i.uv);if rough&gt;clamp(p(30),0,1){return vec4f(0);}</span></div>
+<div class="line"><span class="stringliteral"> var n=normal_at(i.uv);if dot(n,n)&lt;.25{n=normalize(cross(world(m,i.uv+vec2f(tw,0),ssr_depth(i.uv+vec2f(tw,0)))-pos,world(m,i.uv+vec2f(0,th),ssr_depth(i.uv+vec2f(0,th)))-pos));}else{n=normalize(n);}let cam=vec3f(p(16),p(17),p(18));if dot(n,cam-pos)&lt;0{n=-n;}let v=normalize(cam-pos);let metal=metallic_at(i.uv);let surface=color_at(i.uv);let r=reflect(-v,n);if dot(r,v)&gt;.1{return vec4f(0);}</span></div>
+<div class="line"><span class="stringliteral"> let maxd=max(p(23),.01);let step=max(p(24),.001)*mix(.65,1.35,rough);let thickness=max(p(26),.001);let rayOrigin=pos+n*max(thickness*.02,.002);let count=i32(clamp(p(25),1,512));var ray=step;var previousRay=0.0;</span></div>
+<div class="line"><span class="stringliteral"> for(var q=0;q&lt;512;q++){if q&gt;=count||ray&gt;maxd{break;}let rayPos=rayOrigin+r*ray;let clip=vp*vec4f(rayPos,1);let ndc=clip.xyz/max(clip.w,.000001);var uv=ndc.xy*.5+.5;if any(uv&lt;vec2f(0))||any(uv&gt;vec2f(1))||ndc.z&lt;0||ndc.z&gt;1{break;}var traceMip=0;if p(31)&gt;.5{let cone=1+rough*2*ray/max(step,.0001);traceMip=clamp(i32(floor(log2(max(cone,1)))),0,max(i32(floor(p(31)))-1,0));let range=ssr_depth_range(uv,traceMip);let padding=max(p(29),(range.y-range.x)*.25);if ndc.z&lt;range.x-padding{previousRay=ray;ray+=step*exp2(f32(traceMip));continue;}}let scenePos=world(m,uv,ssr_depth(uv));let gap=distance(rayPos,scenePos);if ndc.z&gt;ssr_depth(uv)-p(29)&amp;&amp;gap&lt;=max(thickness,step*1.25){var lo=previousRay;var hi=ray;var refined=uv;for(var refine=0;refine&lt;5;refine++){let mid=(lo+hi)*.5;let rc=vp*vec4f(rayOrigin+r*mid,1);let rn=rc.xyz/max(rc.w,.000001);let candidate=rn.xy*.5+.5;if rn.z&gt;ssr_depth(candidate)-p(29){hi=mid;refined=candidate;}else{lo=mid;}}ray=hi;uv=refined;let refinedGap=distance(rayOrigin+r*ray,world(m,uv,ssr_depth(uv)));let hitAccuracy=1-smoothstep(thickness*.2,max(thickness,step*1.25),refinedGap);let hn=normal_at(uv);let hitFacing=select(1.0,smoothstep(.02,.25,dot(normalize(hn),-r)),dot(hn,hn)&gt;.25);let center=ssr_depth(uv);let depthEdge=max(max(abs(ssr_depth(uv+vec2f(tw,0))-center),abs(ssr_depth(uv-vec2f(tw,0))-center)),max(abs(ssr_depth(uv+vec2f(0,th))-center),abs(ssr_depth(uv-vec2f(0,th))-center)));let continuity=1-smoothstep(.002,.025,depthEdge);let border=min(min(uv.x,uv.y),min(1-uv.x,1-uv.y));let sourceBorder=min(min(i.uv.x,i.uv.y),min(1-i.uv.x,1-i.uv.y));let rf=1-smoothstep(.35,1,rough)*.85;let confidence=clamp(smoothstep(.02,.12,border)*smoothstep(.01,.06,sourceBorder)*(1-smoothstep(0,maxd,ray))*max(p(27),0)*rf*hitFacing*continuity*hitAccuracy,0,1);let materialAlbedo=textureSampleLevel(albedoTex,albedoSamp,i.uv,0).rgb;let diffuseBasis=materialAlbedo*(1-metal);let safeBasis=max(diffuseBasis,vec3f(.001));let diffuseScale=max(min(surface.r/safeBasis.r,min(surface.g/safeBasis.g,surface.b/safeBasis.b)),0);let diffuseEstimate=min(diffuseBasis*diffuseScale,surface);let f0=mix(vec3f(.04),materialAlbedo,metal);let noV=max(dot(n,v),0);let brdf=rough*vec4f(-1,-.0275,-.572,.022)+vec4f(1,.0425,1.04,-.04);let a004=min(brdf.x*brdf.x,exp2(-9.28*noV))*brdf.x+brdf.y;let dfg=vec2f(-1.04,1.04)*a004+brdf.zw;let specWeight=max(f0*dfg.x+dfg.y,vec3f(0));let directionalAlbedo=max(dfg.x+dfg.y,.001);let multiScatter=vec3f(1)+f0*(min(1/directionalAlbedo,8)-1);let reflectedScene=diffuseEstimate+color_rough(uv,rough)*specWeight*multiScatter;return vec4f(reflectedScene*confidence,confidence)*i.color;}previousRay=ray;ray+=step;}</span></div>
+<div class="line"><span class="stringliteral"> return vec4f(0);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="ScreenEffectsWgsl_8h_source.html">ScreenEffectsWgsl.h</a> 第 <a class="el" href="ScreenEffectsWgsl_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e53f17cf6d6b90a73da06692f6626c3" name="a8e53f17cf6d6b90a73da06692f6626c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e53f17cf6d6b90a73da06692f6626c3">&#9670;&#160;</a></span>kSsrTemporal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kSsrTemporal</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn ssr_reprojection()-&gt;mat4x4f{return mat4x4f(u.data[0],u.data[1],u.data[2],u.data[3]);}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_decode_input(v0:vec4f)-&gt;vec4f{var v=v0;if p(23)&gt;.5{v=vec4f(v.rgb*v.a,v.a);}return v;}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_encode_output(v0:vec4f)-&gt;vec4f{var v=v0;if p(23)&gt;.5{v=vec4f(v.rgb/max(v.a,.0001),v.a);}return v;}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_spatial(uv:vec2f)-&gt;vec4f{let base=vec2f(p(16),p(17));let t=base*max(p(24),1);let centerDepth=textureSampleLevel(normalTex,normalSamp,uv,0).r;let center=temporal_decode_input(textureSampleLevel(mainTex,samp,uv,0));let centerRadiance=center.rgb/max(center.a,.05);let centerLog=log2(1+dot(max(centerRadiance,vec3f(0)),vec3f(.2126,.7152,.0722)));let dx=max(abs(textureSampleLevel(normalTex,normalSamp,uv+vec2f(base.x,0),0).r-centerDepth),abs(textureSampleLevel(normalTex,normalSamp,uv-vec2f(base.x,0),0).r-centerDepth));let dy=max(abs(textureSampleLevel(normalTex,normalSamp,uv+vec2f(0,base.y),0).r-centerDepth),abs(textureSampleLevel(normalTex,normalSamp,uv-vec2f(0,base.y),0).r-centerDepth));let depthScale=max(.0015,max(dx,dy)*2+.0005);var sum=center*4;var total=4.0;let offsets=array&lt;vec2f,8&gt;(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1),vec2f(1,1),vec2f(-1,1),vec2f(1,-1),vec2f(-1,-1));for(var q=0;q&lt;8;q++){let suv=uv+offsets[q]*t;let value=temporal_decode_input(textureSampleLevel(mainTex,samp,suv,0));let sampleDepth=textureSampleLevel(normalTex,normalSamp,suv,0).r;let depthWeight=exp(-abs(sampleDepth-centerDepth)/depthScale);let radiance=value.rgb/max(value.a,.05);let sampleLog=log2(1+dot(max(radiance,vec3f(0)),vec3f(.2126,.7152,.0722)));let radianceWeight=exp(-abs(sampleLog-centerLog)*1.5);let confidenceWeight=mix(.35,1,clamp(value.a*6,0,1));let kernelWeight=select(1.0,2.0,q&lt;4);let weight=kernelWeight*depthWeight*radianceWeight*confidenceWeight*clamp(p(22),0,1);sum+=value*weight;total+=weight;}return sum/max(total,.0001);}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_rgb_to_ycocg(c:vec3f)-&gt;vec3f{return vec3f(c.r*.25+c.g*.5+c.b*.25,c.r*.5-c.b*.5,-c.r*.25+c.g*.5-c.b*.25);}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_ycocg_to_rgb(c:vec3f)-&gt;vec3f{return vec3f(c.x+c.y-c.z,c.x+c.z,c.x-c.y-c.z);}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_hdr_encode(c:vec3f)-&gt;vec3f{let q=temporal_rgb_to_ycocg(max(c,vec3f(0)));let r=1+max(q.x,0);return vec3f(log2(r),q.yz/r);}</span></div>
+<div class="line"><span class="stringliteral">fn temporal_hdr_decode(c:vec3f)-&gt;vec3f{let y=max(exp2(c.x)-1,0);let r=1+y;return max(temporal_ycocg_to_rgb(vec3f(y,c.yz*r)),vec3f(0));}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><span class="stringliteral"> var current=temporal_spatial(i.uv);if p(18)&lt;.5{return temporal_encode_output(current)*i.color;}</span></div>
+<div class="line"><span class="stringliteral"> let texel=vec2f(p(16),p(17));let currentEncoded=temporal_hdr_encode(current.rgb);var lo=currentEncoded;var hi=currentEncoded;var sum=vec3f(0);var sumSq=vec3f(0);</span></div>
+<div class="line"><span class="stringliteral"> for(var y=-1;y&lt;=1;y++){for(var x=-1;x&lt;=1;x++){let s=temporal_hdr_encode(temporal_decode_input(textureSampleLevel(mainTex,samp,i.uv+vec2f(f32(x)*texel.x,f32(y)*texel.y),0)).rgb);lo=min(lo,s);hi=max(hi,s);sum+=s;sumSq+=s*s;}}</span></div>
+<div class="line"><span class="stringliteral"> let mean=sum/9;let sigma=sqrt(max(sumSq/9-mean*mean,vec3f(0)));lo=max(lo,mean-sigma*1.5);hi=min(hi,mean+sigma*1.5);hi.x=min(hi.x,mean.x+3);current=vec4f(temporal_hdr_decode(clamp(currentEncoded,lo,hi)),current.a);</span></div>
+<div class="line"><span class="stringliteral"> let md=textureSampleLevel(normalTex,normalSamp,i.uv,0);let n=max(p(19),.0001);let f=max(p(20),n+.001);let vd=mix(n,f,md.r);let z=(f-n*f/max(vd,n))/(f-n);let pc=ssr_reprojection()*vec4f(i.uv*2-1,z,1);var huv=pc.xy/max(abs(pc.w),.000001)*.5+.5;huv+=(md.gb-vec2f(.5))*2;</span></div>
+<div class="line"><span class="stringliteral"> let valid=all(huv&gt;=vec2f(0))&amp;&amp;all(huv&lt;=vec2f(1))&amp;&amp;pc.w&gt;0;var history=temporal_decode_input(history_cubic(clamp(huv,vec2f(0),vec2f(1))));history=vec4f(temporal_hdr_decode(clamp(temporal_hdr_encode(history.rgb),lo,hi)),clamp(history.a,0,1));let cd=abs(current.a-history.a);let velocity=length((md.gb-vec2f(.5))*2);let historyDepth=textureSampleLevel(normalTex,normalSamp,clamp(huv,vec2f(0),vec2f(1)),0).r;let depthGradient=max(max(abs(textureSampleLevel(normalTex,normalSamp,i.uv+vec2f(texel.x,0),0).r-md.r),abs(textureSampleLevel(normalTex,normalSamp,i.uv-vec2f(texel.x,0),0).r-md.r)),max(abs(textureSampleLevel(normalTex,normalSamp,i.uv+vec2f(0,texel.y),0).r-md.r),abs(textureSampleLevel(normalTex,normalSamp,i.uv-vec2f(0,texel.y),0).r-md.r)));let depthTolerance=max(.0015,depthGradient*2+velocity*.5);let depthReject=smoothstep(depthTolerance,depthTolerance*4,abs(historyDepth-md.r));var reject=max(depthReject,max(smoothstep(.08,.35,cd),smoothstep(.01,.08,velocity)));if !valid||current.a&lt;.01{reject=1;}return temporal_encode_output(mix(history,current,mix(clamp(p(21),.02,1),1,reject)))*i.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenEffectsWgsl_8h_source.html">ScreenEffectsWgsl.h</a> 第 <a class="el" href="ScreenEffectsWgsl_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a829ab257b90632a3ce2daec1bfad48a6" name="a829ab257b90632a3ce2daec1bfad48a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829ab257b90632a3ce2daec1bfad48a6">&#9670;&#160;</a></span>kTaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kTaa</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn taa_reprojection()-&gt;mat4x4f{return mat4x4f(</span></div>
+<div class="line"><span class="stringliteral"> vec4f(p(7),p(8),p(9),p(10)),vec4f(p(11),p(12),p(13),p(14)),</span></div>
+<div class="line"><span class="stringliteral"> vec4f(p(15),p(16),p(17),p(18)),vec4f(p(19),p(20),p(21),p(22)));}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><span class="stringliteral"> let t=vec2f(p(0),p(1));let currentSample=tex(i.uv);let current=currentSample.rgb;let linearDepth=select(currentSample.a,motion_load(i.uv).r,p(26)&gt;.5);if p(4)&lt;.5{return vec4f(current*i.color.rgb,linearDepth);}</span></div>
+<div class="line"><span class="stringliteral"> let currentY=hdr_ycocg(current);var lo=currentY;var hi=currentY;var sum=vec3f(0);var sumSq=vec3f(0);</span></div>
+<div class="line"><span class="stringliteral"> for(var y=-1;y&lt;=1;y++){for(var x=-1;x&lt;=1;x++){let c=hdr_ycocg(tex(i.uv+vec2f(f32(x)*t.x,f32(y)*t.y)).rgb);lo=min(lo,c);hi=max(hi,c);sum+=c;sumSq+=c*c;}}</span></div>
+<div class="line"><span class="stringliteral"> let mean=sum/9;let sigma=sqrt(max(sumSq/9-mean*mean,vec3f(0)));lo=max(lo,mean-sigma*1.25);hi=min(hi,mean+sigma*1.25);</span></div>
+<div class="line"><span class="stringliteral"> var historyUV=i.uv+vec2f(p(5),p(6));</span></div>
+<div class="line"><span class="stringliteral"> if p(25)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{let n=max(p(23),.0001);let f=max(p(24),n+.001);let vd=mix(n,f,linearDepth);let z=(f-n*f/max(vd,n))/(f-n);let pc=taa_reprojection()*vec4f(i.uv*2-1,z,1);if abs(pc.w)&gt;.000001{historyUV=pc.xy/pc.w*.5+.5;}}</span></div>
+<div class="line"><span class="stringliteral"> var objectMotion=vec2f(0);if p(26)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{var nearest=motion_load(i.uv);for(var my=-1;my&lt;=1;my++){for(var mx=-1;mx&lt;=1;mx++){let candidate=motion_load(i.uv+vec2f(f32(mx)*t.x,f32(my)*t.y));if candidate.r&lt;nearest.r{nearest=candidate;}}}objectMotion=(nearest.gb-vec2f(.5))*2;historyUV+=objectMotion;}</span></div>
+<div class="line"><span class="stringliteral"> let inBounds=all(historyUV&gt;=vec2f(0))&amp;&amp;all(historyUV&lt;=vec2f(1));let hs=aux_cubic(clamp(historyUV,vec2f(0),vec2f(1)));let history=hs.rgb;let historyY=hdr_ycocg(history);let clippedY=mix(historyY,clamp(historyY,lo,hi),clamp(p(3),0,1));let clipped=hdr_rgb(clippedY);</span></div>
+<div class="line"><span class="stringliteral"> let encodedDelta=abs(currentY-clippedY);let delta=max(encodedDelta.x,max(encodedDelta.y,encodedDelta.z));let colorReject=smoothstep(.03,.15,delta);let dt=.006+linearDepth*.02;let depthReject=smoothstep(dt,dt*4,abs(linearDepth-hs.a));let velocityReactive=smoothstep(.002,.04,length(objectMotion));var surfaceReactive=0.0;if p(26)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{surfaceReactive=smoothstep(.01,.08,abs(linearDepth-motion_load(i.uv).r));}var reject=max(max(colorReject,depthReject),max(velocityReactive*.65,surfaceReactive));if !inBounds{reject=1;}</span></div>
+<div class="line"><span class="stringliteral"> let currentWeight=mix(clamp(p(2),0,1),1.0,reject);</span></div>
+<div class="line"><span class="stringliteral"> var resolved=mix(clipped,current,currentWeight);let crossAverage=(hdr_ycocg(tex(i.uv+vec2f(t.x,0)).rgb)+hdr_ycocg(tex(i.uv-vec2f(t.x,0)).rgb)+hdr_ycocg(tex(i.uv+vec2f(0,t.y)).rgb)+hdr_ycocg(tex(i.uv-vec2f(0,t.y)).rgb))*.25;let sharpenStrength=.12*(1-reject)*(1-velocityReactive);let sharpened=hdr_ycocg(resolved)+(currentY-crossAverage)*sharpenStrength;resolved=hdr_rgb(clamp(sharpened,lo,hi));</span></div>
+<div class="line"><span class="stringliteral"> return vec4f(resolved*i.color.rgb,linearDepth);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment --><p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> source has static storage for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="PostProcessWgsl_8h_source.html">PostProcessWgsl.h</a> 第 <a class="el" href="PostProcessWgsl_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94f21b098b2a1add66b32903bf54fe80" name="a94f21b098b2a1add66b32903bf54fe80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f21b098b2a1add66b32903bf54fe80">&#9670;&#160;</a></span>kVolCloud</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolCloud</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">fn hash(q:vec2f)-&gt;f32{return fract(sin(dot(q,vec2f(12.9898,78.233)))*43758.5453);}</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let uv=i.uv+vec2f(p(25),p(26))*p(19)*.0002;let n=hash(floor(uv*max(p(24),1)));let cov=clamp(p(22),0,1);let density=max(p(23),0);let a=smoothstep(1-cov,1,n)*density*.7;let light=vec3f(p(29),p(30),p(31));return vec4f(light,a)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a10858fd5880e30c4c7c7841fc915834d" name="a10858fd5880e30c4c7c7841fc915834d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10858fd5880e30c4c7c7841fc915834d">&#9670;&#160;</a></span>kVolCommon</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolCommon</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn{@location(0) color:vec4f,@location(1) uv:vec2f};struct U{data:array&lt;vec4f,8&gt;};</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0)var mainTex:texture_2d&lt;f32&gt;;@group(0) @binding(1)var depthTex:texture_2d&lt;f32&gt;;@group(0) @binding(2)var samp:sampler;@group(0) @binding(4)var&lt;uniform&gt;u:U;</span></div>
+<div class="line"><span class="stringliteral">fn p(i:u32)-&gt;f32{return u.data[i/4u][i%4u];}fn tex(uv:vec2f)-&gt;vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00004">4</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb9d784fda1ecb288deddb4776d22000" name="afb9d784fda1ecb288deddb4776d22000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb9d784fda1ecb288deddb4776d22000">&#9670;&#160;</a></span>kVolFog</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolFog</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let z=tex(i.uv).r;if z&gt;=.999{return vec4f(0);}let start=max(p(29),0);let end=max(p(30),start+.001);let dist=mix(max(p(24),.001),max(p(25),1),z);let range=smoothstep(start,end,dist);let height=mix(.65,1.0,clamp(i.uv.y,0,1));let a=clamp(range*max(p(19),0)*max(p(23),0)*height,0,.95);return vec4f(vec3f(p(20),p(21),p(22)),a)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8f1fb19ef9e1c425457e28843ea0bd5" name="ab8f1fb19ef9e1c425457e28843ea0bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8f1fb19ef9e1c425457e28843ea0bd5">&#9670;&#160;</a></span>kVolFroxel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolFroxel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let cols=max(p(0),1);let rows=max(p(1),1);let slices=max(p(2),1);let tile=vec2f(1/cols,1/rows);var acc=vec4f(0);let count=i32(clamp(slices,1,64));for(var q=0;q&lt;64;q++){if q&gt;=count{break;}let f=f32(q);let cell=vec2f(f-floor(f/cols)*cols,floor(f/cols));let s=tex(cell*tile+i.uv*tile);acc.rgb+=s.rgb*(1-acc.a);acc.a+=s.a*(1-acc.a);}return acc*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2adcadb76c3c9c93cfdd0f05b5c9d270" name="a2adcadb76c3c9c93cfdd0f05b5c9d270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2adcadb76c3c9c93cfdd0f05b5c9d270">&#9670;&#160;</a></span>kVolRay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolRay</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let z=tex(i.uv).r;if z&gt;=.999{return vec4f(0);}let d=max(p(19),0);let c=vec3f(p(20),p(21),p(22));let light=normalize(vec3f(p(16),p(17),p(18)));let phase=.35+.65*max(light.y,0);let a=clamp((1-z)*d*max(p(23),0)*(1+max(p(28),0))*.35,0,.9);return vec4f(c*phase,a)*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0669d82a8e6766d6ce73fd9431399821" name="a0669d82a8e6766d6ce73fd9431399821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0669d82a8e6766d6ce73fd9431399821">&#9670;&#160;</a></span>kVolScreen</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kVolScreen</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0)vec4f{let light=vec2f(p(0),p(1));let count=i32(clamp(p(6),1,96));let delta=(i.uv-light)*p(4)/f32(count);var uv=i.uv;var illum=vec3f(0);var decay=1.0;</span></div>
+<div class="line"><span class="stringliteral">for(var q=0;q&lt;96;q++){if q&gt;=count{break;}uv-=delta;illum+=tex(uv).rgb*decay*p(5);decay*=p(3);}let fog=vec3f(p(9),p(10),p(11))*max(p(8),0);let shaft=vec3f(p(12),p(13),p(14));let rgb=(illum*shaft*p(2)+fog)*max(p(17),0);return vec4f(rgb,clamp(max(rgb.r,max(rgb.g,rgb.b)),0,1))*i.color;}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VolumetricWgsl_8h_source.html">VolumetricWgsl.h</a> 第 <a class="el" href="VolumetricWgsl_8h_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67efba44f21f59e2564d70fd8ee9aea0" name="a67efba44f21f59e2564d70fd8ee9aea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67efba44f21f59e2564d70fd8ee9aea0">&#9670;&#160;</a></span>kWaterfallFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kWaterfallFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterfallWgsl_8h_source.html">WaterfallWgsl.h</a> 第 <a class="el" href="WaterfallWgsl_8h_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Waterfall_8cpp_source.html#l00033">eve::graphics::newWaterfallShader()</a>.</p>
+
+</div>
+</div>
+<a id="ad0ed09ecf18bfab93d495860ba8d4717" name="ad0ed09ecf18bfab93d495860ba8d4717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ed09ecf18bfab93d495860ba8d4717">&#9670;&#160;</a></span>kWaterFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::graphics::shaders::kWaterFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterWgsl_8h_source.html">WaterWgsl.h</a> 第 <a class="el" href="WaterWgsl_8h_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Water_8cpp_source.html#l00035">eve::graphics::newWaterShader()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

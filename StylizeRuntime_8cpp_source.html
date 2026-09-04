@@ -1,0 +1,286 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize_editing/StylizeRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4f6e93587114a8e7e806b75b8c67f8dd.html">stylize_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StylizeRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StylizeRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="StylizeTarget_8h.html">stylize_editing/StylizeTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="StyleInstance_8h.html">stylize/StyleInstance.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="StylePass_8h.html">stylize/StylePass.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="StyleRecipe_8h.html">stylize/StyleRecipe.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize__editing.html">eve::stylize_editing</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>EditorResult&lt;T&gt; fail(<a class="code hl_typedef" href="namespaceeve_1_1stylize__editing.html#a5a3cfb437254ae8185d395786c243103">EditorStatus</a> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, std::string <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>), std::move(<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a20eb9249c72e039abdb4d1466e32a801">StylizeRecipeRuntime::StylizeRecipeRuntime</a>()  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a6e5b2c4929c3837c5b58636dff4a7781">StylizeRecipeRuntime::~StylizeRecipeRuntime</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a323555994983453343adec5839d4dac1">   23</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a323555994983453343adec5839d4dac1">StylizeRecipeRuntime::publish</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html">StylizeRecipeTarget</a>&amp; document, <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* graphics) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!graphics)</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.stylize.graphics&quot;</span>, <span class="stringliteral">&quot;Stylize publication requires Graphics&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keyword">auto</span> diagnostics = document.<a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#aa1c715c3169b0a3ccf2b00d1041d3ca7">validate</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : diagnostics)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.severity() == DiagnosticSeverity::Error)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(EditorStatus::Rejected, diagnostics));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::vector&lt;std::unique_ptr&lt;stylize::StyleInstance&gt;&gt; <a class="code hl_variable" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span>                                                 recipe = std::make_unique&lt;stylize::StyleRecipe&gt;();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pass : document.<a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#acdc36baaeaaaf996ba9df41c6257e241">passes</a>()) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">if</span> (!pass.enabled) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keyword">auto</span> instance = std::make_unique&lt;stylize::StyleInstance&gt;(pass.style);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            instance-&gt;setPriority(pass.priority);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>] : pass.overrides) instance-&gt;setFloat(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            recipe-&gt;add(instance.get());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <a class="code hl_variable" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a>.push_back(std::move(instance));</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a>.empty()) recipe-&gt;compile(graphics);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; exception) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.stylize.compile&quot;</span>, exception.what());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    instances_                         = std::move(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    recipe_                            = std::move(recipe);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    graphics_                          = graphics;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    revision_                          = document.<a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#a1fd5e84fe399013245891bb80f3a7bc7">revision</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;(diagnostics);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a8dff56b52cb6cda411cfe5a0a07d534b">   51</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a8dff56b52cb6cda411cfe5a0a07d534b">StylizeRecipeRuntime::apply</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* graphics, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>* <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                               <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a>* destination, Revision expectedRevision)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (expectedRevision != revision_)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.stylize.stale&quot;</span>, <span class="stringliteral">&quot;Stylize runtime generation is stale&quot;</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!graphics || !<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> || !destination || graphics != graphics_ || revision_ == 0)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.stylize.runtime&quot;</span>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                          <span class="stringliteral">&quot;Stylize runtime requires its compiled Graphics, source and destination&quot;</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">if</span> (instances_.empty()) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keyword">auto</span>* <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">getCanvas</a>();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(destination);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ab40301a66c1522e541b451d7adfe5af9">drawTexturedRect</a>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, 0, 0, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(destination-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">getWidth</a>()),</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                       <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(destination-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">getHeight</a>()), <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(1, 1, 1, 1));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            recipe_-&gt;apply(graphics, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, destination);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; exception) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.stylize.apply&quot;</span>, exception.what());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace eve::stylize_editing</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aBuildingTarget_8cpp_html_a847adfdf0456acf149e82b9b0304d031"><div class="ttname"><a href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a></div><div class="ttdeci">std::vector&lt; BuildingInstanceSnapshot &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00255">BuildingTarget.cpp:255</a></div></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aStyleInstance_8h_html"><div class="ttname"><a href="StyleInstance_8h.html">StyleInstance.h</a></div></div>
+<div class="ttc" id="aStylePass_8h_html"><div class="ttname"><a href="StylePass_8h.html">StylePass.h</a></div></div>
+<div class="ttc" id="aStyleRecipe_8h_html"><div class="ttname"><a href="StyleRecipe_8h.html">StyleRecipe.h</a></div></div>
+<div class="ttc" id="aStylizeTarget_8h_html"><div class="ttname"><a href="StylizeTarget_8h.html">StylizeTarget.h</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_a36b54ae2371f612291a02c5f08f0e2ea"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth</a></div><div class="ttdeci">virtual int getWidth() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_ac72d6748ee3c3ca0263fc0b47c93e1b3"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight</a></div><div class="ttdeci">virtual int getHeight() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a5f434930471a7de7991d7f9ae586b7dd"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas</a></div><div class="ttdeci">virtual Canvas * getCanvas() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a97f5ab4a9dfc44c1ca2ee873edc9fe7c"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas</a></div><div class="ttdeci">virtual void setCanvas(Canvas *canvas)=0</div><div class="ttdoc">nullptr or this → screen. Switching flushes pending draws to the previous target.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ab40301a66c1522e541b451d7adfe5af9"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ab40301a66c1522e541b451d7adfe5af9">eve::graphics::Graphics::drawTexturedRect</a></div><div class="ttdeci">virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b, float a=1.f)</div><div class="ttdoc">RGBA-float overload matching the script-facing drawTexturedRect name.</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l01617">Graphics.cpp:1617</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeRuntime_html_a20eb9249c72e039abdb4d1466e32a801"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a20eb9249c72e039abdb4d1466e32a801">eve::stylize_editing::StylizeRecipeRuntime::StylizeRecipeRuntime</a></div><div class="ttdeci">StylizeRecipeRuntime()</div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeRuntime_html_a323555994983453343adec5839d4dac1"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a323555994983453343adec5839d4dac1">eve::stylize_editing::StylizeRecipeRuntime::publish</a></div><div class="ttdeci">EditorResult&lt; void &gt; publish(const StylizeRecipeTarget &amp;document, graphics::Graphics *graphics)</div><div class="ttdoc">Compile a complete candidate before replacing the active generation.</div><div class="ttdef"><b>Definition</b> <a href="StylizeRuntime_8cpp_source.html#l00023">StylizeRuntime.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeRuntime_html_a6e5b2c4929c3837c5b58636dff4a7781"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a6e5b2c4929c3837c5b58636dff4a7781">eve::stylize_editing::StylizeRecipeRuntime::~StylizeRecipeRuntime</a></div><div class="ttdeci">~StylizeRecipeRuntime()</div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeRuntime_html_a8dff56b52cb6cda411cfe5a0a07d534b"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeRuntime.html#a8dff56b52cb6cda411cfe5a0a07d534b">eve::stylize_editing::StylizeRecipeRuntime::apply</a></div><div class="ttdeci">EditorResult&lt; void &gt; apply(graphics::Graphics *graphics, graphics::Texture *source, graphics::Canvas *destination, Revision expectedRevision) const</div><div class="ttdoc">Apply the active post recipe into an explicit destination Canvas.</div><div class="ttdef"><b>Definition</b> <a href="StylizeRuntime_8cpp_source.html#l00051">StylizeRuntime.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeTarget_html"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html">eve::stylize_editing::StylizeRecipeTarget</a></div><div class="ttdoc">Serializable ordered style recipe with dynamic parameter Inspector.</div><div class="ttdef"><b>Definition</b> <a href="StylizeTarget_8h_source.html#l00062">StylizeTarget.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeTarget_html_a1fd5e84fe399013245891bb80f3a7bc7"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#a1fd5e84fe399013245891bb80f3a7bc7">eve::stylize_editing::StylizeRecipeTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="StylizeTarget_8h_source.html#l00069">StylizeTarget.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeTarget_html_aa1c715c3169b0a3ccf2b00d1041d3ca7"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#aa1c715c3169b0a3ccf2b00d1041d3ca7">eve::stylize_editing::StylizeRecipeTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate style existence, stage compatibility, parameters and budgets.</div><div class="ttdef"><b>Definition</b> <a href="StylizeTarget_8cpp_source.html#l00263">StylizeTarget.cpp:263</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize__editing_1_1StylizeRecipeTarget_html_acdc36baaeaaaf996ba9df41c6257e241"><div class="ttname"><a href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#acdc36baaeaaaf996ba9df41c6257e241">eve::stylize_editing::StylizeRecipeTarget::passes</a></div><div class="ttdeci">std::vector&lt; StylizePassValue &gt; passes() const</div><div class="ttdoc">Return ordered immutable pass values.</div><div class="ttdef"><b>Definition</b> <a href="StylizeTarget_8cpp_source.html#l00258">StylizeTarget.cpp:258</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a71149fce33bc9588696b7d54b72f7f92"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00017">SkeletonOverlay.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize__editing_html"><div class="ttname"><a href="namespaceeve_1_1stylize__editing.html">eve::stylize_editing</a></div><div class="ttdef"><b>Definition</b> <a href="MeshVfxTarget_8cpp_source.html#l00007">MeshVfxTarget.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize__editing_html_a5a3cfb437254ae8185d395786c243103"><div class="ttname"><a href="namespaceeve_1_1stylize__editing.html#a5a3cfb437254ae8185d395786c243103">eve::stylize_editing::EditorStatus</a></div><div class="ttdeci">editing::Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="StylizeTarget_8h_source.html#l00048">StylizeTarget.h:48</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

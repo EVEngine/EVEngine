@@ -1,0 +1,302 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation_editing/AnimationGraphRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3a11c95fd6ffff214691f99b8cbdfe86.html">animation_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimationGraphRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimationGraphRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AnimationGraph_8h.html">animation_editing/AnimationGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="AnimStateMachine_8h.html">animation/AnimStateMachine.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>EditorResult&lt;T&gt; runtimeError(<a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#ae8d4779f45df94c6aab3165f06e07c7b">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a>* runtimeField(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>&gt;();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = <span class="keywordtype">object</span>-&gt;find(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> found == <span class="keywordtype">object</span>-&gt;end() ? nullptr : &amp;found-&gt;second;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a2d8fb12791033824689ddd3115b1368d">   27</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;animation::AnimStateMachine*&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a2d8fb12791033824689ddd3115b1368d">AnimationStateGraphRuntimeBuilder::build</a>(</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>* skeleton, <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">ClipResolver</a>&amp; clips)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!skeleton || !clips)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">return</span> runtimeError&lt;animation::AnimStateMachine*&gt;(EditorStatus::Rejected,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                                         <span class="stringliteral">&quot;editor.animation.runtime-input&quot;</span>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                                         <span class="stringliteral">&quot;Animation skeleton and clip resolver are required&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">AnimationStateGraphDomain</a> domain;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a> compiled = domain.<a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a8763c1c4cfbd0b1238b0fdd6ccfff694">compile</a>(<a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (compiled.<a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">status</a> != EditorStatus::Applied)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;animation::AnimStateMachine*&gt;::failure</a>(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(compiled.<a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">status</a>, compiled.<a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a221fd26d202b1e28a0736d24afef1885">diagnostics</a>));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::map&lt;GraphNodeId, const GraphNodeRecord*&gt; nodes;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::map&lt;GraphPinId, GraphNodeId&gt; pinOwners;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a>&amp; node : <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>.nodes) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        nodes.emplace(node.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">id</a>, &amp;node);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; pin : node.pins) pinOwners.emplace(pin.id, node.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">id</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::map&lt;GraphNodeId, GraphNodeId&gt; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::map&lt;GraphNodeId, GraphNodeId&gt; <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphEdgeRecord.html">GraphEdgeRecord</a>&amp; edge : <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>.edges) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> GraphNodeId fromNode = pinOwners.at(edge.from);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> GraphNodeId toNode = pinOwners.at(edge.to);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (nodes.at(fromNode)-&gt;type == <span class="stringliteral">&quot;animation.state&quot;</span>) <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>[toNode] = fromNode;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">else</span> <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>[fromNode] = toNode;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">auto</span> machine = std::make_unique&lt;animation::AnimStateMachine&gt;(skeleton);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, node] : nodes) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (node-&gt;type != <span class="stringliteral">&quot;animation.state&quot;</span>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* clipAssetValue = runtimeField(node-&gt;properties, <span class="stringliteral">&quot;clip&quot;</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* clipAsset = clipAssetValue-&gt;getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a>* <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a> = clips(*clipAsset);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> runtimeError&lt;animation::AnimStateMachine*&gt;(EditorStatus::NotFound,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                             <span class="stringliteral">&quot;editor.animation.clip-not-found&quot;</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                                             <span class="stringliteral">&quot;Animation clip asset could not be resolved: &quot;</span> +</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                                                 *clipAsset);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        machine-&gt;addState(<span class="keywordtype">id</span>.<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>(), <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* entryValue = runtimeField(<a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>.parameters, <span class="stringliteral">&quot;entry&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    machine-&gt;setEntry(*entryValue-&gt;getIf&lt;std::string&gt;());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, node] : nodes) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (node-&gt;type != <span class="stringliteral">&quot;animation.transition&quot;</span>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a> = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;blendSeconds&quot;</span>)-&gt;getIf&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> hasExit = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;hasExitTime&quot;</span>)-&gt;getIf&lt;<span class="keywordtype">bool</span>&gt;();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> exitTime = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;exitTime&quot;</span>)-&gt;getIf&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> std::string <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;conditionKind&quot;</span>)-&gt;getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> std::string parameter = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;parameter&quot;</span>)-&gt;getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> std::string op = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;operator&quot;</span>)-&gt;getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> threshold = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;threshold&quot;</span>)-&gt;getIf&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> boolValue = *runtimeField(node-&gt;properties, <span class="stringliteral">&quot;boolValue&quot;</span>)-&gt;getIf&lt;<span class="keywordtype">bool</span>&gt;();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> transition = machine-&gt;addTransition(<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>.at(<span class="keywordtype">id</span>).value(), <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>.at(<span class="keywordtype">id</span>).value(),</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                                      <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        machine-&gt;setHasExitTime(transition, hasExit);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">if</span> (hasExit) machine-&gt;setExitTime(transition, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(exitTime));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> == <span class="stringliteral">&quot;float&quot;</span>)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            machine-&gt;addFloatCondition(transition, parameter, op, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(threshold));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> == <span class="stringliteral">&quot;bool&quot;</span>)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            machine-&gt;addBoolCondition(transition, parameter, boolValue);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> == <span class="stringliteral">&quot;trigger&quot;</span>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            machine-&gt;addTriggerCondition(transition, parameter);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;animation::AnimStateMachine*&gt;(machine.release());</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::animation_editing</span></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimStateMachine_8h_html"><div class="ttname"><a href="AnimStateMachine_8h.html">AnimStateMachine.h</a></div></div>
+<div class="ttc" id="aAnimationGraph_8h_html"><div class="ttname"><a href="AnimationGraph_8h.html">AnimationGraph.h</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a9ac2274b5c433a584adfb0f337eab980"><div class="ttname"><a href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a></div><div class="ttdeci">float blend</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00036">HexTerrain.cpp:36</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00079">AnimClip.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">eve::animation_editing::AnimationStateGraphDomain</a></div><div class="ttdoc">animation.state graph domain matching AnimStateMachine semantics.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00043">AnimationGraph.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_a8763c1c4cfbd0b1238b0fdd6ccfff694"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a8763c1c4cfbd0b1238b0fdd6ccfff694">eve::animation_editing::AnimationStateGraphDomain::compile</a></div><div class="ttdeci">AnimationGraphCompileResult compile(const GraphDocumentData &amp;graph) const</div><div class="ttdoc">Validate and compile a graph into a deterministic runtime-neutral definition.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00094">AnimationGraph.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder_html_a2d8fb12791033824689ddd3115b1368d"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a2d8fb12791033824689ddd3115b1368d">eve::animation_editing::AnimationStateGraphRuntimeBuilder::build</a></div><div class="ttdeci">EditorResult&lt; animation::AnimStateMachine * &gt; build(const GraphDocumentData &amp;graph, animation::AnimSkeleton *skeleton, const ClipResolver &amp;clips) const</div><div class="ttdoc">Build an AnimStateMachine; caller owns the returned machine.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraphRuntime_8cpp_source.html#l00027">AnimationGraphRuntime.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder_html_a7f3af0e6c4cb3dcc59161478a8063bfe"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">eve::animation_editing::AnimationStateGraphRuntimeBuilder::ClipResolver</a></div><div class="ttdeci">std::function&lt; animation::AnimClip *(const std::string &amp;asset)&gt; ClipResolver</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00060">AnimationGraph.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_af38afcaa2d6048edb43ecc098158a3f2"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">eve::editing::Value::getIf</a></div><div class="ttdeci">const T * getIf() const</div><div class="ttdoc">Return an immediately borrowed typed value.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00050">EditingValue.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationClip_8cpp_source.html#l00010">AnimationClip.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a71149fce33bc9588696b7d54b72f7f92"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00017">SkeletonOverlay.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_ab318e42a80fd1a8dca9e58d28fb1a540"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">eve::animation_editing::EditorValue</a></div><div class="ttdeci">editing::Value EditorValue</div><div class="ttdef"><b>Definition</b> <a href="AnimationEditingTypes_8h_source.html#l00025">AnimationEditingTypes.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_ae8d4779f45df94c6aab3165f06e07c7b"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#ae8d4779f45df94c6aab3165f06e07c7b">eve::animation_editing::EditorStatus</a></div><div class="ttdeci">editing::Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="AnimationEditingTypes_8h_source.html#l00024">AnimationEditingTypes.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">eve::animation_editing::AnimationGraphCompileResult</a></div><div class="ttdoc">Compilation result for a stable-reference animation state graph asset.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00029">AnimationGraph.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a221fd26d202b1e28a0736d24afef1885"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a221fd26d202b1e28a0736d24afef1885">eve::animation_editing::AnimationGraphCompileResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00033">AnimationGraph.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a3a5cd686a17d94589d849afeb88b5810"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">eve::animation_editing::AnimationGraphCompileResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00030">AnimationGraph.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html">eve::editing::GraphDocumentData</a></div><div class="ttdoc">Immutable graph document value sent to a domain compiler.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00038">EditingGraph.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphEdgeRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphEdgeRecord.html">eve::editing::GraphEdgeRecord</a></div><div class="ttdoc">Directed connection between an output and input pin.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00031">EditingGraph.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html">eve::editing::GraphNodeRecord</a></div><div class="ttdoc">Generic graph node independent of its domain.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00023">EditingGraph.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html">eve::editing::GraphPinRecord</a></div><div class="ttdoc">Stable typed pin owned by a graph node.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00015">EditingGraph.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html_a0f2765e75805274e5e85c47ac5f2ac96"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">eve::scene::NodeDesc::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00018">NodeDesc.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

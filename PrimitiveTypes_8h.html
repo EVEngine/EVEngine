@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/PrimitiveTypes.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">PrimitiveTypes.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="BlendMode_8h_source.html">graphics/BlendMode.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Color_8h_source.html">graphics/Color.h</a>&quot;</code><br />
+<code>#include &lt;glm/glm.hpp&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="PrimitiveTypes_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1RadialTessellation.html">eve::graphics::RadialTessellation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quality and screen-error policy used by circles and curved spatial primitives.  <a href="structeve_1_1graphics_1_1RadialTessellation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DashPattern.html">eve::graphics::DashPattern</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning alternating draw/gap pattern for stroked primitives.  <a href="structeve_1_1graphics_1_1DashPattern.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1StrokeStyle.html">eve::graphics::StrokeStyle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral stroke state shared by 2D and 3D canvases.  <a href="structeve_1_1graphics_1_1StrokeStyle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PrimitivePaint.html">eve::graphics::PrimitivePaint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral fill and stroke paint.  <a href="structeve_1_1graphics_1_1PrimitivePaint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">eve::graphics::ScenePrimitivePaint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Additional scene-pass state carried by every 3D command.  <a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SceneDrawContext.html">eve::graphics::SceneDrawContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable camera and viewport facts used to resolve one 3D draw list.  <a href="structeve_1_1graphics_1_1SceneDrawContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">eve::graphics::PrimitiveDrawStatistics</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-frame observable primitive workload.  <a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">eve::graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a3c999b9b6ed51f6349bf0cb1a3c7011c" id="r_a3c999b9b6ed51f6349bf0cb1a3c7011c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">eve::graphics::PaintMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8d2b1ddcb67066e4f983e5ce7e1b28c2">eve::graphics::FillAndStroke</a>
+ }</td></tr>
+<tr class="memdesc:a3c999b9b6ed51f6349bf0cb1a3c7011c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a primitive paints its interior, boundary, or both.  <a href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">更多...</a><br /></td></tr>
+<tr class="separator:a3c999b9b6ed51f6349bf0cb1a3c7011c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c335b7bf5f2ce1bec1fbda05da81b6" id="r_a04c335b7bf5f2ce1bec1fbda05da81b6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">eve::graphics::LineCap</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab2635ed1075287dea1eb1598a90df1fe">eve::graphics::Butt</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6aceb46ca115d05c51aa5a16a8867c3304">eve::graphics::Square</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab7f41fc1412ad2ee75e9b2635d3b9d5c">eve::graphics::Round</a>
+ }</td></tr>
+<tr class="memdesc:a04c335b7bf5f2ce1bec1fbda05da81b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape applied to each open line endpoint.  <a href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">更多...</a><br /></td></tr>
+<tr class="separator:a04c335b7bf5f2ce1bec1fbda05da81b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a773eb3cd86914aca6af6cc2d4206cb1d" id="r_a773eb3cd86914aca6af6cc2d4206cb1d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">eve::graphics::LineJoin</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1dae4396f81cd926bb129ccf3c147c64514">eve::graphics::Miter</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1da1b9ae4ca6d43fc984af318046e1e7bb5">eve::graphics::Bevel</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1dab7f41fc1412ad2ee75e9b2635d3b9d5c">eve::graphics::Round</a>
+ }</td></tr>
+<tr class="memdesc:a773eb3cd86914aca6af6cc2d4206cb1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape used where adjacent line segments meet.  <a href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">更多...</a><br /></td></tr>
+<tr class="separator:a773eb3cd86914aca6af6cc2d4206cb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac623dcff6a3c96f5d2f82722e9ec26ac" id="r_ac623dcff6a3c96f5d2f82722e9ec26ac"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">eve::graphics::WidthSpace</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828">eve::graphics::ScreenPixels</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa">eve::graphics::WorldUnits</a>
+ }</td></tr>
+<tr class="memdesc:ac623dcff6a3c96f5d2f82722e9ec26ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate space in which stroke width is measured.  <a href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">更多...</a><br /></td></tr>
+<tr class="separator:ac623dcff6a3c96f5d2f82722e9ec26ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab83c054bd211ff775e48dc735528ce1e" id="r_ab83c054bd211ff775e48dc735528ce1e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">eve::graphics::DashSpace</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1ea6ee27983416423ac1fd53c1d4f2bc828">eve::graphics::ScreenPixels</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1ea8eed2802a1077ce6e8670971de0fd1aa">eve::graphics::WorldUnits</a>
+ }</td></tr>
+<tr class="memdesc:ab83c054bd211ff775e48dc735528ce1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate space in which dash intervals are measured.  <a href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">更多...</a><br /></td></tr>
+<tr class="separator:ab83c054bd211ff775e48dc735528ce1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4de7e6ba5341eaa38149d1e9c6fe1b8" id="r_af4de7e6ba5341eaa38149d1e9c6fe1b8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">eve::graphics::PrimitiveDepthMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8a9677077bb2ef0421441917f57ac103ba">eve::graphics::TestAndWrite</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8aa9463c9f72315953501239b6c265ecb1">eve::graphics::TestOnly</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8afd038fc7f319e48f3115d92bf5bdbef9">eve::graphics::Ignore</a>
+ }</td></tr>
+<tr class="memdesc:af4de7e6ba5341eaa38149d1e9c6fe1b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth behavior of one 3D primitive.  <a href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">更多...</a><br /></td></tr>
+<tr class="separator:af4de7e6ba5341eaa38149d1e9c6fe1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20fca965a95453d11c9ba68fe40ad5c1" id="r_a20fca965a95453d11c9ba68fe40ad5c1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">eve::graphics::PrimitiveCullMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a6adf97f83acf6453d4a6a4b1070f3754">eve::graphics::None</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a0557fa923dcee4d0f86b1409f5c2167f">eve::graphics::Back</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a5835bab1ade0060909e31a06af2e2cde">eve::graphics::Front</a>
+ }</td></tr>
+<tr class="memdesc:a20fca965a95453d11c9ba68fe40ad5c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Face culling used by filled 3D primitives.  <a href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">更多...</a><br /></td></tr>
+<tr class="separator:a20fca965a95453d11c9ba68fe40ad5c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b1a7c8c113a9a08b1de0de0f855143a" id="r_a3b1a7c8c113a9a08b1de0de0f855143a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">eve::graphics::PrimitiveQuality</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa28d0edd045e05cf5af64e35ae0c4c6ef">eve::graphics::Low</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa87f8a6ab85c9ced3702b4ea641ad4bb5">eve::graphics::Medium</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa655d20c1ca69519ca647684edbb2db35">eve::graphics::High</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa1244cba6ca79bfda45de46141d32ea7b">eve::graphics::Adaptive</a>
+ }</td></tr>
+<tr class="memdesc:a3b1a7c8c113a9a08b1de0de0f855143a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reusable quality policy for radial primitive tessellation.  <a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">更多...</a><br /></td></tr>
+<tr class="separator:a3b1a7c8c113a9a08b1de0de0f855143a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56afc85822dd7ff28fc57f3ae1bd9fc0" id="r_a56afc85822dd7ff28fc57f3ae1bd9fc0"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">eve::graphics::PrimitiveRecordStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0a5b6352d4af330defb41d0bba3929b885">eve::graphics::Recorded</a>
+ }</td></tr>
+<tr class="memdesc:a56afc85822dd7ff28fc57f3ae1bd9fc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successful outcome of one atomic primitive recording operation.  <a href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">更多...</a><br /></td></tr>
+<tr class="separator:a56afc85822dd7ff28fc57f3ae1bd9fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a0186514ab7ab9454b8d6190ad020ea2f" id="r_a0186514ab7ab9454b8d6190ad020ea2f"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a0186514ab7ab9454b8d6190ad020ea2f">eve::graphics::resolveRadialSegments</a> (const <a class="el" href="structeve_1_1graphics_1_1RadialTessellation.html">RadialTessellation</a> &amp;tessellation, float projectedRadiusPixels)</td></tr>
+<tr class="memdesc:a0186514ab7ab9454b8d6190ad020ea2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a radial tessellation policy to a validated segment count.  <br /></td></tr>
+<tr class="separator:a0186514ab7ab9454b8d6190ad020ea2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingCommandRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditingCommandRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditingCommandRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditableTarget_8h.html">editing/EditableTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">EditingCommandDescriptor</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#ad924f45a08869f30aa729b74157ed278">   13</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CommandId</a>   <a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#ad924f45a08869f30aa729b74157ed278">id</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#af2ed56133b80cb19541e9c87d971ce1f">   14</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#af2ed56133b80cb19541e9c87d971ce1f">ownerModule</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#aa28ae3b4d3549d72098993de8fa46f99">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#aa28ae3b4d3549d72098993de8fa46f99">displayName</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a1c52d3624d59358fc1aa50cc4017a165">   16</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a1c52d3624d59358fc1aa50cc4017a165">category</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a0499c7e98674f927c84dec17a40ffad1">   17</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a0499c7e98674f927c84dec17a40ffad1">automationAllowed</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">   21</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">EditingCommandPlanner</a> =</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    std::function&lt;Result&lt;CommandPlan&gt;(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">CommandRequest</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">IEditingCommandRegistry</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a4801b26f173500b13edd92d77e37aedf">   32</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a4801b26f173500b13edd92d77e37aedf">capabilityName</a> = <span class="stringliteral">&quot;IEditingCommandRegistry&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a5f2cd6a1f195802764b1eb83f35c2101">   34</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a5f2cd6a1f195802764b1eb83f35c2101">~IEditingCommandRegistry</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">   36</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">registerPlannedCommand</a>(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_struct" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">EditingCommandDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">EditingCommandPlanner</a> planner) = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">   43</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::size_t&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">unregisterOwner</a>(<span class="keyword">const</span> std::string&amp; ownerModule) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace eve::editing</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEditableTarget_8h_html"><div class="ttname"><a href="EditableTarget_8h.html">EditableTarget.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html">eve::editing::IEditingCommandRegistry</a></div><div class="ttdoc">Lower-layer registration boundary implemented by an editor or runtime editing host.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00030">EditingCommandRegistry.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_a4801b26f173500b13edd92d77e37aedf"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a4801b26f173500b13edd92d77e37aedf">eve::editing::IEditingCommandRegistry::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00032">EditingCommandRegistry.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_a5f2cd6a1f195802764b1eb83f35c2101"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a5f2cd6a1f195802764b1eb83f35c2101">eve::editing::IEditingCommandRegistry::~IEditingCommandRegistry</a></div><div class="ttdeci">virtual ~IEditingCommandRegistry()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_a65f0d15ca87a6458217c81455433d8a5"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">eve::editing::IEditingCommandRegistry::registerPlannedCommand</a></div><div class="ttdeci">virtual Result&lt; void &gt; registerPlannedCommand(EditingCommandDescriptor descriptor, EditingCommandPlanner planner)=0</div><div class="ttdoc">Register or replace one domain-owned planned command.</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_ac71def4c7cfd22e505036eb316589893"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">eve::editing::IEditingCommandRegistry::unregisterOwner</a></div><div class="ttdeci">virtual Result&lt; std::size_t &gt; unregisterOwner(const std::string &amp;ownerModule)=0</div><div class="ttdoc">Remove every command registered by one domain module.</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3b5cef655231a09cdf9a90d51fd9345e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">eve::editing::EditingCommandPlanner</a></div><div class="ttdeci">std::function&lt; Result&lt; CommandPlan &gt;(IEditableTarget &amp;, const CommandRequest &amp;)&gt; EditingCommandPlanner</div><div class="ttdoc">Side-effect-free planner invoked with the resolved target.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00021">EditingCommandRegistry.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandRequest_html"><div class="ttname"><a href="structeve_1_1editing_1_1CommandRequest.html">eve::editing::CommandRequest</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00045">EditingProtocol.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html">eve::editing::EditingCommandDescriptor</a></div><div class="ttdoc">Domain-owned metadata for one planned editing command.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00012">EditingCommandRegistry.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_a0499c7e98674f927c84dec17a40ffad1"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a0499c7e98674f927c84dec17a40ffad1">eve::editing::EditingCommandDescriptor::automationAllowed</a></div><div class="ttdeci">bool automationAllowed</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00017">EditingCommandRegistry.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_a1c52d3624d59358fc1aa50cc4017a165"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#a1c52d3624d59358fc1aa50cc4017a165">eve::editing::EditingCommandDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00016">EditingCommandRegistry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_aa28ae3b4d3549d72098993de8fa46f99"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#aa28ae3b4d3549d72098993de8fa46f99">eve::editing::EditingCommandDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00015">EditingCommandRegistry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_ad924f45a08869f30aa729b74157ed278"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#ad924f45a08869f30aa729b74157ed278">eve::editing::EditingCommandDescriptor::id</a></div><div class="ttdeci">CommandId id</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00013">EditingCommandRegistry.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_af2ed56133b80cb19541e9c87d971ce1f"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#af2ed56133b80cb19541e9c87d971ce1f">eve::editing::EditingCommandDescriptor::ownerModule</a></div><div class="ttdeci">std::string ownerModule</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00014">EditingCommandRegistry.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

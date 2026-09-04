@@ -1,0 +1,793 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Result&lt; void &gt;类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Result_3_01void_01_4.html">Result&lt; void &gt;</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1Result_3_01void_01_4-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Result&lt; void &gt;类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Move-only operation result for actions with no value payload.  
+ <a href="classeve_1_1Result_3_01void_01_4.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Result_8h_source.html">Result.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::Result&lt; void &gt; 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1Result_3_01void_01_4.png" usemap="#eve::Result_3C_20void_20_3E_map" alt=""/>
+  <map id="eve::Result_3C_20void_20_3E_map" name="eve::Result_3C_20void_20_3E_map">
+<area href="classeve_1_1detail_1_1ResultObservation.html" title="Debug-only observation token shared by Result&lt;T&gt; specializations." alt="eve::detail::ResultObservation" shape="rect" coords="0,0,178,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab3bb98981672c79b5842bed5c03dfe69" id="r_ab3bb98981672c79b5842bed5c03dfe69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#ab3bb98981672c79b5842bed5c03dfe69">Result</a> (const <a class="el" href="classeve_1_1Result.html">Result</a> &amp;)=delete</td></tr>
+<tr class="separator:ab3bb98981672c79b5842bed5c03dfe69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bc58b6a89fb2ffc052566927943cfc1" id="r_a1bc58b6a89fb2ffc052566927943cfc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a1bc58b6a89fb2ffc052566927943cfc1">operator=</a> (const <a class="el" href="classeve_1_1Result.html">Result</a> &amp;)=delete</td></tr>
+<tr class="separator:a1bc58b6a89fb2ffc052566927943cfc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dfe0b574259a25b83c21a4edde3f918" id="r_a2dfe0b574259a25b83c21a4edde3f918"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a2dfe0b574259a25b83c21a4edde3f918">Result</a> (<a class="el" href="classeve_1_1Result.html">Result</a> &amp;&amp;other)</td></tr>
+<tr class="memdesc:a2dfe0b574259a25b83c21a4edde3f918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move a result and transfer its debug observation responsibility.  <br /></td></tr>
+<tr class="separator:a2dfe0b574259a25b83c21a4edde3f918"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10947e9b645cdd754adcb1f7f414be4" id="r_aa10947e9b645cdd754adcb1f7f414be4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#aa10947e9b645cdd754adcb1f7f414be4">operator=</a> (<a class="el" href="classeve_1_1Result.html">Result</a> &amp;&amp;other)</td></tr>
+<tr class="memdesc:aa10947e9b645cdd754adcb1f7f414be4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign after checking the destination's old result.  <br /></td></tr>
+<tr class="separator:aa10947e9b645cdd754adcb1f7f414be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18d816508fd802a87608171ce0c67354" id="r_a18d816508fd802a87608171ce0c67354"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">ok</a> () const noexcept</td></tr>
+<tr class="memdesc:a18d816508fd802a87608171ce0c67354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this result represents a non-failure outcome.  <br /></td></tr>
+<tr class="separator:a18d816508fd802a87608171ce0c67354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af856437b28bbe86ddc3f674ea09d3cc2" id="r_af856437b28bbe86ddc3f674ea09d3cc2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">status</a> () const noexcept</td></tr>
+<tr class="memdesc:af856437b28bbe86ddc3f674ea09d3cc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect the structured operation status.  <br /></td></tr>
+<tr class="separator:af856437b28bbe86ddc3f674ea09d3cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abff86252efa2e24c6481ed296921e3e7" id="r_abff86252efa2e24c6481ed296921e3e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">StatusCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#abff86252efa2e24c6481ed296921e3e7">code</a> () const noexcept</td></tr>
+<tr class="memdesc:abff86252efa2e24c6481ed296921e3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect the stable operation code.  <br /></td></tr>
+<tr class="separator:abff86252efa2e24c6481ed296921e3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9479293aca7bc92d6d4e2dc7b9e0b8cc" id="r_a9479293aca7bc92d6d4e2dc7b9e0b8cc"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a9479293aca7bc92d6d4e2dc7b9e0b8cc">diagnostics</a> () const noexcept</td></tr>
+<tr class="memdesc:a9479293aca7bc92d6d4e2dc7b9e0b8cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect all diagnostics; this counts as checking the <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>.  <br /></td></tr>
+<tr class="separator:a9479293aca7bc92d6d4e2dc7b9e0b8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ef24db25b4772ba964c4ae68a53942" id="r_a04ef24db25b4772ba964c4ae68a53942"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a04ef24db25b4772ba964c4ae68a53942">error</a> () const noexcept</td></tr>
+<tr class="memdesc:a04ef24db25b4772ba964c4ae68a53942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect the first diagnostic, or null when none was supplied.  <br /></td></tr>
+<tr class="separator:a04ef24db25b4772ba964c4ae68a53942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea74d280032898ddcb6dd610c42f9508" id="r_aea74d280032898ddcb6dd610c42f9508"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#aea74d280032898ddcb6dd610c42f9508">operator bool</a> () const noexcept</td></tr>
+<tr class="memdesc:aea74d280032898ddcb6dd610c42f9508"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit boolean conversion for control-flow checks.  <br /></td></tr>
+<tr class="separator:aea74d280032898ddcb6dd610c42f9508"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ad366b7c1159dfb21568c074d6fc58" id="r_a76ad366b7c1159dfb21568c074d6fc58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a76ad366b7c1159dfb21568c074d6fc58">value</a> () const</td></tr>
+<tr class="memdesc:a76ad366b7c1159dfb21568c074d6fc58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a successful void operation as checked.  <br /></td></tr>
+<tr class="separator:a76ad366b7c1159dfb21568c074d6fc58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa25a474a0e9b02d286999f1e9a50e10a" id="r_aa25a474a0e9b02d286999f1e9a50e10a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a> (std::string_view reason={}) const noexcept</td></tr>
+<tr class="memdesc:aa25a474a0e9b02d286999f1e9a50e10a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly discard this result after documenting the reason.  <br /></td></tr>
+<tr class="separator:aa25a474a0e9b02d286999f1e9a50e10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e811e57ee138f1572ff70a46029a485" id="r_a5e811e57ee138f1572ff70a46029a485"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a5e811e57ee138f1572ff70a46029a485">expect</a> (std::string_view message) const</td></tr>
+<tr class="memdesc:a5e811e57ee138f1572ff70a46029a485"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require success for a void operation.  <br /></td></tr>
+<tr class="separator:a5e811e57ee138f1572ff70a46029a485"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a834fb6906c4453536ab0b30aeff15d9d" id="r_a834fb6906c4453536ab0b30aeff15d9d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a834fb6906c4453536ab0b30aeff15d9d">success</a> ()</td></tr>
+<tr class="memdesc:a834fb6906c4453536ab0b30aeff15d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a successful void result.  <br /></td></tr>
+<tr class="separator:a834fb6906c4453536ab0b30aeff15d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d84fa75b6bdd36a78bee927dac9f3b2" id="r_a7d84fa75b6bdd36a78bee927dac9f3b2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a7d84fa75b6bdd36a78bee927dac9f3b2">success</a> (<a class="el" href="classeve_1_1Status.html">Status</a> <a class="el" href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">status</a>)</td></tr>
+<tr class="memdesc:a7d84fa75b6bdd36a78bee927dac9f3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a successful void result with an explicit status.  <br /></td></tr>
+<tr class="separator:a7d84fa75b6bdd36a78bee927dac9f3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a422ab87bf07cd9236515b95799efdc21" id="r_a422ab87bf07cd9236515b95799efdc21"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a422ab87bf07cd9236515b95799efdc21">failure</a> (<a class="el" href="classeve_1_1Status.html">Status</a> <a class="el" href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">status</a>)</td></tr>
+<tr class="memdesc:a422ab87bf07cd9236515b95799efdc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a failed void result from a structured status.  <br /></td></tr>
+<tr class="separator:a422ab87bf07cd9236515b95799efdc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813bf7411e4c20fb49afc45042a8d349" id="r_a813bf7411e4c20fb49afc45042a8d349"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Result_3_01void_01_4.html#a813bf7411e4c20fb49afc45042a8d349">failure</a> (<a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> diagnostic)</td></tr>
+<tr class="memdesc:a813bf7411e4c20fb49afc45042a8d349"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a failed void result from one structured diagnostic.  <br /></td></tr>
+<tr class="separator:a813bf7411e4c20fb49afc45042a8d349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Move-only operation result for actions with no value payload. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00377">377</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab3bb98981672c79b5842bed5c03dfe69" name="ab3bb98981672c79b5842bed5c03dfe69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3bb98981672c79b5842bed5c03dfe69">&#9670;&#160;</a></span>Result() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::Result </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2dfe0b574259a25b83c21a4edde3f918" name="a2dfe0b574259a25b83c21a4edde3f918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dfe0b574259a25b83c21a4edde3f918">&#9670;&#160;</a></span>Result() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::Result </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move a result and transfer its debug observation responsibility. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00111">detail</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="abff86252efa2e24c6481ed296921e3e7" name="abff86252efa2e24c6481ed296921e3e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abff86252efa2e24c6481ed296921e3e7">&#9670;&#160;</a></span>code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">StatusCode</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::code </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inspect the stable operation code. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00428">428</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9479293aca7bc92d6d4e2dc7b9e0b8cc" name="a9479293aca7bc92d6d4e2dc7b9e0b8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9479293aca7bc92d6d4e2dc7b9e0b8cc">&#9670;&#160;</a></span>diagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> &gt; &amp; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::diagnostics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inspect all diagnostics; this counts as checking the <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00113">eve::editor::EditorSession::executeCommand()</a>.</p>
+
+</div>
+</div>
+<a id="a04ef24db25b4772ba964c4ae68a53942" name="a04ef24db25b4772ba964c4ae68a53942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04ef24db25b4772ba964c4ae68a53942">&#9670;&#160;</a></span>error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> * <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::error </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inspect the first diagnostic, or null when none was supplied. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer into this <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>'s <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a>; nullptr when no diagnostic exists. @ownership Borrowed; the <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> owns the diagnostic storage. @nullable Yes. @lifetime Valid until this <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> is destroyed or move-assigned. @thread Affine to this <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>; no synchronization. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00448">448</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e811e57ee138f1572ff70a46029a485" name="a5e811e57ee138f1572ff70a46029a485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e811e57ee138f1572ff70a46029a485">&#9670;&#160;</a></span>expect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::expect </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require success for a void operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">message</td><td>Context to include in the assertion on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">zeroerr::AssertionData</td><td>in assertion-enabled builds on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00476">476</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00111">detail</a> , 以及 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00185">eve::level_editing::LevelFormatRegistry::LevelFormatRegistry()</a>, <a class="el" href="PointSet_8cpp_source.html#l00988">eve::procgen::mathPointFloatAttribute()</a>, <a class="el" href="Targeting_8cpp_source.html#l00335">eve::sensing::TargetingResolver::resolve()</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00476">eve::pixelworld::PixelWorld::setMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a813bf7411e4c20fb49afc45042a8d349" name="a813bf7411e4c20fb49afc45042a8d349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a813bf7411e4c20fb49afc45042a8d349">&#9670;&#160;</a></span>failure() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">Result</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::failure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a>&#160;</td>
+          <td class="paramname"><em>diagnostic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a failed void result from one structured diagnostic. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00395">failure()</a> , 以及 <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Result_8h_source.html#l00395">failure()</a>.</p>
+
+</div>
+</div>
+<a id="a422ab87bf07cd9236515b95799efdc21" name="a422ab87bf07cd9236515b95799efdc21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a422ab87bf07cd9236515b95799efdc21">&#9670;&#160;</a></span>failure() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">Result</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::failure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Status.html">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a failed void result from a structured status. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="aa25a474a0e9b02d286999f1e9a50e10a" name="aa25a474a0e9b02d286999f1e9a50e10a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa25a474a0e9b02d286999f1e9a50e10a">&#9670;&#160;</a></span>ignore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::ignore </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>{}</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicitly discard this result after documenting the reason. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reason</td><td>Human-readable reason for intentionally ignoring the result. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a>, <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00067">eve::statepatch::StatePatchStateAdapter::apply()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00192">eve::ui::ObjectRegistry::clear()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00202">eve::ui::ObjectRegistry::clearAll()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00041">eve::rpg::BattleSystem::registerSkillDamage()</a>, <a class="el" href="Battle_8cpp_source.html#l00076">eve::rpg::Battle::setAction()</a>, <a class="el" href="PointSet_8cpp_source.html#l00374">eve::procgen::PointSet::setBoolAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00334">eve::procgen::PointSet::setFloatAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00354">eve::procgen::PointSet::setIntAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00424">eve::procgen::PointSet::setStringAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00394">eve::procgen::PointSet::setVectorAttribute()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04428">eve::rts::CombatFireSystem::step()</a>, <a class="el" href="AnimGraph_8cpp_source.html#l00284">eve::animation::AnimGraph::update()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00217">eve::animation::AnimLayerMixer::update()</a>, <a class="el" href="AnimSyncGroup_8cpp_source.html#l00069">eve::animation::AnimSyncGroup::update()</a>, <a class="el" href="AnimTrail_8cpp_source.html#l00167">eve::animation::AnimTrail::update()</a>, <a class="el" href="ControlAnim_8cpp_source.html#l00171">eve::animation::ControlAnim::update()</a>, <a class="el" href="ControlPose_8cpp_source.html#l00312">eve::animation::ControlPose::update()</a> , 以及 <a class="el" href="MotionMatcher_8cpp_source.html#l00249">eve::animation::MotionMatcher::update()</a>.</p>
+
+</div>
+</div>
+<a id="a18d816508fd802a87608171ce0c67354" name="a18d816508fd802a87608171ce0c67354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18d816508fd802a87608171ce0c67354">&#9670;&#160;</a></span>ok()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::ok </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this result represents a non-failure outcome. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00570">eve::dialogue::DialogueFlow::advance()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00135">eve::vehicle::VehicleSettlementAdapter::armorShield()</a>, <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00298">eve::rpg::RPGSettlementAdapter::clamp()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00191">eve::vehicle::VehicleSettlementAdapter::clamp()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a>, <a class="el" href="I18n_8cpp_source.html#l00442">eve::i18n::I18n::loadFromFile()</a>, <a class="el" href="I18n_8cpp_source.html#l00283">eve::i18n::I18n::loadFromJson()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00415">eve::housegen_editing::HouseGenDocumentTarget::makeCreateComponent()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00113">eve::rpg::RPGActor::removeStatus()</a>, <a class="el" href="I18n_8cpp_source.html#l00457">eve::i18n::I18n::setLanguage()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00145">eve::rpg::RPGSettlementAdapter::sourceModifiers()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00096">eve::vehicle::VehicleSettlementAdapter::sourceModifiers()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00558">eve::dialogue::DialogueFlow::start()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00214">eve::rpg::RPGSettlementAdapter::targetMitigation()</a>, <a class="el" href="I18n_8cpp_source.html#l00639">eve::i18n::I18n::update()</a> , 以及 <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00153">eve::procgen_editing::TextureRecipeTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="aea74d280032898ddcb6dd610c42f9508" name="aea74d280032898ddcb6dd610c42f9508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea74d280032898ddcb6dd610c42f9508">&#9670;&#160;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit boolean conversion for control-flow checks. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00454">454</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+</div>
+</div>
+<a id="a1bc58b6a89fb2ffc052566927943cfc1" name="a1bc58b6a89fb2ffc052566927943cfc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc58b6a89fb2ffc052566927943cfc1">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a> &amp; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa10947e9b645cdd754adcb1f7f414be4" name="aa10947e9b645cdd754adcb1f7f414be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa10947e9b645cdd754adcb1f7f414be4">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a> &amp; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move-assign after checking the destination's old result. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00407">407</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af856437b28bbe86ddc3f674ea09d3cc2" name="af856437b28bbe86ddc3f674ea09d3cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af856437b28bbe86ddc3f674ea09d3cc2">&#9670;&#160;</a></span>status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::status </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inspect the structured operation status. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00422">422</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a834fb6906c4453536ab0b30aeff15d9d" name="a834fb6906c4453536ab0b30aeff15d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834fb6906c4453536ab0b30aeff15d9d">&#9670;&#160;</a></span>success() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">Result</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::success </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a successful void result. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7d84fa75b6bdd36a78bee927dac9f3b2" name="a7d84fa75b6bdd36a78bee927dac9f3b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d84fa75b6bdd36a78bee927dac9f3b2">&#9670;&#160;</a></span>success() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">Result</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::success </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Status.html">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a successful void result with an explicit status. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="a76ad366b7c1159dfb21568c074d6fc58" name="a76ad366b7c1159dfb21568c074d6fc58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76ad366b7c1159dfb21568c074d6fc58">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;::value </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark a successful void operation as checked. </p>
+
+<p class="definition">在文件 <a class="el" href="Result_8h_source.html">Result.h</a> 第 <a class="el" href="Result_8h_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Result_8h_source.html">Result.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

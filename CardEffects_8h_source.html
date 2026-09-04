@@ -1,0 +1,317 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/card/CardEffects.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b6d14880155a7b1832962a5fc46a0e3c.html">card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CardEffects.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CardEffects_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="EffectContainer_8h.html">effects/EffectContainer.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1card.html">eve::card</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6">   25</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6">CardEffectKind</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6ab9f24e83531326204197015b2f43a93f">Damage</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6af357105e6becc3076a3da9b43465051a">Heal</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6a970da5f1f2e32aeb9e488dd017160ab4">Shield</a> };</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectTarget.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectTarget.html#acd5bfbfbb520116cf641aa2c4b0bff28">   29</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectTarget.html#acd5bfbfbb520116cf641aa2c4b0bff28">health</a>        = 100;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectTarget.html#a2674c75479602ef09764be4c7b7196f0">   30</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectTarget.html#a2674c75479602ef09764be4c7b7196f0">maxHealth</a>     = 100;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectTarget.html#ab12fbfd0557cc3e51f29becc32903f6e">   31</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectTarget.html#ab12fbfd0557cc3e51f29becc32903f6e">barrier</a>       = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectTarget.html#aa758f9b5e497e148989ddaaeea1635ad">   32</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectTarget.html#aa758f9b5e497e148989ddaaeea1635ad">deathTriggers</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardEffectDefinition.html">CardEffectDefinition</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a33677cab763c247aea69e238569062d7">   37</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a33677cab763c247aea69e238569062d7">id</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#af0b34f037d27e2c8eb22f0c6ea6fc62b">   38</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#af0b34f037d27e2c8eb22f0c6ea6fc62b">source</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a3745cc6e130d383cf1d26bcb270bf41c">   39</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a3745cc6e130d383cf1d26bcb270bf41c">duration</a>  = 0.0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a220a8506f11978f99c624e5cfc518bec">   40</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a220a8506f11978f99c624e5cfc518bec">period</a>    = 0.0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a23e232bb12e2298b9032f86fbd10069b">   41</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a23e232bb12e2298b9032f86fbd10069b">magnitude</a> = 0.0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#abd1a3454baae0041f9c9220dd547278f">   42</a></span>    <a class="code hl_struct" href="structeve_1_1effects_1_1EffectPolicy.html">effects::EffectPolicy</a>    <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#abd1a3454baae0041f9c9220dd547278f">policy</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a3ca859090511f56ffeffc98bb01df25e">   43</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6">CardEffectKind</a>           <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a3ca859090511f56ffeffc98bb01df25e">kind</a>         = <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6ab9f24e83531326204197015b2f43a93f">CardEffectKind::Damage</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a0b01e6bd53ad8c7f786530cb84558394">   44</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a0b01e6bd53ad8c7f786530cb84558394">deathTrigger</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectDefinition.html#a1789d13c0647b0d99fee0e818b38875c">   45</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectDefinition.html#a1789d13c0647b0d99fee0e818b38875c">tags</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectUpdate.html">   49</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardEffectUpdate.html">CardEffectUpdate</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectUpdate.html#a33ab7501477523b2e883be94ff6f2201">   50</a></span>    <a class="code hl_struct" href="structeve_1_1effects_1_1EffectUpdateSummary.html">effects::EffectUpdateSummary</a> <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectUpdate.html#a33ab7501477523b2e883be94ff6f2201">lifecycle</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectUpdate.html#a4dbed52ea757fb68ee52544ff41c8eb2">   51</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectUpdate.html#a4dbed52ea757fb68ee52544ff41c8eb2">settled</a>        = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectUpdate.html#af8e66edfa6876afe3ea88e773484e5ac">   52</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectUpdate.html#af8e66edfa6876afe3ea88e773484e5ac">absorbed</a>       = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectUpdate.html#a25c438ec8e9312bc046bcd23e7a44930">   53</a></span>    <span class="keywordtype">bool</span>                         <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectUpdate.html#a25c438ec8e9312bc046bcd23e7a44930">deathTriggered</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectSnapshot.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardEffectSnapshot.html">CardEffectSnapshot</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectSnapshot.html#a5ae5a3071e67f403604e52d9aea4c24b">   58</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectContainer.html">effects::EffectContainer</a> <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectSnapshot.html#a5ae5a3071e67f403604e52d9aea4c24b">effects</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardEffectSnapshot.html#ac94ed5fcfea9ee8c4573ad216f3e4d9a">   59</a></span>    <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>         <a class="code hl_variable" href="structeve_1_1card_1_1CardEffectSnapshot.html#ac94ed5fcfea9ee8c4573ad216f3e4d9a">target</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="};">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardEffectExecutor.html">   63</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardEffectExecutor.html">CardEffectExecutor</a> {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectExecutor.html#a083f6a5fb1461f71ad9889b2d6a21efe">applyImmediate</a>(<a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>&amp;              <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                                   <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1effects_1_1EffectInstance.html">effects::EffectInstance</a>&amp; effect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CardEffectUpdate&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectExecutor.html#a3ebe5386d83f954c6959f5633faefd96">settle</a>(<a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>&amp;            <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                                                       <a class="code hl_struct" href="structeve_1_1effects_1_1EffectUpdateSummary.html">effects::EffectUpdateSummary</a> lifecycle) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardEffectAdapter.html">   75</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardEffectAdapter.html">CardEffectAdapter</a> {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a9907478dd0f2576adb64a8c04a7542a1">initializeTarget</a>(<a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#aa17b0f7cca1e329126cce150fb393764">target</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;effects::EffectHandle&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a8d6cd21afb9dd03236803859c091800e">apply</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectDefinition.html">CardEffectDefinition</a>&amp; definition,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                                           <a class="code hl_class" href="classeve_1_1SubjectRef.html">eve::SubjectRef</a>             subject);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#abb1ed10f7ae8ec7281fd6f0ab0151ba3">remove</a>(<a class="code hl_struct" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CardEffectUpdate&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#ade87b44fd385f003f05e2cedede89563">advance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a835144c23351977f3822d47a0bd6399b">count</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectSnapshot.html">CardEffectSnapshot</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a4ca260f010e59dbccc54706cbc9c0113">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a2ebe40572d16ffa4e2f33f0f7e4cc053">restore</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectSnapshot.html">CardEffectSnapshot</a>&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a4ca260f010e59dbccc54706cbc9c0113">snapshot</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;const effects::EffectInstance*&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#aef71f458adbe5c5b77c5b9e0e0d82fcf">resolve</a>(<a class="code hl_struct" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardEffectAdapter.html#aa17b0f7cca1e329126cce150fb393764">   99</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#aa17b0f7cca1e329126cce150fb393764">target</a>() noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardEffectAdapter.html#a722ebc5af3b8acdf33b6459d91658822">  101</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardEffectAdapter.html#a722ebc5af3b8acdf33b6459d91658822">target</a>() const noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectContainer.html">effects::EffectContainer</a> container_;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_class" href="classeve_1_1card_1_1CardEffectExecutor.html">CardEffectExecutor</a>       executor_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_struct" href="structeve_1_1card_1_1CardEffectTarget.html">CardEffectTarget</a>         target_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}  <span class="comment">// namespace eve::card</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEffectContainer_8h_html"><div class="ttname"><a href="EffectContainer_8h.html">EffectContainer.h</a></div><div class="ttdoc">Owning effect storage and lifecycle-only executor.</div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html">eve::card::CardEffectAdapter</a></div><div class="ttdoc">Card adapter composing the common lifecycle container with CardEffectExecutor.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00075">CardEffects.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a2ebe40572d16ffa4e2f33f0f7e4cc053"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a2ebe40572d16ffa4e2f33f0f7e4cc053">eve::card::CardEffectAdapter::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const CardEffectSnapshot &amp;snapshot)</div><div class="ttdoc">Restore a snapshot and invalidate every pre-restore effect handle.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00161">CardEffects.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a4ca260f010e59dbccc54706cbc9c0113"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a4ca260f010e59dbccc54706cbc9c0113">eve::card::CardEffectAdapter::snapshot</a></div><div class="ttdeci">CardEffectSnapshot snapshot() const</div><div class="ttdoc">Capture a deep lifecycle snapshot.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00159">CardEffects.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a722ebc5af3b8acdf33b6459d91658822"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a722ebc5af3b8acdf33b6459d91658822">eve::card::CardEffectAdapter::target</a></div><div class="ttdeci">const CardEffectTarget &amp; target() const noexcept</div><div class="ttdoc">Return the read-only card target state.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00101">CardEffects.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a835144c23351977f3822d47a0bd6399b"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a835144c23351977f3822d47a0bd6399b">eve::card::CardEffectAdapter::count</a></div><div class="ttdeci">std::size_t count() const noexcept</div><div class="ttdoc">Return the number of active card effects.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00157">CardEffects.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a8d6cd21afb9dd03236803859c091800e"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a8d6cd21afb9dd03236803859c091800e">eve::card::CardEffectAdapter::apply</a></div><div class="ttdeci">eve::Result&lt; effects::EffectHandle &gt; apply(const CardEffectDefinition &amp;definition, eve::SubjectRef subject)</div><div class="ttdoc">Apply one typed card effect and return its generation-qualified handle.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00096">CardEffects.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_a9907478dd0f2576adb64a8c04a7542a1"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#a9907478dd0f2576adb64a8c04a7542a1">eve::card::CardEffectAdapter::initializeTarget</a></div><div class="ttdeci">eve::Result&lt; void &gt; initializeTarget(CardEffectTarget target)</div><div class="ttdoc">Seed the domain target before the first effect is applied.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00024">CardEffects.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_aa17b0f7cca1e329126cce150fb393764"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#aa17b0f7cca1e329126cce150fb393764">eve::card::CardEffectAdapter::target</a></div><div class="ttdeci">CardEffectTarget &amp; target() noexcept</div><div class="ttdoc">Return the mutable card target state owned by this adapter.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00099">CardEffects.h:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_abb1ed10f7ae8ec7281fd6f0ab0151ba3"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#abb1ed10f7ae8ec7281fd6f0ab0151ba3">eve::card::CardEffectAdapter::remove</a></div><div class="ttdeci">eve::Result&lt; void &gt; remove(effects::EffectHandle handle)</div><div class="ttdoc">Remove one effect handle; stale handles are rejected.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00138">CardEffects.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_ade87b44fd385f003f05e2cedede89563"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#ade87b44fd385f003f05e2cedede89563">eve::card::CardEffectAdapter::advance</a></div><div class="ttdeci">eve::Result&lt; CardEffectUpdate &gt; advance(const eve::SimulationStep &amp;step)</div><div class="ttdoc">Advance and settle card effects atomically for one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00144">CardEffects.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectAdapter_html_aef71f458adbe5c5b77c5b9e0e0d82fcf"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectAdapter.html#aef71f458adbe5c5b77c5b9e0e0d82fcf">eve::card::CardEffectAdapter::resolve</a></div><div class="ttdeci">eve::Result&lt; const effects::EffectInstance * &gt; resolve(effects::EffectHandle handle) const</div><div class="ttdoc">Resolve a live handle as a borrowed observation.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00171">CardEffects.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectExecutor_html"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectExecutor.html">eve::card::CardEffectExecutor</a></div><div class="ttdoc">Card executor: interprets card policy without owning effect instances.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00063">CardEffects.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectExecutor_html_a083f6a5fb1461f71ad9889b2d6a21efe"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectExecutor.html#a083f6a5fb1461f71ad9889b2d6a21efe">eve::card::CardEffectExecutor::applyImmediate</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyImmediate(CardEffectTarget &amp;target, const effects::EffectInstance &amp;effect) const</div><div class="ttdoc">Apply immediate shield semantics to a staged target.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00035">CardEffects.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardEffectExecutor_html_a3ebe5386d83f954c6959f5633faefd96"><div class="ttname"><a href="classeve_1_1card_1_1CardEffectExecutor.html#a3ebe5386d83f954c6959f5633faefd96">eve::card::CardEffectExecutor::settle</a></div><div class="ttdeci">eve::Result&lt; CardEffectUpdate &gt; settle(CardEffectTarget &amp;target, effects::EffectUpdateSummary lifecycle) const</div><div class="ttdoc">Settle all common periodic triggers using card shield/death rules.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8cpp_source.html#l00049">CardEffects.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectContainer_html"><div class="ttname"><a href="classeve_1_1effects_1_1EffectContainer.html">eve::effects::EffectContainer</a></div><div class="ttdoc">Owns active effect instances and their deterministic lifecycle events.</div><div class="ttdef"><b>Definition</b> <a href="EffectContainer_8h_source.html#l00031">EffectContainer.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html"><div class="ttname"><a href="namespaceeve_1_1card.html">eve::card</a></div><div class="ttdef"><b>Definition</b> <a href="Card_8cpp_source.html#l00016">Card.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a64a3927265463ba39cf426ebdb9b3cd6"><div class="ttname"><a href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6">eve::card::CardEffectKind</a></div><div class="ttdeci">CardEffectKind</div><div class="ttdoc">Card-specific interpretation of an effect magnitude.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00025">CardEffects.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a64a3927265463ba39cf426ebdb9b3cd6a970da5f1f2e32aeb9e488dd017160ab4"><div class="ttname"><a href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6a970da5f1f2e32aeb9e488dd017160ab4">eve::card::CardEffectKind::Shield</a></div><div class="ttdeci">@ Shield</div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a64a3927265463ba39cf426ebdb9b3cd6ab9f24e83531326204197015b2f43a93f"><div class="ttname"><a href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6ab9f24e83531326204197015b2f43a93f">eve::card::CardEffectKind::Damage</a></div><div class="ttdeci">@ Damage</div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a64a3927265463ba39cf426ebdb9b3cd6af357105e6becc3076a3da9b43465051a"><div class="ttname"><a href="namespaceeve_1_1card.html#a64a3927265463ba39cf426ebdb9b3cd6af357105e6becc3076a3da9b43465051a">eve::card::CardEffectKind::Heal</a></div><div class="ttdeci">@ Heal</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html">eve::card::CardEffectDefinition</a></div><div class="ttdoc">Strong card definition projected into the common effect definition.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00036">CardEffects.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a0b01e6bd53ad8c7f786530cb84558394"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a0b01e6bd53ad8c7f786530cb84558394">eve::card::CardEffectDefinition::deathTrigger</a></div><div class="ttdeci">bool deathTrigger</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00044">CardEffects.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a1789d13c0647b0d99fee0e818b38875c"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a1789d13c0647b0d99fee0e818b38875c">eve::card::CardEffectDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00045">CardEffects.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a220a8506f11978f99c624e5cfc518bec"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a220a8506f11978f99c624e5cfc518bec">eve::card::CardEffectDefinition::period</a></div><div class="ttdeci">double period</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00040">CardEffects.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a23e232bb12e2298b9032f86fbd10069b"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a23e232bb12e2298b9032f86fbd10069b">eve::card::CardEffectDefinition::magnitude</a></div><div class="ttdeci">double magnitude</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00041">CardEffects.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a33677cab763c247aea69e238569062d7"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a33677cab763c247aea69e238569062d7">eve::card::CardEffectDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00037">CardEffects.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a3745cc6e130d383cf1d26bcb270bf41c"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a3745cc6e130d383cf1d26bcb270bf41c">eve::card::CardEffectDefinition::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00039">CardEffects.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_a3ca859090511f56ffeffc98bb01df25e"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#a3ca859090511f56ffeffc98bb01df25e">eve::card::CardEffectDefinition::kind</a></div><div class="ttdeci">CardEffectKind kind</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00043">CardEffects.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_abd1a3454baae0041f9c9220dd547278f"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#abd1a3454baae0041f9c9220dd547278f">eve::card::CardEffectDefinition::policy</a></div><div class="ttdeci">effects::EffectPolicy policy</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00042">CardEffects.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectDefinition_html_af0b34f037d27e2c8eb22f0c6ea6fc62b"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectDefinition.html#af0b34f037d27e2c8eb22f0c6ea6fc62b">eve::card::CardEffectDefinition::source</a></div><div class="ttdeci">std::string source</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00038">CardEffects.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectSnapshot_html"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectSnapshot.html">eve::card::CardEffectSnapshot</a></div><div class="ttdoc">Serializable in-memory card effect snapshot.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00057">CardEffects.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectSnapshot_html_a5ae5a3071e67f403604e52d9aea4c24b"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectSnapshot.html#a5ae5a3071e67f403604e52d9aea4c24b">eve::card::CardEffectSnapshot::effects</a></div><div class="ttdeci">effects::EffectContainer effects</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00058">CardEffects.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectSnapshot_html_ac94ed5fcfea9ee8c4573ad216f3e4d9a"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectSnapshot.html#ac94ed5fcfea9ee8c4573ad216f3e4d9a">eve::card::CardEffectSnapshot::target</a></div><div class="ttdeci">CardEffectTarget target</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00059">CardEffects.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectTarget_html"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectTarget.html">eve::card::CardEffectTarget</a></div><div class="ttdoc">Mutable card combat state changed by the card effect executor.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00028">CardEffects.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectTarget_html_a2674c75479602ef09764be4c7b7196f0"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectTarget.html#a2674c75479602ef09764be4c7b7196f0">eve::card::CardEffectTarget::maxHealth</a></div><div class="ttdeci">int maxHealth</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00030">CardEffects.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectTarget_html_aa758f9b5e497e148989ddaaeea1635ad"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectTarget.html#aa758f9b5e497e148989ddaaeea1635ad">eve::card::CardEffectTarget::deathTriggers</a></div><div class="ttdeci">std::uint32_t deathTriggers</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00032">CardEffects.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectTarget_html_ab12fbfd0557cc3e51f29becc32903f6e"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectTarget.html#ab12fbfd0557cc3e51f29becc32903f6e">eve::card::CardEffectTarget::barrier</a></div><div class="ttdeci">int barrier</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00031">CardEffects.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectTarget_html_acd5bfbfbb520116cf641aa2c4b0bff28"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectTarget.html#acd5bfbfbb520116cf641aa2c4b0bff28">eve::card::CardEffectTarget::health</a></div><div class="ttdeci">int health</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00029">CardEffects.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectUpdate_html"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectUpdate.html">eve::card::CardEffectUpdate</a></div><div class="ttdoc">Result of one card effect lifecycle step and its domain settlement.</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00049">CardEffects.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectUpdate_html_a25c438ec8e9312bc046bcd23e7a44930"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectUpdate.html#a25c438ec8e9312bc046bcd23e7a44930">eve::card::CardEffectUpdate::deathTriggered</a></div><div class="ttdeci">bool deathTriggered</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00053">CardEffects.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectUpdate_html_a33ab7501477523b2e883be94ff6f2201"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectUpdate.html#a33ab7501477523b2e883be94ff6f2201">eve::card::CardEffectUpdate::lifecycle</a></div><div class="ttdeci">effects::EffectUpdateSummary lifecycle</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00050">CardEffects.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectUpdate_html_a4dbed52ea757fb68ee52544ff41c8eb2"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectUpdate.html#a4dbed52ea757fb68ee52544ff41c8eb2">eve::card::CardEffectUpdate::settled</a></div><div class="ttdeci">std::uint32_t settled</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00051">CardEffects.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardEffectUpdate_html_af8e66edfa6876afe3ea88e773484e5ac"><div class="ttname"><a href="structeve_1_1card_1_1CardEffectUpdate.html#af8e66edfa6876afe3ea88e773484e5ac">eve::card::CardEffectUpdate::absorbed</a></div><div class="ttdeci">std::uint32_t absorbed</div><div class="ttdef"><b>Definition</b> <a href="CardEffects_8h_source.html#l00052">CardEffects.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectHandle_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectHandle.html">eve::effects::EffectHandle</a></div><div class="ttdoc">Generation-qualified local reference to a canonical effect instance.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00171">EffectTypes.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectInstance_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectInstance.html">eve::effects::EffectInstance</a></div><div class="ttdoc">One owned runtime effect fact.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00125">EffectTypes.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectPolicy_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectPolicy.html">eve::effects::EffectPolicy</a></div><div class="ttdoc">Independent policy dimensions used when applying an effect definition.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00051">EffectTypes.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectUpdateSummary_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectUpdateSummary.html">eve::effects::EffectUpdateSummary</a></div><div class="ttdoc">Summary returned by the lifecycle executor after one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00210">EffectTypes.h:210</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::DatabasePanel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1DatabasePanel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::DatabasePanel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Reflection-driven database panel (DevTools, MVVM).  
+ <a href="classeve_1_1ui_1_1DatabasePanel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DatabasePanel_8h_source.html">DatabasePanel.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9bda810348215081abd0491a4469c6da" id="r_a9bda810348215081abd0491a4469c6da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a9bda810348215081abd0491a4469c6da">DatabasePanel</a> ()=default</td></tr>
+<tr class="separator:a9bda810348215081abd0491a4469c6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbb5a8b3b8a1dafb79e429ba7a8b0aca" id="r_afbb5a8b3b8a1dafb79e429ba7a8b0aca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#afbb5a8b3b8a1dafb79e429ba7a8b0aca">~DatabasePanel</a> ()</td></tr>
+<tr class="separator:afbb5a8b3b8a1dafb79e429ba7a8b0aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278a9653dc6043f25fe20e5f8692bd94" id="r_a278a9653dc6043f25fe20e5f8692bd94"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a278a9653dc6043f25fe20e5f8692bd94">DatabasePanel</a> (const <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a278a9653dc6043f25fe20e5f8692bd94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919127ca1db06fb6aa318e8dbad608ab" id="r_a919127ca1db06fb6aa318e8dbad608ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a919127ca1db06fb6aa318e8dbad608ab">operator=</a> (const <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a919127ca1db06fb6aa318e8dbad608ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab03d13d7a83dde9d7fc6dce3bda9d509" id="r_ab03d13d7a83dde9d7fc6dce3bda9d509"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ab03d13d7a83dde9d7fc6dce3bda9d509">open</a> ()</td></tr>
+<tr class="memdesc:ab03d13d7a83dde9d7fc6dce3bda9d509"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounts (or updates) the database host on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world.  <br /></td></tr>
+<tr class="separator:ab03d13d7a83dde9d7fc6dce3bda9d509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9036a039cca7c944fa9f4c64439d08d" id="r_af9036a039cca7c944fa9f4c64439d08d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#af9036a039cca7c944fa9f4c64439d08d">close</a> ()</td></tr>
+<tr class="memdesc:af9036a039cca7c944fa9f4c64439d08d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hides the database host.  <br /></td></tr>
+<tr class="separator:af9036a039cca7c944fa9f4c64439d08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf8ac1e976db5ffe291c899a096d6c86" id="r_aaf8ac1e976db5ffe291c899a096d6c86"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#aaf8ac1e976db5ffe291c899a096d6c86">isOpen</a> () const</td></tr>
+<tr class="memdesc:aaf8ac1e976db5ffe291c899a096d6c86"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the database host is mounted and visible.  <br /></td></tr>
+<tr class="separator:aaf8ac1e976db5ffe291c899a096d6c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafd9feb65483569ef283b98ac1e8e2d2" id="r_aafd9feb65483569ef283b98ac1e8e2d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#aafd9feb65483569ef283b98ac1e8e2d2">host</a> () const noexcept</td></tr>
+<tr class="memdesc:aafd9feb65483569ef283b98ac1e8e2d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mounted database host handle, or an empty handle until <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ab03d13d7a83dde9d7fc6dce3bda9d509" title="Mounts (or updates) the database host on the UI ECS world.">open()</a>.  <br /></td></tr>
+<tr class="separator:aafd9feb65483569ef283b98ac1e8e2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4897765f36e80067ffd2e82da83c65d2" id="r_a4897765f36e80067ffd2e82da83c65d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a4897765f36e80067ffd2e82da83c65d2">refresh</a> ()</td></tr>
+<tr class="memdesc:a4897765f36e80067ffd2e82da83c65d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-scans reflected classes and refreshes the grid.  <br /></td></tr>
+<tr class="separator:a4897765f36e80067ffd2e82da83c65d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a748cf6d465dc3779d644645e1887b51c" id="r_a748cf6d465dc3779d644645e1887b51c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a748cf6d465dc3779d644645e1887b51c">selectClass</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a748cf6d465dc3779d644645e1887b51c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a class for the grid.  <br /></td></tr>
+<tr class="separator:a748cf6d465dc3779d644645e1887b51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a199ea948c7a779f7958eb128ea154c2a" id="r_a199ea948c7a779f7958eb128ea154c2a"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a199ea948c7a779f7958eb128ea154c2a">selectedClass</a> () const</td></tr>
+<tr class="memdesc:a199ea948c7a779f7958eb128ea154c2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the currently selected class ("" when none).  <br /></td></tr>
+<tr class="separator:a199ea948c7a779f7958eb128ea154c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe800cf6bc1861bfda06b2908faa1a12" id="r_afe800cf6bc1861bfda06b2908faa1a12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#afe800cf6bc1861bfda06b2908faa1a12">createInstance</a> ()</td></tr>
+<tr class="memdesc:afe800cf6bc1861bfda06b2908faa1a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and registers an instance of the selected class.  <br /></td></tr>
+<tr class="separator:afe800cf6bc1861bfda06b2908faa1a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de71ec6b2ab747479951ac04b95f2c6" id="r_a3de71ec6b2ab747479951ac04b95f2c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#a3de71ec6b2ab747479951ac04b95f2c6">registerObject</a> (const ssq::Object &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, const std::string &amp;label={})</td></tr>
+<tr class="memdesc:a3de71ec6b2ab747479951ac04b95f2c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a live script object (auto-derives class when empty).  <br /></td></tr>
+<tr class="separator:a3de71ec6b2ab747479951ac04b95f2c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af962b00bd2124fa46ee146589f55a2ac" id="r_af962b00bd2124fa46ee146589f55a2ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#af962b00bd2124fa46ee146589f55a2ac">unregister</a> (<a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:af962b00bd2124fa46ee146589f55a2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entry from the registry and refreshes the grid.  <br /></td></tr>
+<tr class="separator:af962b00bd2124fa46ee146589f55a2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae366a8c160edd314524779470af6b8fc" id="r_ae366a8c160edd314524779470af6b8fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ae366a8c160edd314524779470af6b8fc">sync</a> ()</td></tr>
+<tr class="memdesc:ae366a8c160edd314524779470af6b8fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pulls model → view for visible cells (per-frame).  <br /></td></tr>
+<tr class="separator:ae366a8c160edd314524779470af6b8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81dd32589a949d5ef4b426aae610565" id="r_ab81dd32589a949d5ef4b426aae610565"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ab81dd32589a949d5ef4b426aae610565">build</a> ()</td></tr>
+<tr class="memdesc:ab81dd32589a949d5ef4b426aae610565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative tree of the current selection.  <br /></td></tr>
+<tr class="separator:ab81dd32589a949d5ef4b426aae610565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Reflection-driven database panel (DevTools, MVVM). </p>
+<p>Left/top: class menu generated from reflected script classes. Below: one editable row per registered instance (<a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html" title="Reflectable script-object registry backing the database panel.">ObjectRegistry</a>), with one cell per reflected member. Cell edits write back to the live script instance; <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ae366a8c160edd314524779470af6b8fc" title="Pulls model → view for visible cells (per-frame).">sync()</a> pulls model changes back into the grid.</p>
+<p>Grid cells reuse the declarative widget set (InputText / Checkbox / Combo / read-only text), so no separate table node type is needed. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8h_source.html">DatabasePanel.h</a> 第 <a class="el" href="DatabasePanel_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a9bda810348215081abd0491a4469c6da" name="a9bda810348215081abd0491a4469c6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bda810348215081abd0491a4469c6da">&#9670;&#160;</a></span>DatabasePanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::DatabasePanel::DatabasePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afbb5a8b3b8a1dafb79e429ba7a8b0aca" name="afbb5a8b3b8a1dafb79e429ba7a8b0aca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbb5a8b3b8a1dafb79e429ba7a8b0aca">&#9670;&#160;</a></span>~DatabasePanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::DatabasePanel::~DatabasePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DatabasePanel_8h_source.html#l00043">host()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a278a9653dc6043f25fe20e5f8692bd94" name="a278a9653dc6043f25fe20e5f8692bd94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278a9653dc6043f25fe20e5f8692bd94">&#9670;&#160;</a></span>DatabasePanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::DatabasePanel::DatabasePanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab81dd32589a949d5ef4b426aae610565" name="ab81dd32589a949d5ef4b426aae610565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81dd32589a949d5ef4b426aae610565">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::DatabasePanel::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Declarative tree of the current selection. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00285">eve::ui::button()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="Widget_8cpp_source.html#l00363">eve::ui::combo()</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00033">eve::ui::ObjectEntry::handle</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00039">eve::ui::ObjectEntry::object</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00106">eve::RuntimeHandle&lt; Tag &gt;::packed()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="Runtime_8cpp_source.html#l00697">eve::Runtime::readProperty()</a>, <a class="el" href="Widget_8cpp_source.html#l00637">eve::ui::row()</a>, <a class="el" href="Module_8cpp_source.html#l00292">eve::ModuleManager::runtime()</a>, <a class="el" href="Widget_8cpp_source.html#l00604">eve::ui::scrollList()</a>, <a class="el" href="Widget_8cpp_source.html#l00319">eve::ui::separator()</a>, <a class="el" href="Widget_8cpp_source.html#l00645">eve::ui::spacer()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="af9036a039cca7c944fa9f4c64439d08d" name="af9036a039cca7c944fa9f4c64439d08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9036a039cca7c944fa9f4c64439d08d">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::DatabasePanel::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hides the database host. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DatabasePanel_8h_source.html#l00043">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="afe800cf6bc1861bfda06b2908faa1a12" name="afe800cf6bc1861bfda06b2908faa1a12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe800cf6bc1861bfda06b2908faa1a12">&#9670;&#160;</a></span>createInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt; eve::ui::DatabasePanel::createInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates and registers an instance of the selected class. </p>
+<dl class="section return"><dt>返回</dt><dd>A generation-qualified <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> object handle, or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectRegistry_8cpp_source.html#l00036">eve::ui::ObjectRegistry::create()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00021">eve::ui::ObjectRegistry::instance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aafd9feb65483569ef283b98ac1e8e2d2" name="aafd9feb65483569ef283b98ac1e8e2d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafd9feb65483569ef283b98ac1e8e2d2">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> eve::ui::DatabasePanel::host </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the mounted database host handle, or an empty handle until <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#ab03d13d7a83dde9d7fc6dce3bda9d509" title="Mounts (or updates) the database host on the UI ECS world.">open()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8h_source.html">DatabasePanel.h</a> 第 <a class="el" href="DatabasePanel_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00068">close()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00072">isOpen()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00056">open()</a> , 以及 <a class="el" href="DatabasePanel_8cpp_source.html#l00050">~DatabasePanel()</a>.</p>
+
+</div>
+</div>
+<a id="aaf8ac1e976db5ffe291c899a096d6c86" name="aaf8ac1e976db5ffe291c899a096d6c86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf8ac1e976db5ffe291c899a096d6c86">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::DatabasePanel::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True while the database host is mounted and visible. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DatabasePanel_8h_source.html#l00043">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="ab03d13d7a83dde9d7fc6dce3bda9d509" name="ab03d13d7a83dde9d7fc6dce3bda9d509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab03d13d7a83dde9d7fc6dce3bda9d509">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::DatabasePanel::open </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mounts (or updates) the database host on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8cpp_source.html#l00047">eve::ui::UIHost::createHost()</a>, <a class="el" href="DatabasePanel_8h_source.html#l00043">host()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00077">refresh()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a919127ca1db06fb6aa318e8dbad608ab" name="a919127ca1db06fb6aa318e8dbad608ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919127ca1db06fb6aa318e8dbad608ab">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp; eve::ui::DatabasePanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4897765f36e80067ffd2e82da83c65d2" name="a4897765f36e80067ffd2e82da83c65d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4897765f36e80067ffd2e82da83c65d2">&#9670;&#160;</a></span>refresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::DatabasePanel::refresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-scans reflected classes and refreshes the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00021">cls</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00292">eve::ModuleManager::runtime()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00056">open()</a>.</p>
+
+</div>
+</div>
+<a id="a3de71ec6b2ab747479951ac04b95f2c6" name="a3de71ec6b2ab747479951ac04b95f2c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3de71ec6b2ab747479951ac04b95f2c6">&#9670;&#160;</a></span>registerObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt; eve::ui::DatabasePanel::registerObject </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a live script object (auto-derives class when empty). </p>
+<dl class="section return"><dt>返回</dt><dd>A generation-qualified <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> object handle, or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00021">eve::ui::ObjectRegistry::instance()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00058">eve::ui::ObjectRegistry::registerObject()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a748cf6d465dc3779d644645e1887b51c" name="a748cf6d465dc3779d644645e1887b51c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a748cf6d465dc3779d644645e1887b51c">&#9670;&#160;</a></span>selectClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::DatabasePanel::selectClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects a class for the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a199ea948c7a779f7958eb128ea154c2a" name="a199ea948c7a779f7958eb128ea154c2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a199ea948c7a779f7958eb128ea154c2a">&#9670;&#160;</a></span>selectedClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::DatabasePanel::selectedClass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the currently selected class ("" when none). </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8h_source.html">DatabasePanel.h</a> 第 <a class="el" href="DatabasePanel_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae366a8c160edd314524779470af6b8fc" name="ae366a8c160edd314524779470af6b8fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae366a8c160edd314524779470af6b8fc">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::DatabasePanel::sync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pulls model → view for visible cells (per-frame). </p>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">eve::Array</a>, <a class="el" href="Runtime_8h_source.html#l00133">eve::ReflectedValue::asBool()</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034">eve::Bool</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00212">host</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bad9a17c1c9e8ef6866e4dbeef41c741b2">eve::Instance</a>, <a class="el" href="Runtime_8h_source.html#l00125">eve::ReflectedValue::kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba6adf97f83acf6453d4a6a4b1070f3754">eve::None</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba6311ae17c1ee52b36e68aaf4ad066387">eve::Other</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="Runtime_8cpp_source.html#l00697">eve::Runtime::readProperty()</a>, <a class="el" href="Module_8cpp_source.html#l00292">eve::ModuleManager::runtime()</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98">eve::String</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">eve::Table</a> , 以及 <a class="el" href="Runtime_8h_source.html#l00129">eve::ReflectedValue::text</a>.</p>
+
+</div>
+</div>
+<a id="af962b00bd2124fa46ee146589f55a2ac" name="af962b00bd2124fa46ee146589f55a2ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af962b00bd2124fa46ee146589f55a2ac">&#9670;&#160;</a></span>unregister()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::ui::DatabasePanel::unregister </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an entry from the registry and refreshes the grid. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>The generation-qualified handle to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, or a structured stale/invalid failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a> 第 <a class="el" href="DatabasePanel_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00021">eve::ui::ObjectRegistry::instance()</a> , 以及 <a class="el" href="ObjectRegistry_8cpp_source.html#l00142">eve::ui::ObjectRegistry::unregister()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="DatabasePanel_8h_source.html">DatabasePanel.h</a></li>
+<li>src/modules/ui/<a class="el" href="DatabasePanel_8cpp_source.html">DatabasePanel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

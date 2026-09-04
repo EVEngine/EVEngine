@@ -1,0 +1,892 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md  
+<a href="namespaceeve_1_1weapon.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1AmmoPoolEntity.html">AmmoPoolEntity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">共享弹药池实体：多把武器共用的备用弹药，装填时从池中取。  <a href="classeve_1_1weapon_1_1AmmoPoolEntity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。  <a href="structeve_1_1weapon_1_1AttackRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackResource.html">AttackResource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">触发资源模板（武器模板的一部分，用于运行时扣费 / 回复）。  <a href="structeve_1_1weapon_1_1AttackResource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackStageSpec.html">AttackStageSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">阶段时长（秒）；各形态按需配置。  <a href="structeve_1_1weapon_1_1AttackStageSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1IProjectileService.html">IProjectileService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">投射物服务：由游戏侧实现并注册为能力。 weapon 模块只认识这个接口，弹道/爆炸/受击由提供方负责。  <a href="classeve_1_1weapon_1_1IProjectileService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html">IProjectileTargetProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional target-position boundary used only by homing projectiles.  <a href="classeve_1_1weapon_1_1IProjectileTargetProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1IWeaponLogic.html">IWeaponLogic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器逻辑接口：注册到 <a class="el" href="classeve_1_1weapon_1_1WeaponSystem.html" title="武器系统：逻辑注册 + 更新 + 开火 + 装填。">WeaponSystem</a> 的可插拔行为。  <a href="classeve_1_1weapon_1_1IWeaponLogic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html">ProjectileDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data-driven trajectory and lifetime definition.  <a href="structeve_1_1weapon_1_1ProjectileDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified reference to one pooled projectile slot.  <a href="structeve_1_1weapon_1_1ProjectileHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectilePoint.html">ProjectilePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning point in projectile simulation space.  <a href="structeve_1_1weapon_1_1ProjectilePoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html">ProjectileRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread deterministic projectile simulator with a bounded reusable pool.  <a href="classeve_1_1weapon_1_1ProjectileRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html">ProjectileRuntimeSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete deterministic projectile-pool state for rollback and save games.  <a href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileSlotSnapshot.html">ProjectileSlotSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One pool slot including its generation, retained even while empty.  <a href="structeve_1_1weapon_1_1ProjectileSlotSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileSpawnRequest.html">ProjectileSpawnRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning spawn request; homing requests require a generation-checked target.  <a href="structeve_1_1weapon_1_1ProjectileSpawnRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileSpec.html">ProjectileSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">投射物参数（武器模板的一部分，供游戏侧投射物服务使用）。  <a href="structeve_1_1weapon_1_1ProjectileSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileState.html">ProjectileState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning observable state for one live projectile.  <a href="structeve_1_1weapon_1_1ProjectileState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileUpdate.html">ProjectileUpdate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of one atomic projectile simulation step.  <a href="structeve_1_1weapon_1_1ProjectileUpdate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileVector.html">ProjectileVector</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning velocity or direction vector in projectile simulation space.  <a href="structeve_1_1weapon_1_1ProjectileVector.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1Resource.html">Resource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时触发资源（实体组件）。  <a href="structeve_1_1weapon_1_1Resource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器模块（eve.Weapon）。  <a href="classeve_1_1weapon_1_1Weapon.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html">WeaponActionAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translates a WeaponDefinition/AttackRequest pair to Action values.  <a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html">WeaponAttributeAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapts only Mana/Stamina trigger resources to AttributeProjection.  <a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponControl.html">WeaponControl</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes one weapon through the shared gameplay command protocol.  <a href="classeve_1_1weapon_1_1WeaponControl.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器模板（registerWeaponsFromJson 注册，进程级注册表）。  <a href="structeve_1_1weapon_1_1WeaponDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a typed <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html" title="武器模板（registerWeaponsFromJson 注册，进程级注册表）。">WeaponDefinition</a> to one mutable runtime instance.  <a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html">WeaponEffectAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> adapter with a single common lifecycle owner.  <a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html">WeaponEffectDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed weapon definition projected into the common lifecycle.  <a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html">WeaponEffectExecutor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> executor applying heat, jam and recoil rules.  <a href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">WeaponEffectSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory weapon effect snapshot.  <a href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable weapon state interpreted by the typed executor.  <a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html">WeaponEffectUpdate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of one weapon lifecycle step and domain settlement.  <a href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器实体：数据全部在组件里，行为在 WeaponSystem。  <a href="classeve_1_1weapon_1_1WeaponEntity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponEvent.html">WeaponEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器事件（帧缓存，脚本轮询，与 building/rpg 风格一致）。  <a href="structeve_1_1weapon_1_1WeaponEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponMountEntity.html">WeaponMountEntity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器挂点实体：可持有武器并限制旋转（炮塔 / 机枪座 / 固定挂架）。  <a href="classeve_1_1weapon_1_1WeaponMountEntity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponRigEntity.html">WeaponRigEntity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">手持位实体：面向 ARPG/RPG 角色手持武器（剑/法杖/步枪），无炮塔限位。  <a href="classeve_1_1weapon_1_1WeaponRigEntity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable state owned by one typed weapon runtime instance.  <a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponSystem.html">WeaponSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器系统：逻辑注册 + 更新 + 开火 + 装填。  <a href="classeve_1_1weapon_1_1WeaponSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a2391a0fbc70c78dacf99d7b15f5d327f" id="r_a2391a0fbc70c78dacf99d7b15f5d327f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">WeaponEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1weapon_1_1WeaponEvent.html">WeaponEvent</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a2391a0fbc70c78dacf99d7b15f5d327f"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件汇：由 <a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> 模块（或测试）注册，把事件写入自己的队列。  <br /></td></tr>
+<tr class="separator:a2391a0fbc70c78dacf99d7b15f5d327f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72508fea6645969eb04ca9ec15aa820e" id="r_a72508fea6645969eb04ca9ec15aa820e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a72508fea6645969eb04ca9ec15aa820e">FireRequest</a> = <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a></td></tr>
+<tr class="memdesc:a72508fea6645969eb04ca9ec15aa820e"><td class="mdescLeft">&#160;</td><td class="mdescRight">兼容别名：IProjectileService 等旧接口继续用 FireRequest 名。  <br /></td></tr>
+<tr class="separator:a72508fea6645969eb04ca9ec15aa820e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a2c9ea9ad3b18de459ab76952321492c3" id="r_a2c9ea9ad3b18de459ab76952321492c3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3">ProjectileMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a272076ee2e40acec00f8329b4b278d51">Ballistic</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a8dea110caafe3b2e7d6bd20b11ee4138">Homing</a>
+ }</td></tr>
+<tr class="memdesc:a2c9ea9ad3b18de459ab76952321492c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in trajectory integration mode.  <a href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3">更多...</a><br /></td></tr>
+<tr class="separator:a2c9ea9ad3b18de459ab76952321492c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489117455b8dc6212979b67e5332e61e" id="r_a489117455b8dc6212979b67e5332e61e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">WeaponEffectKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed">Heat</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55">Jam</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908">Recoil</a>
+ }</td></tr>
+<tr class="memdesc:a489117455b8dc6212979b67e5332e61e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weapon-specific effect strategy.  <a href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">更多...</a><br /></td></tr>
+<tr class="separator:a489117455b8dc6212979b67e5332e61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a123b3b5117966e0d538897311695377b" id="r_a123b3b5117966e0d538897311695377b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">WeaponKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bafcbd772e48c4b07d7d3be13b37a82f5e">Melee</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728">Ranged</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba02700e454d679f31f27c6f0768986dd1">Magic</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bae6eb77b6edb5a7aa5ddff07dd6d4f7b1">Missile</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba90589c47f06eb971d548591f23c285af">Custom</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a123b3b5117966e0d538897311695377b"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器形态。  <a href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">更多...</a><br /></td></tr>
+<tr class="separator:a123b3b5117966e0d538897311695377b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad656fcc85dba9f4e72da62a286bfb6ba" id="r_ad656fcc85dba9f4e72da62a286bfb6ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6ba">ResourceKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baac92a86ef9dceabc5bf5ec6eb9bfd1318">Ammo</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">Mana</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa17e72430608947c0734ef298429647bb">Charges</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9">Stamina</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ad656fcc85dba9f4e72da62a286bfb6ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">触发资源的类型。  <a href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6ba">更多...</a><br /></td></tr>
+<tr class="separator:ad656fcc85dba9f4e72da62a286bfb6ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a647c29c945407d369c4a0e3c7f230085" id="r_a647c29c945407d369c4a0e3c7f230085"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">AttackStage</a> : uint8_t { <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">Idle</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055">Windup</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790">Recover</a>
+ }</td></tr>
+<tr class="memdesc:a647c29c945407d369c4a0e3c7f230085"><td class="mdescLeft">&#160;</td><td class="mdescRight">攻击阶段。  <a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">更多...</a><br /></td></tr>
+<tr class="separator:a647c29c945407d369c4a0e3c7f230085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7ea637e06387da21efa5ff908528f7" id="r_aba7ea637e06387da21efa5ff908528f7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a> : uint8_t { <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e">Single</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2">Burst</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a06b9281e396db002010bde1de57262eb">Auto</a>
+ }</td></tr>
+<tr class="memdesc:aba7ea637e06387da21efa5ff908528f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">开火模式（热武器保留字段）。  <a href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">更多...</a><br /></td></tr>
+<tr class="separator:aba7ea637e06387da21efa5ff908528f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb99d66d6b2f2767ef7387627c0871d6" id="r_acb99d66d6b2f2767ef7387627c0871d6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6">WeaponEventType</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb">Fire</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1">ReloadStart</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb">ReloadEnd</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07">Empty</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6">WindupStart</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e">AttackEnd</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a71020564874b83a0d1f47673b0476ddc">AimIn</a>
+, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a6379f5816b5bf52e12a3b4cbeda8e0c1">AimOut</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:acb99d66d6b2f2767ef7387627c0871d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器事件类型。  <a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6">更多...</a><br /></td></tr>
+<tr class="separator:acb99d66d6b2f2767ef7387627c0871d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aac2e27420bd34a197ffb88c332504627" id="r_aac2e27420bd34a197ffb88c332504627"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#aac2e27420bd34a197ffb88c332504627">Module_IMPL</a> (<a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a>, new <a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a>())</td></tr>
+<tr class="separator:aac2e27420bd34a197ffb88c332504627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac033cff535492332042f4e024278f4ff" id="r_ac033cff535492332042f4e024278f4ff"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#ac033cff535492332042f4e024278f4ff">fireModeName</a> (<a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a> mode)</td></tr>
+<tr class="memdesc:ac033cff535492332042f4e024278f4ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">开火模式的字符串名（"single" | "burst" | "auto"）。  <br /></td></tr>
+<tr class="separator:ac033cff535492332042f4e024278f4ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fa75fee81aaff1cfc6ad7605157fced" id="r_a4fa75fee81aaff1cfc6ad7605157fced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a4fa75fee81aaff1cfc6ad7605157fced">fireModeFromName</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a4fa75fee81aaff1cfc6ad7605157fced"><td class="mdescLeft">&#160;</td><td class="mdescRight">从字符串解析开火模式；未知名字回退 Single。  <br /></td></tr>
+<tr class="separator:a4fa75fee81aaff1cfc6ad7605157fced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6953a6e65ab4297ab7a6812ed1cbd467" id="r_a6953a6e65ab4297ab7a6812ed1cbd467"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a6953a6e65ab4297ab7a6812ed1cbd467">weaponKindName</a> (<a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">WeaponKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:a6953a6e65ab4297ab7a6812ed1cbd467"><td class="mdescLeft">&#160;</td><td class="mdescRight">武器形态的字符串名（"melee" | "ranged" | "magic" | "missile" | "custom"）。  <br /></td></tr>
+<tr class="separator:a6953a6e65ab4297ab7a6812ed1cbd467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30c6c2f55091846c35660b6872319558" id="r_a30c6c2f55091846c35660b6872319558"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">WeaponKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a30c6c2f55091846c35660b6872319558">weaponKindFromName</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a30c6c2f55091846c35660b6872319558"><td class="mdescLeft">&#160;</td><td class="mdescRight">从字符串解析武器形态；未知名字回退 Ranged。  <br /></td></tr>
+<tr class="separator:a30c6c2f55091846c35660b6872319558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc2149253e72340f8aaf1e6fb644e865" id="r_acc2149253e72340f8aaf1e6fb644e865"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#acc2149253e72340f8aaf1e6fb644e865">attackStageName</a> (<a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">AttackStage</a> stage)</td></tr>
+<tr class="memdesc:acc2149253e72340f8aaf1e6fb644e865"><td class="mdescLeft">&#160;</td><td class="mdescRight">攻击阶段的字符串名（"idle" | "windup" | "active" | "recover"）。  <br /></td></tr>
+<tr class="separator:acc2149253e72340f8aaf1e6fb644e865"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdc9e6f1e7f99cc9b6206ec80032f0a6" id="r_abdc9e6f1e7f99cc9b6206ec80032f0a6"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#abdc9e6f1e7f99cc9b6206ec80032f0a6">weaponEventTypeName</a> (<a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6">WeaponEventType</a> <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:abdc9e6f1e7f99cc9b6206ec80032f0a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件类型的字符串名。  <br /></td></tr>
+<tr class="separator:abdc9e6f1e7f99cc9b6206ec80032f0a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bbe9ef7ddb6534c3df6d2908bd15641" id="r_a3bbe9ef7ddb6534c3df6d2908bd15641"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weapon.html#a3bbe9ef7ddb6534c3df6d2908bd15641">parseWeaponDefinition</a> (const <a class="el" href="structeve_1_1definitions_1_1Definition.html">eve::definitions::Definition</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:a3bbe9ef7ddb6534c3df6d2908bd15641"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse one canonical registry definition into an owning typed snapshot.  <br /></td></tr>
+<tr class="separator:a3bbe9ef7ddb6534c3df6d2908bd15641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md </p>
+<p>武器模块数据模型：武器模板 / 武器实体 / 挂点实体 / 手持位实体。</p>
+<p>武器行为静态系统：逻辑注册表 + 每帧推进 + 开火/装填。 与 rpg 的 *System 静态类同一设计语言；事件通过事件汇（sink） 交给模块/游戏侧缓存。</p>
+<p>武器行为接口与投射物服务接口。</p>
+<p>武器模块入口（eve.Weapon）：定义注册 / 实体工厂 / 挂点操作 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</p>
+<p>新增武器类型 = 实现 <a class="el" href="classeve_1_1weapon_1_1IWeaponLogic.html" title="武器逻辑接口：注册到 WeaponSystem 的可插拔行为。">IWeaponLogic</a> 并按名字注册到 <a class="el" href="classeve_1_1weapon_1_1WeaponSystem.html" title="武器系统：逻辑注册 + 更新 + 开火 + 装填。">WeaponSystem</a> （registerLogic），不需要改引擎头文件。投射物/弹道表现由游戏侧 实现 <a class="el" href="classeve_1_1weapon_1_1IProjectileService.html" title="投射物服务：由游戏侧实现并注册为能力。 weapon 模块只认识这个接口，弹道/爆炸/受击由提供方负责。">IProjectileService</a> 并通过 <a class="el" href="namespaceeve_1_1cap.html#a577610c6e7a6517f439b8216bf009f79">eve::cap::provide</a> 注册，weapon 模块 不硬依赖 physics / graphics / particles。</p>
+<p>v2 阶段钩子（begin / channel / end 均有默认空实现）：近战 / 法杖 / 导弹通过阶段机驱动，<code>fire()</code> 在 Active 生效时刻被调用，<code>channel()</code> 在 Active 期逐帧调用，<code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>/<code><a class="el" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end()</a></code> 分别在 Windup 起点与 Recover 起点。</p>
+<p>与引擎其他玩法模块一致（参考 card / rpg）：组件是纯数据结构体， 行为全部放在 WeaponSystem（静态类）与 IWeaponLogic（可插拔逻辑）里。</p>
+<p>v2 设计（见 docs/dev/通用武器系统设计.md）：用统一的「形态 kind + 资源 + 阶段机」泛化触发管线，让热武器 / 冷兵器 / 法杖 / 导弹共用同一套机制：</p><ul>
+<li>WeaponKind 声明武器形态（melee / ranged / magic / missile），</li>
+<li><a class="el" href="structeve_1_1weapon_1_1AttackResource.html" title="触发资源模板（武器模板的一部分，用于运行时扣费 / 回复）。">AttackResource</a> 表达触发消耗（弹药 / 法力 / 充能 / 体力 / 无），</li>
+<li>AttackStage 阶段机（Idle → Windup → Active → Recover）替代硬编码的装填/连发。</li>
+</ul>
+<p>挂点（WeaponMountEntity）独立成实体，可挂在载具 / 建筑 / 炮台上， 炮塔被打掉 = 挂点标记 destroyed，不需要改动载具实体。 手持位（WeaponRigEntity）是轻量持有位，面向 ARPG/RPG 角色手持武器。 </p>
+</div><h2 class="groupheader">类型定义说明</h2>
+<a id="a72508fea6645969eb04ca9ec15aa820e" name="a72508fea6645969eb04ca9ec15aa820e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72508fea6645969eb04ca9ec15aa820e">&#9670;&#160;</a></span>FireRequest</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1weapon.html#a72508fea6645969eb04ca9ec15aa820e">eve::weapon::FireRequest</a> = typedef <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>兼容别名：IProjectileService 等旧接口继续用 FireRequest 名。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00230">230</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2391a0fbc70c78dacf99d7b15f5d327f" name="a2391a0fbc70c78dacf99d7b15f5d327f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2391a0fbc70c78dacf99d7b15f5d327f">&#9670;&#160;</a></span>WeaponEventSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">eve::weapon::WeaponEventSink</a> = typedef std::function&lt;void(const <a class="el" href="structeve_1_1weapon_1_1WeaponEvent.html">WeaponEvent</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>事件汇：由 <a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> 模块（或测试）注册，把事件写入自己的队列。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponSystem_8h_source.html">WeaponSystem.h</a> 第 <a class="el" href="WeaponSystem_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a647c29c945407d369c4a0e3c7f230085" name="a647c29c945407d369c4a0e3c7f230085"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a647c29c945407d369c4a0e3c7f230085">&#9670;&#160;</a></span>AttackStage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">eve::weapon::AttackStage</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>攻击阶段。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c" name="a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c"></a>Idle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055" name="a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055"></a>Windup&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d" name="a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d"></a>Active&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790" name="a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790"></a>Recover&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba7ea637e06387da21efa5ff908528f7" name="aba7ea637e06387da21efa5ff908528f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba7ea637e06387da21efa5ff908528f7">&#9670;&#160;</a></span>FireMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">eve::weapon::FireMode</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>开火模式（热武器保留字段）。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e" name="aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e"></a>Single&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2" name="aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2"></a>Burst&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aba7ea637e06387da21efa5ff908528f7a06b9281e396db002010bde1de57262eb" name="aba7ea637e06387da21efa5ff908528f7a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c9ea9ad3b18de459ab76952321492c3" name="a2c9ea9ad3b18de459ab76952321492c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9ea9ad3b18de459ab76952321492c3">&#9670;&#160;</a></span>ProjectileMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3">eve::weapon::ProjectileMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in trajectory integration mode. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a2c9ea9ad3b18de459ab76952321492c3a32a843da6ea40ab3b17a3421ccdf671b" name="a2c9ea9ad3b18de459ab76952321492c3a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2c9ea9ad3b18de459ab76952321492c3a272076ee2e40acec00f8329b4b278d51" name="a2c9ea9ad3b18de459ab76952321492c3a272076ee2e40acec00f8329b4b278d51"></a>Ballistic&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2c9ea9ad3b18de459ab76952321492c3a8dea110caafe3b2e7d6bd20b11ee4138" name="a2c9ea9ad3b18de459ab76952321492c3a8dea110caafe3b2e7d6bd20b11ee4138"></a>Homing&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad656fcc85dba9f4e72da62a286bfb6ba" name="ad656fcc85dba9f4e72da62a286bfb6ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad656fcc85dba9f4e72da62a286bfb6ba">&#9670;&#160;</a></span>ResourceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6ba">eve::weapon::ResourceKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>触发资源的类型。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad656fcc85dba9f4e72da62a286bfb6baa6adf97f83acf6453d4a6a4b1070f3754" name="ad656fcc85dba9f4e72da62a286bfb6baa6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad656fcc85dba9f4e72da62a286bfb6baac92a86ef9dceabc5bf5ec6eb9bfd1318" name="ad656fcc85dba9f4e72da62a286bfb6baac92a86ef9dceabc5bf5ec6eb9bfd1318"></a>Ammo&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7" name="ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7"></a>Mana&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad656fcc85dba9f4e72da62a286bfb6baa17e72430608947c0734ef298429647bb" name="ad656fcc85dba9f4e72da62a286bfb6baa17e72430608947c0734ef298429647bb"></a>Charges&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9" name="ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9"></a>Stamina&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a489117455b8dc6212979b67e5332e61e" name="a489117455b8dc6212979b67e5332e61e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a489117455b8dc6212979b67e5332e61e">&#9670;&#160;</a></span>WeaponEffectKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">eve::weapon::WeaponEffectKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Weapon-specific effect strategy. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed" name="a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed"></a>Heat&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55" name="a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55"></a>Jam&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908" name="a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908"></a>Recoil&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponEffects_8h_source.html">WeaponEffects.h</a> 第 <a class="el" href="WeaponEffects_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb99d66d6b2f2767ef7387627c0871d6" name="acb99d66d6b2f2767ef7387627c0871d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb99d66d6b2f2767ef7387627c0871d6">&#9670;&#160;</a></span>WeaponEventType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6">eve::weapon::WeaponEventType</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>武器事件类型。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb" name="acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb"></a>Fire&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1" name="acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1"></a>ReloadStart&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb" name="acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb"></a>ReloadEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07" name="acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07"></a>Empty&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6" name="acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6"></a>WindupStart&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e" name="acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e"></a>AttackEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6a71020564874b83a0d1f47673b0476ddc" name="acb99d66d6b2f2767ef7387627c0871d6a71020564874b83a0d1f47673b0476ddc"></a>AimIn&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acb99d66d6b2f2767ef7387627c0871d6a6379f5816b5bf52e12a3b4cbeda8e0c1" name="acb99d66d6b2f2767ef7387627c0871d6a6379f5816b5bf52e12a3b4cbeda8e0c1"></a>AimOut&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a123b3b5117966e0d538897311695377b" name="a123b3b5117966e0d538897311695377b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a123b3b5117966e0d538897311695377b">&#9670;&#160;</a></span>WeaponKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">eve::weapon::WeaponKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>武器形态。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a123b3b5117966e0d538897311695377bafcbd772e48c4b07d7d3be13b37a82f5e" name="a123b3b5117966e0d538897311695377bafcbd772e48c4b07d7d3be13b37a82f5e"></a>Melee&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728" name="a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728"></a>Ranged&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a123b3b5117966e0d538897311695377ba02700e454d679f31f27c6f0768986dd1" name="a123b3b5117966e0d538897311695377ba02700e454d679f31f27c6f0768986dd1"></a>Magic&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a123b3b5117966e0d538897311695377bae6eb77b6edb5a7aa5ddff07dd6d4f7b1" name="a123b3b5117966e0d538897311695377bae6eb77b6edb5a7aa5ddff07dd6d4f7b1"></a>Missile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a123b3b5117966e0d538897311695377ba90589c47f06eb971d548591f23c285af" name="a123b3b5117966e0d538897311695377ba90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="acc2149253e72340f8aaf1e6fb644e865" name="acc2149253e72340f8aaf1e6fb644e865"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc2149253e72340f8aaf1e6fb644e865">&#9670;&#160;</a></span>attackStageName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::weapon::attackStageName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">AttackStage</a>&#160;</td>
+          <td class="paramname"><em>stage</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>攻击阶段的字符串名（"idle" | "windup" | "active" | "recover"）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed non-null pointer to immutable process-lifetime storage. @ownership The returned static text is not caller-owned and must not be freed. @lifetime Valid for the process lifetime; copy it when storing it. @thread Thread-safe because the characters are immutable. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>, <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">Idle</a>, <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790">Recover</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055">Windup</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00617">eve::weapon::Weapon::getStage()</a>.</p>
+
+</div>
+</div>
+<a id="a4fa75fee81aaff1cfc6ad7605157fced" name="a4fa75fee81aaff1cfc6ad7605157fced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fa75fee81aaff1cfc6ad7605157fced">&#9670;&#160;</a></span>fireModeFromName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a> eve::weapon::fireModeFromName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从字符串解析开火模式；未知名字回退 Single。 </p>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a06b9281e396db002010bde1de57262eb">Auto</a>, <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2">Burst</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e">Single</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00489">eve::weapon::Weapon::setFireMode()</a>.</p>
+
+</div>
+</div>
+<a id="ac033cff535492332042f4e024278f4ff" name="ac033cff535492332042f4e024278f4ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac033cff535492332042f4e024278f4ff">&#9670;&#160;</a></span>fireModeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::weapon::fireModeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>开火模式的字符串名（"single" | "burst" | "auto"）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed non-null pointer to immutable process-lifetime storage. @ownership The returned static text is not caller-owned and must not be freed. @lifetime Valid for the process lifetime; copy it when storing it. @thread Thread-safe because the characters are immutable. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a06b9281e396db002010bde1de57262eb">Auto</a>, <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2">Burst</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e">Single</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00504">eve::weapon::Weapon::getFireMode()</a> , 以及 <a class="el" href="Weapon_8cpp_source.html#l00513">eve::weapon::Weapon::getSelectableMode()</a>.</p>
+
+</div>
+</div>
+<a id="aac2e27420bd34a197ffb88c332504627" name="aac2e27420bd34a197ffb88c332504627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2e27420bd34a197ffb88c332504627">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Weapon</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3bbe9ef7ddb6534c3df6d2908bd15641" name="a3bbe9ef7ddb6534c3df6d2908bd15641"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bbe9ef7ddb6534c3df6d2908bd15641">&#9670;&#160;</a></span>parseWeaponDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &gt; eve::weapon::parseWeaponDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1definitions_1_1Definition.html">eve::definitions::Definition</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse one canonical registry definition into an owning typed snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Immutable definition owned by DefinitionRegistry. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A value-owned projection for one consumer, or a structured parse failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The returned value is independent of the registry and does not form a second store. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00050">eve::DefinitionRef::fromId()</a>, <a class="el" href="Identity_8cpp_source.html#l00048">eve::LogicalId::fromParts()</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00181">eve::weapon::Weapon::registerWeaponsFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="abdc9e6f1e7f99cc9b6206ec80032f0a6" name="abdc9e6f1e7f99cc9b6206ec80032f0a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdc9e6f1e7f99cc9b6206ec80032f0a6">&#9670;&#160;</a></span>weaponEventTypeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::weapon::weaponEventTypeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6">WeaponEventType</a>&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>事件类型的字符串名。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed non-null pointer to immutable process-lifetime storage. @ownership The returned static text is not caller-owned and must not be freed. @lifetime Valid for the process lifetime; copy it when storing it. @thread Thread-safe because the characters are immutable. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a71020564874b83a0d1f47673b0476ddc">AimIn</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a6379f5816b5bf52e12a3b4cbeda8e0c1">AimOut</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e">AttackEnd</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07">Empty</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb">Fire</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb">ReloadEnd</a>, <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1">ReloadStart</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6">WindupStart</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00565">eve::weapon::Weapon::getEventType()</a>.</p>
+
+</div>
+</div>
+<a id="a30c6c2f55091846c35660b6872319558" name="a30c6c2f55091846c35660b6872319558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30c6c2f55091846c35660b6872319558">&#9670;&#160;</a></span>weaponKindFromName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">WeaponKind</a> eve::weapon::weaponKindFromName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从字符串解析武器形态；未知名字回退 Ranged。 </p>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba02700e454d679f31f27c6f0768986dd1">Magic</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bafcbd772e48c4b07d7d3be13b37a82f5e">Melee</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bae6eb77b6edb5a7aa5ddff07dd6d4f7b1">Missile</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728">Ranged</a>.</p>
+
+</div>
+</div>
+<a id="a6953a6e65ab4297ab7a6812ed1cbd467" name="a6953a6e65ab4297ab7a6812ed1cbd467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6953a6e65ab4297ab7a6812ed1cbd467">&#9670;&#160;</a></span>weaponKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::weapon::weaponKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377b">WeaponKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>武器形态的字符串名（"melee" | "ranged" | "magic" | "missile" | "custom"）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed non-null pointer to immutable process-lifetime storage. @ownership The returned static text is not caller-owned and must not be freed. @lifetime Valid for the process lifetime; copy it when storing it. @thread Thread-safe because the characters are immutable. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Weapon_8cpp_source.html">Weapon.cpp</a> 第 <a class="el" href="Weapon_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377ba02700e454d679f31f27c6f0768986dd1">Magic</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bafcbd772e48c4b07d7d3be13b37a82f5e">Melee</a>, <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bae6eb77b6edb5a7aa5ddff07dd6d4f7b1">Missile</a> , 以及 <a class="el" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728">Ranged</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

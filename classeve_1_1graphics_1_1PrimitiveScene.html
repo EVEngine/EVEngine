@@ -1,0 +1,595 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::PrimitiveScene类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1PrimitiveScene-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::PrimitiveScene类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative owner for primitives that persist across frames.  
+ <a href="classeve_1_1graphics_1_1PrimitiveScene.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PrimitiveScene_8h_source.html">PrimitiveScene.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac490a924578dc2f71b3dd60f58d58b15" id="r_ac490a924578dc2f71b3dd60f58d58b15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#ac490a924578dc2f71b3dd60f58d58b15">PrimitiveScene</a> ()</td></tr>
+<tr class="separator:ac490a924578dc2f71b3dd60f58d58b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa018185e85b41c24b91f16ba7631cf49" id="r_aa018185e85b41c24b91f16ba7631cf49"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#aa018185e85b41c24b91f16ba7631cf49">PrimitiveScene</a> (const <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;)=delete</td></tr>
+<tr class="separator:aa018185e85b41c24b91f16ba7631cf49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6e094a8706baf8c566af4e5dbe880d5" id="r_ae6e094a8706baf8c566af4e5dbe880d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#ae6e094a8706baf8c566af4e5dbe880d5">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;)=delete</td></tr>
+<tr class="separator:ae6e094a8706baf8c566af4e5dbe880d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87aaf2e838a8fba30af440f89ea4e8a2" id="r_a87aaf2e838a8fba30af440f89ea4e8a2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a87aaf2e838a8fba30af440f89ea4e8a2">PrimitiveScene</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a87aaf2e838a8fba30af440f89ea4e8a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7986c6aef864ca59b2c1246d5163da" id="r_a3a7986c6aef864ca59b2c1246d5163da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a3a7986c6aef864ca59b2c1246d5163da">operator=</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a3a7986c6aef864ca59b2c1246d5163da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52dec9af46cd0f88594d8f885c059932" id="r_a52dec9af46cd0f88594d8f885c059932"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a52dec9af46cd0f88594d8f885c059932">add</a> (<a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a> <a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>)</td></tr>
+<tr class="separator:a52dec9af46cd0f88594d8f885c059932"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96cdc4a8219cf0e535148646de4f4ada" id="r_a96cdc4a8219cf0e535148646de4f4ada"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a5df01b9df078e7713dd804486398c443">PrimitiveUpdateStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a96cdc4a8219cf0e535148646de4f4ada">update</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a> <a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>)</td></tr>
+<tr class="separator:a96cdc4a8219cf0e535148646de4f4ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f7a75ecb1d8c172028f488a9e61637f" id="r_a3f7a75ecb1d8c172028f488a9e61637f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a3d6bd6af11b057d4a1279e33f276b195">PrimitiveRemoveStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a3f7a75ecb1d8c172028f488a9e61637f">remove</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="separator:a3f7a75ecb1d8c172028f488a9e61637f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93ef3b014aebbcb5219d7a2302d6e71e" id="r_a93ef3b014aebbcb5219d7a2302d6e71e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a93ef3b014aebbcb5219d7a2302d6e71e">updateMany</a> (std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1PrimitiveBatchUpdate.html">PrimitiveBatchUpdate</a> &gt; updates)</td></tr>
+<tr class="memdesc:a93ef3b014aebbcb5219d7a2302d6e71e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replaces several live descriptors after validating every handle.  <br /></td></tr>
+<tr class="separator:a93ef3b014aebbcb5219d7a2302d6e71e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb5dc57fbd32bb039b1b42bd7c7e90b1" id="r_adb5dc57fbd32bb039b1b42bd7c7e90b1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#adb5dc57fbd32bb039b1b42bd7c7e90b1">tryGet</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:adb5dc57fbd32bb039b1b42bd7c7e90b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a live primitive handle.  <br /></td></tr>
+<tr class="separator:adb5dc57fbd32bb039b1b42bd7c7e90b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbfd9c3a598783216e2a210235217090" id="r_adbfd9c3a598783216e2a210235217090"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#adbfd9c3a598783216e2a210235217090">isStale</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="separator:adbfd9c3a598783216e2a210235217090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e0060e5b0e5e62be48b8abb6d465fb2" id="r_a1e0060e5b0e5e62be48b8abb6d465fb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a1e0060e5b0e5e62be48b8abb6d465fb2">clear</a> ()</td></tr>
+<tr class="memdesc:a1e0060e5b0e5e62be48b8abb6d465fb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalidates all live handles while retaining slot capacity.  <br /></td></tr>
+<tr class="separator:a1e0060e5b0e5e62be48b8abb6d465fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3269ee55b682b60006e17dec462cc8ec" id="r_a3269ee55b682b60006e17dec462cc8ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a3269ee55b682b60006e17dec462cc8ec">render</a> (<a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html">PrimitiveSceneCanvas3D</a> &amp;canvas) const</td></tr>
+<tr class="memdesc:a3269ee55b682b60006e17dec462cc8ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects visible descriptors in stable slot order.  <br /></td></tr>
+<tr class="separator:a3269ee55b682b60006e17dec462cc8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f779b52d92e934eb6505a7814a4c152" id="r_a2f779b52d92e934eb6505a7814a4c152"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a2f779b52d92e934eb6505a7814a4c152">size</a> () const noexcept</td></tr>
+<tr class="separator:a2f779b52d92e934eb6505a7814a4c152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative owner for primitives that persist across frames. </p>
+<p>Mutation is owner-thread affine. <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html#a3269ee55b682b60006e17dec462cc8ec" title="Projects visible descriptors in stable slot order.">render()</a> is const and synchronously projects descriptors into a caller-owned frame <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> without retaining it. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8h_source.html">PrimitiveScene.h</a> 第 <a class="el" href="PrimitiveScene_8h_source.html#l00140">140</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac490a924578dc2f71b3dd60f58d58b15" name="ac490a924578dc2f71b3dd60f58d58b15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac490a924578dc2f71b3dd60f58d58b15">&#9670;&#160;</a></span>PrimitiveScene() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::PrimitiveScene::PrimitiveScene </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa018185e85b41c24b91f16ba7631cf49" name="aa018185e85b41c24b91f16ba7631cf49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa018185e85b41c24b91f16ba7631cf49">&#9670;&#160;</a></span>PrimitiveScene() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::PrimitiveScene::PrimitiveScene </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87aaf2e838a8fba30af440f89ea4e8a2" name="a87aaf2e838a8fba30af440f89ea4e8a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87aaf2e838a8fba30af440f89ea4e8a2">&#9670;&#160;</a></span>PrimitiveScene() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::PrimitiveScene::PrimitiveScene </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a52dec9af46cd0f88594d8f885c059932" name="a52dec9af46cd0f88594d8f885c059932"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52dec9af46cd0f88594d8f885c059932">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a> &gt; eve::graphics::PrimitiveScene::add </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PrimitiveScene_8h_source.html#l00027">eve::graphics::PrimitiveHandle::invalidIndex</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a1e0060e5b0e5e62be48b8abb6d465fb2" name="a1e0060e5b0e5e62be48b8abb6d465fb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e0060e5b0e5e62be48b8abb6d465fb2">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveScene::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalidates all live handles while retaining slot capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PrimitiveScene_8h_source.html#l00036">eve::graphics::PrimitiveHandle::nextGeneration()</a>.</p>
+
+</div>
+</div>
+<a id="adbfd9c3a598783216e2a210235217090" name="adbfd9c3a598783216e2a210235217090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbfd9c3a598783216e2a210235217090">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::PrimitiveScene::isStale </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="PrimitiveScene_8h_source.html#l00032">eve::graphics::PrimitiveHandle::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="ae6e094a8706baf8c566af4e5dbe880d5" name="ae6e094a8706baf8c566af4e5dbe880d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6e094a8706baf8c566af4e5dbe880d5">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp; eve::graphics::PrimitiveScene::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3a7986c6aef864ca59b2c1246d5163da" name="a3a7986c6aef864ca59b2c1246d5163da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7986c6aef864ca59b2c1246d5163da">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp; eve::graphics::PrimitiveScene::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html">PrimitiveScene</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f7a75ecb1d8c172028f488a9e61637f" name="a3f7a75ecb1d8c172028f488a9e61637f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7a75ecb1d8c172028f488a9e61637f">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a3d6bd6af11b057d4a1279e33f276b195">PrimitiveRemoveStatus</a> &gt; eve::graphics::PrimitiveScene::remove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="PrimitiveScene_8h_source.html#l00036">eve::graphics::PrimitiveHandle::nextGeneration()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3d6bd6af11b057d4a1279e33f276b195a93f07b720ebf7d1246512569761a5804">eve::graphics::Removed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3269ee55b682b60006e17dec462cc8ec" name="a3269ee55b682b60006e17dec462cc8ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3269ee55b682b60006e17dec462cc8ec">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveScene::render </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html">PrimitiveSceneCanvas3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>canvas</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Projects visible descriptors in stable slot order. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00525">eve::graphics::PrimitiveSceneCanvas3D::concat()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00635">eve::graphics::PrimitiveSceneCanvas3D::drawAabb()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00612">eve::graphics::PrimitiveSceneCanvas3D::drawArc()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">eve::graphics::PrimitiveSceneCanvas3D::drawArrow()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00743">eve::graphics::PrimitiveSceneCanvas3D::drawCapsule()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">eve::graphics::PrimitiveSceneCanvas3D::drawCone()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00752">eve::graphics::PrimitiveSceneCanvas3D::drawCylinder()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00600">eve::graphics::PrimitiveSceneCanvas3D::drawDisk()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00815">eve::graphics::PrimitiveSceneCanvas3D::drawFrustum()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00673">eve::graphics::PrimitiveSceneCanvas3D::drawGrid()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00663">eve::graphics::PrimitiveSceneCanvas3D::drawObb()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">eve::graphics::PrimitiveSceneCanvas3D::drawPolyline()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">eve::graphics::PrimitiveSceneCanvas3D::drawSphere()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00519">eve::graphics::PrimitiveSceneCanvas3D::restore()</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00517">eve::graphics::PrimitiveSceneCanvas3D::save()</a>.</p>
+
+</div>
+</div>
+<a id="a2f779b52d92e934eb6505a7814a4c152" name="a2f779b52d92e934eb6505a7814a4c152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f779b52d92e934eb6505a7814a4c152">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::graphics::PrimitiveScene::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8h_source.html">PrimitiveScene.h</a> 第 <a class="el" href="PrimitiveScene_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb5dc57fbd32bb039b1b42bd7c7e90b1" name="adb5dc57fbd32bb039b1b42bd7c7e90b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb5dc57fbd32bb039b1b42bd7c7e90b1">&#9670;&#160;</a></span>tryGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a> * eve::graphics::PrimitiveScene::tryGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a live primitive handle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Generation-qualified handle issued by this scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed descriptor or nullptr when the handle is invalid or stale. @ownership Borrowed; <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html" title="Authoritative owner for primitives that persist across frames.">PrimitiveScene</a> retains ownership. @lifetime Valid until the next non-const <a class="el" href="classeve_1_1graphics_1_1PrimitiveScene.html" title="Authoritative owner for primitives that persist across frames.">PrimitiveScene</a> operation or scene destruction. @thread Owner-thread affine; concurrent mutation is not supported. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="PrimitiveScene_8h_source.html#l00033">eve::graphics::PrimitiveHandle::index()</a>.</p>
+
+</div>
+</div>
+<a id="a96cdc4a8219cf0e535148646de4f4ada" name="a96cdc4a8219cf0e535148646de4f4ada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96cdc4a8219cf0e535148646de4f4ada">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a5df01b9df078e7713dd804486398c443">PrimitiveUpdateStatus</a> &gt; eve::graphics::PrimitiveScene::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1PrimitiveHandle.html">PrimitiveHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1PrimitiveDescriptor3D.html">PrimitiveDescriptor3D</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a5df01b9df078e7713dd804486398c443aff0a3b7f3daef040faf89a88fdac01b7">eve::graphics::Updated</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00132">updateMany()</a>.</p>
+
+</div>
+</div>
+<a id="a93ef3b014aebbcb5219d7a2302d6e71e" name="a93ef3b014aebbcb5219d7a2302d6e71e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ef3b014aebbcb5219d7a2302d6e71e">&#9670;&#160;</a></span>updateMany()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::size_t &gt; eve::graphics::PrimitiveScene::updateMany </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1PrimitiveBatchUpdate.html">PrimitiveBatchUpdate</a> &gt;&#160;</td>
+          <td class="paramname"><em>updates</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replaces several live descriptors after validating every handle. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a> 第 <a class="el" href="PrimitiveScene_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00105">update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="PrimitiveScene_8h_source.html">PrimitiveScene.h</a></li>
+<li>src/modules/graphics/<a class="el" href="PrimitiveScene_8cpp_source.html">PrimitiveScene.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

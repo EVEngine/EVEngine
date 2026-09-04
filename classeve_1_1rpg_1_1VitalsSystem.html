@@ -1,0 +1,585 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::VitalsSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html">VitalsSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1VitalsSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::VitalsSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>当前资源系统：读写 <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Vitals.html" title="当前资源（hp / mana ...）：current 是运行时瞬时值，上限取同名最终属性。 max 由 attributes 推导（getFinalAttribute(resource)），本组件只存...">RPGActor::Vitals</a> 并发出事件。 @thread 调用线程应与 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 的 ECS 线程一致。  
+ <a href="classeve_1_1rpg_1_1VitalsSystem.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VitalsSystem_8h_source.html">VitalsSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a07a18037748f02f9c6ecade50277d05e" id="r_a07a18037748f02f9c6ecade50277d05e"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a07a18037748f02f9c6ecade50277d05e">getCurrent</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource)</td></tr>
+<tr class="memdesc:a07a18037748f02f9c6ecade50277d05e"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前值（无 vitals/资源时 0）。  <br /></td></tr>
+<tr class="separator:a07a18037748f02f9c6ecade50277d05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a32785b55a7be4639400c780c7b8d0" id="r_ac0a32785b55a7be4639400c780c7b8d0"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#ac0a32785b55a7be4639400c780c7b8d0">getMax</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource)</td></tr>
+<tr class="memdesc:ac0a32785b55a7be4639400c780c7b8d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">上限：取 actor 同名最终属性（getFinalAttribute），无则 0。  <br /></td></tr>
+<tr class="separator:ac0a32785b55a7be4639400c780c7b8d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ea82430b3fcc4de491a4556a3489bf0" id="r_a5ea82430b3fcc4de491a4556a3489bf0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a5ea82430b3fcc4de491a4556a3489bf0">setCurrent</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a5ea82430b3fcc4de491a4556a3489bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">直接设定当前值，夹在 [0, max]。  <br /></td></tr>
+<tr class="separator:a5ea82430b3fcc4de491a4556a3489bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5239bccccf72912358e098f74909596d" id="r_a5239bccccf72912358e098f74909596d"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a5239bccccf72912358e098f74909596d">takeDamage</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource, double amount, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a5239bccccf72912358e098f74909596d"><td class="mdescLeft">&#160;</td><td class="mdescRight">造成伤害：current -= amount，下限 0；归零时发 death 事件。  <br /></td></tr>
+<tr class="separator:a5239bccccf72912358e098f74909596d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f43cbebb228fb5e383a6849193e7272" id="r_a8f43cbebb228fb5e383a6849193e7272"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a8f43cbebb228fb5e383a6849193e7272">heal</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource, double amount)</td></tr>
+<tr class="memdesc:a8f43cbebb228fb5e383a6849193e7272"><td class="mdescLeft">&#160;</td><td class="mdescRight">治疗：current += amount，上限 max。返回实际治疗量。  <br /></td></tr>
+<tr class="separator:a8f43cbebb228fb5e383a6849193e7272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d3311e488265182de0ae0c5760bffd7" id="r_a5d3311e488265182de0ae0c5760bffd7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a5d3311e488265182de0ae0c5760bffd7">revive</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource, double amount=-1.0)</td></tr>
+<tr class="memdesc:a5d3311e488265182de0ae0c5760bffd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">复活：把资源设为 amount（默认当前上限），并清掉死亡状态。  <br /></td></tr>
+<tr class="separator:a5d3311e488265182de0ae0c5760bffd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b66a718320e6a8a5d1888705976af2" id="r_af3b66a718320e6a8a5d1888705976af2"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#af3b66a718320e6a8a5d1888705976af2">isDead</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;resource)</td></tr>
+<tr class="memdesc:af3b66a718320e6a8a5d1888705976af2"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否死亡：max &gt; 0 且 current &lt;= 0。  <br /></td></tr>
+<tr class="separator:af3b66a718320e6a8a5d1888705976af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7464b042323b6a1d0ea3f41e05abb1fd" id="r_a7464b042323b6a1d0ea3f41e05abb1fd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1VitalsSystem.html#a7464b042323b6a1d0ea3f41e05abb1fd">pollEvents</a> (std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1VitalsEvent.html">VitalsEvent</a> &gt; &amp;out)</td></tr>
+<tr class="memdesc:a7464b042323b6a1d0ea3f41e05abb1fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">取出并清空自上次调用以来累积的资源事件（push/poll 风格）。  <br /></td></tr>
+<tr class="separator:a7464b042323b6a1d0ea3f41e05abb1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>当前资源系统：读写 <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Vitals.html" title="当前资源（hp / mana ...）：current 是运行时瞬时值，上限取同名最终属性。 max 由 attributes 推导（getFinalAttribute(resource)），本组件只存...">RPGActor::Vitals</a> 并发出事件。 @thread 调用线程应与 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 的 ECS 线程一致。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8h_source.html">VitalsSystem.h</a> 第 <a class="el" href="VitalsSystem_8h_source.html#l00036">36</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a07a18037748f02f9c6ecade50277d05e" name="a07a18037748f02f9c6ecade50277d05e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a18037748f02f9c6ecade50277d05e">&#9670;&#160;</a></span>getCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::VitalsSystem::getCurrent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>当前值（无 vitals/资源时 0）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00247">eve::rpg::RPGActor::getCurrent()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00062">heal()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00083">isDead()</a> , 以及 <a class="el" href="VitalsSystem_8cpp_source.html#l00046">takeDamage()</a>.</p>
+
+</div>
+</div>
+<a id="ac0a32785b55a7be4639400c780c7b8d0" name="ac0a32785b55a7be4639400c780c7b8d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a32785b55a7be4639400c780c7b8d0">&#9670;&#160;</a></span>getMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::VitalsSystem::getMax </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>上限：取 actor 同名最终属性（getFinalAttribute），无则 0。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00103">eve::rpg::AttributeSystem::getFinal()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00251">eve::rpg::RPGActor::getMax()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00062">heal()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00083">isDead()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00074">revive()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00040">setCurrent()</a> , 以及 <a class="el" href="VitalsSystem_8cpp_source.html#l00046">takeDamage()</a>.</p>
+
+</div>
+</div>
+<a id="a8f43cbebb228fb5e383a6849193e7272" name="a8f43cbebb228fb5e383a6849193e7272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f43cbebb228fb5e383a6849193e7272">&#9670;&#160;</a></span>heal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::VitalsSystem::heal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>治疗：current += amount，上限 max。返回实际治疗量。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00030">getCurrent()</a> , 以及 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">getMax()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00264">eve::rpg::RPGActor::heal()</a>.</p>
+
+</div>
+</div>
+<a id="af3b66a718320e6a8a5d1888705976af2" name="af3b66a718320e6a8a5d1888705976af2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b66a718320e6a8a5d1888705976af2">&#9670;&#160;</a></span>isDead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::VitalsSystem::isDead </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>是否死亡：max &gt; 0 且 current &lt;= 0。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00030">getCurrent()</a> , 以及 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">getMax()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Battle_8cpp_source.html#l00212">eve::rpg::Battle::executeNextAction()</a>, <a class="el" href="Battle_8cpp_source.html#l00024">eve::rpg::Battle::isActorAlive()</a> , 以及 <a class="el" href="RPGActor_8cpp_source.html#l00272">eve::rpg::RPGActor::isDead()</a>.</p>
+
+</div>
+</div>
+<a id="a7464b042323b6a1d0ea3f41e05abb1fd" name="a7464b042323b6a1d0ea3f41e05abb1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7464b042323b6a1d0ea3f41e05abb1fd">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::VitalsSystem::pollEvents </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1VitalsEvent.html">VitalsEvent</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>取出并清空自上次调用以来累积的资源事件（push/poll 风格）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00418">eve::rpg::RPG::update()</a>.</p>
+
+</div>
+</div>
+<a id="a5d3311e488265182de0ae0c5760bffd7" name="a5d3311e488265182de0ae0c5760bffd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d3311e488265182de0ae0c5760bffd7">&#9670;&#160;</a></span>revive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::VitalsSystem::revive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em> = <code>-1.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>复活：把资源设为 amount（默认当前上限），并清掉死亡状态。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">getMax()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00268">eve::rpg::RPGActor::revive()</a>.</p>
+
+</div>
+</div>
+<a id="a5ea82430b3fcc4de491a4556a3489bf0" name="a5ea82430b3fcc4de491a4556a3489bf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ea82430b3fcc4de491a4556a3489bf0">&#9670;&#160;</a></span>setCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::VitalsSystem::setCurrent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>直接设定当前值，夹在 [0, max]。 </p>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">getMax()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00255">eve::rpg::RPGActor::setCurrent()</a>.</p>
+
+</div>
+</div>
+<a id="a5239bccccf72912358e098f74909596d" name="a5239bccccf72912358e098f74909596d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5239bccccf72912358e098f74909596d">&#9670;&#160;</a></span>takeDamage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::VitalsSystem::takeDamage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>造成伤害：current -= amount，下限 0；归零时发 death 事件。 </p>
+<dl class="section return"><dt>返回</dt><dd>实际生效的伤害量（夹在 [0, currentBefore]）。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a> 第 <a class="el" href="VitalsSystem_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00030">getCurrent()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00036">getMax()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00259">eve::rpg::RPGActor::takeDamage()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="VitalsSystem_8h_source.html">VitalsSystem.h</a></li>
+<li>src/modules/rpg/<a class="el" href="VitalsSystem_8cpp_source.html">VitalsSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

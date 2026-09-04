@@ -1,0 +1,310 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/MotionEchoEffect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionEchoEffect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionEchoEffect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="MeshParticleEmitter_8h.html">stylize/MeshParticleEmitter.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="TrailEffect_8h.html">stylize/TrailEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html">ProjectileTrailConfig</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a3e17248ec69a60e305e22fdd963c2f61">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a3e17248ec69a60e305e22fdd963c2f61">sampleIntervalSeconds</a> = 1.f / 60.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#ae0f1303ab20d56de66207645bb8a278c">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#ae0f1303ab20d56de66207645bb8a278c">sampleLifetimeSeconds</a> = 0.35f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a18d0a5e46f272ce76294e54bccd20732">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a18d0a5e46f272ce76294e54bccd20732">minimumDistance</a> = 0.01f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a8dda103180bdbb9637c4fe2f5ebfed4b">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a8dda103180bdbb9637c4fe2f5ebfed4b">widthHead</a> = 0.12f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#aaa368f5d37e7438ecba760bbc8a9e3a6">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#aaa368f5d37e7438ecba760bbc8a9e3a6">widthTail</a> = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a17b28ca7a58f9cdd9680a742a8cce9d2">   22</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a17b28ca7a58f9cdd9680a742a8cce9d2">maximumSamples</a> = 128;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html">MotionEchoAdvanceReport</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#ae5678435917322890649816ae514f542">   27</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#ae5678435917322890649816ae514f542">captured</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#abb3bcbc087d8cd39dd12359d092b1076">   28</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#abb3bcbc087d8cd39dd12359d092b1076">expired</a> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#a629b8b41263c8aa2f71df4ea3d154af8">   29</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#a629b8b41263c8aa2f71df4ea3d154af8">distanceRejected</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#aa82f12de4505805454a34db77486c2de">   30</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#aa82f12de4505805454a34db77486c2de">alive</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html">ProjectileTrailEffect</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html">ProjectileTrailEffect</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1ProjectileTrailConfig.html">ProjectileTrailConfig</a> config = {});</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a8f26d704f76778f3b53b92c662248508">reset</a>() <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html">MotionEchoAdvanceReport</a> <a class="code hl_function" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a0e065e43880424934369d489eeec0ce1">update</a>(<span class="keywordtype">float</span> deltaSeconds,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                 <span class="keyword">const</span> glm::vec3&amp; currentPosition);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a> <a class="code hl_function" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#ab96a222bd646ed4de369bc8165ce72ad">build</a>(<span class="keyword">const</span> glm::vec3&amp; cameraForward) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a150739d41264d41e1e3c9467d4424218">   60</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a150739d41264d41e1e3c9467d4424218">size</a>() const noexcept { <span class="keywordflow">return</span> samples_.size(); }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">struct </span>Sample {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>{0.f};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">float</span> age = 0.f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    };</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> append(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <span class="keywordtype">float</span> initialAge,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                MotionEchoAdvanceReport&amp; report);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    ProjectileTrailConfig config_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::vector&lt;Sample&gt; samples_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    glm::vec3 previousInput_{0.f};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">float</span> sampleAccumulator_ = 0.f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">bool</span> hasPreviousInput_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="};">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html">   79</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html">AfterimageEffectConfig</a> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a063f81668d22b76d43b165342edeeecc">   80</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a063f81668d22b76d43b165342edeeecc">sampleIntervalSeconds</a> = 0.06f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a279bd63e3c0bfb01e2dc4733649312cd">   81</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a279bd63e3c0bfb01e2dc4733649312cd">lifetimeSeconds</a> = 0.3f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a1397d35356edb997a443e2523631a41b">   82</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a1397d35356edb997a443e2523631a41b">maximumImages</a> = 12;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a5b3aac0591f19bbe62871a3cae9117e5">   83</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a5b3aac0591f19bbe62871a3cae9117e5">colorStart</a>{0.4f, 0.8f, 1.f, 0.65f};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#ad70f80421b350af581b609ba5bd8ba87">   84</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#ad70f80421b350af581b609ba5bd8ba87">colorEnd</a>{0.1f, 0.2f, 1.f, 0.f};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1AfterimageEffect.html">   93</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1AfterimageEffect.html">AfterimageEffect</a> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1AfterimageEffect.html">AfterimageEffect</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1AfterimageEffectConfig.html">AfterimageEffectConfig</a> config = {});</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1AfterimageEffect.html#ab685ec22fb5028375fc55ffabad7d832">reset</a>() <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html">MotionEchoAdvanceReport</a> <a class="code hl_function" href="classeve_1_1stylize_1_1AfterimageEffect.html#a1b3907e0ff35ee2671ed85ccf15fc43c">update</a>(<span class="keywordtype">float</span> deltaSeconds,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                                 <span class="keyword">const</span> glm::mat4&amp; currentModel);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] std::vector&lt;MeshParticleInstance&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1AfterimageEffect.html#a98c9016805d75c166fad1252d2c9e49b">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1AfterimageEffect.html#ab8a7ed164eb51683d6b330f61caf8491">  114</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1stylize_1_1AfterimageEffect.html#ab8a7ed164eb51683d6b330f61caf8491">size</a>() const noexcept { <span class="keywordflow">return</span> images_.size(); }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">struct </span>Image {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        std::uint64_t stableId = 0;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        glm::mat4 <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>{1.f};</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordtype">float</span> age = 0.f;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    };</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    AfterimageEffectConfig config_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    std::vector&lt;Image&gt; images_;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">float</span> sampleAccumulator_ = 0.f;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::uint64_t nextStableId_ = 1;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>};</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aMeshParticleEmitter_8h_html"><div class="ttname"><a href="MeshParticleEmitter_8h.html">MeshParticleEmitter.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00734">RenderSystem3D.cpp:734</a></div></div>
+<div class="ttc" id="aTrailEffect_8h_html"><div class="ttname"><a href="TrailEffect_8h.html">TrailEffect.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1AfterimageEffect_html"><div class="ttname"><a href="classeve_1_1stylize_1_1AfterimageEffect.html">eve::stylize::AfterimageEffect</a></div><div class="ttdoc">Fixed-rate owning transform history emitted as mesh-particle instances.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00093">MotionEchoEffect.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1AfterimageEffect_html_a1b3907e0ff35ee2671ed85ccf15fc43c"><div class="ttname"><a href="classeve_1_1stylize_1_1AfterimageEffect.html#a1b3907e0ff35ee2671ed85ccf15fc43c">eve::stylize::AfterimageEffect::update</a></div><div class="ttdeci">MotionEchoAdvanceReport update(float deltaSeconds, const glm::mat4 &amp;currentModel)</div><div class="ttdoc">Advance and capture the current model at fixed intervals.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00149">MotionEchoEffect.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1AfterimageEffect_html_a98c9016805d75c166fad1252d2c9e49b"><div class="ttname"><a href="classeve_1_1stylize_1_1AfterimageEffect.html#a98c9016805d75c166fad1252d2c9e49b">eve::stylize::AfterimageEffect::snapshot</a></div><div class="ttdeci">std::vector&lt; MeshParticleInstance &gt; snapshot() const</div><div class="ttdoc">Return render instances in oldest-to-newest stable order.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00188">MotionEchoEffect.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1AfterimageEffect_html_ab685ec22fb5028375fc55ffabad7d832"><div class="ttname"><a href="classeve_1_1stylize_1_1AfterimageEffect.html#ab685ec22fb5028375fc55ffabad7d832">eve::stylize::AfterimageEffect::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Clear images and reset stable identity/timing state.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00143">MotionEchoEffect.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1AfterimageEffect_html_ab8a7ed164eb51683d6b330f61caf8491"><div class="ttname"><a href="classeve_1_1stylize_1_1AfterimageEffect.html#ab8a7ed164eb51683d6b330f61caf8491">eve::stylize::AfterimageEffect::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return retained image count.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00114">MotionEchoEffect.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1ProjectileTrailEffect_html"><div class="ttname"><a href="classeve_1_1stylize_1_1ProjectileTrailEffect.html">eve::stylize::ProjectileTrailEffect</a></div><div class="ttdoc">Time-resampled world-space trail for projectiles and dash effects.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00039">MotionEchoEffect.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1ProjectileTrailEffect_html_a0e065e43880424934369d489eeec0ce1"><div class="ttname"><a href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a0e065e43880424934369d489eeec0ce1">eve::stylize::ProjectileTrailEffect::update</a></div><div class="ttdeci">MotionEchoAdvanceReport update(float deltaSeconds, const glm::vec3 &amp;currentPosition)</div><div class="ttdoc">Advance time and resample movement up to the current world position.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00064">MotionEchoEffect.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1ProjectileTrailEffect_html_a150739d41264d41e1e3c9467d4424218"><div class="ttname"><a href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a150739d41264d41e1e3c9467d4424218">eve::stylize::ProjectileTrailEffect::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return retained sample count.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00060">MotionEchoEffect.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1ProjectileTrailEffect_html_a8f26d704f76778f3b53b92c662248508"><div class="ttname"><a href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#a8f26d704f76778f3b53b92c662248508">eve::stylize::ProjectileTrailEffect::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Clear samples and timing state.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00042">MotionEchoEffect.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1ProjectileTrailEffect_html_ab96a222bd646ed4de369bc8165ce72ad"><div class="ttname"><a href="classeve_1_1stylize_1_1ProjectileTrailEffect.html#ab96a222bd646ed4de369bc8165ce72ad">eve::stylize::ProjectileTrailEffect::build</a></div><div class="ttdeci">TrailMeshSnapshot build(const glm::vec3 &amp;cameraForward) const</div><div class="ttdoc">Build a camera-facing ribbon ordered from oldest tail to newest head.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8cpp_source.html#l00103">MotionEchoEffect.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html">eve::stylize::AfterimageEffectConfig</a></div><div class="ttdoc">Fixed-rate model snapshot and fade controls for character afterimages.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00079">MotionEchoEffect.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html_a063f81668d22b76d43b165342edeeecc"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a063f81668d22b76d43b165342edeeecc">eve::stylize::AfterimageEffectConfig::sampleIntervalSeconds</a></div><div class="ttdeci">float sampleIntervalSeconds</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00080">MotionEchoEffect.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html_a1397d35356edb997a443e2523631a41b"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a1397d35356edb997a443e2523631a41b">eve::stylize::AfterimageEffectConfig::maximumImages</a></div><div class="ttdeci">std::size_t maximumImages</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00082">MotionEchoEffect.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html_a279bd63e3c0bfb01e2dc4733649312cd"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a279bd63e3c0bfb01e2dc4733649312cd">eve::stylize::AfterimageEffectConfig::lifetimeSeconds</a></div><div class="ttdeci">float lifetimeSeconds</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00081">MotionEchoEffect.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html_a5b3aac0591f19bbe62871a3cae9117e5"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#a5b3aac0591f19bbe62871a3cae9117e5">eve::stylize::AfterimageEffectConfig::colorStart</a></div><div class="ttdeci">graphics::Color colorStart</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00083">MotionEchoEffect.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AfterimageEffectConfig_html_ad70f80421b350af581b609ba5bd8ba87"><div class="ttname"><a href="structeve_1_1stylize_1_1AfterimageEffectConfig.html#ad70f80421b350af581b609ba5bd8ba87">eve::stylize::AfterimageEffectConfig::colorEnd</a></div><div class="ttdeci">graphics::Color colorEnd</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00084">MotionEchoEffect.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MotionEchoAdvanceReport_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html">eve::stylize::MotionEchoAdvanceReport</a></div><div class="ttdoc">Per-call observable sample and expiration counters.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00026">MotionEchoEffect.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MotionEchoAdvanceReport_html_a629b8b41263c8aa2f71df4ea3d154af8"><div class="ttname"><a href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#a629b8b41263c8aa2f71df4ea3d154af8">eve::stylize::MotionEchoAdvanceReport::distanceRejected</a></div><div class="ttdeci">std::uint32_t distanceRejected</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00029">MotionEchoEffect.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MotionEchoAdvanceReport_html_aa82f12de4505805454a34db77486c2de"><div class="ttname"><a href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#aa82f12de4505805454a34db77486c2de">eve::stylize::MotionEchoAdvanceReport::alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00030">MotionEchoEffect.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MotionEchoAdvanceReport_html_abb3bcbc087d8cd39dd12359d092b1076"><div class="ttname"><a href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#abb3bcbc087d8cd39dd12359d092b1076">eve::stylize::MotionEchoAdvanceReport::expired</a></div><div class="ttdeci">std::uint32_t expired</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00028">MotionEchoEffect.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MotionEchoAdvanceReport_html_ae5678435917322890649816ae514f542"><div class="ttname"><a href="structeve_1_1stylize_1_1MotionEchoAdvanceReport.html#ae5678435917322890649816ae514f542">eve::stylize::MotionEchoAdvanceReport::captured</a></div><div class="ttdeci">std::uint32_t captured</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00027">MotionEchoEffect.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html">eve::stylize::ProjectileTrailConfig</a></div><div class="ttdoc">Sampling, retention and ribbon appearance for a projectile trail.</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00016">MotionEchoEffect.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_a17b28ca7a58f9cdd9680a742a8cce9d2"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a17b28ca7a58f9cdd9680a742a8cce9d2">eve::stylize::ProjectileTrailConfig::maximumSamples</a></div><div class="ttdeci">std::size_t maximumSamples</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00022">MotionEchoEffect.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_a18d0a5e46f272ce76294e54bccd20732"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a18d0a5e46f272ce76294e54bccd20732">eve::stylize::ProjectileTrailConfig::minimumDistance</a></div><div class="ttdeci">float minimumDistance</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00019">MotionEchoEffect.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_a3e17248ec69a60e305e22fdd963c2f61"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a3e17248ec69a60e305e22fdd963c2f61">eve::stylize::ProjectileTrailConfig::sampleIntervalSeconds</a></div><div class="ttdeci">float sampleIntervalSeconds</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00017">MotionEchoEffect.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_a8dda103180bdbb9637c4fe2f5ebfed4b"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#a8dda103180bdbb9637c4fe2f5ebfed4b">eve::stylize::ProjectileTrailConfig::widthHead</a></div><div class="ttdeci">float widthHead</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00020">MotionEchoEffect.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_aaa368f5d37e7438ecba760bbc8a9e3a6"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#aaa368f5d37e7438ecba760bbc8a9e3a6">eve::stylize::ProjectileTrailConfig::widthTail</a></div><div class="ttdeci">float widthTail</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00021">MotionEchoEffect.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1ProjectileTrailConfig_html_ae0f1303ab20d56de66207645bb8a278c"><div class="ttname"><a href="structeve_1_1stylize_1_1ProjectileTrailConfig.html#ae0f1303ab20d56de66207645bb8a278c">eve::stylize::ProjectileTrailConfig::sampleLifetimeSeconds</a></div><div class="ttdeci">float sampleLifetimeSeconds</div><div class="ttdef"><b>Definition</b> <a href="MotionEchoEffect_8h_source.html#l00018">MotionEchoEffect.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailMeshSnapshot_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">eve::stylize::TrailMeshSnapshot</a></div><div class="ttdoc">Owning CPU snapshot suitable for upload by a graphics adapter.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00040">TrailEffect.h:40</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

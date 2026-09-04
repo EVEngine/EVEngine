@@ -1,0 +1,256 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/BeamSkillEffect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BeamSkillEffect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BeamSkillEffect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="BeamEffect_8h.html">stylize/BeamEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MeshEffect_8h.html">stylize/MeshEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="MeshEffectRenderer_8h.html">stylize/MeshEffectRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">   16</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">BeamSkillPreset</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605ad47bda86cb76322c22950e84e9cd109d">Laser</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605a457ba641340a812b28f949a26fca3e7b">Lightning</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605ad64eb041de32c0ca714095d69654720e">ChainLightning</a> };</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1BeamSkillEffect.html">BeamSkillEffect</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1BeamSkillEffect.html">BeamSkillEffect</a>(<a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">BeamSkillPreset</a> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#aaf7162562927d3ea2ab9a2a4975c2284">preset</a>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a83810d280dd75c503dd9fcf57f9eec18">setPath</a>(std::span&lt;const glm::vec3&gt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a86a8036f1b73792be9b8809ee0d91ac7">setEndpoints</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac77367fe0569fcfad6ab1c14c53c0b90">   37</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac77367fe0569fcfad6ab1c14c53c0b90">play</a>() noexcept { effect_.<a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a0b966f3a332886b7a11e9e21cae8bbf6">play</a>(); }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ad5dea88b7724ea18095eb80b1e190f00">   40</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ad5dea88b7724ea18095eb80b1e190f00">stop</a>(<span class="keywordtype">float</span> fadeOutSeconds = 0.f) { effect_.<a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac3f57e6977fa94474d659f5441114644">stop</a>(fadeOutSeconds); }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac3821d3a0ca400ecfdeec899db4e2ddd">   43</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac3821d3a0ca400ecfdeec899db4e2ddd">update</a>(<span class="keywordtype">float</span> deltaSeconds) { effect_.<a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">update</a>(deltaSeconds); }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1BeamBuildResult.html">BeamBuildResult</a> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#ae7e2581fdbc337f97bd698de947d738c">build</a>(<span class="keyword">const</span> glm::vec3&amp; cameraForward) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MeshEffectSubmitStatus&gt;</a> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a4f4d2cd43fca6915b3e6e07f39dc3523">submit</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a>&amp; renderer, <span class="keyword">const</span> glm::vec3&amp; cameraForward,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a> = <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(1.f));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a38d3e923a32b7ad1b6028e33dc9462f9">   60</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1BeamEffectConfig.html">BeamEffectConfig</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a38d3e923a32b7ad1b6028e33dc9462f9">geometry</a>() noexcept { <span class="keywordflow">return</span> geometry_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a919a2a1eafe2b4f6e688d86d3966c58b">   63</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#a919a2a1eafe2b4f6e688d86d3966c58b">effect</a>() noexcept { <span class="keywordflow">return</span> effect_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1BeamSkillEffect.html#aaf7162562927d3ea2ab9a2a4975c2284">   66</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">BeamSkillPreset</a> <a class="code hl_function" href="classeve_1_1stylize_1_1BeamSkillEffect.html#aaf7162562927d3ea2ab9a2a4975c2284">preset</a>() const noexcept { <span class="keywordflow">return</span> preset_; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">BeamSkillPreset</a> preset_;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1BeamEffectConfig.html">BeamEffectConfig</a> geometry_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> effect_{<span class="stringliteral">&quot;slash&quot;</span>};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::vector&lt;glm::vec3&gt; path_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aBeamEffect_8h_html"><div class="ttname"><a href="BeamEffect_8h.html">BeamEffect.h</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a7675542847a16d47375ee96d007f8999"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a></div><div class="ttdeci">glm::vec4 tint</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00046">GraphicsVirtualGeometry.cpp:46</a></div></div>
+<div class="ttc" id="aMeshEffectRenderer_8h_html"><div class="ttname"><a href="MeshEffectRenderer_8h.html">MeshEffectRenderer.h</a></div></div>
+<div class="ttc" id="aMeshEffect_8h_html"><div class="ttname"><a href="MeshEffect_8h.html">MeshEffect.h</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a294aae2204c93b7ba3628b25f45967cd"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; glm::vec2 &gt; &gt; points</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00076">PrimitiveDrawList.cpp:76</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html">eve::stylize::BeamSkillEffect</a></div><div class="ttdoc">Gameplay-facing recipe for laser and lightning mesh effects.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00025">BeamSkillEffect.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_a38d3e923a32b7ad1b6028e33dc9462f9"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#a38d3e923a32b7ad1b6028e33dc9462f9">eve::stylize::BeamSkillEffect::geometry</a></div><div class="ttdeci">BeamEffectConfig &amp; geometry() noexcept</div><div class="ttdoc">Access mutable geometry controls for per-skill overrides.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00060">BeamSkillEffect.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_a4f4d2cd43fca6915b3e6e07f39dc3523"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#a4f4d2cd43fca6915b3e6e07f39dc3523">eve::stylize::BeamSkillEffect::submit</a></div><div class="ttdeci">eve::Result&lt; MeshEffectSubmitStatus &gt; submit(MeshEffectRenderer &amp;renderer, const glm::vec3 &amp;cameraForward, const graphics::Color &amp;tint=graphics::Color(1.f))</div><div class="ttdoc">Build and submit the current path through the shared Trail renderer.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8cpp_source.html#l00092">BeamSkillEffect.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_a83810d280dd75c503dd9fcf57f9eec18"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#a83810d280dd75c503dd9fcf57f9eec18">eve::stylize::BeamSkillEffect::setPath</a></div><div class="ttdeci">void setPath(std::span&lt; const glm::vec3 &gt; points)</div><div class="ttdoc">Replace the owning world-space path; at least two points are required to build.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8cpp_source.html#l00061">BeamSkillEffect.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_a86a8036f1b73792be9b8809ee0d91ac7"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#a86a8036f1b73792be9b8809ee0d91ac7">eve::stylize::BeamSkillEffect::setEndpoints</a></div><div class="ttdeci">void setEndpoints(const glm::vec3 &amp;start, const glm::vec3 &amp;end)</div><div class="ttdoc">Convenience two-point path assignment.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8cpp_source.html#l00065">BeamSkillEffect.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_a919a2a1eafe2b4f6e688d86d3966c58b"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#a919a2a1eafe2b4f6e688d86d3966c58b">eve::stylize::BeamSkillEffect::effect</a></div><div class="ttdeci">MeshEffectInstance &amp; effect() noexcept</div><div class="ttdoc">Access the owned style/playback instance for exposed parameters.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00063">BeamSkillEffect.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_aaf7162562927d3ea2ab9a2a4975c2284"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#aaf7162562927d3ea2ab9a2a4975c2284">eve::stylize::BeamSkillEffect::preset</a></div><div class="ttdeci">BeamSkillPreset preset() const noexcept</div><div class="ttdoc">Return the selected immutable behavior preset.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00066">BeamSkillEffect.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_ac3821d3a0ca400ecfdeec899db4e2ddd"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac3821d3a0ca400ecfdeec899db4e2ddd">eve::stylize::BeamSkillEffect::update</a></div><div class="ttdeci">void update(float deltaSeconds)</div><div class="ttdoc">Advance the owned effect envelope with caller-provided simulation time.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00043">BeamSkillEffect.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_ac77367fe0569fcfad6ab1c14c53c0b90"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#ac77367fe0569fcfad6ab1c14c53c0b90">eve::stylize::BeamSkillEffect::play</a></div><div class="ttdeci">void play() noexcept</div><div class="ttdoc">Restart the effect playback envelope.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00037">BeamSkillEffect.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_ad5dea88b7724ea18095eb80b1e190f00"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#ad5dea88b7724ea18095eb80b1e190f00">eve::stylize::BeamSkillEffect::stop</a></div><div class="ttdeci">void stop(float fadeOutSeconds=0.f)</div><div class="ttdoc">Stop immediately or fade using the requested duration.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00040">BeamSkillEffect.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1BeamSkillEffect_html_ae7e2581fdbc337f97bd698de947d738c"><div class="ttname"><a href="classeve_1_1stylize_1_1BeamSkillEffect.html#ae7e2581fdbc337f97bd698de947d738c">eve::stylize::BeamSkillEffect::build</a></div><div class="ttdeci">BeamBuildResult build(const glm::vec3 &amp;cameraForward) const</div><div class="ttdoc">Build and merge every path segment into one owning ribbon snapshot.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8cpp_source.html#l00069">BeamSkillEffect.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html">eve::stylize::MeshEffectInstance</a></div><div class="ttdoc">Runtime state for a shader effect attached to a renderable mesh.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00038">MeshEffect.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a0b966f3a332886b7a11e9e21cae8bbf6"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a0b966f3a332886b7a11e9e21cae8bbf6">eve::stylize::MeshEffectInstance::play</a></div><div class="ttdeci">void play() noexcept</div><div class="ttdoc">Restart playback from time zero.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00040">MeshEffect.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_a4c84e5cfb4197f41fc7fcd8c3bdf5f14"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">eve::stylize::MeshEffectInstance::update</a></div><div class="ttdeci">void update(float dtSeconds)</div><div class="ttdoc">Advance playback using caller-provided simulation time.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00061">MeshEffect.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html_ac3f57e6977fa94474d659f5441114644"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac3f57e6977fa94474d659f5441114644">eve::stylize::MeshEffectInstance::stop</a></div><div class="ttdeci">void stop(float fadeOutSeconds=0.f)</div><div class="ttdoc">Stop immediately or fade from the current envelope intensity.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8cpp_source.html#l00048">MeshEffect.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html">eve::stylize::MeshEffectRenderer</a></div><div class="ttdoc">Render-thread adapter from stylize runtime state to Graphics mesh draws.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00113">MeshEffectRenderer.h:113</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aa37cff78ec2defad80245ecb8dcba605"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605">eve::stylize::BeamSkillPreset</a></div><div class="ttdeci">BeamSkillPreset</div><div class="ttdoc">Production-oriented beam behavior preset.</div><div class="ttdef"><b>Definition</b> <a href="BeamSkillEffect_8h_source.html#l00016">BeamSkillEffect.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aa37cff78ec2defad80245ecb8dcba605a457ba641340a812b28f949a26fca3e7b"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605a457ba641340a812b28f949a26fca3e7b">eve::stylize::BeamSkillPreset::Lightning</a></div><div class="ttdeci">@ Lightning</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aa37cff78ec2defad80245ecb8dcba605ad47bda86cb76322c22950e84e9cd109d"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605ad47bda86cb76322c22950e84e9cd109d">eve::stylize::BeamSkillPreset::Laser</a></div><div class="ttdeci">@ Laser</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aa37cff78ec2defad80245ecb8dcba605ad64eb041de32c0ca714095d69654720e"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aa37cff78ec2defad80245ecb8dcba605ad64eb041de32c0ca714095d69654720e">eve::stylize::BeamSkillPreset::ChainLightning</a></div><div class="ttdeci">@ ChainLightning</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamBuildResult_html"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamBuildResult.html">eve::stylize::BeamBuildResult</a></div><div class="ttdoc">Owning beam generation result suitable for MeshEffectRenderer::submitTrail.</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00031">BeamEffect.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html">eve::stylize::BeamEffectConfig</a></div><div class="ttdoc">Shape and deterministic noise controls for one 3D beam or lightning arc.</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00012">BeamEffect.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

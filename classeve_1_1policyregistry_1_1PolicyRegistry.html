@@ -1,0 +1,1119 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::policyregistry::PolicyRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1policyregistry.html">policyregistry</a></li><li class="navelem"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html">PolicyRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1policyregistry_1_1PolicyRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::policyregistry::PolicyRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic registry for discoverable, non-executable policy descriptions.  
+ <a href="classeve_1_1policyregistry_1_1PolicyRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PolicyRegistry_8h_source.html">PolicyRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4b7eb3291fd54dde6fc528ff0fbe187e" id="r_a4b7eb3291fd54dde6fc528ff0fbe187e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a4b7eb3291fd54dde6fc528ff0fbe187e">PolicyRegistry</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId={})</td></tr>
+<tr class="memdesc:a4b7eb3291fd54dde6fc528ff0fbe187e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an independent policy registry.  <br /></td></tr>
+<tr class="separator:a4b7eb3291fd54dde6fc528ff0fbe187e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b555a31c4f5bc7fdcbecf903a1301c9" id="r_a9b555a31c4f5bc7fdcbecf903a1301c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a9b555a31c4f5bc7fdcbecf903a1301c9">insert</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int version, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, const std::string &amp;schemaId, const std::string &amp;metadataJson)</td></tr>
+<tr class="memdesc:a9b555a31c4f5bc7fdcbecf903a1301c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a descriptor through the common checked registry.  <br /></td></tr>
+<tr class="separator:a9b555a31c4f5bc7fdcbecf903a1301c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31a79d13d1217105fe4b575eba633b8e" id="r_a31a79d13d1217105fe4b575eba633b8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a31a79d13d1217105fe4b575eba633b8e">replace</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int version, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, const std::string &amp;schemaId, const std::string &amp;metadataJson)</td></tr>
+<tr class="memdesc:a31a79d13d1217105fe4b575eba633b8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces a descriptor and invalidates the prior generation handle.  <br /></td></tr>
+<tr class="separator:a31a79d13d1217105fe4b575eba633b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac16d3f4c487a2d822c9d8ed1ecfbf211" id="r_ac16d3f4c487a2d822c9d8ed1ecfbf211"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ac16d3f4c487a2d822c9d8ed1ecfbf211">remove</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ac16d3f4c487a2d822c9d8ed1ecfbf211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a descriptor and returns its retained tombstone handle.  <br /></td></tr>
+<tr class="separator:ac16d3f4c487a2d822c9d8ed1ecfbf211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b24e65326a6fdc4664cfcea1ad5927a" id="r_a6b24e65326a6fdc4664cfcea1ad5927a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a6b24e65326a6fdc4664cfcea1ad5927a">enable</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a6b24e65326a6fdc4664cfcea1ad5927a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes enabled state through the same replacement generation path.  <br /></td></tr>
+<tr class="separator:a6b24e65326a6fdc4664cfcea1ad5927a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c3c72355698c213b255e3ce88f3f96f" id="r_a1c3c72355698c213b255e3ce88f3f96f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">eve::ResultRef</a>&lt; const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a1c3c72355698c213b255e3ce88f3f96f">resolve</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a1c3c72355698c213b255e3ce88f3f96f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a descriptor through the common checked-registry API.  <br /></td></tr>
+<tr class="separator:a1c3c72355698c213b255e3ce88f3f96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bf8486c21c510467a17c32614d4daa8" id="r_a9bf8486c21c510467a17c32614d4daa8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">eve::ResultRef</a>&lt; const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a9bf8486c21c510467a17c32614d4daa8">resolveHandle</a> (const <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &amp;<a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a657338afd729d7f69f6a0baf652e9c88">handle</a>) const</td></tr>
+<tr class="memdesc:a9bf8486c21c510467a17c32614d4daa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a generation-qualified policy handle through <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>.  <br /></td></tr>
+<tr class="separator:a9bf8486c21c510467a17c32614d4daa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a657338afd729d7f69f6a0baf652e9c88" id="r_a657338afd729d7f69f6a0baf652e9c88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a657338afd729d7f69f6a0baf652e9c88">handle</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a657338afd729d7f69f6a0baf652e9c88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current generation-qualified handle through <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>.  <br /></td></tr>
+<tr class="separator:a657338afd729d7f69f6a0baf652e9c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0478116d8e879ecdf144b927645a7f8" id="r_ab0478116d8e879ecdf144b927645a7f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">eve::Generation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ab0478116d8e879ecdf144b927645a7f8">generationOf</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:ab0478116d8e879ecdf144b927645a7f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the latest generation, including a retained tombstone.  <br /></td></tr>
+<tr class="separator:ab0478116d8e879ecdf144b927645a7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cda862fb2c4bbc94d02c43b72550415" id="r_a7cda862fb2c4bbc94d02c43b72550415"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a7cda862fb2c4bbc94d02c43b72550415">isTombstone</a> (const std::string &amp;domain, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const noexcept</td></tr>
+<tr class="memdesc:a7cda862fb2c4bbc94d02c43b72550415"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a key is retained as a removal tombstone.  <br /></td></tr>
+<tr class="separator:a7cda862fb2c4bbc94d02c43b72550415"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a3aeaa9617edb89098d1dd43be5e1f" id="r_ab7a3aeaa9617edb89098d1dd43be5e1f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ab7a3aeaa9617edb89098d1dd43be5e1f">isStale</a> (const <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &amp;<a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a657338afd729d7f69f6a0baf652e9c88">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:ab7a3aeaa9617edb89098d1dd43be5e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a generation-qualified policy handle is stale.  <br /></td></tr>
+<tr class="separator:ab7a3aeaa9617edb89098d1dd43be5e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5884e2ff6255332902c852f79d4ec9ef" id="r_a5884e2ff6255332902c852f79d4ec9ef"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a5884e2ff6255332902c852f79d4ec9ef">select</a> (const std::string &amp;domain) const</td></tr>
+<tr class="memdesc:a5884e2ff6255332902c852f79d4ec9ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the enabled highest-priority policy, breaking ties by lexical name.  <br /></td></tr>
+<tr class="separator:a5884e2ff6255332902c852f79d4ec9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20ca697d290234c7aa93ff9a1ded0d0" id="r_ac20ca697d290234c7aa93ff9a1ded0d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ac20ca697d290234c7aa93ff9a1ded0d0">size</a> () const</td></tr>
+<tr class="memdesc:ac20ca697d290234c7aa93ff9a1ded0d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns total live descriptor count.  <br /></td></tr>
+<tr class="separator:ac20ca697d290234c7aa93ff9a1ded0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55e9a827c5983afee1b23dca201e9e97" id="r_a55e9a827c5983afee1b23dca201e9e97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a55e9a827c5983afee1b23dca201e9e97">countDomain</a> (const std::string &amp;domain) const</td></tr>
+<tr class="memdesc:a55e9a827c5983afee1b23dca201e9e97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns live descriptor count in a domain.  <br /></td></tr>
+<tr class="separator:a55e9a827c5983afee1b23dca201e9e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa586430c79361524b0fae06201cd87d0" id="r_aa586430c79361524b0fae06201cd87d0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#aa586430c79361524b0fae06201cd87d0">at</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa586430c79361524b0fae06201cd87d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a live descriptor in globally sorted domain/name order.  <br /></td></tr>
+<tr class="separator:aa586430c79361524b0fae06201cd87d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c377808a4a4c2fbec928fa6d43cf1f4" id="r_a2c377808a4a4c2fbec928fa6d43cf1f4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a2c377808a4a4c2fbec928fa6d43cf1f4">atDomain</a> (const std::string &amp;domain, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a2c377808a4a4c2fbec928fa6d43cf1f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a live descriptor in lexical name order within a domain.  <br /></td></tr>
+<tr class="separator:a2c377808a4a4c2fbec928fa6d43cf1f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20e9d46571b4fa95c3e88c46b0e989b4" id="r_a20e9d46571b4fa95c3e88c46b0e989b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a20e9d46571b4fa95c3e88c46b0e989b4">eventCount</a> () const</td></tr>
+<tr class="memdesc:a20e9d46571b4fa95c3e88c46b0e989b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained event count.  <br /></td></tr>
+<tr class="separator:a20e9d46571b4fa95c3e88c46b0e989b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac195fb5c46a7ebfaf542ebc13dbaf9a2" id="r_ac195fb5c46a7ebfaf542ebc13dbaf9a2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyEvent.html">PolicyEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ac195fb5c46a7ebfaf542ebc13dbaf9a2">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac195fb5c46a7ebfaf542ebc13dbaf9a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained event by sequence order.  <br /></td></tr>
+<tr class="separator:ac195fb5c46a7ebfaf542ebc13dbaf9a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c1a957db983bbffcaa932847077bcf4" id="r_a9c1a957db983bbffcaa932847077bcf4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a9c1a957db983bbffcaa932847077bcf4">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a9c1a957db983bbffcaa932847077bcf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears events without resetting the sequence allocator.  <br /></td></tr>
+<tr class="separator:a9c1a957db983bbffcaa932847077bcf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8ab7ee8e0270dc005d3c4f2882c2525" id="r_ae8ab7ee8e0270dc005d3c4f2882c2525"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#ae8ab7ee8e0270dc005d3c4f2882c2525">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:ae8ab7ee8e0270dc005d3c4f2882c2525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exports registry state as deterministic JSON.  <br /></td></tr>
+<tr class="separator:ae8ab7ee8e0270dc005d3c4f2882c2525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74a10c7aa2e001d10921ffb841873be2" id="r_a74a10c7aa2e001d10921ffb841873be2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a74a10c7aa2e001d10921ffb841873be2">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a74a10c7aa2e001d10921ffb841873be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restores state from the registry snapshot.  <br /></td></tr>
+<tr class="separator:a74a10c7aa2e001d10921ffb841873be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a7a6d8b24a2be61b46a10e53b30e8c4" id="r_a9a7a6d8b24a2be61b46a10e53b30e8c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a9a7a6d8b24a2be61b46a10e53b30e8c4">snapshot</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a9a7a6d8b24a2be61b46a10e53b30e8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures this registry in the common snapshot envelope.  <br /></td></tr>
+<tr class="separator:a9a7a6d8b24a2be61b46a10e53b30e8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd50d70005ac8e7521b6906768ec932f" id="r_abd50d70005ac8e7521b6906768ec932f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#abd50d70005ac8e7521b6906768ec932f">restoreSnapshot</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a9a7a6d8b24a2be61b46a10e53b30e8c4">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:abd50d70005ac8e7521b6906768ec932f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a verified snapshot transactionally without per-item events.  <br /></td></tr>
+<tr class="separator:abd50d70005ac8e7521b6906768ec932f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6542caf7a7bc865a5c9f30126eb56e80" id="r_a6542caf7a7bc865a5c9f30126eb56e80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a6542caf7a7bc865a5c9f30126eb56e80">snapshotEnvelopeJson</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a6542caf7a7bc865a5c9f30126eb56e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the common snapshot envelope as canonical JSON.  <br /></td></tr>
+<tr class="separator:a6542caf7a7bc865a5c9f30126eb56e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a877ca6073a6586da518aa7009353f8" id="r_a4a877ca6073a6586da518aa7009353f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a4a877ca6073a6586da518aa7009353f8">restoreSnapshotJson</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a4a877ca6073a6586da518aa7009353f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and transactionally restores a common snapshot envelope.  <br /></td></tr>
+<tr class="separator:a4a877ca6073a6586da518aa7009353f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a129340077bacec6d8f4998b7e21b4171" id="r_a129340077bacec6d8f4998b7e21b4171"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1policyregistry_1_1PolicyRegistry.html#a129340077bacec6d8f4998b7e21b4171">subscribe</a> (std::function&lt; void(const <a class="el" href="structeve_1_1policyregistry_1_1PolicyEvent.html">PolicyEvent</a> &amp;)&gt; callback)</td></tr>
+<tr class="memdesc:a129340077bacec6d8f4998b7e21b4171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscribes to successful registry mutations.  <br /></td></tr>
+<tr class="separator:a129340077bacec6d8f4998b7e21b4171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic registry for discoverable, non-executable policy descriptions. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8h_source.html">PolicyRegistry.h</a> 第 <a class="el" href="PolicyRegistry_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4b7eb3291fd54dde6fc528ff0fbe187e" name="a4b7eb3291fd54dde6fc528ff0fbe187e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b7eb3291fd54dde6fc528ff0fbe187e">&#9670;&#160;</a></span>PolicyRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::policyregistry::PolicyRegistry::PolicyRegistry </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an independent policy registry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instanceId</td><td>Identity carried by common snapshot envelopes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa586430c79361524b0fae06201cd87d0" name="aa586430c79361524b0fae06201cd87d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa586430c79361524b0fae06201cd87d0">&#9670;&#160;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> * eve::policyregistry::PolicyRegistry::at </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a live descriptor in globally sorted domain/name order. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00320">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::at()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a2c377808a4a4c2fbec928fa6d43cf1f4" name="a2c377808a4a4c2fbec928fa6d43cf1f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c377808a4a4c2fbec928fa6d43cf1f4">&#9670;&#160;</a></span>atDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> * eve::policyregistry::PolicyRegistry::atDomain </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a live descriptor in lexical name order within a domain. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00320">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::at()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00337">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::keyAt()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>.</p>
+
+</div>
+</div>
+<a id="a9c1a957db983bbffcaa932847077bcf4" name="a9c1a957db983bbffcaa932847077bcf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c1a957db983bbffcaa932847077bcf4">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::policyregistry::PolicyRegistry::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears events without resetting the sequence allocator. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00362">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::clearEvents()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>.</p>
+
+</div>
+</div>
+<a id="a55e9a827c5983afee1b23dca201e9e97" name="a55e9a827c5983afee1b23dca201e9e97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55e9a827c5983afee1b23dca201e9e97">&#9670;&#160;</a></span>countDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::policyregistry::PolicyRegistry::countDomain </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns live descriptor count in a domain. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="VersionedRegistry_8h_source.html#l00337">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::keyAt()</a>.</p>
+
+</div>
+</div>
+<a id="a6b24e65326a6fdc4664cfcea1ad5927a" name="a6b24e65326a6fdc4664cfcea1ad5927a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b24e65326a6fdc4664cfcea1ad5927a">&#9670;&#160;</a></span>enable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt; eve::policyregistry::PolicyRegistry::enable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes enabled state through the same replacement generation path. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00255">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::handle()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00198">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::replace()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00231">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::resolve()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ac195fb5c46a7ebfaf542ebc13dbaf9a2" name="ac195fb5c46a7ebfaf542ebc13dbaf9a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac195fb5c46a7ebfaf542ebc13dbaf9a2">&#9670;&#160;</a></span>eventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyEvent.html">PolicyEvent</a> * eve::policyregistry::PolicyRegistry::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a retained event by sequence order. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00354">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::eventAt()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00359">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::eventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a20e9d46571b4fa95c3e88c46b0e989b4" name="a20e9d46571b4fa95c3e88c46b0e989b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20e9d46571b4fa95c3e88c46b0e989b4">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::policyregistry::PolicyRegistry::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns retained event count. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00359">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::eventCount()</a>.</p>
+
+</div>
+</div>
+<a id="ab0478116d8e879ecdf144b927645a7f8" name="ab0478116d8e879ecdf144b927645a7f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0478116d8e879ecdf144b927645a7f8">&#9670;&#160;</a></span>generationOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">eve::Generation</a> &gt; eve::policyregistry::PolicyRegistry::generationOf </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the latest generation, including a retained tombstone. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00266">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::generationOf()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a657338afd729d7f69f6a0baf652e9c88" name="a657338afd729d7f69f6a0baf652e9c88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a657338afd729d7f69f6a0baf652e9c88">&#9670;&#160;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt; eve::policyregistry::PolicyRegistry::handle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the current generation-qualified handle through <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00255">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::handle()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a9b555a31c4f5bc7fdcbecf903a1301c9" name="a9b555a31c4f5bc7fdcbecf903a1301c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b555a31c4f5bc7fdcbecf903a1301c9">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt; eve::policyregistry::PolicyRegistry::insert </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>metadataJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts a descriptor through the common checked registry. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00179">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::insert()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ab7a3aeaa9617edb89098d1dd43be5e1f" name="ab7a3aeaa9617edb89098d1dd43be5e1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a3aeaa9617edb89098d1dd43be5e1f">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::policyregistry::PolicyRegistry::isStale </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether a generation-qualified policy handle is stale. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="a7cda862fb2c4bbc94d02c43b72550415" name="a7cda862fb2c4bbc94d02c43b72550415"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cda862fb2c4bbc94d02c43b72550415">&#9670;&#160;</a></span>isTombstone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::policyregistry::PolicyRegistry::isTombstone </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether a key is retained as a removal tombstone. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ac16d3f4c487a2d822c9d8ed1ecfbf211" name="ac16d3f4c487a2d822c9d8ed1ecfbf211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac16d3f4c487a2d822c9d8ed1ecfbf211">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt; eve::policyregistry::PolicyRegistry::remove </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a descriptor and returns its retained tombstone handle. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00216">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::remove()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00231">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::resolve()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a31a79d13d1217105fe4b575eba633b8e" name="a31a79d13d1217105fe4b575eba633b8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31a79d13d1217105fe4b575eba633b8e">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &gt; eve::policyregistry::PolicyRegistry::replace </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>metadataJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces a descriptor and invalidates the prior generation handle. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00198">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::replace()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a1c3c72355698c213b255e3ce88f3f96f" name="a1c3c72355698c213b255e3ce88f3f96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3c72355698c213b255e3ce88f3f96f">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">eve::ResultRef</a>&lt; const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> &gt; eve::policyregistry::PolicyRegistry::resolve </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves a descriptor through the common checked-registry API. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00231">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::resolve()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a9bf8486c21c510467a17c32614d4daa8" name="a9bf8486c21c510467a17c32614d4daa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bf8486c21c510467a17c32614d4daa8">&#9670;&#160;</a></span>resolveHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">eve::ResultRef</a>&lt; const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> &gt; eve::policyregistry::PolicyRegistry::resolveHandle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyHandle.html">PolicyHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves a generation-qualified policy handle through <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00231">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::resolve()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a74a10c7aa2e001d10921ffb841873be2" name="a74a10c7aa2e001d10921ffb841873be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74a10c7aa2e001d10921ffb841873be2">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::policyregistry::PolicyRegistry::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restores state from the registry snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1policyregistry.html#a23f5d674a120bf421f06e4ca63bfac1badefccbed9421a1e9180a9b1fc35dacdb">eve::policyregistry::Builtin</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="PolicyRegistry_8h_source.html#l00029">eve::policyregistry::PolicyDescriptor::domain</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a8b7e3cdfd1c8bcb45dee8b4c2cbbc7dfaa458be0f08b7e4ff3c0f633c100176c0">eve::Insert</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00173">eve::policyregistry::parseImplementationKind()</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="namespaceeve.html#a8b7e3cdfd1c8bcb45dee8b4c2cbbc7dfa1063e38cb53d94d386f21227fcd84717">eve::Remove</a>, <a class="el" href="namespaceeve.html#a8b7e3cdfd1c8bcb45dee8b4c2cbbc7dfa0ebe6df8a3ac338e0512acc741823fdb">eve::Replace</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00375">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::restoreState()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00609">restoreSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="abd50d70005ac8e7521b6906768ec932f" name="abd50d70005ac8e7521b6906768ec932f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd50d70005ac8e7521b6906768ec932f">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::policyregistry::PolicyRegistry::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a verified snapshot transactionally without per-item events. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00609">609</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">restoreJson()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00637">restoreSnapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a4a877ca6073a6586da518aa7009353f8" name="a4a877ca6073a6586da518aa7009353f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a877ca6073a6586da518aa7009353f8">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::policyregistry::PolicyRegistry::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and transactionally restores a common snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00637">637</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00189">eve::parseSnapshotEnvelope()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00609">restoreSnapshot()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a5884e2ff6255332902c852f79d4ec9ef" name="a5884e2ff6255332902c852f79d4ec9ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5884e2ff6255332902c852f79d4ec9ef">&#9670;&#160;</a></span>select()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1policyregistry_1_1PolicyDescriptor.html">PolicyDescriptor</a> * eve::policyregistry::PolicyRegistry::select </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects the enabled highest-priority policy, breaking ties by lexical name. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00320">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::at()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00337">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::keyAt()</a>, <a class="el" href="PolicyRegistry_8h_source.html#l00030">eve::policyregistry::PolicyDescriptor::name</a> , 以及 <a class="el" href="PolicyRegistry_8h_source.html#l00032">eve::policyregistry::PolicyDescriptor::priority</a>.</p>
+
+</div>
+</div>
+<a id="ac20ca697d290234c7aa93ff9a1ded0d0" name="ac20ca697d290234c7aa93ff9a1ded0d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac20ca697d290234c7aa93ff9a1ded0d0">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::policyregistry::PolicyRegistry::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns total live descriptor count. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00293">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::size()</a>.</p>
+
+</div>
+</div>
+<a id="a9a7a6d8b24a2be61b46a10e53b30e8c4" name="a9a7a6d8b24a2be61b46a10e53b30e8c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a7a6d8b24a2be61b46a10e53b30e8c4">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::policyregistry::PolicyRegistry::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures this registry in the common snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00602">602</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00399">snapshotJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00630">snapshotEnvelopeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a6542caf7a7bc865a5c9f30126eb56e80" name="a6542caf7a7bc865a5c9f30126eb56e80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6542caf7a7bc865a5c9f30126eb56e80">&#9670;&#160;</a></span>snapshotEnvelopeJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::policyregistry::PolicyRegistry::snapshotEnvelopeJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the common snapshot envelope as canonical JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00630">630</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00602">snapshot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae8ab7ee8e0270dc005d3c4f2882c2525" name="ae8ab7ee8e0270dc005d3c4f2882c2525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8ab7ee8e0270dc005d3c4f2882c2525">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::policyregistry::PolicyRegistry::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exports registry state as deterministic JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00359">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::eventCount()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00164">eve::policyregistry::implementationKindName()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00293">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::size()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00365">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::snapshotState()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00602">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a129340077bacec6d8f4998b7e21b4171" name="a129340077bacec6d8f4998b7e21b4171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a129340077bacec6d8f4998b7e21b4171">&#9670;&#160;</a></span>subscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a> eve::policyregistry::PolicyRegistry::subscribe </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(const <a class="el" href="structeve_1_1policyregistry_1_1PolicyEvent.html">PolicyEvent</a> &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Subscribes to successful registry mutations. </p>
+<dl class="section return"><dt>返回</dt><dd>Owner-thread-affine RAII cancellation token. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a> 第 <a class="el" href="PolicyRegistry_8cpp_source.html#l00644">644</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00416">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::subscribe()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/policyregistry/<a class="el" href="PolicyRegistry_8h_source.html">PolicyRegistry.h</a></li>
+<li>src/modules/policyregistry/<a class="el" href="PolicyRegistry_8cpp_source.html">PolicyRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

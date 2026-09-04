@@ -1,0 +1,2854 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map::Fov::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a></li><li class="navelem"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1map_1_1Fov_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map::Fov::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1AngleShadow.html">AngleShadow</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Rect.html">Rect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a44da8b2d2478bcfe01bad4ba5c793f39" id="r_a44da8b2d2478bcfe01bad4ba5c793f39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a44da8b2d2478bcfe01bad4ba5c793f39">index2</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:a44da8b2d2478bcfe01bad4ba5c793f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2475168c9caafdcdf08bb92deb6ebd5" id="r_ae2475168c9caafdcdf08bb92deb6ebd5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2475168c9caafdcdf08bb92deb6ebd5">index3</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:ae2475168c9caafdcdf08bb92deb6ebd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2a9dde8b329cc39ff74cc121dc4f937" id="r_ae2a9dde8b329cc39ff74cc121dc4f937"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2a9dde8b329cc39ff74cc121dc4f937">inBounds2</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:ae2a9dde8b329cc39ff74cc121dc4f937"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fddd9361c78f2cc5d40c757a8ce9d5f" id="r_a6fddd9361c78f2cc5d40c757a8ce9d5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a6fddd9361c78f2cc5d40c757a8ce9d5f">inBounds3</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a6fddd9361c78f2cc5d40c757a8ce9d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b668cb7241c18ed5fbfad5fa11dadd4" id="r_a8b668cb7241c18ed5fbfad5fa11dadd4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a8b668cb7241c18ed5fbfad5fa11dadd4">effectiveVerticalRange</a> () const</td></tr>
+<tr class="separator:a8b668cb7241c18ed5fbfad5fa11dadd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae32a2232867abfaba485ab1d8e070223" id="r_ae32a2232867abfaba485ab1d8e070223"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae32a2232867abfaba485ab1d8e070223">effectiveRadiusOf</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>) const</td></tr>
+<tr class="separator:ae32a2232867abfaba485ab1d8e070223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea8b0e8d64335952208780ec3b92da66" id="r_aea8b0e8d64335952208780ec3b92da66"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aea8b0e8d64335952208780ec3b92da66">inRadius2</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) const</td></tr>
+<tr class="separator:aea8b0e8d64335952208780ec3b92da66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa673b1f77dd788a40ec1e78a044919af" id="r_aa673b1f77dd788a40ec1e78a044919af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa673b1f77dd788a40ec1e78a044919af">inRadius3</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int oz, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) const</td></tr>
+<tr class="separator:aa673b1f77dd788a40ec1e78a044919af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abda7cd791d4896ab08976a19e7069657" id="r_abda7cd791d4896ab08976a19e7069657"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#abda7cd791d4896ab08976a19e7069657">applyAutoTopologyFromLayer</a> ()</td></tr>
+<tr class="separator:abda7cd791d4896ab08976a19e7069657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee15f445a40f79c999cfb2fb0d49b29" id="r_aaee15f445a40f79c999cfb2fb0d49b29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aaee15f445a40f79c999cfb2fb0d49b29">resize</a> (int <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, int <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>)</td></tr>
+<tr class="separator:aaee15f445a40f79c999cfb2fb0d49b29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad207a642d14a72dcd6fc8d7f24c0ea06" id="r_ad207a642d14a72dcd6fc8d7f24c0ea06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad207a642d14a72dcd6fc8d7f24c0ea06">bindLayer</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *l)</td></tr>
+<tr class="separator:ad207a642d14a72dcd6fc8d7f24c0ea06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c80f9099b1e3a1a59c589de0b3cec62" id="r_a7c80f9099b1e3a1a59c589de0b3cec62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a7c80f9099b1e3a1a59c589de0b3cec62">syncFromLayer</a> ()</td></tr>
+<tr class="separator:a7c80f9099b1e3a1a59c589de0b3cec62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa164d7aec71dd91c1656db5af09bacfe" id="r_aa164d7aec71dd91c1656db5af09bacfe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa164d7aec71dd91c1656db5af09bacfe">cellOpaque2</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:aa164d7aec71dd91c1656db5af09bacfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a854681ff7713f23ea89231b92b19c426" id="r_a854681ff7713f23ea89231b92b19c426"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a854681ff7713f23ea89231b92b19c426">cellOpaque3</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a854681ff7713f23ea89231b92b19c426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afed798b36aa14f6984baeb86f06b26c3" id="r_afed798b36aa14f6984baeb86f06b26c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afed798b36aa14f6984baeb86f06b26c3">cellOpaqueOnSlice</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int zSlice) const</td></tr>
+<tr class="separator:afed798b36aa14f6984baeb86f06b26c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade3360c322e3ee794897b9e4289610a5" id="r_ade3360c322e3ee794897b9e4289610a5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ade3360c322e3ee794897b9e4289610a5">elevAt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:ade3360c322e3ee794897b9e4289610a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f92fed410f2a0e7d39ed705cfbd50b" id="r_a28f92fed410f2a0e7d39ed705cfbd50b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a28f92fed410f2a0e7d39ed705cfbd50b">markVisibleIdx</a> (int <a class="el" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>)</td></tr>
+<tr class="separator:a28f92fed410f2a0e7d39ed705cfbd50b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e85c7997ae6eac9e6dbb3dbcd20f9e0" id="r_a3e85c7997ae6eac9e6dbb3dbcd20f9e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a3e85c7997ae6eac9e6dbb3dbcd20f9e0">markVisible2</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a3e85c7997ae6eac9e6dbb3dbcd20f9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b4e9467f584a8a2ca9d34840ada0a9" id="r_a85b4e9467f584a8a2ca9d34840ada0a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a85b4e9467f584a8a2ca9d34840ada0a9">markVisible3</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a85b4e9467f584a8a2ca9d34840ada0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a901e530a932cfadbd9a887056df9f01d" id="r_a901e530a932cfadbd9a887056df9f01d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a901e530a932cfadbd9a887056df9f01d">resetVisibleKeepExplored</a> ()</td></tr>
+<tr class="separator:a901e530a932cfadbd9a887056df9f01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3ceda8e1e5a09aee6e3148b6bbc21ef" id="r_ac3ceda8e1e5a09aee6e3148b6bbc21ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac3ceda8e1e5a09aee6e3148b6bbc21ef">clearAllMemory</a> ()</td></tr>
+<tr class="separator:ac3ceda8e1e5a09aee6e3148b6bbc21ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac726dc3b81dc642d3e99c838f77e4b08" id="r_ac726dc3b81dc642d3e99c838f77e4b08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac726dc3b81dc642d3e99c838f77e4b08">findRevealer</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ac726dc3b81dc642d3e99c838f77e4b08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264735a81493b403037bd601c5828f2e" id="r_a264735a81493b403037bd601c5828f2e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a264735a81493b403037bd601c5828f2e">findRevealerConst</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a264735a81493b403037bd601c5828f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3bd280e36a8c5934499194c52cdb088" id="r_ad3bd280e36a8c5934499194c52cdb088"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad3bd280e36a8c5934499194c52cdb088">losBresenham2</a> (int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td></tr>
+<tr class="separator:ad3bd280e36a8c5934499194c52cdb088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc69278ae567415cf03829d54ea15a83" id="r_adc69278ae567415cf03829d54ea15a83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#adc69278ae567415cf03829d54ea15a83">losHexCube</a> (int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td></tr>
+<tr class="separator:adc69278ae567415cf03829d54ea15a83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdce1670c59dd14401f0919824ee28cc" id="r_acdce1670c59dd14401f0919824ee28cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#acdce1670c59dd14401f0919824ee28cc">los2</a> (int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td></tr>
+<tr class="separator:acdce1670c59dd14401f0919824ee28cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7412a5fe0269253448aaf71d01c0218e" id="r_a7412a5fe0269253448aaf71d01c0218e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a7412a5fe0269253448aaf71d01c0218e">passesHeightToTarget</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int tx, int ty) const</td></tr>
+<tr class="separator:a7412a5fe0269253448aaf71d01c0218e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae189495c56f87f866c236f5918e1fb5b" id="r_ae189495c56f87f866c236f5918e1fb5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae189495c56f87f866c236f5918e1fb5b">tryMark2</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int zSlice, bool useCone, float facingDeg, float halfAngleDeg, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:ae189495c56f87f866c236f5918e1fb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c1f82828b24d5f03880aaddf702322" id="r_a98c1f82828b24d5f03880aaddf702322"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a98c1f82828b24d5f03880aaddf702322">castLight</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, int row, float startSlope, float endSlope, int xx, int xy, int yx, int yy, int zSlice, bool useCone, float facingDeg, float halfAngleDeg)</td></tr>
+<tr class="separator:a98c1f82828b24d5f03880aaddf702322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d46d2a6db4d310e7426bbdc39d700d5" id="r_a1d46d2a6db4d310e7426bbdc39d700d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1d46d2a6db4d310e7426bbdc39d700d5">computeOrthoShadowcast</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a1d46d2a6db4d310e7426bbdc39d700d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09b831958a538eb7ceba07780b822131" id="r_a09b831958a538eb7ceba07780b822131"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a09b831958a538eb7ceba07780b822131">hexCellAngle</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:a09b831958a538eb7ceba07780b822131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1398f3903485d4c0845e52415db2a84" id="r_ab1398f3903485d4c0845e52415db2a84"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ab1398f3903485d4c0845e52415db2a84">angleFullyCovered</a> (float a0, float a1, const std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1AngleShadow.html">AngleShadow</a> &gt; &amp;shadows) const</td></tr>
+<tr class="separator:ab1398f3903485d4c0845e52415db2a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06a49e7abc25df1b099f7bb352319ab" id="r_ac06a49e7abc25df1b099f7bb352319ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac06a49e7abc25df1b099f7bb352319ab">addAngleShadow</a> (std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1AngleShadow.html">AngleShadow</a> &gt; &amp;shadows, float a0, float a1) const</td></tr>
+<tr class="separator:ac06a49e7abc25df1b099f7bb352319ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd74f5ce38bbb8ca5e267af58cd3def4" id="r_abd74f5ce38bbb8ca5e267af58cd3def4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#abd74f5ce38bbb8ca5e267af58cd3def4">computeHexShadowcast</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:abd74f5ce38bbb8ca5e267af58cd3def4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8e786aa5f6d42ce8b6843f8b7063d7" id="r_a0b8e786aa5f6d42ce8b6843f8b7063d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0b8e786aa5f6d42ce8b6843f8b7063d7">computeShadowcast</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a0b8e786aa5f6d42ce8b6843f8b7063d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67b8959f339c41ee3614b521650289e6" id="r_a67b8959f339c41ee3614b521650289e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a67b8959f339c41ee3614b521650289e6">castRayLine</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int tx, int ty, int zSlice, bool useCone, float facingDeg, float halfAngleDeg, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a67b8959f339c41ee3614b521650289e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c58072a3f7bb11c9844aa6f27d9d42d" id="r_a0c58072a3f7bb11c9844aa6f27d9d42d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0c58072a3f7bb11c9844aa6f27d9d42d">computeRaycast</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a0c58072a3f7bb11c9844aa6f27d9d42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae56429c5f4936a349168d55b36b44e" id="r_a1ae56429c5f4936a349168d55b36b44e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1ae56429c5f4936a349168d55b36b44e">computePermissive</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a1ae56429c5f4936a349168d55b36b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2b21fc5c79c6724a562e680550fadff" id="r_aa2b21fc5c79c6724a562e680550fadff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Rect.html">Rect</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa2b21fc5c79c6724a562e680550fadff">buildOpaqueRects</a> (int <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, int <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, int zSlice) const</td></tr>
+<tr class="separator:aa2b21fc5c79c6724a562e680550fadff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc02cbb2ae7614968cd7967b6abe49a" id="r_a1dc02cbb2ae7614968cd7967b6abe49a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1dc02cbb2ae7614968cd7967b6abe49a">computeRectangle</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a1dc02cbb2ae7614968cd7967b6abe49a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc77ac547017434d4cd6ebcde04144a7" id="r_afc77ac547017434d4cd6ebcde04144a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afc77ac547017434d4cd6ebcde04144a7">extendVertical</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, int zSlice, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:afc77ac547017434d4cd6ebcde04144a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc6be66f0e9ca39e62574a708ca766b" id="r_aefc6be66f0e9ca39e62574a708ca766b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aefc6be66f0e9ca39e62574a708ca766b">computeRevealer</a> (const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>)</td></tr>
+<tr class="separator:aefc6be66f0e9ca39e62574a708ca766b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae188c7d5ab12909f594d292112120856" id="r_ae188c7d5ab12909f594d292112120856"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae188c7d5ab12909f594d292112120856">compute</a> ()</td></tr>
+<tr class="separator:ae188c7d5ab12909f594d292112120856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:afaaf87288127ebd8ab67acf0746f0346" id="r_afaaf87288127ebd8ab67acf0746f0346"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afaaf87288127ebd8ab67acf0746f0346">width</a> = 0</td></tr>
+<tr class="separator:afaaf87288127ebd8ab67acf0746f0346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32fcb706afec3f00e390b67397d7403f" id="r_a32fcb706afec3f00e390b67397d7403f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a32fcb706afec3f00e390b67397d7403f">height</a> = 0</td></tr>
+<tr class="separator:a32fcb706afec3f00e390b67397d7403f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a792151c00d73cb812c45fb9e317f3bb1" id="r_a792151c00d73cb812c45fb9e317f3bb1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a792151c00d73cb812c45fb9e317f3bb1">depth</a> = 1</td></tr>
+<tr class="separator:a792151c00d73cb812c45fb9e317f3bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9011bc69e982b690bb3ad850fadaa50" id="r_ae9011bc69e982b690bb3ad850fadaa50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae9011bc69e982b690bb3ad850fadaa50">layer</a> = nullptr</td></tr>
+<tr class="separator:ae9011bc69e982b690bb3ad850fadaa50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba6ad69185ad5f929ef75b09e43eed91" id="r_aba6ad69185ad5f929ef75b09e43eed91"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aba6ad69185ad5f929ef75b09e43eed91">layerRevision</a> = 0</td></tr>
+<tr class="separator:aba6ad69185ad5f929ef75b09e43eed91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f50e769f7ac8b6bbbc712a8245a711" id="r_af0f50e769f7ac8b6bbbc712a8245a711"><td class="memItemLeft" align="right" valign="top">Algorithm&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#af0f50e769f7ac8b6bbbc712a8245a711">algorithm</a> = Algorithm::Shadowcast</td></tr>
+<tr class="separator:af0f50e769f7ac8b6bbbc712a8245a711"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e617b8c5d9622e0a0d0748a8cd263a7" id="r_a1e617b8c5d9622e0a0d0748a8cd263a7"><td class="memItemLeft" align="right" valign="top">RadiusMetric&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1e617b8c5d9622e0a0d0748a8cd263a7">metric</a> = RadiusMetric::Euclidean</td></tr>
+<tr class="separator:a1e617b8c5d9622e0a0d0748a8cd263a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a718e65aebceec4f1e947a4b332f6d4b2" id="r_a718e65aebceec4f1e947a4b332f6d4b2"><td class="memItemLeft" align="right" valign="top">Mode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a718e65aebceec4f1e947a4b332f6d4b2">mode</a> = Mode::Grid2D</td></tr>
+<tr class="separator:a718e65aebceec4f1e947a4b332f6d4b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a039376ce5e16f889136e9f183f021b0c" id="r_a039376ce5e16f889136e9f183f021b0c"><td class="memItemLeft" align="right" valign="top">Topology&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a039376ce5e16f889136e9f183f021b0c">topology</a> = Topology::Ortho</td></tr>
+<tr class="separator:a039376ce5e16f889136e9f183f021b0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af80ee72e70ba064626428e27cc0d1446" id="r_af80ee72e70ba064626428e27cc0d1446"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#af80ee72e70ba064626428e27cc0d1446">topologyManual</a> = false</td></tr>
+<tr class="separator:af80ee72e70ba064626428e27cc0d1446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d30f2d1d66cee11128dd44471a67144" id="r_a1d30f2d1d66cee11128dd44471a67144"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1d30f2d1d66cee11128dd44471a67144">cornerPeek</a> = false</td></tr>
+<tr class="separator:a1d30f2d1d66cee11128dd44471a67144"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cf9eb793a2e2e0ec0b88b30168a17fc" id="r_a8cf9eb793a2e2e0ec0b88b30168a17fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a8cf9eb793a2e2e0ec0b88b30168a17fc">blockEmpty</a> = true</td></tr>
+<tr class="separator:a8cf9eb793a2e2e0ec0b88b30168a17fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b2a69c76b22ebf72111111c7f93acd5" id="r_a0b2a69c76b22ebf72111111c7f93acd5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0b2a69c76b22ebf72111111c7f93acd5">dirty</a> = true</td></tr>
+<tr class="separator:a0b2a69c76b22ebf72111111c7f93acd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742181a89509dcbb13f9636f1eeb9aa2" id="r_a742181a89509dcbb13f9636f1eeb9aa2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a742181a89509dcbb13f9636f1eeb9aa2">cliffBlock</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a742181a89509dcbb13f9636f1eeb9aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afefe2b6b694af3d917597a30f4d52f2c" id="r_afefe2b6b694af3d917597a30f4d52f2c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afefe2b6b694af3d917597a30f4d52f2c">eyeOffset</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:afefe2b6b694af3d917597a30f4d52f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e6a20add84b8baf8dfb9ad8c3871e93" id="r_a2e6a20add84b8baf8dfb9ad8c3871e93"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a2e6a20add84b8baf8dfb9ad8c3871e93">verticalRange</a> = -1</td></tr>
+<tr class="separator:a2e6a20add84b8baf8dfb9ad8c3871e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94c1ad9b91382e3c441e66828d4002ea" id="r_a94c1ad9b91382e3c441e66828d4002ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a94c1ad9b91382e3c441e66828d4002ea">perceptionRadiusScale</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a94c1ad9b91382e3c441e66828d4002ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69bdb7ce77a8a30742eb5a3396e84dc2" id="r_a69bdb7ce77a8a30742eb5a3396e84dc2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a69bdb7ce77a8a30742eb5a3396e84dc2">detectionMargin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a69bdb7ce77a8a30742eb5a3396e84dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136273db9ec605f27d28af254392349f" id="r_a136273db9ec605f27d28af254392349f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a136273db9ec605f27d28af254392349f">opaque</a></td></tr>
+<tr class="separator:a136273db9ec605f27d28af254392349f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92117f4aa53b411cb2e558634306292d" id="r_a92117f4aa53b411cb2e558634306292d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a92117f4aa53b411cb2e558634306292d">elevation</a></td></tr>
+<tr class="separator:a92117f4aa53b411cb2e558634306292d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9dcfaec0246886645e7518fa0780db" id="r_a2c9dcfaec0246886645e7518fa0780db"><td class="memItemLeft" align="right" valign="top">std::vector&lt; CellState &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a2c9dcfaec0246886645e7518fa0780db">state</a></td></tr>
+<tr class="separator:a2c9dcfaec0246886645e7518fa0780db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e09d7ef68baf88ccee65219093d382" id="r_ad9e09d7ef68baf88ccee65219093d382"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad9e09d7ef68baf88ccee65219093d382">visibleList</a></td></tr>
+<tr class="separator:ad9e09d7ef68baf88ccee65219093d382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac934ae145be9af8b6ff4014c8a694d8f" id="r_ac934ae145be9af8b6ff4014c8a694d8f"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac934ae145be9af8b6ff4014c8a694d8f">opaqueGids</a></td></tr>
+<tr class="separator:ac934ae145be9af8b6ff4014c8a694d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dfb66464c61f97cdff5ff24bf0ab86d" id="r_a9dfb66464c61f97cdff5ff24bf0ab86d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a9dfb66464c61f97cdff5ff24bf0ab86d">revealers</a></td></tr>
+<tr class="separator:a9dfb66464c61f97cdff5ff24bf0ab86d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cd618a9f6e6b9151ba11c9fa08246ab" id="r_a1cd618a9f6e6b9151ba11c9fa08246ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1cd618a9f6e6b9151ba11c9fa08246ab">nextRevealerId</a> = 1</td></tr>
+<tr class="separator:a1cd618a9f6e6b9151ba11c9fa08246ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00196">196</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac06a49e7abc25df1b099f7bb352319ab" name="ac06a49e7abc25df1b099f7bb352319ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06a49e7abc25df1b099f7bb352319ab">&#9670;&#160;</a></span>addAngleShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::addAngleShadow </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1AngleShadow.html">AngleShadow</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shadows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00557">557</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="ab1398f3903485d4c0845e52415db2a84" name="ab1398f3903485d4c0845e52415db2a84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1398f3903485d4c0845e52415db2a84">&#9670;&#160;</a></span>angleFullyCovered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::angleFullyCovered </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1AngleShadow.html">AngleShadow</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shadows</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="abda7cd791d4896ab08976a19e7069657" name="abda7cd791d4896ab08976a19e7069657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda7cd791d4896ab08976a19e7069657">&#9670;&#160;</a></span>applyAutoTopologyFromLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::applyAutoTopologyFromLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda">eve::map::Hexagonal</a>, <a class="el" href="Fov_8cpp_source.html#l00222">layer</a>, <a class="el" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09af421d06a10620aa57ae6ebaec46cffe9">eve::map::Staggered</a>, <a class="el" href="Fov_8cpp_source.html#l00227">topology</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00228">topologyManual</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00294">bindLayer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ad207a642d14a72dcd6fc8d7f24c0ea06" name="ad207a642d14a72dcd6fc8d7f24c0ea06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad207a642d14a72dcd6fc8d7f24c0ea06">&#9670;&#160;</a></span>bindLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::bindLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00275">applyAutoTopologyFromLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00222">layer</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="aa2b21fc5c79c6724a562e680550fadff" name="aa2b21fc5c79c6724a562e680550fadff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2b21fc5c79c6724a562e680550fadff">&#9670;&#160;</a></span>buildOpaqueRects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Rect.html">Rect</a> &gt; eve::map::Fov::Impl::buildOpaqueRects </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00728">728</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>.</p>
+
+</div>
+</div>
+<a id="a98c1f82828b24d5f03880aaddf702322" name="a98c1f82828b24d5f03880aaddf702322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c1f82828b24d5f03880aaddf702322">&#9670;&#160;</a></span>castLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::castLight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startSlope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endSlope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>yx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>yy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useCone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>facingDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>halfAngleDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00488">castLight()</a>, <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00488">castLight()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00524">computeOrthoShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="a67b8959f339c41ee3614b521650289e6" name="a67b8959f339c41ee3614b521650289e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67b8959f339c41ee3614b521650289e6">&#9670;&#160;</a></span>castRayLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::castRayLine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useCone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>facingDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>halfAngleDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00616">616</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>, <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00660">computeRaycast()</a>.</p>
+
+</div>
+</div>
+<a id="aa164d7aec71dd91c1656db5af09bacfe" name="aa164d7aec71dd91c1656db5af09bacfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa164d7aec71dd91c1656db5af09bacfe">&#9670;&#160;</a></span>cellOpaque2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::cellOpaque2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00246">index2()</a>, <a class="el" href="Fov_8cpp_source.html#l00238">opaque</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>.</p>
+
+</div>
+</div>
+<a id="a854681ff7713f23ea89231b92b19c426" name="a854681ff7713f23ea89231b92b19c426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a854681ff7713f23ea89231b92b19c426">&#9670;&#160;</a></span>cellOpaque3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::cellOpaque3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00249">inBounds3()</a>, <a class="el" href="Fov_8cpp_source.html#l00247">index3()</a>, <a class="el" href="Fov_8cpp_source.html#l00238">opaque</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>.</p>
+
+</div>
+</div>
+<a id="afed798b36aa14f6984baeb86f06b26c3" name="afed798b36aa14f6984baeb86f06b26c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed798b36aa14f6984baeb86f06b26c3">&#9670;&#160;</a></span>cellOpaqueOnSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::cellOpaqueOnSlice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00329">cellOpaque2()</a>, <a class="el" href="Fov_8cpp_source.html#l00334">cellOpaque3()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">buildOpaqueRects()</a>, <a class="el" href="Fov_8cpp_source.html#l00488">castLight()</a>, <a class="el" href="Fov_8cpp_source.html#l00616">castRayLine()</a>, <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a>.</p>
+
+</div>
+</div>
+<a id="ac3ceda8e1e5a09aee6e3148b6bbc21ef" name="ac3ceda8e1e5a09aee6e3148b6bbc21ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3ceda8e1e5a09aee6e3148b6bbc21ef">&#9670;&#160;</a></span>clearAllMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::clearAllMemory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00231">dirty</a>, <a class="el" href="Fov_8cpp_source.html#l00240">state</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00241">visibleList</a>.</p>
+
+</div>
+</div>
+<a id="ae188c7d5ab12909f594d292112120856" name="ae188c7d5ab12909f594d292112120856"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae188c7d5ab12909f594d292112120856">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::compute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00903">903</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>, <a class="el" href="Fov_8cpp_source.html#l00231">dirty</a>, <a class="el" href="Fov_8cpp_source.html#l00222">layer</a>, <a class="el" href="Fov_8cpp_source.html#l00223">layerRevision</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="Fov_8cpp_source.html#l00367">resetVisibleKeepExplored()</a>, <a class="el" href="Fov_8cpp_source.html#l00243">revealers</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="abd74f5ce38bbb8ca5e267af58cd3def4" name="abd74f5ce38bbb8ca5e267af58cd3def4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd74f5ce38bbb8ca5e267af58cd3def4">&#9670;&#160;</a></span>computeHexShadowcast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeHexShadowcast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00569">569</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00557">addAngleShadow()</a>, <a class="el" href="Fov_8cpp_source.html#l00541">angleFullyCovered()</a>, <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00533">hexCellAngle()</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="Fov_8cpp_source.html#l00473">passesHeightToTarget()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00611">computeShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="a1d46d2a6db4d310e7426bbdc39d700d5" name="a1d46d2a6db4d310e7426bbdc39d700d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d46d2a6db4d310e7426bbdc39d700d5">&#9670;&#160;</a></span>computeOrthoShadowcast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeOrthoShadowcast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00488">castLight()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00611">computeShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="a1ae56429c5f4936a349168d55b36b44e" name="a1ae56429c5f4936a349168d55b36b44e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ae56429c5f4936a349168d55b36b44e">&#9670;&#160;</a></span>computePermissive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computePermissive </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00694">694</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ay</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="Fov_8cpp_source.html#l00468">los2()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="a0c58072a3f7bb11c9844aa6f27d9d42d" name="a0c58072a3f7bb11c9844aa6f27d9d42d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c58072a3f7bb11c9844aa6f27d9d42d">&#9670;&#160;</a></span>computeRaycast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeRaycast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00660">660</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00616">castRayLine()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>, <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="a1dc02cbb2ae7614968cd7967b6abe49a" name="a1dc02cbb2ae7614968cd7967b6abe49a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc02cbb2ae7614968cd7967b6abe49a">&#9670;&#160;</a></span>computeRectangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeRectangle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00771">771</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Fov_8cpp_source.html#l00728">buildOpaqueRects()</a>, <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Fov_8cpp_source.html#l00246">index2()</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="Fov_8cpp_source.html#l00473">passesHeightToTarget()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>, <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="aefc6be66f0e9ca39e62574a708ca766b" name="aefc6be66f0e9ca39e62574a708ca766b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc6be66f0e9ca39e62574a708ca766b">&#9670;&#160;</a></span>computeRevealer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeRevealer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00875">875</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00224">algorithm</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00660">computeRaycast()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>, <a class="el" href="Fov_8cpp_source.html#l00611">computeShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00258">effectiveRadiusOf()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00249">inBounds3()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a>.</p>
+
+</div>
+</div>
+<a id="a0b8e786aa5f6d42ce8b6843f8b7063d7" name="a0b8e786aa5f6d42ce8b6843f8b7063d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8e786aa5f6d42ce8b6843f8b7063d7">&#9670;&#160;</a></span>computeShadowcast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::computeShadowcast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00611">611</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00524">computeOrthoShadowcast()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="ae32a2232867abfaba485ab1d8e070223" name="ae32a2232867abfaba485ab1d8e070223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae32a2232867abfaba485ab1d8e070223">&#9670;&#160;</a></span>effectiveRadiusOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::effectiveRadiusOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00235">perceptionRadiusScale</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="a8b668cb7241c18ed5fbfad5fa11dadd4" name="a8b668cb7241c18ed5fbfad5fa11dadd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b668cb7241c18ed5fbfad5fa11dadd4">&#9670;&#160;</a></span>effectiveVerticalRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::effectiveVerticalRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00221">depth</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00234">verticalRange</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>.</p>
+
+</div>
+</div>
+<a id="ade3360c322e3ee794897b9e4289610a5" name="ade3360c322e3ee794897b9e4289610a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade3360c322e3ee794897b9e4289610a5">&#9670;&#160;</a></span>elevAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::elevAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00239">elevation</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00246">index2()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a>.</p>
+
+</div>
+</div>
+<a id="afc77ac547017434d4cd6ebcde04144a7" name="afc77ac547017434d4cd6ebcde04144a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc77ac547017434d4cd6ebcde04144a7">&#9670;&#160;</a></span>extendVertical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::extendVertical </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00855">855</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00334">cellOpaque3()</a>, <a class="el" href="Fov_8cpp_source.html#l00221">depth</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="Fov_8cpp_source.html#l00253">effectiveVerticalRange()</a>, <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="Fov_8cpp_source.html#l00247">index3()</a>, <a class="el" href="Fov_8cpp_source.html#l00268">inRadius3()</a>, <a class="el" href="Fov_8cpp_source.html#l00362">markVisible3()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Fov_8cpp_source.html#l00240">state</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="ac726dc3b81dc642d3e99c838f77e4b08" name="ac726dc3b81dc642d3e99c838f77e4b08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac726dc3b81dc642d3e99c838f77e4b08">&#9670;&#160;</a></span>findRevealer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> * eve::map::Fov::Impl::findRevealer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00243">revealers</a>.</p>
+
+</div>
+</div>
+<a id="a264735a81493b403037bd601c5828f2e" name="a264735a81493b403037bd601c5828f2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a264735a81493b403037bd601c5828f2e">&#9670;&#160;</a></span>findRevealerConst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a> * eve::map::Fov::Impl::findRevealerConst </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00243">revealers</a>.</p>
+
+</div>
+</div>
+<a id="a09b831958a538eb7ceba07780b822131" name="a09b831958a538eb7ceba07780b822131"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09b831958a538eb7ceba07780b822131">&#9670;&#160;</a></span>hexCellAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::hexCellAngle </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>.</p>
+
+</div>
+</div>
+<a id="ae2a9dde8b329cc39ff74cc121dc4f937" name="ae2a9dde8b329cc39ff74cc121dc4f937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2a9dde8b329cc39ff74cc121dc4f937">&#9670;&#160;</a></span>inBounds2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::inBounds2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00329">cellOpaque2()</a>, <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>, <a class="el" href="Fov_8cpp_source.html#l00344">elevAt()</a>, <a class="el" href="Fov_8cpp_source.html#l00249">inBounds3()</a>, <a class="el" href="Fov_8cpp_source.html#l00357">markVisible2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="a6fddd9361c78f2cc5d40c757a8ce9d5f" name="a6fddd9361c78f2cc5d40c757a8ce9d5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fddd9361c78f2cc5d40c757a8ce9d5f">&#9670;&#160;</a></span>inBounds3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::inBounds3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00221">depth</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00334">cellOpaque3()</a>, <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00362">markVisible3()</a>.</p>
+
+</div>
+</div>
+<a id="a44da8b2d2478bcfe01bad4ba5c793f39" name="a44da8b2d2478bcfe01bad4ba5c793f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44da8b2d2478bcfe01bad4ba5c793f39">&#9670;&#160;</a></span>index2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::index2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00329">cellOpaque2()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>, <a class="el" href="Fov_8cpp_source.html#l00344">elevAt()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00357">markVisible2()</a>.</p>
+
+</div>
+</div>
+<a id="ae2475168c9caafdcdf08bb92deb6ebd5" name="ae2475168c9caafdcdf08bb92deb6ebd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2475168c9caafdcdf08bb92deb6ebd5">&#9670;&#160;</a></span>index3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::index3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Fov_8cpp_source.html#l00219">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00334">cellOpaque3()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00362">markVisible3()</a>.</p>
+
+</div>
+</div>
+<a id="aea8b0e8d64335952208780ec3b92da66" name="aea8b0e8d64335952208780ec3b92da66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea8b0e8d64335952208780ec3b92da66">&#9670;&#160;</a></span>inRadius2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::inRadius2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00225">metric</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">buildOpaqueRects()</a>, <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="aa673b1f77dd788a40ec1e78a044919af" name="aa673b1f77dd788a40ec1e78a044919af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa673b1f77dd788a40ec1e78a044919af">&#9670;&#160;</a></span>inRadius3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::inRadius3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00225">metric</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>.</p>
+
+</div>
+</div>
+<a id="acdce1670c59dd14401f0919824ee28cc" name="acdce1670c59dd14401f0919824ee28cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdce1670c59dd14401f0919824ee28cc">&#9670;&#160;</a></span>los2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::los2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>applyHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00468">468</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a>, <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00227">topology</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00473">passesHeightToTarget()</a>.</p>
+
+</div>
+</div>
+<a id="ad3bd280e36a8c5934499194c52cdb088" name="ad3bd280e36a8c5934499194c52cdb088"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3bd280e36a8c5934499194c52cdb088">&#9670;&#160;</a></span>losBresenham2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::losBresenham2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>applyHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00232">cliffBlock</a>, <a class="el" href="Fov_8cpp_source.html#l00229">cornerPeek</a>, <a class="el" href="Fov_8cpp_source.html#l00344">elevAt()</a>, <a class="el" href="Fov_8cpp_source.html#l00233">eyeOffset</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00468">los2()</a>.</p>
+
+</div>
+</div>
+<a id="adc69278ae567415cf03829d54ea15a83" name="adc69278ae567415cf03829d54ea15a83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc69278ae567415cf03829d54ea15a83">&#9670;&#160;</a></span>losHexCube()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::losHexCube </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>applyHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00232">cliffBlock</a>, <a class="el" href="Fov_8cpp_source.html#l00344">elevAt()</a>, <a class="el" href="Fov_8cpp_source.html#l00233">eyeOffset</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00468">los2()</a>.</p>
+
+</div>
+</div>
+<a id="a3e85c7997ae6eac9e6dbb3dbcd20f9e0" name="a3e85c7997ae6eac9e6dbb3dbcd20f9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e85c7997ae6eac9e6dbb3dbcd20f9e0">&#9670;&#160;</a></span>markVisible2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::markVisible2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00246">index2()</a>, <a class="el" href="Fov_8cpp_source.html#l00349">markVisibleIdx()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="a85b4e9467f584a8a2ca9d34840ada0a9" name="a85b4e9467f584a8a2ca9d34840ada0a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b4e9467f584a8a2ca9d34840ada0a9">&#9670;&#160;</a></span>markVisible3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::markVisible3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00249">inBounds3()</a>, <a class="el" href="Fov_8cpp_source.html#l00247">index3()</a>, <a class="el" href="Fov_8cpp_source.html#l00349">markVisibleIdx()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="a28f92fed410f2a0e7d39ed705cfbd50b" name="a28f92fed410f2a0e7d39ed705cfbd50b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f92fed410f2a0e7d39ed705cfbd50b">&#9670;&#160;</a></span>markVisibleIdx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::markVisibleIdx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="Fov_8cpp_source.html#l00240">state</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00241">visibleList</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00357">markVisible2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00362">markVisible3()</a>.</p>
+
+</div>
+</div>
+<a id="a7412a5fe0269253448aaf71d01c0218e" name="a7412a5fe0269253448aaf71d01c0218e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7412a5fe0269253448aaf71d01c0218e">&#9670;&#160;</a></span>passesHeightToTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::passesHeightToTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00473">473</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00468">los2()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a> , 以及 <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="a901e530a932cfadbd9a887056df9f01d" name="a901e530a932cfadbd9a887056df9f01d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a901e530a932cfadbd9a887056df9f01d">&#9670;&#160;</a></span>resetVisibleKeepExplored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::resetVisibleKeepExplored </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="Fov_8cpp_source.html#l00240">state</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00241">visibleList</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a>.</p>
+
+</div>
+</div>
+<a id="aaee15f445a40f79c999cfb2fb0d49b29" name="aaee15f445a40f79c999cfb2fb0d49b29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaee15f445a40f79c999cfb2fb0d49b29">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Fov_8cpp_source.html#l00221">depth</a>, <a class="el" href="Fov_8cpp_source.html#l00231">dirty</a>, <a class="el" href="Fov_8cpp_source.html#l00239">elevation</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Fov_8cpp_source.html#l00238">opaque</a>, <a class="el" href="Fov_8cpp_source.html#l00240">state</a>, <a class="el" href="Fov_8cpp_source.html#l00241">visibleList</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00219">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00294">bindLayer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a7c80f9099b1e3a1a59c589de0b3cec62" name="a7c80f9099b1e3a1a59c589de0b3cec62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c80f9099b1e3a1a59c589de0b3cec62">&#9670;&#160;</a></span>syncFromLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::syncFromLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00275">applyAutoTopologyFromLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00230">blockEmpty</a>, <a class="el" href="Fov_8cpp_source.html#l00221">depth</a>, <a class="el" href="Fov_8cpp_source.html#l00231">dirty</a>, <a class="el" href="Fov_8cpp_source.html#l00220">height</a>, <a class="el" href="Fov_8cpp_source.html#l01028">eve::map::Fov::isOpaque()</a>, <a class="el" href="Fov_8cpp_source.html#l00222">layer</a>, <a class="el" href="Fov_8cpp_source.html#l00223">layerRevision</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Fov_8cpp_source.html#l00238">opaque</a>, <a class="el" href="Fov_8cpp_source.html#l00242">opaqueGids</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a>, <a class="el" href="TileLayer_8h_source.html#l00342">eve::map::tileGid()</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00219">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00294">bindLayer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a>.</p>
+
+</div>
+</div>
+<a id="ae189495c56f87f866c236f5918e1fb5b" name="ae189495c56f87f866c236f5918e1fb5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae189495c56f87f866c236f5918e1fb5b">&#9670;&#160;</a></span>tryMark2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::Impl::tryMark2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zSlice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useCone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>facingDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>halfAngleDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="Fov_8cpp_source.html#l00357">markVisible2()</a>, <a class="el" href="Fov_8cpp_source.html#l00362">markVisible3()</a>, <a class="el" href="Fov_8cpp_source.html#l00226">mode</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="Fov_8cpp_source.html#l00473">passesHeightToTarget()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00488">castLight()</a>, <a class="el" href="Fov_8cpp_source.html#l00616">castRayLine()</a>, <a class="el" href="Fov_8cpp_source.html#l00569">computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00524">computeOrthoShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00660">computeRaycast()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="af0f50e769f7ac8b6bbbc712a8245a711" name="af0f50e769f7ac8b6bbbc712a8245a711"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0f50e769f7ac8b6bbbc712a8245a711">&#9670;&#160;</a></span>algorithm</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Algorithm eve::map::Fov::Impl::algorithm = Algorithm::Shadowcast</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="a8cf9eb793a2e2e0ec0b88b30168a17fc" name="a8cf9eb793a2e2e0ec0b88b30168a17fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cf9eb793a2e2e0ec0b88b30168a17fc">&#9670;&#160;</a></span>blockEmpty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::blockEmpty = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a742181a89509dcbb13f9636f1eeb9aa2" name="a742181a89509dcbb13f9636f1eeb9aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742181a89509dcbb13f9636f1eeb9aa2">&#9670;&#160;</a></span>cliffBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::cliffBlock = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a>.</p>
+
+</div>
+</div>
+<a id="a1d30f2d1d66cee11128dd44471a67144" name="a1d30f2d1d66cee11128dd44471a67144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d30f2d1d66cee11128dd44471a67144">&#9670;&#160;</a></span>cornerPeek</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::cornerPeek = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a>.</p>
+
+</div>
+</div>
+<a id="a792151c00d73cb812c45fb9e317f3bb1" name="a792151c00d73cb812c45fb9e317f3bb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a792151c00d73cb812c45fb9e317f3bb1">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::depth = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00253">effectiveVerticalRange()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00249">inBounds3()</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a69bdb7ce77a8a30742eb5a3396e84dc2" name="a69bdb7ce77a8a30742eb5a3396e84dc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69bdb7ce77a8a30742eb5a3396e84dc2">&#9670;&#160;</a></span>detectionMargin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::detectionMargin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b2a69c76b22ebf72111111c7f93acd5" name="a0b2a69c76b22ebf72111111c7f93acd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b2a69c76b22ebf72111111c7f93acd5">&#9670;&#160;</a></span>dirty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::dirty = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00376">clearAllMemory()</a>, <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a92117f4aa53b411cb2e558634306292d" name="a92117f4aa53b411cb2e558634306292d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92117f4aa53b411cb2e558634306292d">&#9670;&#160;</a></span>elevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::map::Fov::Impl::elevation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00344">elevAt()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a>.</p>
+
+</div>
+</div>
+<a id="afefe2b6b694af3d917597a30f4d52f2c" name="afefe2b6b694af3d917597a30f4d52f2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afefe2b6b694af3d917597a30f4d52f2c">&#9670;&#160;</a></span>eyeOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::eyeOffset = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a>.</p>
+
+</div>
+</div>
+<a id="a32fcb706afec3f00e390b67397d7403f" name="a32fcb706afec3f00e390b67397d7403f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32fcb706afec3f00e390b67397d7403f">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::height = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">buildOpaqueRects()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00247">index3()</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ae9011bc69e982b690bb3ad850fadaa50" name="ae9011bc69e982b690bb3ad850fadaa50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9011bc69e982b690bb3ad850fadaa50">&#9670;&#160;</a></span>layer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a>* eve::map::Fov::Impl::layer = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00275">applyAutoTopologyFromLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00294">bindLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="aba6ad69185ad5f929ef75b09e43eed91" name="aba6ad69185ad5f929ef75b09e43eed91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba6ad69185ad5f929ef75b09e43eed91">&#9670;&#160;</a></span>layerRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::map::Fov::Impl::layerRevision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a1e617b8c5d9622e0a0d0748a8cd263a7" name="a1e617b8c5d9622e0a0d0748a8cd263a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e617b8c5d9622e0a0d0748a8cd263a7">&#9670;&#160;</a></span>metric</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RadiusMetric eve::map::Fov::Impl::metric = RadiusMetric::Euclidean</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00268">inRadius3()</a>.</p>
+
+</div>
+</div>
+<a id="a718e65aebceec4f1e947a4b332f6d4b2" name="a718e65aebceec4f1e947a4b332f6d4b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a718e65aebceec4f1e947a4b332f6d4b2">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Mode eve::map::Fov::Impl::mode = Mode::Grid2D</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00294">bindLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00339">cellOpaqueOnSlice()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">computePermissive()</a>, <a class="el" href="Fov_8cpp_source.html#l00875">computeRevealer()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00396">losBresenham2()</a>, <a class="el" href="Fov_8cpp_source.html#l00434">losHexCube()</a>, <a class="el" href="Fov_8cpp_source.html#l00473">passesHeightToTarget()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00478">tryMark2()</a>.</p>
+
+</div>
+</div>
+<a id="a1cd618a9f6e6b9151ba11c9fa08246ab" name="a1cd618a9f6e6b9151ba11c9fa08246ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cd618a9f6e6b9151ba11c9fa08246ab">&#9670;&#160;</a></span>nextRevealerId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::nextRevealerId = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a136273db9ec605f27d28af254392349f" name="a136273db9ec605f27d28af254392349f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a136273db9ec605f27d28af254392349f">&#9670;&#160;</a></span>opaque</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint8_t&gt; eve::map::Fov::Impl::opaque</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00329">cellOpaque2()</a>, <a class="el" href="Fov_8cpp_source.html#l00334">cellOpaque3()</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ac934ae145be9af8b6ff4014c8a694d8f" name="ac934ae145be9af8b6ff4014c8a694d8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac934ae145be9af8b6ff4014c8a694d8f">&#9670;&#160;</a></span>opaqueGids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_set&lt;uint32_t&gt; eve::map::Fov::Impl::opaqueGids</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a94c1ad9b91382e3c441e66828d4002ea" name="a94c1ad9b91382e3c441e66828d4002ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94c1ad9b91382e3c441e66828d4002ea">&#9670;&#160;</a></span>perceptionRadiusScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::Impl::perceptionRadiusScale = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00258">effectiveRadiusOf()</a>.</p>
+
+</div>
+</div>
+<a id="a9dfb66464c61f97cdff5ff24bf0ab86d" name="a9dfb66464c61f97cdff5ff24bf0ab86d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dfb66464c61f97cdff5ff24bf0ab86d">&#9670;&#160;</a></span>revealers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html">Revealer</a>&gt; eve::map::Fov::Impl::revealers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00903">compute()</a>, <a class="el" href="Fov_8cpp_source.html#l00382">findRevealer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00389">findRevealerConst()</a>.</p>
+
+</div>
+</div>
+<a id="a2c9dcfaec0246886645e7518fa0780db" name="a2c9dcfaec0246886645e7518fa0780db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9dcfaec0246886645e7518fa0780db">&#9670;&#160;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;CellState&gt; eve::map::Fov::Impl::state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00376">clearAllMemory()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00349">markVisibleIdx()</a>, <a class="el" href="Fov_8cpp_source.html#l00367">resetVisibleKeepExplored()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a>.</p>
+
+</div>
+</div>
+<a id="a039376ce5e16f889136e9f183f021b0c" name="a039376ce5e16f889136e9f183f021b0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a039376ce5e16f889136e9f183f021b0c">&#9670;&#160;</a></span>topology</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Topology eve::map::Fov::Impl::topology = Topology::Ortho</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00275">applyAutoTopologyFromLayer()</a>, <a class="el" href="Fov_8cpp_source.html#l00616">castRayLine()</a>, <a class="el" href="Fov_8cpp_source.html#l00660">computeRaycast()</a>, <a class="el" href="Fov_8cpp_source.html#l00611">computeShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00263">inRadius2()</a>, <a class="el" href="Fov_8cpp_source.html#l00268">inRadius3()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00468">los2()</a>.</p>
+
+</div>
+</div>
+<a id="af80ee72e70ba064626428e27cc0d1446" name="af80ee72e70ba064626428e27cc0d1446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af80ee72e70ba064626428e27cc0d1446">&#9670;&#160;</a></span>topologyManual</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::Impl::topologyManual = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00275">applyAutoTopologyFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a2e6a20add84b8baf8dfb9ad8c3871e93" name="a2e6a20add84b8baf8dfb9ad8c3871e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e6a20add84b8baf8dfb9ad8c3871e93">&#9670;&#160;</a></span>verticalRange</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::verticalRange = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00253">effectiveVerticalRange()</a>.</p>
+
+</div>
+</div>
+<a id="ad9e09d7ef68baf88ccee65219093d382" name="ad9e09d7ef68baf88ccee65219093d382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9e09d7ef68baf88ccee65219093d382">&#9670;&#160;</a></span>visibleList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::map::Fov::Impl::visibleList</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00376">clearAllMemory()</a>, <a class="el" href="Fov_8cpp_source.html#l00349">markVisibleIdx()</a>, <a class="el" href="Fov_8cpp_source.html#l00367">resetVisibleKeepExplored()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a>.</p>
+
+</div>
+</div>
+<a id="afaaf87288127ebd8ab67acf0746f0346" name="afaaf87288127ebd8ab67acf0746f0346"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaaf87288127ebd8ab67acf0746f0346">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::Impl::width = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">buildOpaqueRects()</a>, <a class="el" href="Fov_8cpp_source.html#l00771">computeRectangle()</a>, <a class="el" href="Fov_8cpp_source.html#l00855">extendVertical()</a>, <a class="el" href="Fov_8cpp_source.html#l00248">inBounds2()</a>, <a class="el" href="Fov_8cpp_source.html#l00246">index2()</a>, <a class="el" href="Fov_8cpp_source.html#l00247">index3()</a>, <a class="el" href="Fov_8cpp_source.html#l00282">resize()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00304">syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/map/<a class="el" href="Fov_8cpp_source.html">Fov.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

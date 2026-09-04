@@ -1,0 +1,303 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: GPU 计算模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">GPU 计算模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>GPU 计算模块</h1>
+<p><b>脚本入口：</b> <code>eve.Gpgpu()</code> / <code>eve.EcsShaderSystem</code> / <code>eve.ShaderSystem</code></p>
+<p>创建 storage buffer 和 compute shader，绑定后通过当前 Vulkan 或 WebGPU 后端调度 compute。Vulkan 使用 GLSL，WebGPU 使用 WGSL；也可把 ECS System 写成 compute shader：打包组件 float 字段 → storage buffer → dispatch → 写回。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local gpu = eve.Gpgpu();</div>
+<div class="line">if (gpu.isAvailable()) {</div>
+<div class="line">    local shader = gpu.newShader(shaderSource);</div>
+<div class="line">    local buffer = gpu.newBuffer(1024, &quot;storage&quot;);</div>
+<div class="line">    shader.bindBuffer(0, buffer);</div>
+<div class="line">    gpu.dispatch(shader, 4, 1, 1);</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>用 shader 写 ECS System</h2>
+<div class="fragment"><div class="line">class Moveable extends eve.Entity { pos = Position; vel = Velocity }</div>
+<div class="line"> </div>
+<div class="line">local sys = eve.ShaderSystem(Moveable, gpgpu, moveGlsl, 64)</div>
+<div class="line">sys.bindFields(0, &quot;pos&quot;, [&quot;x&quot;, &quot;y&quot;])</div>
+<div class="line">sys.bindFields(1, &quot;vel&quot;, [&quot;x&quot;, &quot;y&quot;])</div>
+<div class="line"> </div>
+<div class="line">eve_update = function(dt) { sys.update(dt) }</div>
+</div><!-- fragment --><p>Compute shader 约定：</p>
+<ul>
+<li><code>binding i</code>：对应 <code>bindFields(i, …)</code> 的 AoS float 流（按实体顺序紧密排列）</li>
+<li><code>push_constant data[0]</code> = <code>dt</code>，<code>data[1]</code> = 实体数量</li>
+</ul>
+<p>C++ 侧可用 <code>gpgpu::ShaderSystem</code> + <code><a class="el" href="EcsGpu_8h.html">gpgpu/EcsGpu.h</a></code> 的 <code>packViewComponent</code> / <code>unpackViewComponent</code> 对 <code>ECS.hpp</code> View 做同样的打包与调度。</p>
+<p>大批量、连续多帧仿真应让组件留在 GPU：</p>
+<div class="fragment"><div class="line">local sys = eve.ShaderSystem(Moveable, gpgpu, moveGlsl, 64)</div>
+<div class="line">sys.bindFields(0, &quot;pos&quot;, [&quot;x&quot;, &quot;y&quot;], false, false)</div>
+<div class="line">sys.bindFields(1, &quot;vel&quot;, [&quot;x&quot;, &quot;y&quot;], false, false)</div>
+<div class="line"> </div>
+<div class="line">// 第一次 update 自动上传；稳态 update 只 dispatch。</div>
+<div class="line">// CPU 修改组件后显式请求重新上传，需要 CPU 快照时显式请求一次回读。</div>
+<div class="line">sys.requestUpload(1)</div>
+<div class="line">sys.requestReadback(0)</div>
+</div><!-- fragment --><p><code>bindFields</code> 的第 4、5 个参数分别是 <code>uploadEachUpdate</code> 和该 binding 的 <code>readback</code> 策略。实体创建/销毁会自动触发重新打包。GPU-resident 期间 CPU 组件是旧投影，不应同时作为权威状态；需要 CPU/GPU 共享每帧状态时保留默认同步模式。可用 backend 的 <code>getUploadCount()</code> / <code>getDownloadCount()</code> / <code>getDispatchCount()</code> 与 <code>resetStatistics()</code> 审计实际传输次数。</p>
+<p>CPU 只修改连续的一段实体时，可用 <code>requestUploadRange(binding, first, count)</code>；只观察一段结果时用 <code>requestReadbackRange</code>。同一帧的重复范围请求会合并，实体结构 revision 改变时自动退化为安全的全量重打包。</p>
+<p>多个 system 可共享驻留数据并合并提交：</p>
+<div class="fragment"><div class="line">consumer.bindSharedFields(0, producer, 0, &quot;pos&quot;, [&quot;x&quot;, &quot;y&quot;])</div>
+<div class="line">local seq = gpgpu.newSequence()</div>
+<div class="line">seq.begin()</div>
+<div class="line">local produced = producer.record(seq, dt)</div>
+<div class="line">local consumed = consumer.record(seq, dt)</div>
+<div class="line">seq.submit()</div>
+<div class="line">producer.completeRecorded(produced)</div>
+<div class="line">consumer.completeRecorded(consumed)</div>
+</div><!-- fragment --><p>调用顺序是契约的一部分：producer 必须先 prepare/record；脚本 wrapper 会持有 producer，且每帧重新附着可能被扩容替换的 buffer。Sequence 在两个 dispatch 间插入 GPU memory barrier，但 <code>submit()</code> 当前仍等待整批完成。</p>
+<p>不需要立即读取 CPU 结果时可非阻塞提交：</p>
+<div class="fragment"><div class="line">local status = seq.submitAsync() // &quot;submitted&quot;</div>
+<div class="line">// CPU 可继续处理不依赖这些 buffer 的工作</div>
+<div class="line">status = seq.poll()              // &quot;submitted&quot; / &quot;complete&quot; / &quot;failed&quot;</div>
+<div class="line">if (status == &quot;submitted&quot;) status = seq.wait()</div>
+</div><!-- fragment --><p>pending 期间引用的 shader/buffer 必须存活，且同一个 Sequence 不允许再次 <code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>；完成或失败后才能复用。Vulkan 使用 fence，WebGPU 使用 <code>wgpuQueueOnSubmittedWorkDone</code> future。析构 pending Sequence 会等待，防止 callback 或 GPU command 访问已释放状态。</p>
+<p>需要显式布局和访问权时使用 typed schema：</p>
+<div class="fragment"><div class="line">sys.bindSchema(0, {</div>
+<div class="line">    slot = &quot;pos&quot;, fields = [&quot;x&quot;, &quot;y&quot;], scalar = &quot;f32&quot;, access = &quot;read_write&quot;</div>
+<div class="line">})</div>
+<div class="line">sys.bindSchema(1, {</div>
+<div class="line">    slot = &quot;result&quot;, fields = [&quot;x&quot;], scalar = &quot;f32&quot;, access = &quot;write&quot;</div>
+<div class="line">})</div>
+<div class="line">print(sys.shaderDeclarations(&quot;glsl&quot;)) // 也支持 &quot;wgsl&quot;</div>
+</div><!-- fragment --><p><code>write</code> binding 由 shader 权威初始化，只分配容量，不做无意义的首次 CPU 上传；当前唯一标量类型是 <code>f32</code>，schema 暴露 <code>strideFloats</code>。不支持的类型或访问权在绑定时直接报错，而不是静默按 float 解释。</p>
+<p>C++ ECS 可复用 <code>EcsGpuWorkspace&lt;Component&gt;</code>，并用 <code>packViewComponentRange</code> / <code>unpackViewComponentRange</code> 更新已有 resident buffer 的连续区间，避免每帧临时 vector 分配。组件在编译期要求 trivially-copyable 且大小是 float 的整数倍。</p>
+<p>Squirrel 与 C++ 都能把标准 <code>graphics::GpuInstance</code>（80 bytes）直接交给渲染器， 无需把实例流读回 CPU。脚本侧是正式的一等接口：</p>
+<div class="fragment"><div class="line">local meshId = gpgpu.gpuDrivenMeshRecord(mesh)</div>
+<div class="line">local materialId = gpgpu.gpuDrivenMaterialRecord(material)</div>
+<div class="line">local instances = gpgpu.newBuffer(gpgpu.getGpuDrivenInstanceStride(), &quot;storage&quot;)</div>
+<div class="line">local model = [1.0, 0.0, 0.0, 0.0,</div>
+<div class="line">               0.0, 1.0, 0.0, 0.0,</div>
+<div class="line">               0.0, 0.0, 1.0, 0.0,</div>
+<div class="line">               0.0, 0.0, 0.0, 1.0]</div>
+<div class="line">gpgpu.writeGpuDrivenInstance(instances, 0, model, meshId, materialId, 0, -1)</div>
+<div class="line">local buckets = [{ firstInstance = 0, instanceCount = 1,</div>
+<div class="line">                   meshId = meshId, materialId = materialId }]</div>
+<div class="line">gpgpu.setGpuDrivenEnabled(true)</div>
+<div class="line">gfx.begin3DFrame()</div>
+<div class="line">local status = gpgpu.submitResidentInstances(instances, buckets, 1, 0)</div>
+<div class="line">if (status != &quot;submitted&quot;) throw &quot;resident submit failed: &quot; + status</div>
+<div class="line">gfx.present()</div>
+</div><!-- fragment --><p><code>writeGpuDrivenInstance</code> 是便利的类型化上传接口；大批量对象应由 compute shader 直接输出 同一布局。提交返回稳定状态字符串：<code>submitted</code>、<code>unsupported</code>、<code>invalid_argument</code>、 <code>backend_mismatch</code>、<code>resource_unavailable</code> 或 <code>capacity_exceeded</code>。bucket 必须连续覆盖全部 实例。buffer 必须活到本帧 GPU 命令完成，slice offset 按 <code>getGpuResidentOffsetAlignment()</code>（当前 256 bytes）对齐。<code>eve.ShaderSystem</code> 也提供资源注册 方法及 <code>submitResidentInstances(binding, buckets, count, offset)</code>，直接提交 resident binding。</p>
+<p>C++ 侧仍可把 <code>system.getBuffer(binding)-&gt;residentView()</code> 交给 <code>Graphics::gpuDrivenSubmitResident()</code>。</p>
+<h2>Sequence：把多次调度合并为一次 GPU 提交</h2>
+<p><code>eve.GpuSequence</code>（C++：<code>gpgpu::Sequence</code>）对标 Kompute 的 Sequence：在 Vulkan 与 WebGPU 上都把多个 buffer 拷贝和 compute dispatch 录制进**同一个 command buffer**，<code>submit()</code> 时一次提交、一次等待。对 AI 推理这类几十个 kernel 串行的负载，这能把几十次 record/submit/wait 往返压成一次。</p>
+<div class="fragment"><div class="line">local seq = gpu.newSequence();</div>
+<div class="line">seq.begin();</div>
+<div class="line">seq.recordUpload(inputBuffer, hostDataPointer, nbytes);   // 可多次</div>
+<div class="line">seq.recordDispatch(shaderA, groupsA);                    // 录制时 shader 的</div>
+<div class="line">seq.recordDispatch(shaderB, groupsB);                    // binding 已生效</div>
+<div class="line">seq.recordDownload(outputBuffer, stagingBuffer, nbytes); // staging 需 &quot;staging&quot; 用途</div>
+<div class="line">seq.submit();                                            // 一次提交，内部等待完成</div>
+<div class="line">local out = stagingBuffer.readFloat32s(count);</div>
+</div><!-- fragment --><p>要点：</p>
+<ul>
+<li><code>recordUpload</code> 会把数据先 memcpy 到内部 host-visible staging，调用返回后源指针即可失效。</li>
+<li><code>recordDownload</code> 目标必须是 <code>newBuffer(n, "staging")</code>；<code>submit()</code> 返回后再读。</li>
+<li>同一 Sequence 可循环复用：<code>submit()</code> 后再 <code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>。</li>
+<li>Sequence 内部自动插入内存屏障，保证拷贝/计算/回读之间可见（单次提交没有 fence 兜底，这是与每次 dispatch 各提交一次的关键区别）。</li>
+<li>录制期间 shader 的 descriptor set 会被延迟释放，<code>submit()</code> 完成后才回收，避免多 dispatch 引用被覆盖的 set。</li>
+</ul>
+<p>引擎内部的 tensor 模块（<code>CompiledFunction</code> 的 GPU 执行）已经用 Sequence 实现整图单次提交：placeholder 上传 → 所有融合 kernel dispatch → 输出回读，一次 <code>submit()</code> 完成。</p>
+<h2>对象关系与调用时机</h2>
+<p><code>Gpgpu</code> 使用当前 Graphics 后端设备；<code>ComputeShader</code> / <code>GpuBuffer</code> 为后端无关抽象。Vulkan 编译 GLSL 并保存 SPIR-V，WebGPU 直接创建 WGSL pipeline；<code>newShaderFromSpvFile</code> 是 Vulkan SPIR-V 兼容包装，WebGPU 不接受 SPIR-V。<code>EcsShaderSystem</code> / <code>eve.ShaderSystem</code> 负责 ECS 查询、打包与 dispatch。dispatch 前所有 binding 和 push constant 必须有效。</p>
+<h2>目标导向指南</h2>
+<h3>批量缩放数组</h3>
+<p>先检查 <code>isAvailable()</code>，创建 storage buffer 并写入 float，创建 compute shader，binding 0 绑定 buffer、push constant 设置倍率，按 local size 计算 group 数后 <code>dispatch()</code>，最后读回结果。</p>
+<h3>ECS 积分 / 粒子式批量更新</h3>
+<p>用 <code>eve.ShaderSystem</code> 绑定要读写的组件浮点字段，在 <code>eve_update</code> 调用 <code>update(dt)</code>。需要 CPU 侧逻辑（碰撞反弹等）时，可在 GPU 积分后再遍历 <code>entities()</code>。</p>
+<h3>避免 GPU 同步拖慢帧</h3>
+<p>频繁 readData / <code>setReadback(true)</code>（默认）会等待 GPU；将连续计算保留在 device-local buffer，最终需要 CPU 结果时再读回。shader、buffer 和 binding 应复用，尺寸变化时才重建。</p>
+<h2>常见问题</h2>
+<ul>
+<li>未检查 <code>isAvailable()</code> 就创建资源。</li>
+<li>dispatch group 数按元素数而非 local size 取整（<code>ShaderSystem</code> 已按 local size 处理）。</li>
+<li>GPU 写完立即频繁 readback，造成同步停顿。</li>
+<li>组件字段不是 number：只有 float/int 字段可打包。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>、<code>bindBuffer()</code>、<code>clearBindings()</code>、<code>dispatch()</code>、<code>fillFloat32()</code>、<code>getBoundBuffer()</code>、<code>getFloat()</code>、<code>getName()</code>、<code>getSize()</code></li>
+<li><code>getUsage()</code>、<code>isAvailable()</code>、<code>newBuffer()</code>、<code>newShader()</code>、<code>newShaderFromBytecode()</code>、<code>newShaderFromSpvFile()</code>、<code>readData()</code>、<code>readFloat32()</code>、<code>setFloat()</code></li>
+<li>GPU-driven resident render：<code>setGpuDrivenEnabled()</code> / <code>isGpuDrivenEnabled()</code> / <code>gpuDrivenMeshRecord()</code> / <code>gpuDrivenMaterialRecord()</code> / <code>gpuDrivenMaterialUsable()</code> / <code>getGpuDrivenInstanceStride()</code> / <code>getGpuResidentOffsetAlignment()</code> / <code>writeGpuDrivenInstance()</code> / <code>submitResidentInstances()</code></li>
+<li><code>newSequence()</code>、<code>recordDispatch()</code>、<code>recordDownload()</code>、<code>recordUpload()</code>、<code>submit()</code>、<code>submitAsync()</code>、<code>poll()</code>、<code>wait()</code>、<code>getStatus()</code>、<code>writeData()</code>、<code>writeFloat32()</code>、<code>packEcsFloats()</code>、<code>unpackEcsFloats()</code>、<code>packEcsFloatsRange()</code>、<code>unpackEcsFloatsRange()</code></li>
+<li><code>eve.EcsShaderSystem</code>：<code>setGpgpu</code> / <code>setShaderSource</code> / <code>ensureBuffer</code> / <code>dispatch</code> / …</li>
+<li><code>eve.ShaderSystem</code>：<code>bindFields</code> / <code>setShaderSource</code> / <code>setReadback</code> / <code>update</code> / GPU-driven 资源注册与 <code>submitResidentInstances</code></li>
+<li>GPU 驻留控制：<code>setBindingUpload</code> / <code>setBindingReadback</code> / <code>requestUpload</code> / <code>requestReadback</code>、对应的 <code>*Range</code> 接口</li>
+<li>GPU 链式系统：<code>bindSharedFields</code> / <code>record</code> / <code>completeRecorded</code>；native backend 提供 <code>attachBuffer</code> / <code>recordDispatch</code></li>
+<li>typed schema：<code>bindSchema</code> / <code>getBindingSchema</code> / <code>shaderDeclarations</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/gpgpu/"><code>src/modules/gpgpu/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>gpgpu</code> / <code>ShaderECS</code>。 <b>示例：</b> <a href="../../../examples/ecs/gpu_main.nut"><code>examples/ecs/gpu_main.nut</code></a>、<a href="../../../examples/basic/compute/ecs_move.comp"><code>examples/basic/compute/ecs_move.comp</code></a> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

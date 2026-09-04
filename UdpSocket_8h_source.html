@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/network/UdpSocket.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_01fbf463d294056048b691191265bf7f.html">network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UdpSocket.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UdpSocket_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="NetTypes_8h.html">NetTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1data.html">eve::data</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>ByteData;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePoco_1_1Net.html">Poco::Net</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>DatagramSocket;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network.html">eve::network</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256">Network</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpSocket.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>(<a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* net);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a8de5de32e6a3098c66dd704a94c51493">~UdpSocket</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a841ec03f660a14ac59a642d5bf576125">bind</a>(uint16_t port);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#ad0d2ef3c5d1cc5492606be25379d0976">connect</a>(std::string <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, uint16_t port);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a1108a2d45db121dddf8079ff20be544e">sendTo</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a>* <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, std::string <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, uint16_t port);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a566e9ae0975557be5515f72736da237b">sendToString</a>(std::string <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, std::string <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, uint16_t port);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#ae6793e7fdcfafae1ad6772d8c7ebaed7">send</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a>* <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a844d7df9a1c73f352553ba0eb2e2ce94">sendString</a>(std::string <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a76b40d74527505e1292ed9c15e0651e3">close</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Poco::Net::DatagramSocket* <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a21315823557ce4ff74541e0aa4877784">datagram</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpSocket.html#aa4ca5ea75ec2512e1344f334fbd1c4ff">   48</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#aa4ca5ea75ec2512e1344f334fbd1c4ff">isBound</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> bound_; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpSocket.html#a1746e938899be5666a177ce9ba707cd4">   50</a></span>    <a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* <a class="code hl_function" href="classeve_1_1network_1_1UdpSocket.html#a1746e938899be5666a177ce9ba707cd4">network</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> net_; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* net_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    std::unique_ptr&lt;Poco::Net::DatagramSocket&gt; sock_;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">bool</span> bound_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">bool</span> connected_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}  <span class="comment">// namespace eve::network</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aNetTypes_8h_html"><div class="ttname"><a href="NetTypes_8h.html">NetTypes.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00212">UIAutomationCapabilities.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html"><div class="ttname"><a href="classeve_1_1network_1_1Network.html">eve::network::Network</a></div><div class="ttdoc">Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00033">Network.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html">eve::network::UdpSocket</a></div><div class="ttdoc">UDP socket backed by Poco::Net; supports connect/bind and datagram send.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8h_source.html#l00024">UdpSocket.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a1108a2d45db121dddf8079ff20be544e"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a1108a2d45db121dddf8079ff20be544e">eve::network::UdpSocket::sendTo</a></div><div class="ttdeci">bool sendTo(eve::data::ByteData *data, std::string host, uint16_t port)</div><div class="ttdoc">Sends a datagram to an explicit host:port.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00070">UdpSocket.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a1746e938899be5666a177ce9ba707cd4"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a1746e938899be5666a177ce9ba707cd4">eve::network::UdpSocket::network</a></div><div class="ttdeci">Network * network() const</div><div class="ttdoc">Owning module.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8h_source.html#l00050">UdpSocket.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a21315823557ce4ff74541e0aa4877784"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a21315823557ce4ff74541e0aa4877784">eve::network::UdpSocket::datagram</a></div><div class="ttdeci">Poco::Net::DatagramSocket * datagram()</div><div class="ttdoc">Internal: underlying Poco datagram socket.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00018">UdpSocket.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a566e9ae0975557be5515f72736da237b"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a566e9ae0975557be5515f72736da237b">eve::network::UdpSocket::sendToString</a></div><div class="ttdeci">bool sendToString(std::string s, std::string host, uint16_t port)</div><div class="ttdoc">Sends a string datagram to an explicit host:port.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00095">UdpSocket.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a76b40d74527505e1292ed9c15e0651e3"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a76b40d74527505e1292ed9c15e0651e3">eve::network::UdpSocket::close</a></div><div class="ttdeci">void close()</div><div class="ttdoc">Closes the socket.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00131">UdpSocket.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a841ec03f660a14ac59a642d5bf576125"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a841ec03f660a14ac59a642d5bf576125">eve::network::UdpSocket::bind</a></div><div class="ttdeci">bool bind(uint16_t port)</div><div class="ttdoc">Binds to a local port; true on success.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00022">UdpSocket.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a844d7df9a1c73f352553ba0eb2e2ce94"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a844d7df9a1c73f352553ba0eb2e2ce94">eve::network::UdpSocket::sendString</a></div><div class="ttdeci">bool sendString(std::string s)</div><div class="ttdoc">Sends a string datagram to the connected peer.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00125">UdpSocket.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_a8de5de32e6a3098c66dd704a94c51493"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#a8de5de32e6a3098c66dd704a94c51493">eve::network::UdpSocket::~UdpSocket</a></div><div class="ttdeci">~UdpSocket()</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00014">UdpSocket.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_aa4ca5ea75ec2512e1344f334fbd1c4ff"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#aa4ca5ea75ec2512e1344f334fbd1c4ff">eve::network::UdpSocket::isBound</a></div><div class="ttdeci">bool isBound() const</div><div class="ttdoc">True after bind().</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8h_source.html#l00048">UdpSocket.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_ad0d2ef3c5d1cc5492606be25379d0976"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#ad0d2ef3c5d1cc5492606be25379d0976">eve::network::UdpSocket::connect</a></div><div class="ttdeci">bool connect(std::string host, uint16_t port)</div><div class="ttdoc">Connects to a remote host:port (restricts send()).</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00047">UdpSocket.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html_ae6793e7fdcfafae1ad6772d8c7ebaed7"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html#ae6793e7fdcfafae1ad6772d8c7ebaed7">eve::network::UdpSocket::send</a></div><div class="ttdeci">bool send(eve::data::ByteData *data)</div><div class="ttdoc">Sends a datagram to the connected peer.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8cpp_source.html#l00101">UdpSocket.cpp:101</a></div></div>
+<div class="ttc" id="anamespacePoco_1_1Net_html"><div class="ttname"><a href="namespacePoco_1_1Net.html">Poco::Net</a></div><div class="ttdef"><b>Definition</b> <a href="DebugAdapter_8hpp_source.html#l00016">DebugAdapter.hpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html"><div class="ttname"><a href="namespaceeve_1_1data.html">eve::data</a></div><div class="ttdef"><b>Definition</b> <a href="ByteData_8cpp_source.html#l00007">ByteData.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256">eve::editing::ActionOrigin::Network</a></div><div class="ttdeci">@ Network</div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html"><div class="ttname"><a href="namespaceeve_1_1network.html">eve::network</a></div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8cpp_source.html#l00012">Channel.cpp:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

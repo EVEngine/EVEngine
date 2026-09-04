@@ -1,0 +1,289 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/AttributeTable.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AttributeTable.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AttributeTable_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html">ProcgenAttributeVector</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a59239c13d19cea9c4e0f8698981c0322">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a59239c13d19cea9c4e0f8698981c0322">x</a> = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a91a1c90e620907ab35d6802fa9a5e4a0">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a91a1c90e620907ab35d6802fa9a5e4a0">y</a> = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a9eb63cd58e5ee623d5a25a7f01ac83ca">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a9eb63cd58e5ee623d5a25a7f01ac83ca">z</a> = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">   23</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a1686a6c336b71b36d77354cea19a8b52">Int</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3ac26f15e86e3de4c398a8273272aba034">Bool</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a57dea6f5039281b7fee517fc43bf3110">Vector</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98">String</a> };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1AttributeTable.html">   33</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1AttributeTable.html">AttributeTable</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a74117120fe25e81d318f75c657cf8bd3">rowCount</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#ae11d953972f49a1862eb37e6e052c3b6">resize</a>(std::size_t rows);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a595f7bcb4621b6c4e326312cba25d8c3">appendRow</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::size_t&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#ad22994e499a52863073ac171d83e4a63">appendRowFrom</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1AttributeTable.html">AttributeTable</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::size_t sourceRow);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#ae2c7d035ecbc10df611903fc6ad45f32">clearRow</a>(std::size_t row);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a9fa50c04443e9df05e0f776cfb04ceb3">clear</a>() <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a710a619b7599d026f85ddd9dcec804db">columnCount</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#adb9efcf77d5521485cc07044872d513a">columnName</a>(std::size_t <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    [[nodiscard]] std::optional&lt;ProcgenAttributeType&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#af0a59d425f83080e48799ef392cf458d">typeOf</a>(std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a44b11d207e03090e682c5564bc739201">has</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#aaf81465295aef59144c5ee116085b3c2">setFloat</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#aa0b398fd9f3170fc5970e819f651686d">setInt</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::int64_t <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a999afd9a86d86b269cde89188a66d249">setBool</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#adc5e6a18461ef0beeaa2d5dadbcec63e">setVector</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_struct" href="structeve_1_1procgen_1_1ProcgenAttributeVector.html">ProcgenAttributeVector</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#ae10e5a2b5c0cf0e177843baa46e9a875">setString</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] std::optional&lt;float&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#ae5f74f17059bb84f11c0193ee36b1a4b">getFloat</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] std::optional&lt;std::int64_t&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a3a9513cb822503eba1e124ccfd57164d">getInt</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] std::optional&lt;bool&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a7e1f1b3d9c6175f7c7b64113f38c244a">getBool</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] std::optional&lt;ProcgenAttributeVector&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a4966cce8f20aed3782b32bdde475084c">getVector</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] std::optional&lt;std::string_view&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1AttributeTable.html#a1ba935b5c6d7189c8e91bbc1b9b51164">getString</a>(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">using </span>FloatColumn  = std::vector&lt;std::optional&lt;float&gt;&gt;;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">using </span>IntColumn    = std::vector&lt;std::optional&lt;std::int64_t&gt;&gt;;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">using </span>BoolColumn   = std::vector&lt;std::optional&lt;bool&gt;&gt;;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">using </span>VectorColumn = std::vector&lt;std::optional&lt;ProcgenAttributeVector&gt;&gt;;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">using </span>StringColumn = std::vector&lt;std::optional&lt;std::string&gt;&gt;;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">using </span>Storage      = std::variant&lt;FloatColumn, IntColumn, BoolColumn, VectorColumn, StringColumn&gt;;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">struct </span>Column {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>    = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">ProcgenAttributeType::Float</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        Storage              storage = FloatColumn{};</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    };</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> set(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, T <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] std::optional&lt;T&gt; get(std::size_t row, std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Column*&gt;</a>  ensureColumn(std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::size_t                             rows_ = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::unordered_map&lt;std::string, Column&gt; columns_;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::vector&lt;std::string&gt;                order_;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>};</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>[[nodiscard]] std::string_view <a class="code hl_function" href="namespaceeve_1_1procgen.html#ac2f5efaf3bf866b83c3d0ca342d4577a">procgenAttributeTypeName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">ProcgenAttributeType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html">eve::procgen::AttributeTable</a></div><div class="ttdoc">Schema-bearing column store aligned with a PointSet's point rows.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00033">AttributeTable.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a1ba935b5c6d7189c8e91bbc1b9b51164"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a1ba935b5c6d7189c8e91bbc1b9b51164">eve::procgen::AttributeTable::getString</a></div><div class="ttdeci">std::optional&lt; std::string_view &gt; getString(std::size_t row, std::string_view name) const</div><div class="ttdoc">Borrow a string value until the next table mutation, or return no value.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00167">AttributeTable.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a3a9513cb822503eba1e124ccfd57164d"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a3a9513cb822503eba1e124ccfd57164d">eve::procgen::AttributeTable::getInt</a></div><div class="ttdeci">std::optional&lt; std::int64_t &gt; getInt(std::size_t row, std::string_view name) const</div><div class="ttdoc">Read an integer value, or no value for an absent row, name, or type.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00158">AttributeTable.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a44b11d207e03090e682c5564bc739201"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a44b11d207e03090e682c5564bc739201">eve::procgen::AttributeTable::has</a></div><div class="ttdeci">bool has(std::size_t row, std::string_view name) const</div><div class="ttdoc">Return whether a row contains a value in the named column.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00088">AttributeTable.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a4966cce8f20aed3782b32bdde475084c"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a4966cce8f20aed3782b32bdde475084c">eve::procgen::AttributeTable::getVector</a></div><div class="ttdeci">std::optional&lt; ProcgenAttributeVector &gt; getVector(std::size_t row, std::string_view name) const</div><div class="ttdoc">Read a vector value, or no value for an absent row, name, or type.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00164">AttributeTable.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a595f7bcb4621b6c4e326312cba25d8c3"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a595f7bcb4621b6c4e326312cba25d8c3">eve::procgen::AttributeTable::appendRow</a></div><div class="ttdeci">std::size_t appendRow()</div><div class="ttdoc">Append one empty row and return its stable row index.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00033">AttributeTable.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a710a619b7599d026f85ddd9dcec804db"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a710a619b7599d026f85ddd9dcec804db">eve::procgen::AttributeTable::columnCount</a></div><div class="ttdeci">std::size_t columnCount() const noexcept</div><div class="ttdoc">Return the number of declared columns.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00080">AttributeTable.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a74117120fe25e81d318f75c657cf8bd3"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a74117120fe25e81d318f75c657cf8bd3">eve::procgen::AttributeTable::rowCount</a></div><div class="ttdeci">std::size_t rowCount() const noexcept</div><div class="ttdoc">Return the number of aligned point rows.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00028">AttributeTable.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a7e1f1b3d9c6175f7c7b64113f38c244a"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a7e1f1b3d9c6175f7c7b64113f38c244a">eve::procgen::AttributeTable::getBool</a></div><div class="ttdeci">std::optional&lt; bool &gt; getBool(std::size_t row, std::string_view name) const</div><div class="ttdoc">Read a Boolean value, or no value for an absent row, name, or type.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00161">AttributeTable.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a999afd9a86d86b269cde89188a66d249"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a999afd9a86d86b269cde89188a66d249">eve::procgen::AttributeTable::setBool</a></div><div class="ttdeci">Result&lt; void &gt; setBool(std::size_t row, std::string_view name, bool value)</div><div class="ttdoc">Set a Boolean value, rejecting an incompatible existing schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00146">AttributeTable.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_a9fa50c04443e9df05e0f776cfb04ceb3"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#a9fa50c04443e9df05e0f776cfb04ceb3">eve::procgen::AttributeTable::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Remove all rows and schema columns.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00075">AttributeTable.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_aa0b398fd9f3170fc5970e819f651686d"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#aa0b398fd9f3170fc5970e819f651686d">eve::procgen::AttributeTable::setInt</a></div><div class="ttdeci">Result&lt; void &gt; setInt(std::size_t row, std::string_view name, std::int64_t value)</div><div class="ttdoc">Set an integer value, rejecting an incompatible existing schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00143">AttributeTable.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_aaf81465295aef59144c5ee116085b3c2"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#aaf81465295aef59144c5ee116085b3c2">eve::procgen::AttributeTable::setFloat</a></div><div class="ttdeci">Result&lt; void &gt; setFloat(std::size_t row, std::string_view name, float value)</div><div class="ttdoc">Set a float value, rejecting an incompatible existing schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00140">AttributeTable.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_ad22994e499a52863073ac171d83e4a63"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#ad22994e499a52863073ac171d83e4a63">eve::procgen::AttributeTable::appendRowFrom</a></div><div class="ttdeci">Result&lt; std::size_t &gt; appendRowFrom(const AttributeTable &amp;source, std::size_t sourceRow)</div><div class="ttdoc">Append one row copied from another table, merging compatible schema columns.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00038">AttributeTable.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_adb9efcf77d5521485cc07044872d513a"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#adb9efcf77d5521485cc07044872d513a">eve::procgen::AttributeTable::columnName</a></div><div class="ttdeci">std::string_view columnName(std::size_t index) const noexcept</div><div class="ttdoc">Return a stable insertion-ordered column name or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00081">AttributeTable.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_adc5e6a18461ef0beeaa2d5dadbcec63e"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#adc5e6a18461ef0beeaa2d5dadbcec63e">eve::procgen::AttributeTable::setVector</a></div><div class="ttdeci">Result&lt; void &gt; setVector(std::size_t row, std::string_view name, ProcgenAttributeVector value)</div><div class="ttdoc">Set a vector value, rejecting an incompatible existing schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00149">AttributeTable.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_ae10e5a2b5c0cf0e177843baa46e9a875"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#ae10e5a2b5c0cf0e177843baa46e9a875">eve::procgen::AttributeTable::setString</a></div><div class="ttdeci">Result&lt; void &gt; setString(std::size_t row, std::string_view name, std::string value)</div><div class="ttdoc">Set a string value, rejecting an incompatible existing schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00152">AttributeTable.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_ae11d953972f49a1862eb37e6e052c3b6"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#ae11d953972f49a1862eb37e6e052c3b6">eve::procgen::AttributeTable::resize</a></div><div class="ttdeci">void resize(std::size_t rows)</div><div class="ttdoc">Resize every column to the same row count.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00029">AttributeTable.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_ae2c7d035ecbc10df611903fc6ad45f32"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#ae2c7d035ecbc10df611903fc6ad45f32">eve::procgen::AttributeTable::clearRow</a></div><div class="ttdeci">Result&lt; void &gt; clearRow(std::size_t row)</div><div class="ttdoc">Clear every value in one row while preserving the table schema.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00070">AttributeTable.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_ae5f74f17059bb84f11c0193ee36b1a4b"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#ae5f74f17059bb84f11c0193ee36b1a4b">eve::procgen::AttributeTable::getFloat</a></div><div class="ttdeci">std::optional&lt; float &gt; getFloat(std::size_t row, std::string_view name) const</div><div class="ttdoc">Read a float value, or no value for an absent row, name, or type.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00155">AttributeTable.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1AttributeTable_html_af0a59d425f83080e48799ef392cf458d"><div class="ttname"><a href="classeve_1_1procgen_1_1AttributeTable.html#af0a59d425f83080e48799ef392cf458d">eve::procgen::AttributeTable::typeOf</a></div><div class="ttdeci">std::optional&lt; ProcgenAttributeType &gt; typeOf(std::string_view name) const</div><div class="ttdoc">Return the declared type for a name, or no value when absent.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00084">AttributeTable.cpp:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3">eve::procgen::ProcgenAttributeType</a></div><div class="ttdeci">ProcgenAttributeType</div><div class="ttdoc">Closed set of column types supported by procedural point metadata.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00023">AttributeTable.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a1686a6c336b71b36d77354cea19a8b52"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a1686a6c336b71b36d77354cea19a8b52">eve::procgen::ProcgenAttributeType::Int</a></div><div class="ttdeci">@ Int</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::ProcgenAttributeType::Float</a></div><div class="ttdeci">@ Float</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98">eve::procgen::ProcgenAttributeType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a57dea6f5039281b7fee517fc43bf3110"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a57dea6f5039281b7fee517fc43bf3110">eve::procgen::ProcgenAttributeType::Vector</a></div><div class="ttdeci">@ Vector</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3ac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3ac26f15e86e3de4c398a8273272aba034">eve::procgen::ProcgenAttributeType::Bool</a></div><div class="ttdeci">@ Bool</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ac2f5efaf3bf866b83c3d0ca342d4577a"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ac2f5efaf3bf866b83c3d0ca342d4577a">eve::procgen::procgenAttributeTypeName</a></div><div class="ttdeci">std::string_view procgenAttributeTypeName(ProcgenAttributeType type) noexcept</div><div class="ttdoc">Return the stable script/persistence name for an attribute type.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8cpp_source.html#l00175">AttributeTable.cpp:175</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ProcgenAttributeVector_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ProcgenAttributeVector.html">eve::procgen::ProcgenAttributeVector</a></div><div class="ttdoc">Compact three-component value used by typed procedural metadata.</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00016">AttributeTable.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ProcgenAttributeVector_html_a59239c13d19cea9c4e0f8698981c0322"><div class="ttname"><a href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a59239c13d19cea9c4e0f8698981c0322">eve::procgen::ProcgenAttributeVector::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00017">AttributeTable.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ProcgenAttributeVector_html_a91a1c90e620907ab35d6802fa9a5e4a0"><div class="ttname"><a href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a91a1c90e620907ab35d6802fa9a5e4a0">eve::procgen::ProcgenAttributeVector::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00018">AttributeTable.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ProcgenAttributeVector_html_a9eb63cd58e5ee623d5a25a7f01ac83ca"><div class="ttname"><a href="structeve_1_1procgen_1_1ProcgenAttributeVector.html#a9eb63cd58e5ee623d5a25a7f01ac83ca">eve::procgen::ProcgenAttributeVector::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AttributeTable_8h_source.html#l00019">AttributeTable.h:19</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

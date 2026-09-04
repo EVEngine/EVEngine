@@ -1,0 +1,244 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorEnvironmentBrowser.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorEnvironmentBrowser.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorEnvironmentBrowser_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAssetDatabase_8h.html">editor/EditorAssetDatabase.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html">    8</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EnvironmentAssetCard.html">EnvironmentAssetCard</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a9ba393ef4416695995b717e7f8dd81a5">    9</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">AssetGuid</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a9ba393ef4416695995b717e7f8dd81a5">asset</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a6db7c337724f0e28008f5f1946eeaf93">   10</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a6db7c337724f0e28008f5f1946eeaf93">logicalUri</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a25e625a93bac1f1415ca2742f1fc667a">   11</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a25e625a93bac1f1415ca2742f1fc667a">previewArtifact</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#ac6d8ae978db94e91238c8456211c2549">   12</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#ac6d8ae978db94e91238c8456211c2549">layout</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a7e8779ed19cbaebd0456dbe325dadcaf">   13</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a7e8779ed19cbaebd0456dbe325dadcaf">width</a> = 0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aebadf649cd2547ebd536b97702851405">   14</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aebadf649cd2547ebd536b97702851405">height</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aa049a1bd1225c64c74f38abdf0e3d1af">   15</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aa049a1bd1225c64c74f38abdf0e3d1af">faceCount</a> = 0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a244e3cc2e20dc57e87135eabb256c838">   16</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959de">AssetStatus</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a244e3cc2e20dc57e87135eabb256c838">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959dea902b0d55fddef6f8d651fe1035b7d4bd">AssetStatus::Error</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a217cc3815fb5f6910691a9f94b3639ed">   17</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a217cc3815fb5f6910691a9f94b3639ed">diagnostics</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetPage.html">   21</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EnvironmentAssetPage.html">EnvironmentAssetPage</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#a41ffa09b95e5ba8c33ca4e5a97607af8">   22</a></span>    std::vector&lt;EnvironmentAssetCard&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#a41ffa09b95e5ba8c33ca4e5a97607af8">values</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aa1e3d4b83e96710c04b89417db3e1ed9">   23</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aa1e3d4b83e96710c04b89417db3e1ed9">nextOffset</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#ad331ae8d1364f6d6711b81e650c5e3fb">   24</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#ad331ae8d1364f6d6711b81e650c5e3fb">hasMore</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aff6212cc2c729689dec0a9996529ef55">   25</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aff6212cc2c729689dec0a9996529ef55">generation</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html">EnvironmentAssetBrowser</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a3a0dea49b2b2845b37ccc67ea8815ce5">   31</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a3a0dea49b2b2845b37ccc67ea8815ce5">EnvironmentAssetBrowser</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1MemoryAssetDatabase.html">MemoryAssetDatabase</a>* database) : database_(database) {}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EnvironmentAssetPage&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a7f10e053633ec8de97ace84591f0fcef">query</a>(std::string <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, std::size_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                                             std::size_t limit,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                             std::optional&lt;std::uint64_t&gt; generation = std::nullopt) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EnvironmentAssetCard&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a463e4ccad16757b102a7e2ae7ba37a4e">select</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">AssetGuid</a>&amp; asset) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EnvironmentAssetCard&gt;</a> card(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a>&amp; record) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1MemoryAssetDatabase.html">MemoryAssetDatabase</a>* database_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorAssetDatabase_8h_html"><div class="ttname"><a href="EditorAssetDatabase_8h.html">EditorAssetDatabase.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EnvironmentAssetBrowser_html"><div class="ttname"><a href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html">eve::editor::EnvironmentAssetBrowser</a></div><div class="ttdoc">Queries and validates cubemap/equirectangular assets from the shared AssetDB.</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00029">EditorEnvironmentBrowser.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EnvironmentAssetBrowser_html_a3a0dea49b2b2845b37ccc67ea8815ce5"><div class="ttname"><a href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a3a0dea49b2b2845b37ccc67ea8815ce5">eve::editor::EnvironmentAssetBrowser::EnvironmentAssetBrowser</a></div><div class="ttdeci">EnvironmentAssetBrowser(const MemoryAssetDatabase *database)</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00031">EditorEnvironmentBrowser.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EnvironmentAssetBrowser_html_a463e4ccad16757b102a7e2ae7ba37a4e"><div class="ttname"><a href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a463e4ccad16757b102a7e2ae7ba37a4e">eve::editor::EnvironmentAssetBrowser::select</a></div><div class="ttdeci">EditorResult&lt; EnvironmentAssetCard &gt; select(const AssetGuid &amp;asset) const</div><div class="ttdoc">Resolve a selected environment map and reject unusable import metadata.</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8cpp_source.html#l00084">EditorEnvironmentBrowser.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EnvironmentAssetBrowser_html_a7f10e053633ec8de97ace84591f0fcef"><div class="ttname"><a href="classeve_1_1editor_1_1EnvironmentAssetBrowser.html#a7f10e053633ec8de97ace84591f0fcef">eve::editor::EnvironmentAssetBrowser::query</a></div><div class="ttdeci">EditorResult&lt; EnvironmentAssetPage &gt; query(std::string text, std::size_t offset, std::size_t limit, std::optional&lt; std::uint64_t &gt; generation=std::nullopt) const</div><div class="ttdoc">Query deterministic cards; stale index generations return Conflict.</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8cpp_source.html#l00065">EditorEnvironmentBrowser.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MemoryAssetDatabase_html"><div class="ttname"><a href="classeve_1_1editor_1_1MemoryAssetDatabase.html">eve::editor::MemoryAssetDatabase</a></div><div class="ttdoc">Thread-neutral in-memory asset index used by editor hosts and tests.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00068">EditorAssetDatabase.h:68</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a99eea4b40241276976f599f4d2c959de"><div class="ttname"><a href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959de">eve::editor::AssetStatus</a></div><div class="ttdeci">AssetStatus</div><div class="ttdoc">Current indexing/import health of an asset record.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00013">EditorAssetDatabase.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a99eea4b40241276976f599f4d2c959dea902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959dea902b0d55fddef6f8d651fe1035b7d4bd">eve::editor::AssetStatus::Error</a></div><div class="ttdeci">@ Error</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html">eve::editor::AssetRecord</a></div><div class="ttdoc">Value snapshot stored by the editor asset index.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00016">EditorAssetDatabase.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html">eve::editor::EnvironmentAssetCard</a></div><div class="ttdoc">One environment-map asset card independent of a concrete browser UI.</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00008">EditorEnvironmentBrowser.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a217cc3815fb5f6910691a9f94b3639ed"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a217cc3815fb5f6910691a9f94b3639ed">eve::editor::EnvironmentAssetCard::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00017">EditorEnvironmentBrowser.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a244e3cc2e20dc57e87135eabb256c838"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a244e3cc2e20dc57e87135eabb256c838">eve::editor::EnvironmentAssetCard::status</a></div><div class="ttdeci">AssetStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00016">EditorEnvironmentBrowser.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a25e625a93bac1f1415ca2742f1fc667a"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a25e625a93bac1f1415ca2742f1fc667a">eve::editor::EnvironmentAssetCard::previewArtifact</a></div><div class="ttdeci">std::string previewArtifact</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00011">EditorEnvironmentBrowser.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a6db7c337724f0e28008f5f1946eeaf93"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a6db7c337724f0e28008f5f1946eeaf93">eve::editor::EnvironmentAssetCard::logicalUri</a></div><div class="ttdeci">std::string logicalUri</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00010">EditorEnvironmentBrowser.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a7e8779ed19cbaebd0456dbe325dadcaf"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a7e8779ed19cbaebd0456dbe325dadcaf">eve::editor::EnvironmentAssetCard::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00013">EditorEnvironmentBrowser.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_a9ba393ef4416695995b717e7f8dd81a5"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#a9ba393ef4416695995b717e7f8dd81a5">eve::editor::EnvironmentAssetCard::asset</a></div><div class="ttdeci">AssetGuid asset</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00009">EditorEnvironmentBrowser.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_aa049a1bd1225c64c74f38abdf0e3d1af"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aa049a1bd1225c64c74f38abdf0e3d1af">eve::editor::EnvironmentAssetCard::faceCount</a></div><div class="ttdeci">int faceCount</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00015">EditorEnvironmentBrowser.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_ac6d8ae978db94e91238c8456211c2549"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#ac6d8ae978db94e91238c8456211c2549">eve::editor::EnvironmentAssetCard::layout</a></div><div class="ttdeci">std::string layout</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00012">EditorEnvironmentBrowser.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetCard_html_aebadf649cd2547ebd536b97702851405"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetCard.html#aebadf649cd2547ebd536b97702851405">eve::editor::EnvironmentAssetCard::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00014">EditorEnvironmentBrowser.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetPage_html"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetPage.html">eve::editor::EnvironmentAssetPage</a></div><div class="ttdoc">Generation-qualified environment asset browser page.</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00021">EditorEnvironmentBrowser.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetPage_html_a41ffa09b95e5ba8c33ca4e5a97607af8"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetPage.html#a41ffa09b95e5ba8c33ca4e5a97607af8">eve::editor::EnvironmentAssetPage::values</a></div><div class="ttdeci">std::vector&lt; EnvironmentAssetCard &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00022">EditorEnvironmentBrowser.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetPage_html_aa1e3d4b83e96710c04b89417db3e1ed9"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aa1e3d4b83e96710c04b89417db3e1ed9">eve::editor::EnvironmentAssetPage::nextOffset</a></div><div class="ttdeci">std::size_t nextOffset</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00023">EditorEnvironmentBrowser.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetPage_html_ad331ae8d1364f6d6711b81e650c5e3fb"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetPage.html#ad331ae8d1364f6d6711b81e650c5e3fb">eve::editor::EnvironmentAssetPage::hasMore</a></div><div class="ttdeci">bool hasMore</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00024">EditorEnvironmentBrowser.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EnvironmentAssetPage_html_aff6212cc2c729689dec0a9996529ef55"><div class="ttname"><a href="structeve_1_1editor_1_1EnvironmentAssetPage.html#aff6212cc2c729689dec0a9996529ef55">eve::editor::EnvironmentAssetPage::generation</a></div><div class="ttdeci">std::uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="EditorEnvironmentBrowser_8h_source.html#l00025">EditorEnvironmentBrowser.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sensing::WorldArea类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sensing.html">sensing</a></li><li class="navelem"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1sensing_1_1WorldArea-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sensing::WorldArea类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A world-space area constraint.  
+ <a href="classeve_1_1sensing_1_1WorldArea.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Targeting_8h_source.html">Targeting.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aad7e5fb324a34a8d86c0c8f00a6b28e7" id="r_aad7e5fb324a34a8d86c0c8f00a6b28e7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7">Shape</a> : std::uint8_t { <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7af7d296383f067244af554e62a8c1d204">Circle2D</a>
+, <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a4e6ec449daef0c507e7098750cd32e0d">Box2D</a>
+, <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a514b4841d6187868ca40826c4d6a17fb">Sphere3D</a>
+, <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a171f0a41200dfd456bfe2c1f4818c74d">Box3D</a>
+ }</td></tr>
+<tr class="separator:aad7e5fb324a34a8d86c0c8f00a6b28e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a278e6681f291ef18e04fd224d56f6a64" id="r_a278e6681f291ef18e04fd224d56f6a64"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a278e6681f291ef18e04fd224d56f6a64">WorldArea</a> ()=default</td></tr>
+<tr class="memdesc:a278e6681f291ef18e04fd224d56f6a64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an invalid default area.  <br /></td></tr>
+<tr class="separator:a278e6681f291ef18e04fd224d56f6a64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3efed6b3212e2ff59af446a63b3bb4d3" id="r_a3efed6b3212e2ff59af446a63b3bb4d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7">Shape</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a3efed6b3212e2ff59af446a63b3bb4d3">shape</a> () const noexcept</td></tr>
+<tr class="memdesc:a3efed6b3212e2ff59af446a63b3bb4d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the area shape.  <br /></td></tr>
+<tr class="separator:a3efed6b3212e2ff59af446a63b3bb4d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af562124f87fe611debb6af9b3e4342ac" id="r_af562124f87fe611debb6af9b3e4342ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#af562124f87fe611debb6af9b3e4342ac">space</a> () const noexcept</td></tr>
+<tr class="memdesc:af562124f87fe611debb6af9b3e4342ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the area coordinate space.  <br /></td></tr>
+<tr class="separator:af562124f87fe611debb6af9b3e4342ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b4be44a50a699134d19015db47885c" id="r_ae8b4be44a50a699134d19015db47885c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#ae8b4be44a50a699134d19015db47885c">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:ae8b4be44a50a699134d19015db47885c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this area is valid.  <br /></td></tr>
+<tr class="separator:ae8b4be44a50a699134d19015db47885c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4139cb358c869538d324597ea018630" id="r_aa4139cb358c869538d324597ea018630"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aa4139cb358c869538d324597ea018630">contains</a> (<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) const noexcept</td></tr>
+<tr class="memdesc:aa4139cb358c869538d324597ea018630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a world point without converting coordinate spaces.  <br /></td></tr>
+<tr class="separator:aa4139cb358c869538d324597ea018630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a0fd60b1bfedc899bce7afb836e791bb7" id="r_a0fd60b1bfedc899bce7afb836e791bb7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a0fd60b1bfedc899bce7afb836e791bb7">circle2D</a> (<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a0fd60b1bfedc899bce7afb836e791bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a finite non-negative 2D world circle.  <br /></td></tr>
+<tr class="separator:a0fd60b1bfedc899bce7afb836e791bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90cd72af2f50d8de9149d69d0b307c94" id="r_a90cd72af2f50d8de9149d69d0b307c94"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a90cd72af2f50d8de9149d69d0b307c94">box2D</a> (<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, <a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>)</td></tr>
+<tr class="memdesc:a90cd72af2f50d8de9149d69d0b307c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an axis-aligned 2D world box from inclusive corners.  <br /></td></tr>
+<tr class="separator:a90cd72af2f50d8de9149d69d0b307c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63d1d71219ed288a67c5af07ecab8c83" id="r_a63d1d71219ed288a67c5af07ecab8c83"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a63d1d71219ed288a67c5af07ecab8c83">sphere3D</a> (<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a63d1d71219ed288a67c5af07ecab8c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a finite non-negative 3D world sphere.  <br /></td></tr>
+<tr class="separator:a63d1d71219ed288a67c5af07ecab8c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a359983d5b94b1d4dbc5898b2b8fcf6f9" id="r_a359983d5b94b1d4dbc5898b2b8fcf6f9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a359983d5b94b1d4dbc5898b2b8fcf6f9">box3D</a> (<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, <a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a> <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>)</td></tr>
+<tr class="memdesc:a359983d5b94b1d4dbc5898b2b8fcf6f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an axis-aligned 3D world box from inclusive corners.  <br /></td></tr>
+<tr class="separator:a359983d5b94b1d4dbc5898b2b8fcf6f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A world-space area constraint. </p>
+<p>Circle/box are 2D and sphere/box3D are 3D. Factory methods reject a point from the wrong coordinate space, so a 2D area cannot accidentally consume a 3D point or a grid point. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00203">203</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="aad7e5fb324a34a8d86c0c8f00a6b28e7" name="aad7e5fb324a34a8d86c0c8f00a6b28e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7e5fb324a34a8d86c0c8f00a6b28e7">&#9670;&#160;</a></span>Shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7">eve::sensing::WorldArea::Shape</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aad7e5fb324a34a8d86c0c8f00a6b28e7af7d296383f067244af554e62a8c1d204" name="aad7e5fb324a34a8d86c0c8f00a6b28e7af7d296383f067244af554e62a8c1d204"></a>Circle2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aad7e5fb324a34a8d86c0c8f00a6b28e7a4e6ec449daef0c507e7098750cd32e0d" name="aad7e5fb324a34a8d86c0c8f00a6b28e7a4e6ec449daef0c507e7098750cd32e0d"></a>Box2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aad7e5fb324a34a8d86c0c8f00a6b28e7a514b4841d6187868ca40826c4d6a17fb" name="aad7e5fb324a34a8d86c0c8f00a6b28e7a514b4841d6187868ca40826c4d6a17fb"></a>Sphere3D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aad7e5fb324a34a8d86c0c8f00a6b28e7a171f0a41200dfd456bfe2c1f4818c74d" name="aad7e5fb324a34a8d86c0c8f00a6b28e7a171f0a41200dfd456bfe2c1f4818c74d"></a>Box3D&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00205">205</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a278e6681f291ef18e04fd224d56f6a64" name="a278e6681f291ef18e04fd224d56f6a64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278e6681f291ef18e04fd224d56f6a64">&#9670;&#160;</a></span>WorldArea()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::WorldArea::WorldArea </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an invalid default area. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Targeting_8cpp_source.html#l00165">box2D()</a>, <a class="el" href="Targeting_8cpp_source.html#l00178">box3D()</a>, <a class="el" href="Targeting_8cpp_source.html#l00158">circle2D()</a> , 以及 <a class="el" href="Targeting_8cpp_source.html#l00171">sphere3D()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a90cd72af2f50d8de9149d69d0b307c94" name="a90cd72af2f50d8de9149d69d0b307c94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90cd72af2f50d8de9149d69d0b307c94">&#9670;&#160;</a></span>box2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt; eve::sensing::WorldArea::box2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>maximum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an axis-aligned 2D world box from inclusive corners. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a4e6ec449daef0c507e7098750cd32e0d">Box2D</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">eve::sensing::World2D</a> , 以及 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a278e6681f291ef18e04fd224d56f6a64">WorldArea()</a>.</p>
+
+</div>
+</div>
+<a id="a359983d5b94b1d4dbc5898b2b8fcf6f9" name="a359983d5b94b1d4dbc5898b2b8fcf6f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a359983d5b94b1d4dbc5898b2b8fcf6f9">&#9670;&#160;</a></span>box3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt; eve::sensing::WorldArea::box3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>maximum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an axis-aligned 3D world box from inclusive corners. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a171f0a41200dfd456bfe2c1f4818c74d">Box3D</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">eve::sensing::World3D</a> , 以及 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a278e6681f291ef18e04fd224d56f6a64">WorldArea()</a>.</p>
+
+</div>
+</div>
+<a id="a0fd60b1bfedc899bce7afb836e791bb7" name="a0fd60b1bfedc899bce7afb836e791bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fd60b1bfedc899bce7afb836e791bb7">&#9670;&#160;</a></span>circle2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt; eve::sensing::WorldArea::circle2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a finite non-negative 2D world circle. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7af7d296383f067244af554e62a8c1d204">Circle2D</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">eve::sensing::World2D</a> , 以及 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a278e6681f291ef18e04fd224d56f6a64">WorldArea()</a>.</p>
+
+</div>
+</div>
+<a id="aa4139cb358c869538d324597ea018630" name="aa4139cb358c869538d324597ea018630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4139cb358c869538d324597ea018630">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sensing::WorldArea::contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tests a world point without converting coordinate spaces. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="ae8b4be44a50a699134d19015db47885c" name="ae8b4be44a50a699134d19015db47885c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8b4be44a50a699134d19015db47885c">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sensing::WorldArea::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this area is valid. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00223">223</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3efed6b3212e2ff59af446a63b3bb4d3" name="a3efed6b3212e2ff59af446a63b3bb4d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efed6b3212e2ff59af446a63b3bb4d3">&#9670;&#160;</a></span>shape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7">Shape</a> eve::sensing::WorldArea::shape </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the area shape. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af562124f87fe611debb6af9b3e4342ac" name="af562124f87fe611debb6af9b3e4342ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af562124f87fe611debb6af9b3e4342ac">&#9670;&#160;</a></span>space()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> eve::sensing::WorldArea::space </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the area coordinate space. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63d1d71219ed288a67c5af07ecab8c83" name="a63d1d71219ed288a67c5af07ecab8c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63d1d71219ed288a67c5af07ecab8c83">&#9670;&#160;</a></span>sphere3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a> &gt; eve::sensing::WorldArea::sphere3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a finite non-negative 3D world sphere. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#aad7e5fb324a34a8d86c0c8f00a6b28e7a514b4841d6187868ca40826c4d6a17fb">Sphere3D</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">eve::sensing::World3D</a> , 以及 <a class="el" href="classeve_1_1sensing_1_1WorldArea.html#a278e6681f291ef18e04fd224d56f6a64">WorldArea()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/sensing/<a class="el" href="Targeting_8h_source.html">Targeting.h</a></li>
+<li>src/modules/sensing/<a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

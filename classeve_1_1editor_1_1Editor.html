@@ -1,0 +1,1061 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::Editor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1Editor.html">Editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1Editor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::Editor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1editor_1_1Editor.html" title="Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();">Editor</a> building blocks — not a shipped 3D/map editor app. Script: <code>editor &lt;- eve.Editor();</code>  
+ <a href="classeve_1_1editor_1_1Editor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Editor_8h_source.html">Editor.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::Editor 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1Editor.png" usemap="#eve::editor::Editor_map" alt=""/>
+  <map id="eve::editor::Editor_map" name="eve::editor::Editor_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,110,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0734edc1e3f23ae45a4271283e58973a" id="r_a0734edc1e3f23ae45a4271283e58973a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0734edc1e3f23ae45a4271283e58973a">Module_REG</a> (<a class="el" href="classeve_1_1editor_1_1Editor.html">Editor</a>)</td></tr>
+<tr class="separator:a0734edc1e3f23ae45a4271283e58973a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9773f791d6ada52b28fc8a0c2fbc08c8" id="r_a9773f791d6ada52b28fc8a0c2fbc08c8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a9773f791d6ada52b28fc8a0c2fbc08c8">Editor</a> ()</td></tr>
+<tr class="separator:a9773f791d6ada52b28fc8a0c2fbc08c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a376a947f9f61f247c524b51a6751233a" id="r_a376a947f9f61f247c524b51a6751233a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a376a947f9f61f247c524b51a6751233a">~Editor</a> () override</td></tr>
+<tr class="separator:a376a947f9f61f247c524b51a6751233a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6b42f5f6d85c3c19f23b94d0580d50" id="r_a1b6b42f5f6d85c3c19f23b94d0580d50"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a1b6b42f5f6d85c3c19f23b94d0580d50">newGizmo</a> ()</td></tr>
+<tr class="memdesc:a1b6b42f5f6d85c3c19f23b94d0580d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a transform gizmo. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a1b6b42f5f6d85c3c19f23b94d0580d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc649ac83ef57f41e84d70f3adcf5ea7" id="r_acc649ac83ef57f41e84d70f3adcf5ea7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1GizmoManager.html">GizmoManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#acc649ac83ef57f41e84d70f3adcf5ea7">newGizmoManager</a> ()</td></tr>
+<tr class="memdesc:acc649ac83ef57f41e84d70f3adcf5ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a gizmo manager. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:acc649ac83ef57f41e84d70f3adcf5ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa570f3d91489411cded14c4f45fdc5" id="r_aafa570f3d91489411cded14c4f45fdc5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorToolbar.html">EditorToolbar</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#aafa570f3d91489411cded14c4f45fdc5">newToolbar</a> ()</td></tr>
+<tr class="memdesc:aafa570f3d91489411cded14c4f45fdc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a toolbar model. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:aafa570f3d91489411cded14c4f45fdc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc331c86308ce8a8c36f752976b7b90" id="r_aefc331c86308ce8a8c36f752976b7b90"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorInspector.html">EditorInspector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#aefc331c86308ce8a8c36f752976b7b90">newInspector</a> ()</td></tr>
+<tr class="memdesc:aefc331c86308ce8a8c36f752976b7b90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an inspector model. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:aefc331c86308ce8a8c36f752976b7b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d015b6cfdbb312ca98b619203d30353" id="r_a0d015b6cfdbb312ca98b619203d30353"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorDock.html">EditorDock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0d015b6cfdbb312ca98b619203d30353">newDock</a> ()</td></tr>
+<tr class="memdesc:a0d015b6cfdbb312ca98b619203d30353"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a dock model. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a0d015b6cfdbb312ca98b619203d30353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705b7c38e8fc40d8a620df7397f8810f" id="r_a705b7c38e8fc40d8a620df7397f8810f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a705b7c38e8fc40d8a620df7397f8810f">newSession</a> ()</td></tr>
+<tr class="memdesc:a705b7c38e8fc40d8a620df7397f8810f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a host for interchangeable <a class="el" href="classeve_1_1editor_1_1IEditorTool.html" title="Protocol implemented by every editor tool.">IEditorTool</a> implementations. @ownership Unique ownership transfers to the caller. The session borrows this editor's command service.  <br /></td></tr>
+<tr class="separator:a705b7c38e8fc40d8a620df7397f8810f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2f82f61b1422ec0f4e668b79226b9b2" id="r_ac2f82f61b1422ec0f4e668b79226b9b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">EditorWorkspace</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#ac2f82f61b1422ec0f4e668b79226b9b2">newWorkspace</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>)</td></tr>
+<tr class="memdesc:ac2f82f61b1422ec0f4e668b79226b9b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a UI-neutral composition model for a project-specific editor.  <br /></td></tr>
+<tr class="separator:ac2f82f61b1422ec0f4e668b79226b9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb2267873298031e3ff247041b8df309" id="r_acb2267873298031e3ff247041b8df309"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#acb2267873298031e3ff247041b8df309">commandService</a> ()</td></tr>
+<tr class="memdesc:acb2267873298031e3ff247041b8df309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the UI- and script-neutral command registry owned by this editor module.  <br /></td></tr>
+<tr class="separator:acb2267873298031e3ff247041b8df309"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3749eba4b183f7e4cba7f1178debe59e" id="r_a3749eba4b183f7e4cba7f1178debe59e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a3749eba4b183f7e4cba7f1178debe59e">commandService</a> () const</td></tr>
+<tr class="memdesc:a3749eba4b183f7e4cba7f1178debe59e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable command registry owned by this editor module.  <br /></td></tr>
+<tr class="separator:a3749eba4b183f7e4cba7f1178debe59e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a486dde7ee68d4fc6965faf2ebc5fb6ec" id="r_a486dde7ee68d4fc6965faf2ebc5fb6ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">editing::ExtensionProviderRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a486dde7ee68d4fc6965faf2ebc5fb6ec">extensionProviders</a> ()</td></tr>
+<tr class="memdesc:a486dde7ee68d4fc6965faf2ebc5fb6ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the open, generation-safe registry used to discover linked domain editing providers.  <br /></td></tr>
+<tr class="separator:a486dde7ee68d4fc6965faf2ebc5fb6ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a034e875cacd64f7929c821fc54e7ea58" id="r_a034e875cacd64f7929c821fc54e7ea58"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">editing::ExtensionProviderRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a034e875cacd64f7929c821fc54e7ea58">extensionProviders</a> () const</td></tr>
+<tr class="memdesc:a034e875cacd64f7929c821fc54e7ea58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable domain editing provider registry.  <br /></td></tr>
+<tr class="separator:a034e875cacd64f7929c821fc54e7ea58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26d452ee056c54f2878bd8393598edef" id="r_a26d452ee056c54f2878bd8393598edef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a26d452ee056c54f2878bd8393598edef">registerEditingTarget</a> (<a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a26d452ee056c54f2878bd8393598edef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a borrowed editable target for UI, script and automation access.  <br /></td></tr>
+<tr class="separator:a26d452ee056c54f2878bd8393598edef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761d666e3500f7572de71bf7ed689178" id="r_a761d666e3500f7572de71bf7ed689178"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a761d666e3500f7572de71bf7ed689178">unregisterEditingTarget</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a761d666e3500f7572de71bf7ed689178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a borrowed editing target and its local transaction history.  <br /></td></tr>
+<tr class="separator:a761d666e3500f7572de71bf7ed689178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d42caabf18ad854c92c1192fa89418" id="r_ad6d42caabf18ad854c92c1192fa89418"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#ad6d42caabf18ad854c92c1192fa89418">bindEditingTarget</a> (<a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;session, const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:ad6d42caabf18ad854c92c1192fa89418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a registered target to a host session without exposing the coordinator.  <br /></td></tr>
+<tr class="separator:ad6d42caabf18ad854c92c1192fa89418"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f839e1af2a7dbfa679b7e4d6066022c" id="r_a3f839e1af2a7dbfa679b7e4d6066022c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1ScriptEditorTool.html">ScriptEditorTool</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a3f839e1af2a7dbfa679b7e4d6066022c">newScriptTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;label)</td></tr>
+<tr class="memdesc:a3f839e1af2a7dbfa679b7e4d6066022c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a script-backed implementation of the <a class="el" href="classeve_1_1editor_1_1IEditorTool.html" title="Protocol implemented by every editor tool.">IEditorTool</a> protocol. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a3f839e1af2a7dbfa679b7e4d6066022c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66ceb3c14b3bd38b80e76ea137a43e4" id="r_aa66ceb3c14b3bd38b80e76ea137a43e4"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1ConstantBrushFalloff.html">ConstantBrushFalloff</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#aa66ceb3c14b3bd38b80e76ea137a43e4">newConstantBrushFalloff</a> ()</td></tr>
+<tr class="memdesc:aa66ceb3c14b3bd38b80e76ea137a43e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a constant brush falloff strategy. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:aa66ceb3c14b3bd38b80e76ea137a43e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ab2d71a3c76e0cadff668671d381e7" id="r_ac6ab2d71a3c76e0cadff668671d381e7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1LinearBrushFalloff.html">LinearBrushFalloff</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#ac6ab2d71a3c76e0cadff668671d381e7">newLinearBrushFalloff</a> ()</td></tr>
+<tr class="memdesc:ac6ab2d71a3c76e0cadff668671d381e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a linear brush falloff strategy. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:ac6ab2d71a3c76e0cadff668671d381e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab6599f2b882e0e5355b206e931e5a97" id="r_aab6599f2b882e0e5355b206e931e5a97"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1SmoothBrushFalloff.html">SmoothBrushFalloff</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#aab6599f2b882e0e5355b206e931e5a97">newSmoothBrushFalloff</a> ()</td></tr>
+<tr class="memdesc:aab6599f2b882e0e5355b206e931e5a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a smoothstep brush falloff strategy. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:aab6599f2b882e0e5355b206e931e5a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae861e86295e1d8a72b799beb3b059615" id="r_ae861e86295e1d8a72b799beb3b059615"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1CircleBrushKernel.html">CircleBrushKernel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#ae861e86295e1d8a72b799beb3b059615">newCircleBrushKernel</a> ()</td></tr>
+<tr class="memdesc:ae861e86295e1d8a72b799beb3b059615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a circular brush kernel with a replaceable falloff. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:ae861e86295e1d8a72b799beb3b059615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6980e917ddd095f942355eb3da1fd1af" id="r_a6980e917ddd095f942355eb3da1fd1af"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1BoxBrushKernel.html">BoxBrushKernel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a6980e917ddd095f942355eb3da1fd1af">newBoxBrushKernel</a> ()</td></tr>
+<tr class="memdesc:a6980e917ddd095f942355eb3da1fd1af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a rotatable box brush kernel with a replaceable falloff. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a6980e917ddd095f942355eb3da1fd1af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5490b0aa83157c7ebebfd070e80564" id="r_a0b5490b0aa83157c7ebebfd070e80564"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1PaintIntFieldOperation.html">PaintIntFieldOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0b5490b0aa83157c7ebebfd070e80564">newPaintIntFieldOperation</a> (int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a0b5490b0aa83157c7ebebfd070e80564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an integer-field paint operation. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a0b5490b0aa83157c7ebebfd070e80564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4bc1903bd7410656e5f87243cdb219e" id="r_ad4bc1903bd7410656e5f87243cdb219e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1AddScalarFieldOperation.html">AddScalarFieldOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#ad4bc1903bd7410656e5f87243cdb219e">newAddScalarFieldOperation</a> ()</td></tr>
+<tr class="memdesc:ad4bc1903bd7410656e5f87243cdb219e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an additive scalar-field operation. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:ad4bc1903bd7410656e5f87243cdb219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a61a2d8097302bd84aed61b2f44ae77" id="r_a7a61a2d8097302bd84aed61b2f44ae77"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1FieldBrushTool.html">FieldBrushTool</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a7a61a2d8097302bd84aed61b2f44ae77">newFieldBrushTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;label)</td></tr>
+<tr class="memdesc:a7a61a2d8097302bd84aed61b2f44ae77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a field brush tool whose kernel and operation are supplied separately.  <br /></td></tr>
+<tr class="separator:a7a61a2d8097302bd84aed61b2f44ae77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e3de2c50a0633d64b50714f460bfd1" id="r_a82e3de2c50a0633d64b50714f460bfd1"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1SphereVolumeBrushKernel.html">SphereVolumeBrushKernel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a82e3de2c50a0633d64b50714f460bfd1">newSphereVolumeBrushKernel</a> ()</td></tr>
+<tr class="memdesc:a82e3de2c50a0633d64b50714f460bfd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a spherical kernel for sparse three-dimensional fields. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a82e3de2c50a0633d64b50714f460bfd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e41f69dfb28fe9709eb0d342ed6356c" id="r_a0e41f69dfb28fe9709eb0d342ed6356c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1BoxVolumeBrushKernel.html">BoxVolumeBrushKernel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0e41f69dfb28fe9709eb0d342ed6356c">newBoxVolumeBrushKernel</a> ()</td></tr>
+<tr class="memdesc:a0e41f69dfb28fe9709eb0d342ed6356c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an axis-aligned box kernel for sparse three-dimensional fields. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a0e41f69dfb28fe9709eb0d342ed6356c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b17bbc94d8f6575f09fcaf7720a446" id="r_a07b17bbc94d8f6575f09fcaf7720a446"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html">PaintIntVolumeOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a07b17bbc94d8f6575f09fcaf7720a446">newPaintIntVolumeOperation</a> (int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a07b17bbc94d8f6575f09fcaf7720a446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a byte-range integer paint operation for volume targets. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a07b17bbc94d8f6575f09fcaf7720a446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37babb58de21cc9740683cfcb0227c92" id="r_a37babb58de21cc9740683cfcb0227c92"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1VolumeBrushTool.html">VolumeBrushTool</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1Editor.html#a37babb58de21cc9740683cfcb0227c92">newVolumeBrushTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;label)</td></tr>
+<tr class="memdesc:a37babb58de21cc9740683cfcb0227c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 3D brush tool whose kernel and operation are supplied separately. @ownership Unique ownership transfers to the caller.  <br /></td></tr>
+<tr class="separator:a37babb58de21cc9740683cfcb0227c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1editor_1_1Editor.html" title="Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();">Editor</a> building blocks — not a shipped 3D/map editor app. Script: <code>editor &lt;- eve.Editor();</code> </p>
+<p>Provides transform gizmos, map brushes, and UI shell helpers so games/tools can assemble their own editors (Love2D-style runtime tooling). </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8h_source.html">Editor.h</a> 第 <a class="el" href="Editor_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a9773f791d6ada52b28fc8a0c2fbc08c8" name="a9773f791d6ada52b28fc8a0c2fbc08c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9773f791d6ada52b28fc8a0c2fbc08c8">&#9670;&#160;</a></span>Editor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::Editor::Editor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a376a947f9f61f247c524b51a6751233a" name="a376a947f9f61f247c524b51a6751233a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a376a947f9f61f247c524b51a6751233a">&#9670;&#160;</a></span>~Editor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::Editor::~Editor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad6d42caabf18ad854c92c1192fa89418" name="ad6d42caabf18ad854c92c1192fa89418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d42caabf18ad854c92c1192fa89418">&#9670;&#160;</a></span>bindEditingTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::Editor::bindEditingTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a registered target to a host session without exposing the coordinator. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">session</td><td>Session owned by the caller. </td></tr>
+    <tr><td class="paramname">target</td><td>Registered target identity. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied or a structured lookup failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="acb2267873298031e3ff247041b8df309" name="acb2267873298031e3ff247041b8df309"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb2267873298031e3ff247041b8df309">&#9670;&#160;</a></span>commandService() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp; eve::editor::Editor::commandService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the UI- and script-neutral command registry owned by this editor module. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8h_source.html">Editor.h</a> 第 <a class="el" href="Editor_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3749eba4b183f7e4cba7f1178debe59e" name="a3749eba4b183f7e4cba7f1178debe59e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3749eba4b183f7e4cba7f1178debe59e">&#9670;&#160;</a></span>commandService() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp; eve::editor::Editor::commandService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable command registry owned by this editor module. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8h_source.html">Editor.h</a> 第 <a class="el" href="Editor_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a486dde7ee68d4fc6965faf2ebc5fb6ec" name="a486dde7ee68d4fc6965faf2ebc5fb6ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a486dde7ee68d4fc6965faf2ebc5fb6ec">&#9670;&#160;</a></span>extensionProviders() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">editing::ExtensionProviderRegistry</a> &amp; eve::editor::Editor::extensionProviders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the open, generation-safe registry used to discover linked domain editing providers. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8h_source.html">Editor.h</a> 第 <a class="el" href="Editor_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a034e875cacd64f7929c821fc54e7ea58" name="a034e875cacd64f7929c821fc54e7ea58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a034e875cacd64f7929c821fc54e7ea58">&#9670;&#160;</a></span>extensionProviders() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1editing_1_1ExtensionProviderRegistry.html">editing::ExtensionProviderRegistry</a> &amp; eve::editor::Editor::extensionProviders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable domain editing provider registry. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8h_source.html">Editor.h</a> 第 <a class="el" href="Editor_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0734edc1e3f23ae45a4271283e58973a" name="a0734edc1e3f23ae45a4271283e58973a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0734edc1e3f23ae45a4271283e58973a">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::Editor::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1Editor.html">Editor</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad4bc1903bd7410656e5f87243cdb219e" name="ad4bc1903bd7410656e5f87243cdb219e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4bc1903bd7410656e5f87243cdb219e">&#9670;&#160;</a></span>newAddScalarFieldOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1AddScalarFieldOperation.html">AddScalarFieldOperation</a> &gt; eve::editor::Editor::newAddScalarFieldOperation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an additive scalar-field operation. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6980e917ddd095f942355eb3da1fd1af" name="a6980e917ddd095f942355eb3da1fd1af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6980e917ddd095f942355eb3da1fd1af">&#9670;&#160;</a></span>newBoxBrushKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1BoxBrushKernel.html">BoxBrushKernel</a> &gt; eve::editor::Editor::newBoxBrushKernel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a rotatable box brush kernel with a replaceable falloff. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e41f69dfb28fe9709eb0d342ed6356c" name="a0e41f69dfb28fe9709eb0d342ed6356c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e41f69dfb28fe9709eb0d342ed6356c">&#9670;&#160;</a></span>newBoxVolumeBrushKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1BoxVolumeBrushKernel.html">BoxVolumeBrushKernel</a> &gt; eve::editor::Editor::newBoxVolumeBrushKernel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an axis-aligned box kernel for sparse three-dimensional fields. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae861e86295e1d8a72b799beb3b059615" name="ae861e86295e1d8a72b799beb3b059615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae861e86295e1d8a72b799beb3b059615">&#9670;&#160;</a></span>newCircleBrushKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1CircleBrushKernel.html">CircleBrushKernel</a> &gt; eve::editor::Editor::newCircleBrushKernel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a circular brush kernel with a replaceable falloff. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa66ceb3c14b3bd38b80e76ea137a43e4" name="aa66ceb3c14b3bd38b80e76ea137a43e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa66ceb3c14b3bd38b80e76ea137a43e4">&#9670;&#160;</a></span>newConstantBrushFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1ConstantBrushFalloff.html">ConstantBrushFalloff</a> &gt; eve::editor::Editor::newConstantBrushFalloff </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a constant brush falloff strategy. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d015b6cfdbb312ca98b619203d30353" name="a0d015b6cfdbb312ca98b619203d30353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d015b6cfdbb312ca98b619203d30353">&#9670;&#160;</a></span>newDock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorDock.html">EditorDock</a> &gt; eve::editor::Editor::newDock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a dock model. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a61a2d8097302bd84aed61b2f44ae77" name="a7a61a2d8097302bd84aed61b2f44ae77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a61a2d8097302bd84aed61b2f44ae77">&#9670;&#160;</a></span>newFieldBrushTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1FieldBrushTool.html">FieldBrushTool</a> &gt; eve::editor::Editor::newFieldBrushTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a field brush tool whose kernel and operation are supplied separately. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable project-defined tool id. </td></tr>
+    <tr><td class="paramname">label</td><td>User-facing label used for transaction names. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Unconfigured tool; set its kernel and operation before activation. @ownership Unique ownership transfers to the caller. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b6b42f5f6d85c3c19f23b94d0580d50" name="a1b6b42f5f6d85c3c19f23b94d0580d50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b6b42f5f6d85c3c19f23b94d0580d50">&#9670;&#160;</a></span>newGizmo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a> &gt; eve::editor::Editor::newGizmo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a transform gizmo. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc649ac83ef57f41e84d70f3adcf5ea7" name="acc649ac83ef57f41e84d70f3adcf5ea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc649ac83ef57f41e84d70f3adcf5ea7">&#9670;&#160;</a></span>newGizmoManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1GizmoManager.html">GizmoManager</a> &gt; eve::editor::Editor::newGizmoManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a gizmo manager. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefc331c86308ce8a8c36f752976b7b90" name="aefc331c86308ce8a8c36f752976b7b90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc331c86308ce8a8c36f752976b7b90">&#9670;&#160;</a></span>newInspector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorInspector.html">EditorInspector</a> &gt; eve::editor::Editor::newInspector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an inspector model. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6ab2d71a3c76e0cadff668671d381e7" name="ac6ab2d71a3c76e0cadff668671d381e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ab2d71a3c76e0cadff668671d381e7">&#9670;&#160;</a></span>newLinearBrushFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1LinearBrushFalloff.html">LinearBrushFalloff</a> &gt; eve::editor::Editor::newLinearBrushFalloff </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a linear brush falloff strategy. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b5490b0aa83157c7ebebfd070e80564" name="a0b5490b0aa83157c7ebebfd070e80564"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5490b0aa83157c7ebebfd070e80564">&#9670;&#160;</a></span>newPaintIntFieldOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1PaintIntFieldOperation.html">PaintIntFieldOperation</a> &gt; eve::editor::Editor::newPaintIntFieldOperation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an integer-field paint operation. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a07b17bbc94d8f6575f09fcaf7720a446" name="a07b17bbc94d8f6575f09fcaf7720a446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07b17bbc94d8f6575f09fcaf7720a446">&#9670;&#160;</a></span>newPaintIntVolumeOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html">PaintIntVolumeOperation</a> &gt; eve::editor::Editor::newPaintIntVolumeOperation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a byte-range integer paint operation for volume targets. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3f839e1af2a7dbfa679b7e4d6066022c" name="a3f839e1af2a7dbfa679b7e4d6066022c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f839e1af2a7dbfa679b7e4d6066022c">&#9670;&#160;</a></span>newScriptTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1ScriptEditorTool.html">ScriptEditorTool</a> &gt; eve::editor::Editor::newScriptTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a script-backed implementation of the <a class="el" href="classeve_1_1editor_1_1IEditorTool.html" title="Protocol implemented by every editor tool.">IEditorTool</a> protocol. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a705b7c38e8fc40d8a620df7397f8810f" name="a705b7c38e8fc40d8a620df7397f8810f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705b7c38e8fc40d8a620df7397f8810f">&#9670;&#160;</a></span>newSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &gt; eve::editor::Editor::newSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a host for interchangeable <a class="el" href="classeve_1_1editor_1_1IEditorTool.html" title="Protocol implemented by every editor tool.">IEditorTool</a> implementations. @ownership Unique ownership transfers to the caller. The session borrows this editor's command service. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab6599f2b882e0e5355b206e931e5a97" name="aab6599f2b882e0e5355b206e931e5a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab6599f2b882e0e5355b206e931e5a97">&#9670;&#160;</a></span>newSmoothBrushFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1SmoothBrushFalloff.html">SmoothBrushFalloff</a> &gt; eve::editor::Editor::newSmoothBrushFalloff </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a smoothstep brush falloff strategy. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82e3de2c50a0633d64b50714f460bfd1" name="a82e3de2c50a0633d64b50714f460bfd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e3de2c50a0633d64b50714f460bfd1">&#9670;&#160;</a></span>newSphereVolumeBrushKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1SphereVolumeBrushKernel.html">SphereVolumeBrushKernel</a> &gt; eve::editor::Editor::newSphereVolumeBrushKernel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a spherical kernel for sparse three-dimensional fields. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafa570f3d91489411cded14c4f45fdc5" name="aafa570f3d91489411cded14c4f45fdc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa570f3d91489411cded14c4f45fdc5">&#9670;&#160;</a></span>newToolbar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorToolbar.html">EditorToolbar</a> &gt; eve::editor::Editor::newToolbar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a toolbar model. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37babb58de21cc9740683cfcb0227c92" name="a37babb58de21cc9740683cfcb0227c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37babb58de21cc9740683cfcb0227c92">&#9670;&#160;</a></span>newVolumeBrushTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1VolumeBrushTool.html">VolumeBrushTool</a> &gt; eve::editor::Editor::newVolumeBrushTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a 3D brush tool whose kernel and operation are supplied separately. @ownership Unique ownership transfers to the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2f82f61b1422ec0f4e668b79226b9b2" name="ac2f82f61b1422ec0f4e668b79226b9b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2f82f61b1422ec0f4e668b79226b9b2">&#9670;&#160;</a></span>newWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">EditorWorkspace</a> &gt; &gt; eve::editor::Editor::newWorkspace </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a UI-neutral composition model for a project-specific editor. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable workspace identity; empty values are rejected. </td></tr>
+    <tr><td class="paramname">title</td><td>User-facing title; empty title uses id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied unique workspace, or Rejected when id is empty. @ownership Success transfers unique ownership to the caller. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="a26d452ee056c54f2878bd8393598edef" name="a26d452ee056c54f2878bd8393598edef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26d452ee056c54f2878bd8393598edef">&#9670;&#160;</a></span>registerEditingTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::Editor::registerEditingTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a borrowed editable target for UI, script and automation access. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Target owned by the caller and kept alive until <a class="el" href="classeve_1_1editor_1_1Editor.html#a761d666e3500f7572de71bf7ed689178" title="Remove a borrowed editing target and its local transaction history.">unregisterEditingTarget()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, NoOp for the same registration, or structured diagnostics. @thread Owner-thread only. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a761d666e3500f7572de71bf7ed689178" name="a761d666e3500f7572de71bf7ed689178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761d666e3500f7572de71bf7ed689178">&#9670;&#160;</a></span>unregisterEditingTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::Editor::unregisterEditingTarget </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a borrowed editing target and its local transaction history. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied when removed, or NoOp when the target was not registered. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Editor_8cpp_source.html">Editor.cpp</a> 第 <a class="el" href="Editor_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="Editor_8h_source.html">Editor.h</a></li>
+<li>src/modules/editor/<a class="el" href="Editor_8cpp_source.html">Editor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

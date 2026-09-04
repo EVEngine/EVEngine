@@ -1,0 +1,1395 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::schema::Schema类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1schema.html">schema</a></li><li class="navelem"><a class="el" href="classeve_1_1schema_1_1Schema.html">Schema</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1schema_1_1Schema-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::schema::Schema类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing facade for runtime schema registration and validation.  
+ <a href="classeve_1_1schema_1_1Schema.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Schema_8h_source.html">Schema.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::schema::Schema 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1schema_1_1Schema.png" usemap="#eve::schema::Schema_map" alt=""/>
+  <map id="eve::schema::Schema_map" name="eve::schema::Schema_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,133,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7bdfe9d6b936acae412ff73b0f4c01b8" id="r_a7bdfe9d6b936acae412ff73b0f4c01b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a7bdfe9d6b936acae412ff73b0f4c01b8">Module_REG</a> (<a class="el" href="classeve_1_1schema_1_1Schema.html">Schema</a>)</td></tr>
+<tr class="separator:a7bdfe9d6b936acae412ff73b0f4c01b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af42f593dfad7080d79b28dc7f67e0390" id="r_af42f593dfad7080d79b28dc7f67e0390"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#af42f593dfad7080d79b28dc7f67e0390">Schema</a> ()</td></tr>
+<tr class="memdesc:af42f593dfad7080d79b28dc7f67e0390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty facade over the process schema registry.  <br /></td></tr>
+<tr class="separator:af42f593dfad7080d79b28dc7f67e0390"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7be2f1ab3de7c44eccb8dccb6fea2037" id="r_a7be2f1ab3de7c44eccb8dccb6fea2037"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a7be2f1ab3de7c44eccb8dccb6fea2037">registerJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a7be2f1ab3de7c44eccb8dccb6fea2037"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers or replaces a schema encoded as JSON.  <br /></td></tr>
+<tr class="separator:a7be2f1ab3de7c44eccb8dccb6fea2037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7412c1b391b713bc85367b89feeb0e1" id="r_af7412c1b391b713bc85367b89feeb0e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#af7412c1b391b713bc85367b89feeb0e1">registerFromClass</a> (const ssq::Object &amp;classOrInstance)</td></tr>
+<tr class="memdesc:af7412c1b391b713bc85367b89feeb0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a schema reflected from a script class or instance.  <br /></td></tr>
+<tr class="separator:af7412c1b391b713bc85367b89feeb0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7330c70cd7870ab5390babf0ee368fd4" id="r_a7330c70cd7870ab5390babf0ee368fd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a7330c70cd7870ab5390babf0ee368fd4">clear</a> ()</td></tr>
+<tr class="memdesc:a7330c70cd7870ab5390babf0ee368fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all registered schemas and cached validation errors.  <br /></td></tr>
+<tr class="separator:a7330c70cd7870ab5390babf0ee368fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e4a69219342d6cc4c3d75bfabe17807" id="r_a7e4a69219342d6cc4c3d75bfabe17807"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a7e4a69219342d6cc4c3d75bfabe17807">has</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a7e4a69219342d6cc4c3d75bfabe17807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a stable schema id is registered.  <br /></td></tr>
+<tr class="separator:a7e4a69219342d6cc4c3d75bfabe17807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fd2d82b09ef17f141bad89936698e3" id="r_ad3fd2d82b09ef17f141bad89936698e3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#ad3fd2d82b09ef17f141bad89936698e3">hasVersion</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int version) const</td></tr>
+<tr class="memdesc:ad3fd2d82b09ef17f141bad89936698e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether an exact schema id and version is registered.  <br /></td></tr>
+<tr class="separator:ad3fd2d82b09ef17f141bad89936698e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ff3fdf6cad7393bbfcf60d196f7cae3" id="r_a8ff3fdf6cad7393bbfcf60d196f7cae3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a8ff3fdf6cad7393bbfcf60d196f7cae3">getSchemaCount</a> () const</td></tr>
+<tr class="memdesc:a8ff3fdf6cad7393bbfcf60d196f7cae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of registered schema ids.  <br /></td></tr>
+<tr class="separator:a8ff3fdf6cad7393bbfcf60d196f7cae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a6153a560fd7de30caf6eab253b95f4" id="r_a7a6153a560fd7de30caf6eab253b95f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a7a6153a560fd7de30caf6eab253b95f4">getSchemaVersionCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a7a6153a560fd7de30caf6eab253b95f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of registered versions for one schema id.  <br /></td></tr>
+<tr class="separator:a7a6153a560fd7de30caf6eab253b95f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af479e82219b380bdaf01ae5af2414d1a" id="r_af479e82219b380bdaf01ae5af2414d1a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#af479e82219b380bdaf01ae5af2414d1a">getSchemaVersionAt</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:af479e82219b380bdaf01ae5af2414d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a schema version at an ascending enumeration index.  <br /></td></tr>
+<tr class="separator:af479e82219b380bdaf01ae5af2414d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4882025a598cdcb587358a6624cf0b" id="r_a3e4882025a598cdcb587358a6624cf0b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a3e4882025a598cdcb587358a6624cf0b">getSchemaId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3e4882025a598cdcb587358a6624cf0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the id at a deterministic enumeration index.  <br /></td></tr>
+<tr class="separator:a3e4882025a598cdcb587358a6624cf0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905cf01a68ccac171b5ec72778268bd1" id="r_a905cf01a68ccac171b5ec72778268bd1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a905cf01a68ccac171b5ec72778268bd1">getSchemaVersion</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a905cf01a68ccac171b5ec72778268bd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the highest registered schema version, or zero when absent.  <br /></td></tr>
+<tr class="separator:a905cf01a68ccac171b5ec72778268bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef332395bd370258ebd2235e55ec001a" id="r_aef332395bd370258ebd2235e55ec001a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aef332395bd370258ebd2235e55ec001a">getSchemaTitle</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:aef332395bd370258ebd2235e55ec001a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a schema title, or an empty string when absent.  <br /></td></tr>
+<tr class="separator:aef332395bd370258ebd2235e55ec001a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71584db5ed970abd3eec2cc9b2bd63c" id="r_ab71584db5ed970abd3eec2cc9b2bd63c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#ab71584db5ed970abd3eec2cc9b2bd63c">getSchemaDescription</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:ab71584db5ed970abd3eec2cc9b2bd63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a schema description, or an empty string when absent.  <br /></td></tr>
+<tr class="separator:ab71584db5ed970abd3eec2cc9b2bd63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce41adffdc091521e19cf1e0f3692b3" id="r_a5ce41adffdc091521e19cf1e0f3692b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a5ce41adffdc091521e19cf1e0f3692b3">getSchemaAdditionalProperties</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a5ce41adffdc091521e19cf1e0f3692b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether undeclared object members are accepted.  <br /></td></tr>
+<tr class="separator:a5ce41adffdc091521e19cf1e0f3692b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af688588a5b447017c7a57e0dfbebf5e8" id="r_af688588a5b447017c7a57e0dfbebf5e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#af688588a5b447017c7a57e0dfbebf5e8">getFieldCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:af688588a5b447017c7a57e0dfbebf5e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of fields in a schema.  <br /></td></tr>
+<tr class="separator:af688588a5b447017c7a57e0dfbebf5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a588ec1e2bd4b78725e499214dfb63fef" id="r_a588ec1e2bd4b78725e499214dfb63fef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a588ec1e2bd4b78725e499214dfb63fef">getFieldName</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a588ec1e2bd4b78725e499214dfb63fef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a field's stable name.  <br /></td></tr>
+<tr class="separator:a588ec1e2bd4b78725e499214dfb63fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4985187674e4cbbba24107339be35b8" id="r_aa4985187674e4cbbba24107339be35b8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aa4985187674e4cbbba24107339be35b8">getFieldType</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa4985187674e4cbbba24107339be35b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a field's stable value type name.  <br /></td></tr>
+<tr class="separator:aa4985187674e4cbbba24107339be35b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31f0800a20a29aad26348cf380631370" id="r_a31f0800a20a29aad26348cf380631370"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a31f0800a20a29aad26348cf380631370">getFieldElementType</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a31f0800a20a29aad26348cf380631370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the element type name for an array field.  <br /></td></tr>
+<tr class="separator:a31f0800a20a29aad26348cf380631370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa715d1d27ae498c639fc9712501315a1" id="r_aa715d1d27ae498c639fc9712501315a1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aa715d1d27ae498c639fc9712501315a1">getFieldRequired</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa715d1d27ae498c639fc9712501315a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a field must be present.  <br /></td></tr>
+<tr class="separator:aa715d1d27ae498c639fc9712501315a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aeda3fee1c9676258bdaa5754e6fba9" id="r_a5aeda3fee1c9676258bdaa5754e6fba9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a5aeda3fee1c9676258bdaa5754e6fba9">getFieldTitle</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a5aeda3fee1c9676258bdaa5754e6fba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short editor-facing field title.  <br /></td></tr>
+<tr class="separator:a5aeda3fee1c9676258bdaa5754e6fba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abad8ceecf2e7c6b05063b0a68967e655" id="r_abad8ceecf2e7c6b05063b0a68967e655"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#abad8ceecf2e7c6b05063b0a68967e655">getFieldDescription</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:abad8ceecf2e7c6b05063b0a68967e655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the editor-facing field description.  <br /></td></tr>
+<tr class="separator:abad8ceecf2e7c6b05063b0a68967e655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4381960fd81a3a427f41b01018e02fc7" id="r_a4381960fd81a3a427f41b01018e02fc7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a4381960fd81a3a427f41b01018e02fc7">getFieldReference</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a4381960fd81a3a427f41b01018e02fc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the referenced definition/schema category.  <br /></td></tr>
+<tr class="separator:a4381960fd81a3a427f41b01018e02fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2ced0222c9cb02af5897de952b4ced" id="r_a0f2ced0222c9cb02af5897de952b4ced"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a0f2ced0222c9cb02af5897de952b4ced">getFieldDefaultJson</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a0f2ced0222c9cb02af5897de952b4ced"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the optional default value as JSON text.  <br /></td></tr>
+<tr class="separator:a0f2ced0222c9cb02af5897de952b4ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4879b68719aa4342014c2568d4dc774" id="r_aa4879b68719aa4342014c2568d4dc774"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aa4879b68719aa4342014c2568d4dc774">getFieldHasMinimum</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa4879b68719aa4342014c2568d4dc774"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a numeric minimum constraint is present.  <br /></td></tr>
+<tr class="separator:aa4879b68719aa4342014c2568d4dc774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a197befbd8a7aa299535bb8ec161bd5c4" id="r_a197befbd8a7aa299535bb8ec161bd5c4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a197befbd8a7aa299535bb8ec161bd5c4">getFieldMinimum</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a197befbd8a7aa299535bb8ec161bd5c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a numeric minimum, or zero when absent.  <br /></td></tr>
+<tr class="separator:a197befbd8a7aa299535bb8ec161bd5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4c7b8c007c49cb16a4f98c64c1cb936" id="r_af4c7b8c007c49cb16a4f98c64c1cb936"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#af4c7b8c007c49cb16a4f98c64c1cb936">getFieldHasMaximum</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:af4c7b8c007c49cb16a4f98c64c1cb936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a numeric maximum constraint is present.  <br /></td></tr>
+<tr class="separator:af4c7b8c007c49cb16a4f98c64c1cb936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572bbc2075adcceb768da4a897b5639e" id="r_a572bbc2075adcceb768da4a897b5639e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a572bbc2075adcceb768da4a897b5639e">getFieldMaximum</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a572bbc2075adcceb768da4a897b5639e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a numeric maximum, or zero when absent.  <br /></td></tr>
+<tr class="separator:a572bbc2075adcceb768da4a897b5639e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14364fc8671d9b030a0352334b4d61ad" id="r_a14364fc8671d9b030a0352334b4d61ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a14364fc8671d9b030a0352334b4d61ad">getFieldEnumCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a14364fc8671d9b030a0352334b4d61ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of allowed string values.  <br /></td></tr>
+<tr class="separator:a14364fc8671d9b030a0352334b4d61ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42f0fa3d019c104966c1852286b8994b" id="r_a42f0fa3d019c104966c1852286b8994b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a42f0fa3d019c104966c1852286b8994b">getFieldEnumValue</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int fieldIndex, int valueIndex) const</td></tr>
+<tr class="memdesc:a42f0fa3d019c104966c1852286b8994b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns one allowed string value.  <br /></td></tr>
+<tr class="separator:a42f0fa3d019c104966c1852286b8994b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6ec2f490050932012883b872910c49" id="r_aec6ec2f490050932012883b872910c49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aec6ec2f490050932012883b872910c49">validateJson</a> (const std::string &amp;schemaId, const std::string &amp;json)</td></tr>
+<tr class="memdesc:aec6ec2f490050932012883b872910c49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates JSON against the highest registered version and caches failures.  <br /></td></tr>
+<tr class="separator:aec6ec2f490050932012883b872910c49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef4fefd22658bbb7a77fb841144a7464" id="r_aef4fefd22658bbb7a77fb841144a7464"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#aef4fefd22658bbb7a77fb841144a7464">validateJsonVersioned</a> (const std::string &amp;schemaId, int version, const std::string &amp;json)</td></tr>
+<tr class="memdesc:aef4fefd22658bbb7a77fb841144a7464"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates JSON against one exact schema version.  <br /></td></tr>
+<tr class="separator:aef4fefd22658bbb7a77fb841144a7464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8720343c22bcdeec1da4dbd8cf19b3a0" id="r_a8720343c22bcdeec1da4dbd8cf19b3a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a8720343c22bcdeec1da4dbd8cf19b3a0">getValidationErrorCount</a> () const</td></tr>
+<tr class="memdesc:a8720343c22bcdeec1da4dbd8cf19b3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns cached validation failure count.  <br /></td></tr>
+<tr class="separator:a8720343c22bcdeec1da4dbd8cf19b3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f18ef2608d0d5679919929629c0e942" id="r_a3f18ef2608d0d5679919929629c0e942"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#a3f18ef2608d0d5679919929629c0e942">getValidationErrorPath</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3f18ef2608d0d5679919929629c0e942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a failure's JSON Pointer-like path.  <br /></td></tr>
+<tr class="separator:a3f18ef2608d0d5679919929629c0e942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd4fe2dcf54eb3f704efe082804f6078" id="r_abd4fe2dcf54eb3f704efe082804f6078"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#abd4fe2dcf54eb3f704efe082804f6078">getValidationErrorCode</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:abd4fe2dcf54eb3f704efe082804f6078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a stable machine-readable failure code.  <br /></td></tr>
+<tr class="separator:abd4fe2dcf54eb3f704efe082804f6078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad24f30f1e093394f24e123f680d26b" id="r_adad24f30f1e093394f24e123f680d26b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1Schema.html#adad24f30f1e093394f24e123f680d26b">getValidationErrorMessage</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:adad24f30f1e093394f24e123f680d26b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human-readable failure description.  <br /></td></tr>
+<tr class="separator:adad24f30f1e093394f24e123f680d26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing facade for runtime schema registration and validation. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8h_source.html">Schema.h</a> 第 <a class="el" href="Schema_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af42f593dfad7080d79b28dc7f67e0390" name="af42f593dfad7080d79b28dc7f67e0390"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af42f593dfad7080d79b28dc7f67e0390">&#9670;&#160;</a></span>Schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::schema::Schema::Schema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an empty facade over the process schema registry. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7330c70cd7870ab5390babf0ee368fd4" name="a7330c70cd7870ab5390babf0ee368fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7330c70cd7870ab5390babf0ee368fd4">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::schema::Schema::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes all registered schemas and cached validation errors. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00936">eve::schema::SchemaRegistry::clear()</a>.</p>
+
+</div>
+</div>
+<a id="af688588a5b447017c7a57e0dfbebf5e8" name="af688588a5b447017c7a57e0dfbebf5e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af688588a5b447017c7a57e0dfbebf5e8">&#9670;&#160;</a></span>getFieldCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getFieldCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of fields in a schema. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0f2ced0222c9cb02af5897de952b4ced" name="a0f2ced0222c9cb02af5897de952b4ced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2ced0222c9cb02af5897de952b4ced">&#9670;&#160;</a></span>getFieldDefaultJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldDefaultJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the optional default value as JSON text. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="abad8ceecf2e7c6b05063b0a68967e655" name="abad8ceecf2e7c6b05063b0a68967e655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abad8ceecf2e7c6b05063b0a68967e655">&#9670;&#160;</a></span>getFieldDescription()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldDescription </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the editor-facing field description. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a31f0800a20a29aad26348cf380631370" name="a31f0800a20a29aad26348cf380631370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31f0800a20a29aad26348cf380631370">&#9670;&#160;</a></span>getFieldElementType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldElementType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the element type name for an array field. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00813">eve::schema::valueTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="a14364fc8671d9b030a0352334b4d61ad" name="a14364fc8671d9b030a0352334b4d61ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14364fc8671d9b030a0352334b4d61ad">&#9670;&#160;</a></span>getFieldEnumCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getFieldEnumCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of allowed string values. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a42f0fa3d019c104966c1852286b8994b" name="a42f0fa3d019c104966c1852286b8994b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42f0fa3d019c104966c1852286b8994b">&#9670;&#160;</a></span>getFieldEnumValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldEnumValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fieldIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>valueIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns one allowed string value. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="af4c7b8c007c49cb16a4f98c64c1cb936" name="af4c7b8c007c49cb16a4f98c64c1cb936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c7b8c007c49cb16a4f98c64c1cb936">&#9670;&#160;</a></span>getFieldHasMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::getFieldHasMaximum </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a numeric maximum constraint is present. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa4879b68719aa4342014c2568d4dc774" name="aa4879b68719aa4342014c2568d4dc774"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4879b68719aa4342014c2568d4dc774">&#9670;&#160;</a></span>getFieldHasMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::getFieldHasMinimum </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a numeric minimum constraint is present. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a572bbc2075adcceb768da4a897b5639e" name="a572bbc2075adcceb768da4a897b5639e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572bbc2075adcceb768da4a897b5639e">&#9670;&#160;</a></span>getFieldMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::schema::Schema::getFieldMaximum </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a numeric maximum, or zero when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a197befbd8a7aa299535bb8ec161bd5c4" name="a197befbd8a7aa299535bb8ec161bd5c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a197befbd8a7aa299535bb8ec161bd5c4">&#9670;&#160;</a></span>getFieldMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::schema::Schema::getFieldMinimum </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a numeric minimum, or zero when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a588ec1e2bd4b78725e499214dfb63fef" name="a588ec1e2bd4b78725e499214dfb63fef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a588ec1e2bd4b78725e499214dfb63fef">&#9670;&#160;</a></span>getFieldName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a field's stable name. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a4381960fd81a3a427f41b01018e02fc7" name="a4381960fd81a3a427f41b01018e02fc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4381960fd81a3a427f41b01018e02fc7">&#9670;&#160;</a></span>getFieldReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldReference </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the referenced definition/schema category. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa715d1d27ae498c639fc9712501315a1" name="aa715d1d27ae498c639fc9712501315a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa715d1d27ae498c639fc9712501315a1">&#9670;&#160;</a></span>getFieldRequired()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::getFieldRequired </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a field must be present. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a5aeda3fee1c9676258bdaa5754e6fba9" name="a5aeda3fee1c9676258bdaa5754e6fba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aeda3fee1c9676258bdaa5754e6fba9">&#9670;&#160;</a></span>getFieldTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the short editor-facing field title. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa4985187674e4cbbba24107339be35b8" name="aa4985187674e4cbbba24107339be35b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4985187674e4cbbba24107339be35b8">&#9670;&#160;</a></span>getFieldType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getFieldType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a field's stable value type name. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00813">eve::schema::valueTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="a5ce41adffdc091521e19cf1e0f3692b3" name="a5ce41adffdc091521e19cf1e0f3692b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ce41adffdc091521e19cf1e0f3692b3">&#9670;&#160;</a></span>getSchemaAdditionalProperties()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::getSchemaAdditionalProperties </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether undeclared object members are accepted. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a8ff3fdf6cad7393bbfcf60d196f7cae3" name="a8ff3fdf6cad7393bbfcf60d196f7cae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ff3fdf6cad7393bbfcf60d196f7cae3">&#9670;&#160;</a></span>getSchemaCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getSchemaCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of registered schema ids. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00941">eve::schema::SchemaRegistry::count()</a>.</p>
+
+</div>
+</div>
+<a id="ab71584db5ed970abd3eec2cc9b2bd63c" name="ab71584db5ed970abd3eec2cc9b2bd63c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab71584db5ed970abd3eec2cc9b2bd63c">&#9670;&#160;</a></span>getSchemaDescription()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getSchemaDescription </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a schema description, or an empty string when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3e4882025a598cdcb587358a6624cf0b" name="a3e4882025a598cdcb587358a6624cf0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e4882025a598cdcb587358a6624cf0b">&#9670;&#160;</a></span>getSchemaId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getSchemaId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the id at a deterministic enumeration index. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00952">eve::schema::SchemaRegistry::ids()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="aef332395bd370258ebd2235e55ec001a" name="aef332395bd370258ebd2235e55ec001a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef332395bd370258ebd2235e55ec001a">&#9670;&#160;</a></span>getSchemaTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getSchemaTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a schema title, or an empty string when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a905cf01a68ccac171b5ec72778268bd1" name="a905cf01a68ccac171b5ec72778268bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905cf01a68ccac171b5ec72778268bd1">&#9670;&#160;</a></span>getSchemaVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getSchemaVersion </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the highest registered schema version, or zero when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="af479e82219b380bdaf01ae5af2414d1a" name="af479e82219b380bdaf01ae5af2414d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af479e82219b380bdaf01ae5af2414d1a">&#9670;&#160;</a></span>getSchemaVersionAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getSchemaVersionAt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a schema version at an ascending enumeration index. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">index</td><td>Version enumeration index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Version, or zero when the index is out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00891">eve::schema::SchemaRegistry::versions()</a>.</p>
+
+</div>
+</div>
+<a id="a7a6153a560fd7de30caf6eab253b95f4" name="a7a6153a560fd7de30caf6eab253b95f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a6153a560fd7de30caf6eab253b95f4">&#9670;&#160;</a></span>getSchemaVersionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getSchemaVersionCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of registered versions for one schema id. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable schema id. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00891">eve::schema::SchemaRegistry::versions()</a>.</p>
+
+</div>
+</div>
+<a id="abd4fe2dcf54eb3f704efe082804f6078" name="abd4fe2dcf54eb3f704efe082804f6078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd4fe2dcf54eb3f704efe082804f6078">&#9670;&#160;</a></span>getValidationErrorCode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getValidationErrorCode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a stable machine-readable failure code. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8720343c22bcdeec1da4dbd8cf19b3a0" name="a8720343c22bcdeec1da4dbd8cf19b3a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8720343c22bcdeec1da4dbd8cf19b3a0">&#9670;&#160;</a></span>getValidationErrorCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::Schema::getValidationErrorCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns cached validation failure count. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adad24f30f1e093394f24e123f680d26b" name="adad24f30f1e093394f24e123f680d26b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adad24f30f1e093394f24e123f680d26b">&#9670;&#160;</a></span>getValidationErrorMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getValidationErrorMessage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a human-readable failure description. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00423">423</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3f18ef2608d0d5679919929629c0e942" name="a3f18ef2608d0d5679919929629c0e942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f18ef2608d0d5679919929629c0e942">&#9670;&#160;</a></span>getValidationErrorPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::Schema::getValidationErrorPath </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a failure's JSON Pointer-like path. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a7e4a69219342d6cc4c3d75bfabe17807" name="a7e4a69219342d6cc4c3d75bfabe17807"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e4a69219342d6cc4c3d75bfabe17807">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a stable schema id is registered. </p>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="ad3fd2d82b09ef17f141bad89936698e3" name="ad3fd2d82b09ef17f141bad89936698e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fd2d82b09ef17f141bad89936698e3">&#9670;&#160;</a></span>hasVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::Schema::hasVersion </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether an exact schema id and version is registered. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">version</td><td>Exact schema version. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">eve::schema::SchemaRegistry::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a7bdfe9d6b936acae412ff73b0f4c01b8" name="a7bdfe9d6b936acae412ff73b0f4c01b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bdfe9d6b936acae412ff73b0f4c01b8">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::schema::Schema::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1schema_1_1Schema.html">Schema</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af7412c1b391b713bc85367b89feeb0e1" name="af7412c1b391b713bc85367b89feeb0e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7412c1b391b713bc85367b89feeb0e1">&#9670;&#160;</a></span>registerFromClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::Schema::registerFromClass </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>classOrInstance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a schema reflected from a script class or instance. </p>
+<p>Class-level <code>&lt;/ ... /&gt;</code> attributes supply <code>id</code>, <code>version</code>, <code>title</code>, <code>description</code> and <code>additionalProperties</code>. Each non-method member becomes a field: its default value infers the type and the JSON default, and member-level <code>&lt;/ ... /&gt;</code> attributes carry <code>required</code>, <code>type</code>, <code>elementType</code>, <code>title</code>, <code>description</code>, <code>reference</code>, <code>defaultJson</code>, <code>values</code>, <code>minimum</code>/<code>min</code>, <code>maximum</code>/<code>max</code>, <code>minLength</code>, <code>maxLength</code>. </p><dl class="section return"><dt>返回</dt><dd>Success, or a structured reflection/registration failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="SchemaTypes_8h_source.html#l00084">eve::schema::FieldDefinition::defaultJson</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="SchemaTypes_8h_source.html#l00078">eve::schema::FieldDefinition::name</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00850">eve::schema::SchemaRegistry::registerSchema()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="SchemaTypes_8h_source.html#l00049">eve::schema::SchemaNode::type</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a7be2f1ab3de7c44eccb8dccb6fea2037" name="a7be2f1ab3de7c44eccb8dccb6fea2037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7be2f1ab3de7c44eccb8dccb6fea2037">&#9670;&#160;</a></span>registerJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::Schema::registerJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers or replaces a schema encoded as JSON. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured parse/validation/conflict failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00855">eve::schema::SchemaRegistry::registerFromJson()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aec6ec2f490050932012883b872910c49" name="aec6ec2f490050932012883b872910c49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec6ec2f490050932012883b872910c49">&#9670;&#160;</a></span>validateJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::Schema::validateJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates JSON against the highest registered version and caches failures. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or the first structured validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">eve::schema::SchemaRegistry::validate()</a>.</p>
+
+</div>
+</div>
+<a id="aef4fefd22658bbb7a77fb841144a7464" name="aef4fefd22658bbb7a77fb841144a7464"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef4fefd22658bbb7a77fb841144a7464">&#9670;&#160;</a></span>validateJsonVersioned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::Schema::validateJsonVersioned </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates JSON against one exact schema version. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">version</td><td>Exact schema version. </td></tr>
+    <tr><td class="paramname">json</td><td>JSON value to validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when validation succeeds; otherwise the first validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a> 第 <a class="el" href="Schema_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">eve::schema::SchemaRegistry::validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/schema/<a class="el" href="Schema_8h_source.html">Schema.h</a></li>
+<li>src/modules/schema/<a class="el" href="Schema_8cpp_source.html">Schema.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

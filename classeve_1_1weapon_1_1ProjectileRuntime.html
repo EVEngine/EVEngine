@@ -1,0 +1,522 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::ProjectileRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html">ProjectileRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1weapon_1_1ProjectileRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::ProjectileRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread deterministic projectile simulator with a bounded reusable pool.  
+ <a href="classeve_1_1weapon_1_1ProjectileRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac912e95a0dd00958390c911d1f42e712" id="r_ac912e95a0dd00958390c911d1f42e712"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#ac912e95a0dd00958390c911d1f42e712">ProjectileRuntime</a> ()</td></tr>
+<tr class="separator:ac912e95a0dd00958390c911d1f42e712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c19ff41167bc78644ccc92680af44c" id="r_a55c19ff41167bc78644ccc92680af44c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a55c19ff41167bc78644ccc92680af44c">configurePool</a> (std::uint32_t <a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#aed7a4efda334b84af3fe45a6555f7ac3">capacity</a>)</td></tr>
+<tr class="memdesc:a55c19ff41167bc78644ccc92680af44c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the pool while empty; capacity must be in 1..1048576.  <br /></td></tr>
+<tr class="separator:a55c19ff41167bc78644ccc92680af44c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae15eff4a2329a78d582e3fcf6c69783c" id="r_ae15eff4a2329a78d582e3fcf6c69783c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#ae15eff4a2329a78d582e3fcf6c69783c">spawn</a> (const <a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html">ProjectileDefinition</a> &amp;definition, const <a class="el" href="structeve_1_1weapon_1_1ProjectileSpawnRequest.html">ProjectileSpawnRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:ae15eff4a2329a78d582e3fcf6c69783c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn one projectile or return a structured capacity/validation failure.  <br /></td></tr>
+<tr class="separator:ae15eff4a2329a78d582e3fcf6c69783c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace0f3b8932930866eac955428d4e1370" id="r_ace0f3b8932930866eac955428d4e1370"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileUpdate.html">ProjectileUpdate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#ace0f3b8932930866eac955428d4e1370">update</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> delta, const <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html">IProjectileTargetProvider</a> *targets=nullptr)</td></tr>
+<tr class="memdesc:ace0f3b8932930866eac955428d4e1370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically advance all live projectiles by supplied deterministic time.  <br /></td></tr>
+<tr class="separator:ace0f3b8932930866eac955428d4e1370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26f57451ad09f36fd1a825fe590dbfb8" id="r_a26f57451ad09f36fd1a825fe590dbfb8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a26f57451ad09f36fd1a825fe590dbfb8">release</a> (<a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a26f57451ad09f36fd1a825fe590dbfb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly release one live handle; stale handles are rejected.  <br /></td></tr>
+<tr class="separator:a26f57451ad09f36fd1a825fe590dbfb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ababf58983bdb2fbaec8fa5a6c30ae966" id="r_ababf58983bdb2fbaec8fa5a6c30ae966"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileState.html">ProjectileState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#ababf58983bdb2fbaec8fa5a6c30ae966">find</a> (<a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:ababf58983bdb2fbaec8fa5a6c30ae966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning state copy, or empty for a stale/released handle.  <br /></td></tr>
+<tr class="separator:ababf58983bdb2fbaec8fa5a6c30ae966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c34da4c1e90e6418a355f1d8ca9c0a" id="r_aa0c34da4c1e90e6418a355f1d8ca9c0a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileState.html">ProjectileState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#aa0c34da4c1e90e6418a355f1d8ca9c0a">states</a> () const</td></tr>
+<tr class="memdesc:aa0c34da4c1e90e6418a355f1d8ca9c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return owning live states in stable slot order.  <br /></td></tr>
+<tr class="separator:aa0c34da4c1e90e6418a355f1d8ca9c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5061b00d17ccefd5fe3757c5b4d576aa" id="r_a5061b00d17ccefd5fe3757c5b4d576aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html">ProjectileRuntimeSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a5061b00d17ccefd5fe3757c5b4d576aa">snapshot</a> () const</td></tr>
+<tr class="memdesc:a5061b00d17ccefd5fe3757c5b4d576aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture live trajectories plus empty-slot generations.  <br /></td></tr>
+<tr class="separator:a5061b00d17ccefd5fe3757c5b4d576aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a1ac24b49d60c8ee4c2b8f8afbb5f2" id="r_a49a1ac24b49d60c8ee4c2b8f8afbb5f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a49a1ac24b49d60c8ee4c2b8f8afbb5f2">restore</a> (const <a class="el" href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html">ProjectileRuntimeSnapshot</a> &amp;<a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a5061b00d17ccefd5fe3757c5b4d576aa">snapshot</a>)</td></tr>
+<tr class="memdesc:a49a1ac24b49d60c8ee4c2b8f8afbb5f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace this pool from a validated snapshot.  <br /></td></tr>
+<tr class="separator:a49a1ac24b49d60c8ee4c2b8f8afbb5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ac092497321b35fe7fa6e9a9d7fd37" id="r_a26ac092497321b35fe7fa6e9a9d7fd37"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#a26ac092497321b35fe7fa6e9a9d7fd37">activeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a26ac092497321b35fe7fa6e9a9d7fd37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of live projectiles.  <br /></td></tr>
+<tr class="separator:a26ac092497321b35fe7fa6e9a9d7fd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed7a4efda334b84af3fe45a6555f7ac3" id="r_aed7a4efda334b84af3fe45a6555f7ac3"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1ProjectileRuntime.html#aed7a4efda334b84af3fe45a6555f7ac3">capacity</a> () const noexcept</td></tr>
+<tr class="memdesc:aed7a4efda334b84af3fe45a6555f7ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current fixed pool capacity.  <br /></td></tr>
+<tr class="separator:aed7a4efda334b84af3fe45a6555f7ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread deterministic projectile simulator with a bounded reusable pool. </p>
+<p>update stages every live state and publishes only after all homing target lookups succeed. It uses injected <a class="el" href="classeve_1_1Duration.html" title="Signed, fixed-resolution simulation duration in nanoseconds.">Duration</a> and no clock or RNG. Floating point replay is deterministic for the same compiler/backend; cross-backend comparison should use a documented positional tolerance. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00112">112</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac912e95a0dd00958390c911d1f42e712" name="ac912e95a0dd00958390c911d1f42e712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac912e95a0dd00958390c911d1f42e712">&#9670;&#160;</a></span>ProjectileRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::ProjectileRuntime::ProjectileRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a26ac092497321b35fe7fa6e9a9d7fd37" name="a26ac092497321b35fe7fa6e9a9d7fd37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26ac092497321b35fe7fa6e9a9d7fd37">&#9670;&#160;</a></span>activeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::weapon::ProjectileRuntime::activeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of live projectiles. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8h_source.html#l00639">eve::rts::RTSProjectileSystem::activeCount()</a>.</p>
+
+</div>
+</div>
+<a id="aed7a4efda334b84af3fe45a6555f7ac3" name="aed7a4efda334b84af3fe45a6555f7ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7a4efda334b84af3fe45a6555f7ac3">&#9670;&#160;</a></span>capacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::weapon::ProjectileRuntime::capacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current fixed pool capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00085">configurePool()</a>.</p>
+
+</div>
+</div>
+<a id="a55c19ff41167bc78644ccc92680af44c" name="a55c19ff41167bc78644ccc92680af44c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c19ff41167bc78644ccc92680af44c">&#9670;&#160;</a></span>configurePool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::ProjectileRuntime::configurePool </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the pool while empty; capacity must be in 1..1048576. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectileRuntime_8h_source.html#l00136">capacity()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ababf58983bdb2fbaec8fa5a6c30ae966" name="ababf58983bdb2fbaec8fa5a6c30ae966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ababf58983bdb2fbaec8fa5a6c30ae966">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileState.html">ProjectileState</a> &gt; eve::weapon::ProjectileRuntime::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning state copy, or empty for a stale/released handle. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="a26f57451ad09f36fd1a825fe590dbfb8" name="a26f57451ad09f36fd1a825fe590dbfb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26f57451ad09f36fd1a825fe590dbfb8">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::ProjectileRuntime::release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly release one live handle; stale handles are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a49a1ac24b49d60c8ee4c2b8f8afbb5f2" name="a49a1ac24b49d60c8ee4c2b8f8afbb5f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a1ac24b49d60c8ee4c2b8f8afbb5f2">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::ProjectileRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html">ProjectileRuntimeSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace this pool from a validated snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00093">eve::weapon::ProjectileRuntimeSnapshot::slots</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04131">eve::rts::RTSProjectileSystem::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a5061b00d17ccefd5fe3757c5b4d576aa" name="a5061b00d17ccefd5fe3757c5b4d576aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5061b00d17ccefd5fe3757c5b4d576aa">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1weapon_1_1ProjectileRuntimeSnapshot.html">ProjectileRuntimeSnapshot</a> eve::weapon::ProjectileRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture live trajectories plus empty-slot generations. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectileRuntime_8h_source.html#l00093">eve::weapon::ProjectileRuntimeSnapshot::slots</a>.</p>
+
+</div>
+</div>
+<a id="ae15eff4a2329a78d582e3fcf6c69783c" name="ae15eff4a2329a78d582e3fcf6c69783c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae15eff4a2329a78d582e3fcf6c69783c">&#9670;&#160;</a></span>spawn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileHandle.html">ProjectileHandle</a> &gt; eve::weapon::ProjectileRuntime::spawn </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html">ProjectileDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1ProjectileSpawnRequest.html">ProjectileSpawnRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn one projectile or return a structured capacity/validation failure. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00061">eve::weapon::ProjectileSpawnRequest::direction</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00060">eve::weapon::ProjectileSpawnRequest::position</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00062">eve::weapon::ProjectileSpawnRequest::target</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00030">eve::weapon::ProjectileVector::x</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00031">eve::weapon::ProjectileVector::y</a> , 以及 <a class="el" href="ProjectileRuntime_8h_source.html#l00032">eve::weapon::ProjectileVector::z</a>.</p>
+
+</div>
+</div>
+<a id="aa0c34da4c1e90e6418a355f1d8ca9c0a" name="aa0c34da4c1e90e6418a355f1d8ca9c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c34da4c1e90e6418a355f1d8ca9c0a">&#9670;&#160;</a></span>states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileState.html">ProjectileState</a> &gt; eve::weapon::ProjectileRuntime::states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return owning live states in stable slot order. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04131">eve::rts::RTSProjectileSystem::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ace0f3b8932930866eac955428d4e1370" name="ace0f3b8932930866eac955428d4e1370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace0f3b8932930866eac955428d4e1370">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1ProjectileUpdate.html">ProjectileUpdate</a> &gt; eve::weapon::ProjectileRuntime::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html">IProjectileTargetProvider</a> *&#160;</td>
+          <td class="paramname"><em>targets</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically advance all live projectiles by supplied deterministic time. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a272076ee2e40acec00f8329b4b278d51">eve::weapon::Ballistic</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a8dea110caafe3b2e7d6bd20b11ee4138">eve::weapon::Homing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Time_8h_source.html#l00073">eve::Duration::isZero()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html#aca4676e7877b1fa43b267546a2433439">eve::weapon::IProjectileTargetProvider::position()</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">update()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a></li>
+<li>src/modules/weapon/<a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,2775 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dialogue::Dialogue类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1dialogue_1_1Dialogue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dialogue::Dialogue类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Visual-novel style dialogue stage. Script: <code>dlg &lt;- eve.Dialogue();</code>  
+ <a href="classeve_1_1dialogue_1_1Dialogue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Dialogue_8h_source.html">Dialogue.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::dialogue::Dialogue 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1dialogue_1_1Dialogue.png" usemap="#eve::dialogue::Dialogue_map" alt=""/>
+  <map id="eve::dialogue::Dialogue_map" name="eve::dialogue::Dialogue_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,143,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aa892c847f0a77ee9e42aae7b73d3b165" id="r_aa892c847f0a77ee9e42aae7b73d3b165"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">DataValue</a> = <a class="el" href="classeve_1_1Value.html">eve::Value</a></td></tr>
+<tr class="separator:aa892c847f0a77ee9e42aae7b73d3b165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53875a13e9acd82a8bebf95789439f65" id="r_a53875a13e9acd82a8bebf95789439f65"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> = <a class="el" href="classeve_1_1Value.html">eve::Value</a></td></tr>
+<tr class="separator:a53875a13e9acd82a8bebf95789439f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3a11f28f50cd5c497074496c94e323dc" id="r_a3a11f28f50cd5c497074496c94e323dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a3a11f28f50cd5c497074496c94e323dc">Module_REG</a> (<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a>)</td></tr>
+<tr class="separator:a3a11f28f50cd5c497074496c94e323dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d91087d1b55829becbcdbc4529bcc7" id="r_a11d91087d1b55829becbcdbc4529bcc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a11d91087d1b55829becbcdbc4529bcc7">Dialogue</a> ()</td></tr>
+<tr class="separator:a11d91087d1b55829becbcdbc4529bcc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abff7cf2c5279645a7337cce2b2e5f86f" id="r_abff7cf2c5279645a7337cce2b2e5f86f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#abff7cf2c5279645a7337cce2b2e5f86f">~Dialogue</a> () override</td></tr>
+<tr class="separator:abff7cf2c5279645a7337cce2b2e5f86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a392dae6fdfc2c09ef61a16d8bab458fe" id="r_a392dae6fdfc2c09ef61a16d8bab458fe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a392dae6fdfc2c09ef61a16d8bab458fe">registerCharacter</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;displayName)</td></tr>
+<tr class="memdesc:a392dae6fdfc2c09ef61a16d8bab458fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">角色：注册 / 查询 / 绑定 Avatar。  <br /></td></tr>
+<tr class="separator:a392dae6fdfc2c09ef61a16d8bab458fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ef5b87a22bdb9f68d4acb69b959f17c" id="r_a5ef5b87a22bdb9f68d4acb69b959f17c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a5ef5b87a22bdb9f68d4acb69b959f17c">hasCharacter</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a5ef5b87a22bdb9f68d4acb69b959f17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef51987864864fba13a47bdfa980b47e" id="r_aef51987864864fba13a47bdfa980b47e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aef51987864864fba13a47bdfa980b47e">getDisplayName</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:aef51987864864fba13a47bdfa980b47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bea117174e506e2bae9e9928e233414" id="r_a9bea117174e506e2bae9e9928e233414"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a9bea117174e506e2bae9e9928e233414">bindAvatar</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *av)</td></tr>
+<tr class="separator:a9bea117174e506e2bae9e9928e233414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7469f5afdd81b06c274b6a4263bba0d1" id="r_a7469f5afdd81b06c274b6a4263bba0d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a7469f5afdd81b06c274b6a4263bba0d1">getAvatar</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a7469f5afdd81b06c274b6a4263bba0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224811eec3e2e16ac00f81aba4025ab4" id="r_a224811eec3e2e16ac00f81aba4025ab4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a224811eec3e2e16ac00f81aba4025ab4">getCharacterCount</a> () const</td></tr>
+<tr class="separator:a224811eec3e2e16ac00f81aba4025ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5efdc53e8d0960f47e03a288fcbe303a" id="r_a5efdc53e8d0960f47e03a288fcbe303a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a5efdc53e8d0960f47e03a288fcbe303a">getCharacterId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a5efdc53e8d0960f47e03a288fcbe303a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65633f81597344db2e785279d5f3f489" id="r_a65633f81597344db2e785279d5f3f489"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a65633f81597344db2e785279d5f3f489">show</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;slot)</td></tr>
+<tr class="memdesc:a65633f81597344db2e785279d5f3f489"><td class="mdescLeft">&#160;</td><td class="mdescRight">舞台：显示/隐藏角色、槽位与表情/动作。  <br /></td></tr>
+<tr class="separator:a65633f81597344db2e785279d5f3f489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f74178af003bf61dbf91e93b0a23e0" id="r_ae0f74178af003bf61dbf91e93b0a23e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ae0f74178af003bf61dbf91e93b0a23e0">hide</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ae0f74178af003bf61dbf91e93b0a23e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ca22f023c5e90adb7c56034c8ac775" id="r_ab5ca22f023c5e90adb7c56034c8ac775"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ab5ca22f023c5e90adb7c56034c8ac775">isShown</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:ab5ca22f023c5e90adb7c56034c8ac775"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac683ed0d1d926261b53b8ca0b436d704" id="r_ac683ed0d1d926261b53b8ca0b436d704"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ac683ed0d1d926261b53b8ca0b436d704">getSlot</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:ac683ed0d1d926261b53b8ca0b436d704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6eb488de68448804d63d4dce905662c" id="r_aa6eb488de68448804d63d4dce905662c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa6eb488de68448804d63d4dce905662c">setSlotX</a> (const std::string &amp;slot, float xNorm)</td></tr>
+<tr class="separator:aa6eb488de68448804d63d4dce905662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a43d1d59db2900a80c3543c66231635" id="r_a2a43d1d59db2900a80c3543c66231635"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2a43d1d59db2900a80c3543c66231635">getSlotX</a> (const std::string &amp;slot) const</td></tr>
+<tr class="separator:a2a43d1d59db2900a80c3543c66231635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d58bd8f939c31dafa832b2eb78f8c2" id="r_a08d58bd8f939c31dafa832b2eb78f8c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a08d58bd8f939c31dafa832b2eb78f8c2">setExpression</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;expression)</td></tr>
+<tr class="separator:a08d58bd8f939c31dafa832b2eb78f8c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09fd89404840dd710e43ac462aab4a4c" id="r_a09fd89404840dd710e43ac462aab4a4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a09fd89404840dd710e43ac462aab4a4c">setMotion</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;motion)</td></tr>
+<tr class="separator:a09fd89404840dd710e43ac462aab4a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abafe767e7427fc8de9d7d564743a45d1" id="r_abafe767e7427fc8de9d7d564743a45d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#abafe767e7427fc8de9d7d564743a45d1">syncStage</a> (float stageWidth, float stageHeight)</td></tr>
+<tr class="separator:abafe767e7427fc8de9d7d564743a45d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd03eda5f168161185094b3151f1fd4" id="r_a8dd03eda5f168161185094b3151f1fd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a8dd03eda5f168161185094b3151f1fd4">say</a> (const std::string &amp;speakerId, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:a8dd03eda5f168161185094b3151f1fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">台词：说话/旁白、打字机效果与推进。  <br /></td></tr>
+<tr class="separator:a8dd03eda5f168161185094b3151f1fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d6d9965c6fee81dc9360f6af1bf1eb" id="r_a45d6d9965c6fee81dc9360f6af1bf1eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a45d6d9965c6fee81dc9360f6af1bf1eb">narrate</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="separator:a45d6d9965c6fee81dc9360f6af1bf1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a690a33364fcc6499df39bdcfd3c472e9" id="r_a690a33364fcc6499df39bdcfd3c472e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a690a33364fcc6499df39bdcfd3c472e9">setTypeSpeed</a> (float charsPerSecond)</td></tr>
+<tr class="separator:a690a33364fcc6499df39bdcfd3c472e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0d3978236bf4408b1f5d2233c22b959" id="r_af0d3978236bf4408b1f5d2233c22b959"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#af0d3978236bf4408b1f5d2233c22b959">getTypeSpeed</a> () const</td></tr>
+<tr class="separator:af0d3978236bf4408b1f5d2233c22b959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898c94fe4044684798cd370de950da36" id="r_a898c94fe4044684798cd370de950da36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a898c94fe4044684798cd370de950da36">skipTyping</a> ()</td></tr>
+<tr class="separator:a898c94fe4044684798cd370de950da36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55be1db54839368a9c409bf7207d0850" id="r_a55be1db54839368a9c409bf7207d0850"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a55be1db54839368a9c409bf7207d0850">isTyping</a> () const</td></tr>
+<tr class="separator:a55be1db54839368a9c409bf7207d0850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2a8a89f6097f33d4f8b1f916c30a604" id="r_ae2a8a89f6097f33d4f8b1f916c30a604"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ae2a8a89f6097f33d4f8b1f916c30a604">isWaitingAdvance</a> () const</td></tr>
+<tr class="separator:ae2a8a89f6097f33d4f8b1f916c30a604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ba33f740a16229f14491b8b36ebb8e2" id="r_a2ba33f740a16229f14491b8b36ebb8e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2ba33f740a16229f14491b8b36ebb8e2">isIdle</a> () const</td></tr>
+<tr class="separator:a2ba33f740a16229f14491b8b36ebb8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18742710cae7b5eede07ab840ef17236" id="r_a18742710cae7b5eede07ab840ef17236"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a18742710cae7b5eede07ab840ef17236">advance</a> ()</td></tr>
+<tr class="separator:a18742710cae7b5eede07ab840ef17236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201ac6cc95d7e36b178f9285387f832c" id="r_a201ac6cc95d7e36b178f9285387f832c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a201ac6cc95d7e36b178f9285387f832c">getSpeakerId</a> () const</td></tr>
+<tr class="separator:a201ac6cc95d7e36b178f9285387f832c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8fa1635c3545473c2aad1a848a7658" id="r_a0b8fa1635c3545473c2aad1a848a7658"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a0b8fa1635c3545473c2aad1a848a7658">getSpeakerName</a> () const</td></tr>
+<tr class="separator:a0b8fa1635c3545473c2aad1a848a7658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36ee970ea14c7042eec757763b8041ae" id="r_a36ee970ea14c7042eec757763b8041ae"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a36ee970ea14c7042eec757763b8041ae">getFullText</a> () const</td></tr>
+<tr class="separator:a36ee970ea14c7042eec757763b8041ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef785970773e3fad4cfdd365be9831cc" id="r_aef785970773e3fad4cfdd365be9831cc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aef785970773e3fad4cfdd365be9831cc">getVisibleText</a> () const</td></tr>
+<tr class="separator:aef785970773e3fad4cfdd365be9831cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6e82426946ea97da8aeb65b3aea2c75" id="r_af6e82426946ea97da8aeb65b3aea2c75"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#af6e82426946ea97da8aeb65b3aea2c75">getPhase</a> () const</td></tr>
+<tr class="separator:af6e82426946ea97da8aeb65b3aea2c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acddb80c3e6a9d5450125ee1399bdfd1c" id="r_acddb80c3e6a9d5450125ee1399bdfd1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#acddb80c3e6a9d5450125ee1399bdfd1c">setLipSyncEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:acddb80c3e6a9d5450125ee1399bdfd1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">口型同步：打字时驱动说话者 Avatar 参数。  <br /></td></tr>
+<tr class="separator:acddb80c3e6a9d5450125ee1399bdfd1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed5a64ae0e094615283e85bda90884a0" id="r_aed5a64ae0e094615283e85bda90884a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aed5a64ae0e094615283e85bda90884a0">isLipSyncEnabled</a> () const</td></tr>
+<tr class="separator:aed5a64ae0e094615283e85bda90884a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63bc96431f330766d8c7ff09fa9923f3" id="r_a63bc96431f330766d8c7ff09fa9923f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a63bc96431f330766d8c7ff09fa9923f3">setLipSyncParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a63bc96431f330766d8c7ff09fa9923f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8326297090bfba1ff960d54204ba0bb" id="r_ab8326297090bfba1ff960d54204ba0bb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ab8326297090bfba1ff960d54204ba0bb">getLipSyncParameter</a> () const</td></tr>
+<tr class="separator:ab8326297090bfba1ff960d54204ba0bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9614efd97a1892a947fe848ef55dedc" id="r_ad9614efd97a1892a947fe848ef55dedc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ad9614efd97a1892a947fe848ef55dedc">setLipSyncAmplitude</a> (float amplitude)</td></tr>
+<tr class="separator:ad9614efd97a1892a947fe848ef55dedc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bdd0e7e7ecb5e1c3f9c37b2ac286326" id="r_a1bdd0e7e7ecb5e1c3f9c37b2ac286326"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a1bdd0e7e7ecb5e1c3f9c37b2ac286326">getLipSyncAmplitude</a> () const</td></tr>
+<tr class="separator:a1bdd0e7e7ecb5e1c3f9c37b2ac286326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a927bce74ef083d3c4178726d2d118236" id="r_a927bce74ef083d3c4178726d2d118236"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a927bce74ef083d3c4178726d2d118236">getLipSyncValue</a> () const</td></tr>
+<tr class="separator:a927bce74ef083d3c4178726d2d118236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c572c190ec5a49c44ffb9fe5b900402" id="r_a4c572c190ec5a49c44ffb9fe5b900402"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a4c572c190ec5a49c44ffb9fe5b900402">clearChoices</a> ()</td></tr>
+<tr class="memdesc:a4c572c190ec5a49c44ffb9fe5b900402"><td class="mdescLeft">&#160;</td><td class="mdescRight">选项：清空/添加/展示与选择。  <br /></td></tr>
+<tr class="separator:a4c572c190ec5a49c44ffb9fe5b900402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6436e2677602eff83691e915255a9c83" id="r_a6436e2677602eff83691e915255a9c83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a6436e2677602eff83691e915255a9c83">addChoice</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;label)</td></tr>
+<tr class="separator:a6436e2677602eff83691e915255a9c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1948f6107a91d76ab71df5b83065bc5a" id="r_a1948f6107a91d76ab71df5b83065bc5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a1948f6107a91d76ab71df5b83065bc5a">presentChoices</a> ()</td></tr>
+<tr class="separator:a1948f6107a91d76ab71df5b83065bc5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9050137052e19640ea24c741cc96f9e5" id="r_a9050137052e19640ea24c741cc96f9e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a9050137052e19640ea24c741cc96f9e5">isWaitingChoice</a> () const</td></tr>
+<tr class="separator:a9050137052e19640ea24c741cc96f9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7cc88535d70aedb609825994b171e38" id="r_ac7cc88535d70aedb609825994b171e38"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ac7cc88535d70aedb609825994b171e38">getChoiceCount</a> () const</td></tr>
+<tr class="separator:ac7cc88535d70aedb609825994b171e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7256431526c496bb34ef17aaf5ea00d7" id="r_a7256431526c496bb34ef17aaf5ea00d7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a7256431526c496bb34ef17aaf5ea00d7">getChoiceId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7256431526c496bb34ef17aaf5ea00d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96888dd599b04455b57ddc160fd562d4" id="r_a96888dd599b04455b57ddc160fd562d4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a96888dd599b04455b57ddc160fd562d4">getChoiceLabel</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a96888dd599b04455b57ddc160fd562d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5df2d93f2bd72a693e708061f581820a" id="r_a5df2d93f2bd72a693e708061f581820a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a5df2d93f2bd72a693e708061f581820a">selectChoice</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a5df2d93f2bd72a693e708061f581820a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4d547fc62d864327098c4eb4dded476" id="r_ad4d547fc62d864327098c4eb4dded476"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ad4d547fc62d864327098c4eb4dded476">getSelectedChoiceId</a> () const</td></tr>
+<tr class="separator:ad4d547fc62d864327098c4eb4dded476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ebbe545c7702d8ebfa808547091a15" id="r_a58ebbe545c7702d8ebfa808547091a15"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a58ebbe545c7702d8ebfa808547091a15">setVar</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, ssq::Object <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="separator:a58ebbe545c7702d8ebfa808547091a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe9089bfbe750c32553b9bb14781cb99" id="r_abe9089bfbe750c32553b9bb14781cb99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#abe9089bfbe750c32553b9bb14781cb99">setVarValue</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="separator:abe9089bfbe750c32553b9bb14781cb99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64c191161293dfb8b643a738e15f8da8" id="r_a64c191161293dfb8b643a738e15f8da8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a64c191161293dfb8b643a738e15f8da8">getVarValue</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:a64c191161293dfb8b643a738e15f8da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5d2c56e10625383487c98c461a2920c" id="r_aa5d2c56e10625383487c98c461a2920c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa5d2c56e10625383487c98c461a2920c">getVarType</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:aa5d2c56e10625383487c98c461a2920c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad575ab0800bde7c4b5b3ed921bec7f24" id="r_ad575ab0800bde7c4b5b3ed921bec7f24"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ad575ab0800bde7c4b5b3ed921bec7f24">getVarInt</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:ad575ab0800bde7c4b5b3ed921bec7f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a500f855fb008bbe9dad994a8d0269e" id="r_a6a500f855fb008bbe9dad994a8d0269e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a6a500f855fb008bbe9dad994a8d0269e">getVarFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:a6a500f855fb008bbe9dad994a8d0269e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3739226dc9bea8b435bc985f6c8a785d" id="r_a3739226dc9bea8b435bc985f6c8a785d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a3739226dc9bea8b435bc985f6c8a785d">getVarBool</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:a3739226dc9bea8b435bc985f6c8a785d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf2209db6af450463bea8ebcd7892fe8" id="r_aaf2209db6af450463bea8ebcd7892fe8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aaf2209db6af450463bea8ebcd7892fe8">getVarString</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:aaf2209db6af450463bea8ebcd7892fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1eec6821362c0a8cc50d9da880ce4dd" id="r_af1eec6821362c0a8cc50d9da880ce4dd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#af1eec6821362c0a8cc50d9da880ce4dd">hasVar</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const</td></tr>
+<tr class="separator:af1eec6821362c0a8cc50d9da880ce4dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce80baf2e9b958ce291cf8183818652" id="r_a1ce80baf2e9b958ce291cf8183818652"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a1ce80baf2e9b958ce291cf8183818652">clearVar</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="separator:a1ce80baf2e9b958ce291cf8183818652"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae24514e9390a485019dd368f61d34ab9" id="r_ae24514e9390a485019dd368f61d34ab9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ae24514e9390a485019dd368f61d34ab9">clearVars</a> (const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="separator:ae24514e9390a485019dd368f61d34ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94132040ac716753b9d4c9798bd610a" id="r_aa94132040ac716753b9d4c9798bd610a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa94132040ac716753b9d4c9798bd610a">registerCondition</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, ssq::Object <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:aa94132040ac716753b9d4c9798bd610a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8861143c5aaff09944c20824afecbce7" id="r_a8861143c5aaff09944c20824afecbce7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a8861143c5aaff09944c20824afecbce7">unregisterCondition</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a8861143c5aaff09944c20824afecbce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a303352ca1cfd43ccbe945b8281fc60b0" id="r_a303352ca1cfd43ccbe945b8281fc60b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a303352ca1cfd43ccbe945b8281fc60b0">evalCondition</a> (ssq::Object table)</td></tr>
+<tr class="separator:a303352ca1cfd43ccbe945b8281fc60b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f42163897b0942191e16c1b1c174097" id="r_a8f42163897b0942191e16c1b1c174097"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a8f42163897b0942191e16c1b1c174097">evalConditionData</a> (const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">DataValue</a> &amp;cond)</td></tr>
+<tr class="separator:a8f42163897b0942191e16c1b1c174097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aaa3c496a75c27c7283aa58e7c16da5" id="r_a6aaa3c496a75c27c7283aa58e7c16da5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a6aaa3c496a75c27c7283aa58e7c16da5">loadPoolsFromTable</a> (ssq::Object table)</td></tr>
+<tr class="separator:a6aaa3c496a75c27c7283aa58e7c16da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46b5fce908a3a9754533ba5eb9dca756" id="r_a46b5fce908a3a9754533ba5eb9dca756"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a46b5fce908a3a9754533ba5eb9dca756">loadPoolsFromData</a> (const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">DataValue</a> &amp;<a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>)</td></tr>
+<tr class="separator:a46b5fce908a3a9754533ba5eb9dca756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0cae327ae68faba99af6eee2df8940" id="r_a4e0cae327ae68faba99af6eee2df8940"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a4e0cae327ae68faba99af6eee2df8940">loadPoolsFromDnut</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a4e0cae327ae68faba99af6eee2df8940"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e1e2c1b1ffe33043be1a72ef5dfdb9b" id="r_a2e1e2c1b1ffe33043be1a72ef5dfdb9b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2e1e2c1b1ffe33043be1a72ef5dfdb9b">loadPoolsFromDnutFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a2e1e2c1b1ffe33043be1a72ef5dfdb9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14a77174e862714bc3155e0508fbe55" id="r_af14a77174e862714bc3155e0508fbe55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#af14a77174e862714bc3155e0508fbe55">clearPools</a> ()</td></tr>
+<tr class="separator:af14a77174e862714bc3155e0508fbe55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56a98e92ed90d6a729e86179e68963ee" id="r_a56a98e92ed90d6a729e86179e68963ee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a56a98e92ed90d6a729e86179e68963ee">getPoolCount</a> () const</td></tr>
+<tr class="separator:a56a98e92ed90d6a729e86179e68963ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae09691b000cff9baaf44bf2cbe660941" id="r_ae09691b000cff9baaf44bf2cbe660941"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ae09691b000cff9baaf44bf2cbe660941">getPoolId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae09691b000cff9baaf44bf2cbe660941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705b4fad6359616eb63028a7a91deec9" id="r_a705b4fad6359616eb63028a7a91deec9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a705b4fad6359616eb63028a7a91deec9">hasPool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a705b4fad6359616eb63028a7a91deec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1996c86b17de3c351c0a59727d76a3d6" id="r_a1996c86b17de3c351c0a59727d76a3d6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a1996c86b17de3c351c0a59727d76a3d6">getLastPoolsError</a> () const</td></tr>
+<tr class="separator:a1996c86b17de3c351c0a59727d76a3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c7cbe1175316356cb3b5ff8cdf5e51b" id="r_a9c7cbe1175316356cb3b5ff8cdf5e51b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a9c7cbe1175316356cb3b5ff8cdf5e51b">setRandomSeed</a> (int <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="separator:a9c7cbe1175316356cb3b5ff8cdf5e51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab152752b9e2ca58a69136438a4a8e548" id="r_ab152752b9e2ca58a69136438a4a8e548"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ab152752b9e2ca58a69136438a4a8e548">getRandomSeed</a> () const</td></tr>
+<tr class="separator:ab152752b9e2ca58a69136438a4a8e548"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9567138ad18c260c34b3932c21e37d81" id="r_a9567138ad18c260c34b3932c21e37d81"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a9567138ad18c260c34b3932c21e37d81">pickLine</a> (const std::string &amp;poolId, ssq::Object <a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a9567138ad18c260c34b3932c21e37d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0517529e52a608522c53bf84fc089250" id="r_a0517529e52a608522c53bf84fc089250"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a0517529e52a608522c53bf84fc089250">pickLineWithParams</a> (const std::string &amp;poolId, const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a0517529e52a608522c53bf84fc089250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e726ea05d998b304c2843097a0d9c20" id="r_a3e726ea05d998b304c2843097a0d9c20"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a3e726ea05d998b304c2843097a0d9c20">playLine</a> (const std::string &amp;lineId, ssq::Object <a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a3e726ea05d998b304c2843097a0d9c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e23d9ff1ca000e5556d062072c56706" id="r_a1e23d9ff1ca000e5556d062072c56706"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a1e23d9ff1ca000e5556d062072c56706">playLineWithParams</a> (const std::string &amp;lineId, const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a1e23d9ff1ca000e5556d062072c56706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac01aed90a103440de71abda5546697" id="r_a3ac01aed90a103440de71abda5546697"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a3ac01aed90a103440de71abda5546697">playPool</a> (const std::string &amp;poolId, ssq::Object <a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a3ac01aed90a103440de71abda5546697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c03574543cc91a1b216b9fec33b6dc" id="r_a82c03574543cc91a1b216b9fec33b6dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a82c03574543cc91a1b216b9fec33b6dc">playPoolWithParams</a> (const std::string &amp;poolId, const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a82c03574543cc91a1b216b9fec33b6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35ff5a9ddc861c809e728ed5f3f6c5ba" id="r_a35ff5a9ddc861c809e728ed5f3f6c5ba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a35ff5a9ddc861c809e728ed5f3f6c5ba">getCurrentLineId</a> () const</td></tr>
+<tr class="separator:a35ff5a9ddc861c809e728ed5f3f6c5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27cf297fa1ea6e4df58b5c38cfa826c8" id="r_a27cf297fa1ea6e4df58b5c38cfa826c8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a27cf297fa1ea6e4df58b5c38cfa826c8">getCurrentLineMeta</a> (const std::string &amp;field) const</td></tr>
+<tr class="separator:a27cf297fa1ea6e4df58b5c38cfa826c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c621504336f0d004e8915021658f4a5" id="r_a3c621504336f0d004e8915021658f4a5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a3c621504336f0d004e8915021658f4a5">getCurrentLineTags</a> () const</td></tr>
+<tr class="separator:a3c621504336f0d004e8915021658f4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ab844fa3fdd293f0230ed8ea68b4ab9" id="r_a8ab844fa3fdd293f0230ed8ea68b4ab9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a8ab844fa3fdd293f0230ed8ea68b4ab9">update</a> (float dt)</td></tr>
+<tr class="memdesc:a8ab844fa3fdd293f0230ed8ea68b4ab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">推进打字机 / 口型同步 / 阶段机；每帧调用。  <br /></td></tr>
+<tr class="separator:a8ab844fa3fdd293f0230ed8ea68b4ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eeadefda18b5278393bb2604efc7a6a" id="r_a0eeadefda18b5278393bb2604efc7a6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a0eeadefda18b5278393bb2604efc7a6a">reset</a> ()</td></tr>
+<tr class="memdesc:a0eeadefda18b5278393bb2604efc7a6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">重置舞台与台词状态。  <br /></td></tr>
+<tr class="separator:a0eeadefda18b5278393bb2604efc7a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2468c73a49bcbdd696a3103ee7334d02" id="r_a2468c73a49bcbdd696a3103ee7334d02"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2468c73a49bcbdd696a3103ee7334d02">captureState</a> (<a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;out) const</td></tr>
+<tr class="memdesc:a2468c73a49bcbdd696a3103ee7334d02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize conversation state (vars, rng, phase, choices, stage).  <br /></td></tr>
+<tr class="separator:a2468c73a49bcbdd696a3103ee7334d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2629452d86cecacf31654c70bdf2883c" id="r_a2629452d86cecacf31654c70bdf2883c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2629452d86cecacf31654c70bdf2883c">restoreState</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;in, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:a2629452d86cecacf31654c70bdf2883c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore conversation state captured by <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2468c73a49bcbdd696a3103ee7334d02" title="Serialize conversation state (vars, rng, phase, choices, stage).">captureState()</a>.  <br /></td></tr>
+<tr class="separator:a2629452d86cecacf31654c70bdf2883c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5280916b63a4ff9d391d33d5183be25" id="r_aa5280916b63a4ff9d391d33d5183be25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa5280916b63a4ff9d391d33d5183be25">resetToDefaults</a> ()</td></tr>
+<tr class="memdesc:aa5280916b63a4ff9d391d33d5183be25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset stage and line state (restore fallback).  <br /></td></tr>
+<tr class="separator:aa5280916b63a4ff9d391d33d5183be25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Visual-novel style dialogue stage. Script: <code>dlg &lt;- eve.Dialogue();</code> </p>
+<p><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a> scripts remain Squirrel (functions / generators). This module only owns speaker lines, typewriter, choices, and avatar stage slots. </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="aa892c847f0a77ee9e42aae7b73d3b165" name="aa892c847f0a77ee9e42aae7b73d3b165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa892c847f0a77ee9e42aae7b73d3b165">&#9670;&#160;</a></span>DataValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">eve::dialogue::Dialogue::DataValue</a> =  <a class="el" href="classeve_1_1Value.html">eve::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53875a13e9acd82a8bebf95789439f65" name="a53875a13e9acd82a8bebf95789439f65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53875a13e9acd82a8bebf95789439f65">&#9670;&#160;</a></span>VarValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">eve::dialogue::Dialogue::VarValue</a> =  <a class="el" href="classeve_1_1Value.html">eve::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a11d91087d1b55829becbcdbc4529bcc7" name="a11d91087d1b55829becbcdbc4529bcc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11d91087d1b55829becbcdbc4529bcc7">&#9670;&#160;</a></span>Dialogue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::Dialogue::Dialogue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abff7cf2c5279645a7337cce2b2e5f86f" name="abff7cf2c5279645a7337cce2b2e5f86f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abff7cf2c5279645a7337cce2b2e5f86f">&#9670;&#160;</a></span>~Dialogue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::Dialogue::~Dialogue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6436e2677602eff83691e915255a9c83" name="a6436e2677602eff83691e915255a9c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6436e2677602eff83691e915255a9c83">&#9670;&#160;</a></span>addChoice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::addChoice </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01095">1095</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="a18742710cae7b5eede07ab840ef17236" name="a18742710cae7b5eede07ab840ef17236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18742710cae7b5eede07ab840ef17236">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::advance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01054">1054</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l01041">skipTyping()</a>.</p>
+
+</div>
+</div>
+<a id="a9bea117174e506e2bae9e9928e233414" name="a9bea117174e506e2bae9e9928e233414"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bea117174e506e2bae9e9928e233414">&#9670;&#160;</a></span>bindAvatar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::bindAvatar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *&#160;</td>
+          <td class="paramname"><em>av</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00914">914</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarInstance_8cpp_source.html#l00118">eve::avatar::AvatarInstance::addDestroyHook()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a2468c73a49bcbdd696a3103ee7334d02" name="a2468c73a49bcbdd696a3103ee7334d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2468c73a49bcbdd696a3103ee7334d02">&#9670;&#160;</a></span>captureState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::captureState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize conversation state (vars, rng, phase, choices, stage). </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01204">1204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00037">eve::StateValue::array()</a>, <a class="el" href="StateValue_8cpp_source.html#l00050">eve::StateValue::boolean()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00072">choices</a>, <a class="el" href="Dialogue_8cpp_source.html#l01076">getPhase()</a>, <a class="el" href="StateValue_8cpp_source.html#l00038">eve::StateValue::integer()</a>, <a class="el" href="StateValue_8cpp_source.html#l00044">eve::StateValue::number()</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="StateValue_8cpp_source.html#l00062">eve::StateValue::pushBack()</a>, <a class="el" href="Graphics_8cpp_source.html#l00078">scene</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00056">eve::StateValue::string()</a>.</p>
+
+</div>
+</div>
+<a id="a4c572c190ec5a49c44ffb9fe5b900402" name="a4c572c190ec5a49c44ffb9fe5b900402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c572c190ec5a49c44ffb9fe5b900402">&#9670;&#160;</a></span>clearChoices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::clearChoices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>选项：清空/添加/展示与选择。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01090">1090</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af14a77174e862714bc3155e0508fbe55" name="af14a77174e862714bc3155e0508fbe55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14a77174e862714bc3155e0508fbe55">&#9670;&#160;</a></span>clearPools()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::clearPools </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00663">663</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ce80baf2e9b958ce291cf8183818652" name="a1ce80baf2e9b958ce291cf8183818652"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce80baf2e9b958ce291cf8183818652">&#9670;&#160;</a></span>clearVar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::clearVar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="ae24514e9390a485019dd368f61d34ab9" name="ae24514e9390a485019dd368f61d34ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae24514e9390a485019dd368f61d34ab9">&#9670;&#160;</a></span>clearVars()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::clearVars </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="a303352ca1cfd43ccbe945b8281fc60b0" name="a303352ca1cfd43ccbe945b8281fc60b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a303352ca1cfd43ccbe945b8281fc60b0">&#9670;&#160;</a></span>evalCondition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::evalCondition </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l00451">evalConditionData()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a8f42163897b0942191e16c1b1c174097" name="a8f42163897b0942191e16c1b1c174097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f42163897b0942191e16c1b1c174097">&#9670;&#160;</a></span>evalConditionData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::evalConditionData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">DataValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>cond</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="Package_8cpp_source.html#l00060">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00300">evalCondition()</a>.</p>
+
+</div>
+</div>
+<a id="a7469f5afdd81b06c274b6a4263bba0d1" name="a7469f5afdd81b06c274b6a4263bba0d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7469f5afdd81b06c274b6a4263bba0d1">&#9670;&#160;</a></span>getAvatar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> * eve::dialogue::Dialogue::getAvatar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00934">934</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a224811eec3e2e16ac00f81aba4025ab4" name="a224811eec3e2e16ac00f81aba4025ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a224811eec3e2e16ac00f81aba4025ab4">&#9670;&#160;</a></span>getCharacterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::getCharacterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00939">939</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5efdc53e8d0960f47e03a288fcbe303a" name="a5efdc53e8d0960f47e03a288fcbe303a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5efdc53e8d0960f47e03a288fcbe303a">&#9670;&#160;</a></span>getCharacterId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getCharacterId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00941">941</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac7cc88535d70aedb609825994b171e38" name="ac7cc88535d70aedb609825994b171e38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7cc88535d70aedb609825994b171e38">&#9670;&#160;</a></span>getChoiceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::getChoiceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01118">1118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7256431526c496bb34ef17aaf5ea00d7" name="a7256431526c496bb34ef17aaf5ea00d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7256431526c496bb34ef17aaf5ea00d7">&#9670;&#160;</a></span>getChoiceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getChoiceId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01120">1120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a96888dd599b04455b57ddc160fd562d4" name="a96888dd599b04455b57ddc160fd562d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96888dd599b04455b57ddc160fd562d4">&#9670;&#160;</a></span>getChoiceLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getChoiceLabel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01125">1125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a35ff5a9ddc861c809e728ed5f3f6c5ba" name="a35ff5a9ddc861c809e728ed5f3f6c5ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35ff5a9ddc861c809e728ed5f3f6c5ba">&#9670;&#160;</a></span>getCurrentLineId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getCurrentLineId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27cf297fa1ea6e4df58b5c38cfa826c8" name="a27cf297fa1ea6e4df58b5c38cfa826c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27cf297fa1ea6e4df58b5c38cfa826c8">&#9670;&#160;</a></span>getCurrentLineMeta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getCurrentLineMeta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00851">851</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c621504336f0d004e8915021658f4a5" name="a3c621504336f0d004e8915021658f4a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c621504336f0d004e8915021658f4a5">&#9670;&#160;</a></span>getCurrentLineTags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::dialogue::Dialogue::getCurrentLineTags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00856">856</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef51987864864fba13a47bdfa980b47e" name="aef51987864864fba13a47bdfa980b47e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef51987864864fba13a47bdfa980b47e">&#9670;&#160;</a></span>getDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getDisplayName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00909">909</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01062">getSpeakerName()</a>.</p>
+
+</div>
+</div>
+<a id="a36ee970ea14c7042eec757763b8041ae" name="a36ee970ea14c7042eec757763b8041ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36ee970ea14c7042eec757763b8041ae">&#9670;&#160;</a></span>getFullText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getFullText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1996c86b17de3c351c0a59727d76a3d6" name="a1996c86b17de3c351c0a59727d76a3d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1996c86b17de3c351c0a59727d76a3d6">&#9670;&#160;</a></span>getLastPoolsError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getLastPoolsError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1bdd0e7e7ecb5e1c3f9c37b2ac286326" name="a1bdd0e7e7ecb5e1c3f9c37b2ac286326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bdd0e7e7ecb5e1c3f9c37b2ac286326">&#9670;&#160;</a></span>getLipSyncAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dialogue::Dialogue::getLipSyncAmplitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8326297090bfba1ff960d54204ba0bb" name="ab8326297090bfba1ff960d54204ba0bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8326297090bfba1ff960d54204ba0bb">&#9670;&#160;</a></span>getLipSyncParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getLipSyncParameter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a927bce74ef083d3c4178726d2d118236" name="a927bce74ef083d3c4178726d2d118236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a927bce74ef083d3c4178726d2d118236">&#9670;&#160;</a></span>getLipSyncValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dialogue::Dialogue::getLipSyncValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6e82426946ea97da8aeb65b3aea2c75" name="af6e82426946ea97da8aeb65b3aea2c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6e82426946ea97da8aeb65b3aea2c75">&#9670;&#160;</a></span>getPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getPhase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01076">1076</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01204">captureState()</a>.</p>
+
+</div>
+</div>
+<a id="a56a98e92ed90d6a729e86179e68963ee" name="a56a98e92ed90d6a729e86179e68963ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56a98e92ed90d6a729e86179e68963ee">&#9670;&#160;</a></span>getPoolCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::getPoolCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00665">665</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae09691b000cff9baaf44bf2cbe660941" name="ae09691b000cff9baaf44bf2cbe660941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09691b000cff9baaf44bf2cbe660941">&#9670;&#160;</a></span>getPoolId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getPoolId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00667">667</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab152752b9e2ca58a69136438a4a8e548" name="ab152752b9e2ca58a69136438a4a8e548"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab152752b9e2ca58a69136438a4a8e548">&#9670;&#160;</a></span>getRandomSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::getRandomSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00151">151</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4d547fc62d864327098c4eb4dded476" name="ad4d547fc62d864327098c4eb4dded476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4d547fc62d864327098c4eb4dded476">&#9670;&#160;</a></span>getSelectedChoiceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getSelectedChoiceId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac683ed0d1d926261b53b8ca0b436d704" name="ac683ed0d1d926261b53b8ca0b436d704"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac683ed0d1d926261b53b8ca0b436d704">&#9670;&#160;</a></span>getSlot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getSlot </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00968">968</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a2a43d1d59db2900a80c3543c66231635" name="a2a43d1d59db2900a80c3543c66231635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a43d1d59db2900a80c3543c66231635">&#9670;&#160;</a></span>getSlotX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dialogue::Dialogue::getSlotX </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00978">978</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01001">syncStage()</a>.</p>
+
+</div>
+</div>
+<a id="a201ac6cc95d7e36b178f9285387f832c" name="a201ac6cc95d7e36b178f9285387f832c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a201ac6cc95d7e36b178f9285387f832c">&#9670;&#160;</a></span>getSpeakerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getSpeakerId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b8fa1635c3545473c2aad1a848a7658" name="a0b8fa1635c3545473c2aad1a848a7658"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8fa1635c3545473c2aad1a848a7658">&#9670;&#160;</a></span>getSpeakerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getSpeakerName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01062">1062</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l00909">getDisplayName()</a>.</p>
+
+</div>
+</div>
+<a id="af0d3978236bf4408b1f5d2233c22b959" name="af0d3978236bf4408b1f5d2233c22b959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0d3978236bf4408b1f5d2233c22b959">&#9670;&#160;</a></span>getTypeSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dialogue::Dialogue::getTypeSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3739226dc9bea8b435bc985f6c8a785d" name="a3739226dc9bea8b435bc985f6c8a785d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3739226dc9bea8b435bc985f6c8a785d">&#9670;&#160;</a></span>getVarBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::getVarBool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>defaultValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742ac26f15e86e3de4c398a8273272aba034">eve::Value::Bool</a>, <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a22ae0e2b89e5e3d477f988cc36d3272b">eve::Value::Float</a>, <a class="el" href="Dialogue_8cpp_source.html#l00209">getVarValue()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a1686a6c336b71b36d77354cea19a8b52">eve::Value::Int</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a6a500f855fb008bbe9dad994a8d0269e" name="a6a500f855fb008bbe9dad994a8d0269e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a500f855fb008bbe9dad994a8d0269e">&#9670;&#160;</a></span>getVarFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dialogue::Dialogue::getVarFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>defaultValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742ac26f15e86e3de4c398a8273272aba034">eve::Value::Bool</a>, <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a22ae0e2b89e5e3d477f988cc36d3272b">eve::Value::Float</a>, <a class="el" href="Dialogue_8cpp_source.html#l00209">getVarValue()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a1686a6c336b71b36d77354cea19a8b52">eve::Value::Int</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ad575ab0800bde7c4b5b3ed921bec7f24" name="ad575ab0800bde7c4b5b3ed921bec7f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad575ab0800bde7c4b5b3ed921bec7f24">&#9670;&#160;</a></span>getVarInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::getVarInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>defaultValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742ac26f15e86e3de4c398a8273272aba034">eve::Value::Bool</a>, <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a22ae0e2b89e5e3d477f988cc36d3272b">eve::Value::Float</a>, <a class="el" href="Dialogue_8cpp_source.html#l00209">getVarValue()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a1686a6c336b71b36d77354cea19a8b52">eve::Value::Int</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aaf2209db6af450463bea8ebcd7892fe8" name="aaf2209db6af450463bea8ebcd7892fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf2209db6af450463bea8ebcd7892fe8">&#9670;&#160;</a></span>getVarString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getVarString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defaultValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a>, <a class="el" href="Dialogue_8cpp_source.html#l00209">getVarValue()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a27118326006d3829667a400ad23d5d98">eve::Value::String</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aa5d2c56e10625383487c98c461a2920c" name="aa5d2c56e10625383487c98c461a2920c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5d2c56e10625383487c98c461a2920c">&#9670;&#160;</a></span>getVarType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getVarType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l00209">getVarValue()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00252">hasVar()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00150">eve::Value::typeName()</a>.</p>
+
+</div>
+</div>
+<a id="a64c191161293dfb8b643a738e15f8da8" name="a64c191161293dfb8b643a738e15f8da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64c191161293dfb8b643a738e15f8da8">&#9670;&#160;</a></span>getVarValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">Dialogue::VarValue</a> eve::dialogue::Dialogue::getVarValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="Value_8h_source.html#l00110">eve::Value::string()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00237">getVarBool()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00228">getVarFloat()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00220">getVarInt()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00246">getVarString()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00216">getVarType()</a>.</p>
+
+</div>
+</div>
+<a id="aef785970773e3fad4cfdd365be9831cc" name="aef785970773e3fad4cfdd365be9831cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef785970773e3fad4cfdd365be9831cc">&#9670;&#160;</a></span>getVisibleText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::getVisibleText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01067">1067</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="utf8_8cpp_source.html#l00037">eve::utf8_byte_offset_for_codepoints()</a> , 以及 <a class="el" href="utf8_8cpp_source.html#l00023">eve::utf8_codepoint_count()</a>.</p>
+
+</div>
+</div>
+<a id="a5ef5b87a22bdb9f68d4acb69b959f17c" name="a5ef5b87a22bdb9f68d4acb69b959f17c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ef5b87a22bdb9f68d4acb69b959f17c">&#9670;&#160;</a></span>hasCharacter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::hasCharacter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00907">907</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a705b4fad6359616eb63028a7a91deec9" name="a705b4fad6359616eb63028a7a91deec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705b4fad6359616eb63028a7a91deec9">&#9670;&#160;</a></span>hasPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::hasPool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00672">672</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1eec6821362c0a8cc50d9da880ce4dd" name="af1eec6821362c0a8cc50d9da880ce4dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1eec6821362c0a8cc50d9da880ce4dd">&#9670;&#160;</a></span>hasVar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::hasVar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00216">getVarType()</a>.</p>
+
+</div>
+</div>
+<a id="ae0f74178af003bf61dbf91e93b0a23e0" name="ae0f74178af003bf61dbf91e93b0a23e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f74178af003bf61dbf91e93b0a23e0">&#9670;&#160;</a></span>hide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::hide </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00955">955</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a2ba33f740a16229f14491b8b36ebb8e2" name="a2ba33f740a16229f14491b8b36ebb8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ba33f740a16229f14491b8b36ebb8e2">&#9670;&#160;</a></span>isIdle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isIdle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01052">1052</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed5a64ae0e094615283e85bda90884a0" name="aed5a64ae0e094615283e85bda90884a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed5a64ae0e094615283e85bda90884a0">&#9670;&#160;</a></span>isLipSyncEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isLipSyncEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5ca22f023c5e90adb7c56034c8ac775" name="ab5ca22f023c5e90adb7c56034c8ac775"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ca22f023c5e90adb7c56034c8ac775">&#9670;&#160;</a></span>isShown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isShown </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00963">963</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a55be1db54839368a9c409bf7207d0850" name="a55be1db54839368a9c409bf7207d0850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55be1db54839368a9c409bf7207d0850">&#9670;&#160;</a></span>isTyping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isTyping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01048">1048</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2a8a89f6097f33d4f8b1f916c30a604" name="ae2a8a89f6097f33d4f8b1f916c30a604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2a8a89f6097f33d4f8b1f916c30a604">&#9670;&#160;</a></span>isWaitingAdvance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isWaitingAdvance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01050">1050</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9050137052e19640ea24c741cc96f9e5" name="a9050137052e19640ea24c741cc96f9e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9050137052e19640ea24c741cc96f9e5">&#9670;&#160;</a></span>isWaitingChoice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::isWaitingChoice </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01116">1116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46b5fce908a3a9754533ba5eb9dca756" name="a46b5fce908a3a9754533ba5eb9dca756"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46b5fce908a3a9754533ba5eb9dca756">&#9670;&#160;</a></span>loadPoolsFromData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::loadPoolsFromData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">DataValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00580">580</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00100">eve::Value::arraySize()</a>, <a class="el" href="Value_8cpp_source.html#l00106">eve::Value::at()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a22ae0e2b89e5e3d477f988cc36d3272b">eve::Value::Float</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a1686a6c336b71b36d77354cea19a8b52">eve::Value::Int</a>, <a class="el" href="Value_8h_source.html#l00085">eve::Value::kind()</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00632">loadPoolsFromDnut()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00499">loadPoolsFromTable()</a>.</p>
+
+</div>
+</div>
+<a id="a4e0cae327ae68faba99af6eee2df8940" name="a4e0cae327ae68faba99af6eee2df8940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e0cae327ae68faba99af6eee2df8940">&#9670;&#160;</a></span>loadPoolsFromDnut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::loadPoolsFromDnut </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>解析 .dnut 源码并注册台词池；path 用于错误信息（可传 ""）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00632">632</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Dialogue_8cpp_source.html#l00580">loadPoolsFromData()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00464">eve::dialogue::parseDnut()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00642">loadPoolsFromDnutFile()</a>.</p>
+
+</div>
+</div>
+<a id="a2e1e2c1b1ffe33043be1a72ef5dfdb9b" name="a2e1e2c1b1ffe33043be1a72ef5dfdb9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e1e2c1b1ffe33043be1a72ef5dfdb9b">&#9670;&#160;</a></span>loadPoolsFromDnutFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::loadPoolsFromDnutFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>读取 .dnut 文件并解析注册（经 eve.Filesystem）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00642">642</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FileData_8h_source.html#l00023">eve::filesystem::FileData::getData()</a>, <a class="el" href="FileData_8h_source.html#l00024">eve::filesystem::FileData::getSize()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00632">loadPoolsFromDnut()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="a6aaa3c496a75c27c7283aa58e7c16da5" name="a6aaa3c496a75c27c7283aa58e7c16da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aaa3c496a75c27c7283aa58e7c16da5">&#9670;&#160;</a></span>loadPoolsFromTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::Dialogue::loadPoolsFromTable </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00499">499</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l00580">loadPoolsFromData()</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+</div>
+</div>
+<a id="a3a11f28f50cd5c497074496c94e323dc" name="a3a11f28f50cd5c497074496c94e323dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a11f28f50cd5c497074496c94e323dc">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::Dialogue::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45d6d9965c6fee81dc9360f6af1bf1eb" name="a45d6d9965c6fee81dc9360f6af1bf1eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45d6d9965c6fee81dc9360f6af1bf1eb">&#9670;&#160;</a></span>narrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::narrate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01037">1037</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00815">playLineWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a9567138ad18c260c34b3932c21e37d81" name="a9567138ad18c260c34b3932c21e37d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9567138ad18c260c34b3932c21e37d81">&#9670;&#160;</a></span>pickLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::pickLine </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>poolId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00761">761</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00767">pickLineWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a0517529e52a608522c53bf84fc089250" name="a0517529e52a608522c53bf84fc089250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0517529e52a608522c53bf84fc089250">&#9670;&#160;</a></span>pickLineWithParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::pickLineWithParams </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>poolId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00767">767</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00761">pickLine()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00845">playPoolWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a3e726ea05d998b304c2843097a0d9c20" name="a3e726ea05d998b304c2843097a0d9c20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e726ea05d998b304c2843097a0d9c20">&#9670;&#160;</a></span>playLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::playLine </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>lineId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00809">809</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00815">playLineWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a1e23d9ff1ca000e5556d062072c56706" name="a1e23d9ff1ca000e5556d062072c56706"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e23d9ff1ca000e5556d062072c56706">&#9670;&#160;</a></span>playLineWithParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::playLineWithParams </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>lineId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00815">815</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="Dialogue_8cpp_source.html#l01037">narrate()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="Dialogue_8cpp_source.html#l01033">say()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00809">playLine()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00845">playPoolWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a3ac01aed90a103440de71abda5546697" name="a3ac01aed90a103440de71abda5546697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac01aed90a103440de71abda5546697">&#9670;&#160;</a></span>playPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::playPool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>poolId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00839">839</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00845">playPoolWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a82c03574543cc91a1b216b9fec33b6dc" name="a82c03574543cc91a1b216b9fec33b6dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c03574543cc91a1b216b9fec33b6dc">&#9670;&#160;</a></span>playPoolWithParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::playPoolWithParams </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>poolId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00845">845</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="Dialogue_8cpp_source.html#l00767">pickLineWithParams()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00815">playLineWithParams()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00839">playPool()</a>.</p>
+
+</div>
+</div>
+<a id="a1948f6107a91d76ab71df5b83065bc5a" name="a1948f6107a91d76ab71df5b83065bc5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1948f6107a91d76ab71df5b83065bc5a">&#9670;&#160;</a></span>presentChoices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::presentChoices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01107">1107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l01041">skipTyping()</a>.</p>
+
+</div>
+</div>
+<a id="a392dae6fdfc2c09ef61a16d8bab458fe" name="a392dae6fdfc2c09ef61a16d8bab458fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a392dae6fdfc2c09ef61a16d8bab458fe">&#9670;&#160;</a></span>registerCharacter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::registerCharacter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>displayName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>角色：注册 / 查询 / 绑定 Avatar。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00894">894</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="aa94132040ac716753b9d4c9798bd610a" name="aa94132040ac716753b9d4c9798bd610a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa94132040ac716753b9d4c9798bd610a">&#9670;&#160;</a></span>registerCondition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::registerCondition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Register a Squirrel predicate: <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn(ctx)</a> -&gt; bool, ctx = {vars, params, lineId}. </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00292">unregisterCondition()</a>.</p>
+
+</div>
+</div>
+<a id="a0eeadefda18b5278393bb2604efc7a6a" name="a0eeadefda18b5278393bb2604efc7a6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eeadefda18b5278393bb2604efc7a6a">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>重置舞台与台词状态。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01186">1186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01350">resetToDefaults()</a>.</p>
+
+</div>
+</div>
+<a id="aa5280916b63a4ff9d391d33d5183be25" name="aa5280916b63a4ff9d391d33d5183be25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5280916b63a4ff9d391d33d5183be25">&#9670;&#160;</a></span>resetToDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::resetToDefaults </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset stage and line state (restore fallback). </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01350">1350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8cpp_source.html#l01186">reset()</a>.</p>
+
+</div>
+</div>
+<a id="a2629452d86cecacf31654c70bdf2883c" name="a2629452d86cecacf31654c70bdf2883c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2629452d86cecacf31654c70bdf2883c">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore conversation state captured by <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2468c73a49bcbdd696a3103ee7334d02" title="Serialize conversation state (vars, rng, phase, choices, stage).">captureState()</a>. </p>
+<dl class="section return"><dt>返回</dt><dd>false when the captured state is malformed; the reload session then falls back to <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aa5280916b63a4ff9d391d33d5183be25" title="Reset stage and line state (restore fallback).">resetToDefaults()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01252">1252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00059">eve::StateValue::asString()</a>, <a class="el" href="StateValue_8h_source.html#l00066">eve::StateValue::at()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00072">choices</a>, <a class="el" href="StateValue_8cpp_source.html#l00074">eve::StateValue::find()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="StateValue_8h_source.html#l00050">eve::StateValue::isArray()</a>, <a class="el" href="StateValue_8h_source.html#l00047">eve::StateValue::isBool()</a>, <a class="el" href="StateValue_8h_source.html#l00045">eve::StateValue::isInt()</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a>, <a class="el" href="StateValue_8h_source.html#l00048">eve::StateValue::isString()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00140">vars</a>.</p>
+
+</div>
+</div>
+<a id="a8dd03eda5f168161185094b3151f1fd4" name="a8dd03eda5f168161185094b3151f1fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dd03eda5f168161185094b3151f1fd4">&#9670;&#160;</a></span>say()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::say </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>speakerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>台词：说话/旁白、打字机效果与推进。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01033">1033</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00815">playLineWithParams()</a>.</p>
+
+</div>
+</div>
+<a id="a5df2d93f2bd72a693e708061f581820a" name="a5df2d93f2bd72a693e708061f581820a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5df2d93f2bd72a693e708061f581820a">&#9670;&#160;</a></span>selectChoice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::selectChoice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01130">1130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a08d58bd8f939c31dafa832b2eb78f8c2" name="a08d58bd8f939c31dafa832b2eb78f8c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08d58bd8f939c31dafa832b2eb78f8c2">&#9670;&#160;</a></span>setExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::setExpression </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>expression</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00987">987</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="ad9614efd97a1892a947fe848ef55dedc" name="ad9614efd97a1892a947fe848ef55dedc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9614efd97a1892a947fe848ef55dedc">&#9670;&#160;</a></span>setLipSyncAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setLipSyncAmplitude </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amplitude</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01144">1144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acddb80c3e6a9d5450125ee1399bdfd1c" name="acddb80c3e6a9d5450125ee1399bdfd1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acddb80c3e6a9d5450125ee1399bdfd1c">&#9670;&#160;</a></span>setLipSyncEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setLipSyncEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>口型同步：打字时驱动说话者 Avatar 参数。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01138">1138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a63bc96431f330766d8c7ff09fa9923f3" name="a63bc96431f330766d8c7ff09fa9923f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63bc96431f330766d8c7ff09fa9923f3">&#9670;&#160;</a></span>setLipSyncParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setLipSyncParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01140">1140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a09fd89404840dd710e43ac462aab4a4c" name="a09fd89404840dd710e43ac462aab4a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09fd89404840dd710e43ac462aab4a4c">&#9670;&#160;</a></span>setMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::setMotion </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>motion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00994">994</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a9c7cbe1175316356cb3b5ff8cdf5e51b" name="a9c7cbe1175316356cb3b5ff8cdf5e51b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7cbe1175316356cb3b5ff8cdf5e51b">&#9670;&#160;</a></span>setRandomSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setRandomSeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reseed the weighted picker; also resets per-pool no-repeat history. </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00756">756</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>.</p>
+
+</div>
+</div>
+<a id="aa6eb488de68448804d63d4dce905662c" name="aa6eb488de68448804d63d4dce905662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6eb488de68448804d63d4dce905662c">&#9670;&#160;</a></span>setSlotX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setSlotX </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>xNorm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00973">973</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a690a33364fcc6499df39bdcfd3c472e9" name="a690a33364fcc6499df39bdcfd3c472e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a690a33364fcc6499df39bdcfd3c472e9">&#9670;&#160;</a></span>setTypeSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::setTypeSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>charsPerSecond</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01039">1039</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58ebbe545c7702d8ebfa808547091a15" name="a58ebbe545c7702d8ebfa808547091a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ebbe545c7702d8ebfa808547091a15">&#9670;&#160;</a></span>setVar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::setVar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Squirrel-facing setter: value may be int/float/bool/string. </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="Dialogue_8cpp_source.html#l00190">setVarValue()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="abe9089bfbe750c32553b9bb14781cb99" name="abe9089bfbe750c32553b9bb14781cb99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe9089bfbe750c32553b9bb14781cb99">&#9670;&#160;</a></span>setVarValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::setVarValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">VarValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>C++ core setter (also used by unit tests). </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00198">setVar()</a>.</p>
+
+</div>
+</div>
+<a id="a65633f81597344db2e785279d5f3f489" name="a65633f81597344db2e785279d5f3f489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65633f81597344db2e785279d5f3f489">&#9670;&#160;</a></span>show()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::show </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>舞台：显示/隐藏角色、槽位与表情/动作。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00946">946</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a898c94fe4044684798cd370de950da36" name="a898c94fe4044684798cd370de950da36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898c94fe4044684798cd370de950da36">&#9670;&#160;</a></span>skipTyping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::skipTyping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01041">1041</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="utf8_8cpp_source.html#l00023">eve::utf8_codepoint_count()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01054">advance()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01107">presentChoices()</a>.</p>
+
+</div>
+</div>
+<a id="abafe767e7427fc8de9d7d564743a45d1" name="abafe767e7427fc8de9d7d564743a45d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abafe767e7427fc8de9d7d564743a45d1">&#9670;&#160;</a></span>syncStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::syncStage </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stageWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stageHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Place visible avatars using normalized slot X * stageWidth. </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01001">1001</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Dialogue_8cpp_source.html#l00978">getSlotX()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a8861143c5aaff09944c20824afecbce7" name="a8861143c5aaff09944c20824afecbce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8861143c5aaff09944c20824afecbce7">&#9670;&#160;</a></span>unregisterCondition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::unregisterCondition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00277">registerCondition()</a>.</p>
+
+</div>
+</div>
+<a id="a8ab844fa3fdd293f0230ed8ea68b4ab9" name="a8ab844fa3fdd293f0230ed8ea68b4ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ab844fa3fdd293f0230ed8ea68b4ab9">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::Dialogue::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>推进打字机 / 口型同步 / 阶段机；每帧调用。 </p>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l01172">1172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="utf8_8cpp_source.html#l00023">eve::utf8_codepoint_count()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/dialogue/<a class="el" href="Dialogue_8h_source.html">Dialogue.h</a></li>
+<li>src/modules/dialogue/<a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

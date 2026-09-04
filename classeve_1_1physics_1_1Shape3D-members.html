@@ -1,0 +1,268 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::Shape3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ae30bd318249b3571f2625136d643461f">areHitEventsEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a75a7b4360539d56559cea72b031c19b0">Body3D</a></td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a872756a08f61c407d4e6c16e43a1d1ed">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ad328639c4e48fe47de7f2a3641ebff33">disableOneWay</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#abd5d112f1a86099463d2504b62a64837">getBody</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a00ebcefbb6e3eaf34de43d5b6f2a09cb">getBody</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a9bef94d1752b2fd54e04253389aed6c5">getBoxDepth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a69bcb6f6da2e00a248b4330886c2f244">getBoxHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a791065a658b1fb648b934e833be879b6">getBoxWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a9a5de47dca78702be010b8500b1103d1">getCapsuleHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a83a51eec0ba4dcdc54e2b2cb5e2f4e92">getCategoryBits</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#af91731198d267d31e8521f504d76062c">getConvexHullMaxVertices</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ad84b404fb855a8a6065977db0c371389">getConvexHullPointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aac235ddebcf12aef8d1785c036b26eef">getDensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a944875d280507a1ce586e4ad1f9e05ea">getExplosionScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a7fb24bed648622017e3c9fe2e8efde5c">getFriction</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#addb84338421651918dec8b76ea59bb87">getFrictionCombineMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aae94fa20ab109f68129b80ac5279f77b">getGroupIndex</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aa402cc38d3154f81f44405162cb867fe">getHeightFieldCellSizeX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0c1138a1795c119e8bea150de4032694">getHeightFieldCellSizeZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a9d4bb05ef2410f8170911f000d4c2d72">getHeightFieldCountX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a25d8d5ed5493ae8368f5222babe4a029">getHeightFieldCountZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ab49f3d42d7ed325d092908238210d0be">getHeightFieldGlobalMax</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a7c042370748ada88bdb84f76df1c774b">getHeightFieldGlobalMin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a4ce2c1c1f5372314800a074f2a529830">getHeightFieldHeight</a>(int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a01871b2ad3ba6ceffed897811c05d1b8">getId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a3056eefb36d93cd15f5da4757f496fb5">getKind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a8b5bb0d8295ec1b33d670729aa273781">getLocalRotW</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a41cbb2f7eb3a0d09e910ceb689cdd2ed">getLocalRotX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ad87656a497644bf754b6a79d44b0866e">getLocalRotY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aaf8924f767f5b6abe2f607029417763a">getLocalRotZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a6afb445ad050ca573f3feb90e85fdb4e">getLocalX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a668483713faa1a480d50795e6a91e7f2">getLocalY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a2a9778939281f23c326776f8c99e8d70">getLocalZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a761ea73bff7050b6249389f9e752a195">getMaskBits</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a99db814f96b087ec1245ea781549f9d2">getMaterialId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#af5d4eaca321d01d7b5ad06efcd37d5b1">getRadius</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a82db0e038b6708fc0bca6c67fa7a69e8">getRestitution</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#abc5e86e50851a572b145a7ce13dba0ae">getRestitutionCombineMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#afc335fa5e5849b95fa951f391f0c84e9">getRollingResistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a4210f3ccb9299598425b2a891865913d">getTag</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#afa623f9c5c62718bd5f48d67a0bf9b9c">getTangentVelocityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a5794509d45e1f094331a6e32183303d7">getTangentVelocityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ab8b6df81840d587c5b0d9922e76606bd">getTangentVelocityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a50717b0bb3f8df6029b16f4b30f849de">getTriangleMeshMaterialCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a729ca456b6a4cd3f7c8af74ec3c79ad7">getTriangleMeshMaterialFriction</a>(int slot) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a2823ab89dc6d24689d9e9c6efd21292c">getTriangleMeshMaterialId</a>(int slot) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a381a9263d86a25433771b6e07f603554">getTriangleMeshMaterialIndex</a>(int triangleIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a25fb23bdcc2f4324c268a205603e02cf">getTriangleMeshMaterialRestitution</a>(int slot) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a57bfc05174ee7e827134a239df636617">getTriangleMeshMaterialRollingResistance</a>(int slot) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ababaf9126d0dab4e9c956f7625423429">getTriangleMeshTriangleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a2eb561627af958a9830f9c00c568032a">getTriangleMeshVertexCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0d3c418d463b8a704ec7e0b2a469613a">invalidate</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a6d13cec61ee8de0b5846165d230fe11a">isOneWay</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a5b33505bf48e52c3b6e4c1174a5e738d">isSensor</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a7a1d262b5c01957ba9fac869d12cea58">isValid</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a559028053dac54cfe829c1b20fc49e9a">Kind</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a76cd4f4c9faa2fe6d7a47a141fba62a6">operator=</a>(const Shape3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ad6d4fc462afd56760acca5a9e00c98be">raw</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0fef118055007c82fe8fd52899c3b52e">runtimeHandle</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a211f135488ec0ccefd0b05b6bcc03c7a">setBoxSize</a>(float width, float height, float depth)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aa1e10105ef7c9e815af1ea263ae7c093">setCapsuleSize</a>(float height, float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a4d0eccd22b089adbbf07eb5292e32310">setCategoryBits</a>(uint64_t bits)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#aa2ce1a5afb6d05a609d94c4d2702cf84">setConvexHullVertices</a>(const std::vector&lt; float &gt; &amp;vertices, int maxVertices=64)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0cee5dea5c83c68b5cc97d5bb2bb6455">setDensity</a>(float density)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#af2b2beb9a831c9fd10e93f97d79ebf9d">setExplosionScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a916d6480f9a20c2b21d7ece8032307ab">setFilterBits</a>(uint64_t categoryBits, uint64_t maskBits)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#af0e209779b3f09f803f00a41929692f8">setFriction</a>(float friction)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a85bc6d1dbe284093abad7fe70b19b0e5">setFrictionCombineMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a6f9e9ea9b65ee72d6f27c092a693902a">setGroupIndex</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a755568573f427dd645c9c4e068151c0d">setHeightFieldHeights</a>(const std::vector&lt; float &gt; &amp;heights)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ac379ba744bb9cbc3d788eaf41ad59a3d">setHeightFieldRegion</a>(int x, int z, int width, int depth, const std::vector&lt; float &gt; &amp;heights)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a37f1d893094bf9b22a904054e746bd41">setHitEventsEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0cd25d5cfa621e7bb3a39fa17c9aa110">setLocalPosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a8784577cd996fe446076e3b3eb2d760e">setLocalRotation</a>(float qx, float qy, float qz, float qw)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a6db0e73d500b031ad6c9d346cb5646f4">setLocalTransform</a>(float px, float py, float pz, float qx, float qy, float qz, float qw)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a3fbc58654b96c5c89dfde1e416428538">setMaskBits</a>(uint64_t bits)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a380350dc5629e79a514878cb5e0687a2">setMaterialId</a>(int id)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a2859b6971a4cc7a88f6f093516515a23">setOneWay</a>(float nx, float ny, float nz, float planeOffset, float margin, float minNormalDot)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a65f95d80e0cfcb2de19e638a40b3a2f1">setRestitution</a>(float restitution)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ab65d540694ef19c2993c154bc5734df0">setRestitutionCombineMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ac411262179197765e791aaf9e68aa7f8">setRollingResistance</a>(float resistance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#ad7290966e2c7727905869a96c17105ce">setSensor</a>(bool sensor)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a68aadec25e9cdf798fc604f6022d99f2">setSphereRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a152b2103917a27c1709f9225f0910e6e">setTag</a>(int tag)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a8df0debe81eb6a9f3c9427b081ef3888">setTangentVelocity</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a29befad724459f527cde8d861dd2992c">setTriangleMeshData</a>(const std::vector&lt; float &gt; &amp;vertices, const std::vector&lt; int32_t &gt; &amp;indices, bool weldVertices=true, float weldTolerance=0.001f, bool identifyEdges=true, bool useMedianSplit=false)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a4c244aee91190f4722c43f6a2364664e">setTriangleMeshMaterial</a>(int slot, float friction, float restitution, float rollingResistance, float tangentX, float tangentY, float tangentZ, int materialId, const std::string &amp;frictionMode, const std::string &amp;restitutionMode)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a395c98f54940acc9a78ec4a33a81c5ca">setTriangleMeshMaterialIndices</a>(const std::vector&lt; int32_t &gt; &amp;materialIndices)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a587c1da26122607a2f5ea7e7fd6debb7">Shape3D</a>(World3D *world, Body3D *body, b3ShapeId shapeId, PhysicsShapeHandle runtimeHandle, Kind kind, float a, float b, float c, std::vector&lt; float &gt; hullVertices={}, int hullMaxVertices=64, std::vector&lt; float &gt; meshVertices={}, std::vector&lt; int32_t &gt; meshIndices={}, b3MeshData *meshData=nullptr, bool meshWeldVertices=true, float meshWeldTolerance=0.001f, bool meshIdentifyEdges=true, bool meshUseMedianSplit=false, std::vector&lt; float &gt; heightValues={}, int heightCountX=0, int heightCountZ=0, float heightCellSizeX=1.f, float heightCellSizeZ=1.f, float heightGlobalMin=0.f, float heightGlobalMax=0.f, bool heightClockwise=false, b3HeightFieldData *heightData=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a922bc4dacd1b8e45efc136a86d4dabc5">Shape3D</a>(const Shape3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a32d1fe56ec97bea010ad780555d71ddb">testPoint</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">World3D</a></td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html#a9d679985395c62e7c15ad1927c0f930f">~Shape3D</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

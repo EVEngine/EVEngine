@@ -1,0 +1,1406 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::PrimitiveSceneCanvas3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html">PrimitiveSceneCanvas3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::PrimitiveSceneCanvas3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Frame-local scene recorder for 3D line primitives.  
+ <a href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8cc31d9aac5ba767e13605f0a1c3577c" id="r_a8cc31d9aac5ba767e13605f0a1c3577c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a8cc31d9aac5ba767e13605f0a1c3577c">PrimitiveSceneCanvas3D</a> (<a class="el" href="structeve_1_1graphics_1_1SceneDrawContext.html">SceneDrawContext</a> <a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ab8f791bd8d6dbbef9c6aef04e967c6d5">context</a>, std::size_t hardCommandLimit=65536)</td></tr>
+<tr class="separator:a8cc31d9aac5ba767e13605f0a1c3577c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ca14472d229220b090c137ab82bb563" id="r_a2ca14472d229220b090c137ab82bb563"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a2ca14472d229220b090c137ab82bb563">save</a> ()</td></tr>
+<tr class="separator:a2ca14472d229220b090c137ab82bb563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f2565b06699ee1e18e669e3b8a65c2c" id="r_a1f2565b06699ee1e18e669e3b8a65c2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a1f2565b06699ee1e18e669e3b8a65c2c">restore</a> ()</td></tr>
+<tr class="separator:a1f2565b06699ee1e18e669e3b8a65c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a9cb6cb5723d0b430cd15b0b5166aa1" id="r_a6a9cb6cb5723d0b430cd15b0b5166aa1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a6a9cb6cb5723d0b430cd15b0b5166aa1">concat</a> (const glm::mat4 &amp;transform)</td></tr>
+<tr class="separator:a6a9cb6cb5723d0b430cd15b0b5166aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a859713541e3979a1f117605efed8425e" id="r_a859713541e3979a1f117605efed8425e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a859713541e3979a1f117605efed8425e">drawLine</a> (glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:a859713541e3979a1f117605efed8425e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc49ff908c474042859f386badd0f7f2" id="r_abc49ff908c474042859f386badd0f7f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#abc49ff908c474042859f386badd0f7f2">drawPoint</a> (glm::vec3 <a class="el" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:abc49ff908c474042859f386badd0f7f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dde2c25258febd4b585b320fae4198a" id="r_a9dde2c25258febd4b585b320fae4198a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a9dde2c25258febd4b585b320fae4198a">drawPolyline</a> (std::span&lt; const glm::vec3 &gt; <a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, bool closed, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:a9dde2c25258febd4b585b320fae4198a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af827bc0fefb6ee511020033deb3f8f5c" id="r_af827bc0fefb6ee511020033deb3f8f5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">PrimitiveRecordStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#af827bc0fefb6ee511020033deb3f8f5c">tryDrawPolyline</a> (std::span&lt; const glm::vec3 &gt; <a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, bool closed, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="memdesc:af827bc0fefb6ee511020033deb3f8f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically records an owning 3D polyline or returns a structured budget failure.  <br /></td></tr>
+<tr class="separator:af827bc0fefb6ee511020033deb3f8f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a400d9abf0617851ad230bff8d980a64f" id="r_a400d9abf0617851ad230bff8d980a64f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a400d9abf0617851ad230bff8d980a64f">drawRay</a> (glm::vec3 origin, glm::vec3 direction, float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:a400d9abf0617851ad230bff8d980a64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac617979071a169286b92d9acd1b8b5f4" id="r_ac617979071a169286b92d9acd1b8b5f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ac617979071a169286b92d9acd1b8b5f4">drawTriangle</a> (glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, glm::vec3 <a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:ac617979071a169286b92d9acd1b8b5f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae635f48d566ae0946e352467259a81fb" id="r_ae635f48d566ae0946e352467259a81fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ae635f48d566ae0946e352467259a81fb">drawQuad</a> (glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, glm::vec3 <a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, glm::vec3 <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:ae635f48d566ae0946e352467259a81fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5442a53cfd60befbe7e85bfe9101831" id="r_ac5442a53cfd60befbe7e85bfe9101831"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ac5442a53cfd60befbe7e85bfe9101831">drawDisk</a> (glm::vec3 <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, glm::vec3 <a class="el" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="separator:ac5442a53cfd60befbe7e85bfe9101831"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0544949ae904031bdb690352f0d075c" id="r_ab0544949ae904031bdb690352f0d075c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ab0544949ae904031bdb690352f0d075c">drawArc</a> (glm::vec3 <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, glm::vec3 <a class="el" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, glm::vec3 zeroDirection, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float startRadians, float sweepRadians, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="separator:ab0544949ae904031bdb690352f0d075c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ead7e62ee003213d81fe56e28593c28" id="r_a8ead7e62ee003213d81fe56e28593c28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a8ead7e62ee003213d81fe56e28593c28">drawAabb</a> (glm::vec3 <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, glm::vec3 <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="memdesc:a8ead7e62ee003213d81fe56e28593c28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the twelve edges of an axis-aligned box.  <br /></td></tr>
+<tr class="separator:a8ead7e62ee003213d81fe56e28593c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2c41ce2b3bf9ee12156b1bb33cd61d" id="r_a8d2c41ce2b3bf9ee12156b1bb33cd61d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a8d2c41ce2b3bf9ee12156b1bb33cd61d">drawObb</a> (glm::vec3 <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, const std::array&lt; glm::vec3, 3 &gt; &amp;halfAxes, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:a8d2c41ce2b3bf9ee12156b1bb33cd61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d4b86fcda8f06a52a69725aba40c319" id="r_a8d4b86fcda8f06a52a69725aba40c319"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a8d4b86fcda8f06a52a69725aba40c319">drawGrid</a> (glm::vec3 origin, glm::vec3 axisU, glm::vec3 axisV, std::uint32_t cellsU, std::uint32_t cellsV, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="memdesc:a8d4b86fcda8f06a52a69725aba40c319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records a planar grid spanned by two caller-provided axes.  <br /></td></tr>
+<tr class="separator:a8d4b86fcda8f06a52a69725aba40c319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ea235fd639d33c455843566c5637b3" id="r_a58ea235fd639d33c455843566c5637b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a58ea235fd639d33c455843566c5637b3">drawSphere</a> (glm::vec3 <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="memdesc:a58ea235fd639d33c455843566c5637b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records three orthogonal great circles.  <br /></td></tr>
+<tr class="separator:a58ea235fd639d33c455843566c5637b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe2be5c640e1e896de570adf5ff6971e" id="r_afe2be5c640e1e896de570adf5ff6971e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#afe2be5c640e1e896de570adf5ff6971e">drawSphere</a> (glm::vec3 <a class="el" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, const <a class="el" href="structeve_1_1graphics_1_1RadialTessellation.html">RadialTessellation</a> &amp;tessellation)</td></tr>
+<tr class="memdesc:afe2be5c640e1e896de570adf5ff6971e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a sphere using a fixed quality or adaptive projected error policy.  <br /></td></tr>
+<tr class="separator:afe2be5c640e1e896de570adf5ff6971e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2d4678663a14971528d54d2381f7a0" id="r_a6f2d4678663a14971528d54d2381f7a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a6f2d4678663a14971528d54d2381f7a0">drawCapsule</a> (glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="separator:a6f2d4678663a14971528d54d2381f7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2b316a64808310f0ca83aa1aa16fcea" id="r_ab2b316a64808310f0ca83aa1aa16fcea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ab2b316a64808310f0ca83aa1aa16fcea">drawCylinder</a> (glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec3 <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="memdesc:ab2b316a64808310f0ca83aa1aa16fcea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records endpoint circles and four side lines of a cylinder.  <br /></td></tr>
+<tr class="separator:ab2b316a64808310f0ca83aa1aa16fcea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee3008bafc51fe9a29326155486dbc71" id="r_aee3008bafc51fe9a29326155486dbc71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#aee3008bafc51fe9a29326155486dbc71">drawCone</a> (glm::vec3 apex, glm::vec3 axis, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint, std::uint32_t segments=32)</td></tr>
+<tr class="memdesc:aee3008bafc51fe9a29326155486dbc71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the base circle and four side lines of a cone.  <br /></td></tr>
+<tr class="separator:aee3008bafc51fe9a29326155486dbc71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b12ae4e3ed4d9461610a9fef8c12241" id="r_a2b12ae4e3ed4d9461610a9fef8c12241"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a2b12ae4e3ed4d9461610a9fef8c12241">drawArrow</a> (glm::vec3 <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, glm::vec3 <a class="el" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>, float headLength, float headRadius, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="memdesc:a2b12ae4e3ed4d9461610a9fef8c12241"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records a shaft and four-sided arrow head.  <br /></td></tr>
+<tr class="separator:a2b12ae4e3ed4d9461610a9fef8c12241"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c57a79d87e609299d80a2ca67d64e6b" id="r_a8c57a79d87e609299d80a2ca67d64e6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a8c57a79d87e609299d80a2ca67d64e6b">drawFrustum</a> (const std::array&lt; glm::vec3, 8 &gt; &amp;corners, const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;paint)</td></tr>
+<tr class="separator:a8c57a79d87e609299d80a2ca67d64e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad0a85699f2254175e2229390b059af" id="r_a5ad0a85699f2254175e2229390b059af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a5ad0a85699f2254175e2229390b059af">reset</a> ()</td></tr>
+<tr class="separator:a5ad0a85699f2254175e2229390b059af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f791bd8d6dbbef9c6aef04e967c6d5" id="r_ab8f791bd8d6dbbef9c6aef04e967c6d5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1SceneDrawContext.html">SceneDrawContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#ab8f791bd8d6dbbef9c6aef04e967c6d5">context</a> () const noexcept</td></tr>
+<tr class="separator:ab8f791bd8d6dbbef9c6aef04e967c6d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d85565cceb9fe6f99d26c27a5b80811" id="r_a5d85565cceb9fe6f99d26c27a5b80811"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1PolylineCommand3D.html">PolylineCommand3D</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a5d85565cceb9fe6f99d26c27a5b80811">commands</a> () const noexcept</td></tr>
+<tr class="separator:a5d85565cceb9fe6f99d26c27a5b80811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a197cc1864dec88fa7da0ac3132f98d7f" id="r_a197cc1864dec88fa7da0ac3132f98d7f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1TriangleCommand3D.html">TriangleCommand3D</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#a197cc1864dec88fa7da0ac3132f98d7f">triangles</a> () const noexcept</td></tr>
+<tr class="separator:a197cc1864dec88fa7da0ac3132f98d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfb533433980097ebc05a11652dbff9f" id="r_acfb533433980097ebc05a11652dbff9f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">PrimitiveDrawStatistics</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1PrimitiveSceneCanvas3D.html#acfb533433980097ebc05a11652dbff9f">statistics</a> () const noexcept</td></tr>
+<tr class="separator:acfb533433980097ebc05a11652dbff9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Frame-local scene recorder for 3D line primitives. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a> 第 <a class="el" href="PrimitiveDrawList_8h_source.html#l00108">108</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8cc31d9aac5ba767e13605f0a1c3577c" name="a8cc31d9aac5ba767e13605f0a1c3577c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc31d9aac5ba767e13605f0a1c3577c">&#9670;&#160;</a></span>PrimitiveSceneCanvas3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::PrimitiveSceneCanvas3D::PrimitiveSceneCanvas3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1SceneDrawContext.html">SceneDrawContext</a>&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>hardCommandLimit</em> = <code>65536</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00511">511</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="PrimitiveTypes_8cpp_source.html#l00061">eve::graphics::SceneDrawContext::validate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5d85565cceb9fe6f99d26c27a5b80811" name="a5d85565cceb9fe6f99d26c27a5b80811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d85565cceb9fe6f99d26c27a5b80811">&#9670;&#160;</a></span>commands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1PolylineCommand3D.html">PolylineCommand3D</a> &gt; &amp; eve::graphics::PrimitiveSceneCanvas3D::commands </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a> 第 <a class="el" href="PrimitiveDrawList_8h_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a> , 以及 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>.</p>
+
+</div>
+</div>
+<a id="a6a9cb6cb5723d0b430cd15b0b5166aa1" name="a6a9cb6cb5723d0b430cd15b0b5166aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a9cb6cb5723d0b430cd15b0b5166aa1">&#9670;&#160;</a></span>concat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::concat </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>transform</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00525">525</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ab8f791bd8d6dbbef9c6aef04e967c6d5" name="ab8f791bd8d6dbbef9c6aef04e967c6d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8f791bd8d6dbbef9c6aef04e967c6d5">&#9670;&#160;</a></span>context()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1SceneDrawContext.html">SceneDrawContext</a> &amp; eve::graphics::PrimitiveSceneCanvas3D::context </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a> 第 <a class="el" href="PrimitiveDrawList_8h_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>.</p>
+
+</div>
+</div>
+<a id="a8ead7e62ee003213d81fe56e28593c28" name="a8ead7e62ee003213d81fe56e28593c28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ead7e62ee003213d81fe56e28593c28">&#9670;&#160;</a></span>drawAabb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawAabb </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>maximum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records the twelve edges of an axis-aligned box. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00635">635</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00210">edges</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ab0544949ae904031bdb690352f0d075c" name="ab0544949ae904031bdb690352f0d075c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0544949ae904031bdb690352f0d075c">&#9670;&#160;</a></span>drawArc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawArc </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>zeroDirection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startRadians</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sweepRadians</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00612">612</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00164">angle</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a2b12ae4e3ed4d9461610a9fef8c12241" name="a2b12ae4e3ed4d9461610a9fef8c12241"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b12ae4e3ed4d9461610a9fef8c12241">&#9670;&#160;</a></span>drawArrow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawArrow </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>headLength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>headRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records a shaft and four-sided arrow head. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">800</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">drawCone()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a6f2d4678663a14971528d54d2381f7a0" name="a6f2d4678663a14971528d54d2381f7a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2d4678663a14971528d54d2381f7a0">&#9670;&#160;</a></span>drawCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawCapsule </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00743">743</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00752">drawCylinder()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">drawSphere()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="aee3008bafc51fe9a29326155486dbc71" name="aee3008bafc51fe9a29326155486dbc71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee3008bafc51fe9a29326155486dbc71">&#9670;&#160;</a></span>drawCone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawCone </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>apex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records the base circle and four side lines of a cone. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">776</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">drawArrow()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ab2b316a64808310f0ca83aa1aa16fcea" name="ab2b316a64808310f0ca83aa1aa16fcea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2b316a64808310f0ca83aa1aa16fcea">&#9670;&#160;</a></span>drawCylinder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawCylinder </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records endpoint circles and four side lines of a cylinder. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00752">752</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00743">drawCapsule()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ac5442a53cfd60befbe7e85bfe9101831" name="ac5442a53cfd60befbe7e85bfe9101831"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5442a53cfd60befbe7e85bfe9101831">&#9670;&#160;</a></span>drawDisk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawDisk </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00600">600</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a8c57a79d87e609299d80a2ca67d64e6b" name="a8c57a79d87e609299d80a2ca67d64e6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c57a79d87e609299d80a2ca67d64e6b">&#9670;&#160;</a></span>drawFrustum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawFrustum </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; glm::vec3, 8 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>corners</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00815">815</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00210">edges</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00663">drawObb()</a>, <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a8d4b86fcda8f06a52a69725aba40c319" name="a8d4b86fcda8f06a52a69725aba40c319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d4b86fcda8f06a52a69725aba40c319">&#9670;&#160;</a></span>drawGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawGrid </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>axisU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>axisV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>cellsU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>cellsV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records a planar grid spanned by two caller-provided axes. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00673">673</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a859713541e3979a1f117605efed8425e" name="a859713541e3979a1f117605efed8425e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a859713541e3979a1f117605efed8425e">&#9670;&#160;</a></span>drawLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawLine </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00635">drawAabb()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">drawArrow()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">drawCone()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00752">drawCylinder()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00815">drawFrustum()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00673">drawGrid()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00532">drawPoint()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00563">drawRay()</a> , 以及 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a>.</p>
+
+</div>
+</div>
+<a id="a8d2c41ce2b3bf9ee12156b1bb33cd61d" name="a8d2c41ce2b3bf9ee12156b1bb33cd61d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d2c41ce2b3bf9ee12156b1bb33cd61d">&#9670;&#160;</a></span>drawObb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawObb </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; glm::vec3, 3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>halfAxes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00663">663</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00815">drawFrustum()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="abc49ff908c474042859f386badd0f7f2" name="abc49ff908c474042859f386badd0f7f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc49ff908c474042859f386badd0f7f2">&#9670;&#160;</a></span>drawPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawPoint </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00532">532</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00095">eve::graphics::SceneDrawContext::nearPlane</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00073">eve::graphics::PrimitivePaint::stroke</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00091">eve::graphics::SceneDrawContext::view</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00094">eve::graphics::SceneDrawContext::viewportSize</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00058">eve::graphics::StrokeStyle::width</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00059">eve::graphics::StrokeStyle::widthSpace</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa">eve::graphics::WorldUnits</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a>.</p>
+
+</div>
+</div>
+<a id="a9dde2c25258febd4b585b320fae4198a" name="a9dde2c25258febd4b585b320fae4198a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dde2c25258febd4b585b320fae4198a">&#9670;&#160;</a></span>drawPolyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawPolyline </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const glm::vec3 &gt;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>closed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00547">tryDrawPolyline()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00612">drawArc()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">drawCone()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00752">drawCylinder()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00600">drawDisk()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00588">drawQuad()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">drawSphere()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00573">drawTriangle()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ae635f48d566ae0946e352467259a81fb" name="ae635f48d566ae0946e352467259a81fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae635f48d566ae0946e352467259a81fb">&#9670;&#160;</a></span>drawQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawQuad </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00588">588</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a>.</p>
+
+</div>
+</div>
+<a id="a400d9abf0617851ad230bff8d980a64f" name="a400d9abf0617851ad230bff8d980a64f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a400d9abf0617851ad230bff8d980a64f">&#9670;&#160;</a></span>drawRay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawRay </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00563">563</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00527">drawLine()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+</div>
+</div>
+<a id="afe2be5c640e1e896de570adf5ff6971e" name="afe2be5c640e1e896de570adf5ff6971e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe2be5c640e1e896de570adf5ff6971e">&#9670;&#160;</a></span>drawSphere() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawSphere </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1RadialTessellation.html">RadialTessellation</a> &amp;&#160;</td>
+          <td class="paramname"><em>tessellation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a sphere using a fixed quality or adaptive projected error policy. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00726">726</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">drawSphere()</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00092">eve::graphics::SceneDrawContext::projection</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="PrimitiveTypes_8cpp_source.html#l00013">eve::graphics::resolveRadialSegments()</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00091">eve::graphics::SceneDrawContext::view</a> , 以及 <a class="el" href="PrimitiveTypes_8h_source.html#l00094">eve::graphics::SceneDrawContext::viewportSize</a>.</p>
+
+</div>
+</div>
+<a id="a58ea235fd639d33c455843566c5637b3" name="a58ea235fd639d33c455843566c5637b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ea235fd639d33c455843566c5637b3">&#9670;&#160;</a></span>drawSphere() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawSphere </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>segments</em> = <code>32</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records three orthogonal great circles. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">691</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00743">drawCapsule()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00726">drawSphere()</a>, <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="ac617979071a169286b92d9acd1b8b5f4" name="ac617979071a169286b92d9acd1b8b5f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac617979071a169286b92d9acd1b8b5f4">&#9670;&#160;</a></span>drawTriangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::drawTriangle </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00573">573</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::Fill</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00072">eve::graphics::PrimitivePaint::mode</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::Stroke</a> , 以及 <a class="el" href="PrimitiveTypes_8cpp_source.html#l00059">eve::graphics::PrimitivePaint::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a5ad0a85699f2254175e2229390b059af" name="a5ad0a85699f2254175e2229390b059af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad0a85699f2254175e2229390b059af">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00830">830</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f2565b06699ee1e18e669e3b8a65c2c" name="a1f2565b06699ee1e18e669e3b8a65c2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f2565b06699ee1e18e669e3b8a65c2c">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::restore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="a2ca14472d229220b090c137ab82bb563" name="a2ca14472d229220b090c137ab82bb563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ca14472d229220b090c137ab82bb563">&#9670;&#160;</a></span>save()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::PrimitiveSceneCanvas3D::save </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8cpp_source.html#l00168">eve::graphics::PrimitiveScene::render()</a>.</p>
+
+</div>
+</div>
+<a id="acfb533433980097ebc05a11652dbff9f" name="acfb533433980097ebc05a11652dbff9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfb533433980097ebc05a11652dbff9f">&#9670;&#160;</a></span>statistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">PrimitiveDrawStatistics</a> &amp; eve::graphics::PrimitiveSceneCanvas3D::statistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a> 第 <a class="el" href="PrimitiveDrawList_8h_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a> , 以及 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>.</p>
+
+</div>
+</div>
+<a id="a197cc1864dec88fa7da0ac3132f98d7f" name="a197cc1864dec88fa7da0ac3132f98d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a197cc1864dec88fa7da0ac3132f98d7f">&#9670;&#160;</a></span>triangles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1TriangleCommand3D.html">TriangleCommand3D</a> &gt; &amp; eve::graphics::PrimitiveSceneCanvas3D::triangles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a> 第 <a class="el" href="PrimitiveDrawList_8h_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a> , 以及 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>.</p>
+
+</div>
+</div>
+<a id="af827bc0fefb6ee511020033deb3f8f5c" name="af827bc0fefb6ee511020033deb3f8f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af827bc0fefb6ee511020033deb3f8f5c">&#9670;&#160;</a></span>tryDrawPolyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">PrimitiveRecordStatus</a> &gt; eve::graphics::PrimitiveSceneCanvas3D::tryDrawPolyline </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const glm::vec3 &gt;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>closed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically records an owning 3D polyline or returns a structured budget failure. </p>
+
+<p class="definition">在文件 <a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a> 第 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00547">547</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTypes_8h_source.html#l00104">eve::graphics::PrimitiveDrawStatistics::commandCount</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00110">eve::graphics::PrimitiveDrawStatistics::droppedCommands</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0a5b6352d4af330defb41d0bba3929b885">eve::graphics::Recorded</a>, <a class="el" href="PrimitiveTypes_8h_source.html#l00105">eve::graphics::PrimitiveDrawStatistics::segmentCount</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="PrimitiveTypes_8cpp_source.html#l00059">eve::graphics::PrimitivePaint::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00541">drawPolyline()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="PrimitiveDrawList_8h_source.html">PrimitiveDrawList.h</a></li>
+<li>src/modules/graphics/<a class="el" href="PrimitiveDrawList_8cpp_source.html">PrimitiveDrawList.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

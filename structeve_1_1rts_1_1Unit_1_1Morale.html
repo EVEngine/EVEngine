@@ -1,0 +1,425 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::Unit::Morale结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html">Morale</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1Unit_1_1Morale-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::Unit::Morale结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Suppression, recovery, retreat policy, and friendly morale aura.  
+ <a href="structeve_1_1rts_1_1Unit_1_1Morale.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a9deab9cdc4b02302e19eabb02dad76f8" id="r_a9deab9cdc4b02302e19eabb02dad76f8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a9deab9cdc4b02302e19eabb02dad76f8">suppression</a> = 0.0f</td></tr>
+<tr class="separator:a9deab9cdc4b02302e19eabb02dad76f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e6185c83cc24cd7eb1019ca041056d" id="r_a29e6185c83cc24cd7eb1019ca041056d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a29e6185c83cc24cd7eb1019ca041056d">capacity</a> = 0.0f</td></tr>
+<tr class="separator:a29e6185c83cc24cd7eb1019ca041056d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfb8af91b8f51feca01a384691507496" id="r_acfb8af91b8f51feca01a384691507496"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#acfb8af91b8f51feca01a384691507496">recoveryRate</a> = 0.0f</td></tr>
+<tr class="separator:acfb8af91b8f51feca01a384691507496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73803de5b6f9a9101e657d05cc8c5cb2" id="r_a73803de5b6f9a9101e657d05cc8c5cb2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a73803de5b6f9a9101e657d05cc8c5cb2">suppressedSpeedFactor</a> = 1.0f</td></tr>
+<tr class="separator:a73803de5b6f9a9101e657d05cc8c5cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55199d41e33dba555c6ab90824c83b4c" id="r_a55199d41e33dba555c6ab90824c83b4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a55199d41e33dba555c6ab90824c83b4c">suppressedDamageFactor</a> = 1.0f</td></tr>
+<tr class="separator:a55199d41e33dba555c6ab90824c83b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e4dd868215df3d0d29c61683dc01671" id="r_a7e4dd868215df3d0d29c61683dc01671"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a7e4dd868215df3d0d29c61683dc01671">retreatThreshold</a> = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7e4dd868215df3d0d29c61683dc01671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db153e6e1a02049ac2bd6c53528d14a" id="r_a1db153e6e1a02049ac2bd6c53528d14a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a1db153e6e1a02049ac2bd6c53528d14a">retreatDistance</a> = 6.0f</td></tr>
+<tr class="separator:a1db153e6e1a02049ac2bd6c53528d14a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34fd11102c2c694c7f12922117e02811" id="r_a34fd11102c2c694c7f12922117e02811"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a34fd11102c2c694c7f12922117e02811">auraRange</a> = 0.0f</td></tr>
+<tr class="separator:a34fd11102c2c694c7f12922117e02811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a097ea5dd3e03d01d2c76e8c8bc509e3a" id="r_a097ea5dd3e03d01d2c76e8c8bc509e3a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a097ea5dd3e03d01d2c76e8c8bc509e3a">auraSuppressionFactor</a> = 1.0f</td></tr>
+<tr class="separator:a097ea5dd3e03d01d2c76e8c8bc509e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2679a880ff677bd07984c4c81af85466" id="r_a2679a880ff677bd07984c4c81af85466"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a2679a880ff677bd07984c4c81af85466">auraRecoveryBonus</a> = 0.0f</td></tr>
+<tr class="separator:a2679a880ff677bd07984c4c81af85466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac327571bdde63fabe3966545007ad312" id="r_ac327571bdde63fabe3966545007ad312"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#ac327571bdde63fabe3966545007ad312">active</a> = false</td></tr>
+<tr class="separator:ac327571bdde63fabe3966545007ad312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73b4a3332f7f540c7f61d222321efd19" id="r_a73b4a3332f7f540c7f61d222321efd19"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#a73b4a3332f7f540c7f61d222321efd19">retreatEnabled</a> = false</td></tr>
+<tr class="separator:a73b4a3332f7f540c7f61d222321efd19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa444342449ee0db4cf4816cc66559e" id="r_aafa444342449ee0db4cf4816cc66559e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Morale.html#aafa444342449ee0db4cf4816cc66559e">retreating</a> = false</td></tr>
+<tr class="separator:aafa444342449ee0db4cf4816cc66559e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Suppression, recovery, retreat policy, and friendly morale aura. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00675">675</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ac327571bdde63fabe3966545007ad312" name="ac327571bdde63fabe3966545007ad312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac327571bdde63fabe3966545007ad312">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Morale::active = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00686">686</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34fd11102c2c694c7f12922117e02811" name="a34fd11102c2c694c7f12922117e02811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34fd11102c2c694c7f12922117e02811">&#9670;&#160;</a></span>auraRange</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::auraRange = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00683">683</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2679a880ff677bd07984c4c81af85466" name="a2679a880ff677bd07984c4c81af85466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2679a880ff677bd07984c4c81af85466">&#9670;&#160;</a></span>auraRecoveryBonus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::auraRecoveryBonus = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00685">685</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a097ea5dd3e03d01d2c76e8c8bc509e3a" name="a097ea5dd3e03d01d2c76e8c8bc509e3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a097ea5dd3e03d01d2c76e8c8bc509e3a">&#9670;&#160;</a></span>auraSuppressionFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::auraSuppressionFactor = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00684">684</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29e6185c83cc24cd7eb1019ca041056d" name="a29e6185c83cc24cd7eb1019ca041056d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e6185c83cc24cd7eb1019ca041056d">&#9670;&#160;</a></span>capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::capacity = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00677">677</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfb8af91b8f51feca01a384691507496" name="acfb8af91b8f51feca01a384691507496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfb8af91b8f51feca01a384691507496">&#9670;&#160;</a></span>recoveryRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::recoveryRate = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00678">678</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1db153e6e1a02049ac2bd6c53528d14a" name="a1db153e6e1a02049ac2bd6c53528d14a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db153e6e1a02049ac2bd6c53528d14a">&#9670;&#160;</a></span>retreatDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::retreatDistance = 6.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00682">682</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73b4a3332f7f540c7f61d222321efd19" name="a73b4a3332f7f540c7f61d222321efd19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73b4a3332f7f540c7f61d222321efd19">&#9670;&#160;</a></span>retreatEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Morale::retreatEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00687">687</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafa444342449ee0db4cf4816cc66559e" name="aafa444342449ee0db4cf4816cc66559e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa444342449ee0db4cf4816cc66559e">&#9670;&#160;</a></span>retreating</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Morale::retreating = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00688">688</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e4dd868215df3d0d29c61683dc01671" name="a7e4dd868215df3d0d29c61683dc01671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e4dd868215df3d0d29c61683dc01671">&#9670;&#160;</a></span>retreatThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::retreatThreshold = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00681">681</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55199d41e33dba555c6ab90824c83b4c" name="a55199d41e33dba555c6ab90824c83b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55199d41e33dba555c6ab90824c83b4c">&#9670;&#160;</a></span>suppressedDamageFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::suppressedDamageFactor = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00680">680</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73803de5b6f9a9101e657d05cc8c5cb2" name="a73803de5b6f9a9101e657d05cc8c5cb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73803de5b6f9a9101e657d05cc8c5cb2">&#9670;&#160;</a></span>suppressedSpeedFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::suppressedSpeedFactor = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00679">679</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9deab9cdc4b02302e19eabb02dad76f8" name="a9deab9cdc4b02302e19eabb02dad76f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9deab9cdc4b02302e19eabb02dad76f8">&#9670;&#160;</a></span>suppression</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Morale::suppression = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00676">676</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

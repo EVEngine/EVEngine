@@ -1,0 +1,280 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/webgpu/PipelineBuilder.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_370a268442834cf9d1d0b414d06c917d.html">webgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PipelineBuilder.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PipelineBuilder_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="wgpu__types_8h.html">graphics/webgpu/wgpu_types.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="BlendMode_8h.html">graphics/BlendMode.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1webgpu.html">eve::graphics::webgpu</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a28cfb5e0b7d2ca66f29ab8765ce3ea2e">   21</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a28cfb5e0b7d2ca66f29ab8765ce3ea2e">PipelineBuilder</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ac51b60b9ec78d4073b419a70a056be99">   23</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ac51b60b9ec78d4073b419a70a056be99">label</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *l) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        label_ = l;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a2789d3ff0d7f0a052338759b1cd97713">   27</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a2789d3ff0d7f0a052338759b1cd97713">layout</a>(wgpu::PipelineLayout l) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        layout_ = l;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a8963768c47b2ad59dc4ae81ac41259cb">vertexLayout</a>(uint64_t <a class="code hl_variable" href="GltfImporter_8cpp.html#aae4b42a5bc0f8441bf3cb20ba767e99c">stride</a>, wgpu::VertexStepMode stepMode,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                  <span class="keyword">const</span> wgpu::VertexAttribute *attrs, <span class="keywordtype">size_t</span> attrCount);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>(wgpu::ShaderModule <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *vertEntry,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                            wgpu::ShaderModule <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *fragEntry);</div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#aed230304c16e5ea852d9fa7df630bdad">   35</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#aed230304c16e5ea852d9fa7df630bdad">topology</a>(wgpu::PrimitiveTopology <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        topology_ = <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ae9550b0934e09c35efafd1fdf2d41d6f">   39</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ae9550b0934e09c35efafd1fdf2d41d6f">cull</a>(wgpu::CullMode <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        cullMode_ = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab973972c188e46ec8d3373375feee5cf">   43</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab973972c188e46ec8d3373375feee5cf">frontFace</a>(wgpu::FrontFace <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        frontFace_ = <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a40411e4572c351eb277b5c4514e5c20d">colorTarget</a>(WGPUTextureFormat format, <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::graphics::BlendMode</a> mode);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>(WGPUTextureFormat format, wgpu::CompareFunction compare,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                           <span class="keywordtype">bool</span> writeEnabled);</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a734971f9ae0b759d7011664d848752f5">   51</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a734971f9ae0b759d7011664d848752f5">sampleCount</a>(uint32_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        sampleCount_ = <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    wgpu::RenderPipeline <a class="code hl_function" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab5f5d7626a99f6f6aca7e87f713ca412">build</a>(<span class="keyword">const</span> wgpu::Device &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <span class="keywordtype">char</span> *label_ = <span class="stringliteral">&quot;eve_pipeline&quot;</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    wgpu::PipelineLayout layout_;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;wgpu::VertexBufferLayout&gt; vertexBuffers_;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    wgpu::ShaderModule vertModule_;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    wgpu::ShaderModule fragModule_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keywordtype">char</span> *vertEntry_ = <span class="stringliteral">&quot;vs_main&quot;</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keywordtype">char</span> *fragEntry_ = <span class="stringliteral">&quot;fs_main&quot;</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    wgpu::PrimitiveTopology topology_ = wgpu::PrimitiveTopology::TriangleList;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    wgpu::CullMode cullMode_ = wgpu::CullMode::None;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    wgpu::FrontFace frontFace_ = wgpu::FrontFace::CCW;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">bool</span> hasColorTarget_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    wgpu::TextureFormat colorFormat_ = wgpu::TextureFormat::Undefined;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::graphics::BlendMode</a> blendMode_ = eve::graphics::BlendMode::Alpha;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">bool</span> hasDepth_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    wgpu::TextureFormat depthFormat_ = wgpu::TextureFormat::Undefined;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    wgpu::CompareFunction depthCompare_ = wgpu::CompareFunction::Less;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">bool</span> depthWrite_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    uint32_t sampleCount_ = 1;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}  <span class="comment">// namespace eve::graphics::webgpu</span></div>
+<div class="ttc" id="aBlendMode_8h_html"><div class="ttname"><a href="BlendMode_8h.html">BlendMode.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aae4b42a5bc0f8441bf3cb20ba767e99c"><div class="ttname"><a href="GltfImporter_8cpp.html#aae4b42a5bc0f8441bf3cb20ba767e99c">stride</a></div><div class="ttdeci">std::size_t stride</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00145">GltfImporter.cpp:145</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a06dd41ecb2d0928d25f7c8180156197f"><div class="ttname"><a href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a></div><div class="ttdeci">vkb::Device &amp; device</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00288">GraphicsInternal.h:288</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a99414c99dbdc7df738b99938089a3298"><div class="ttname"><a href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a></div><div class="ttdeci">vk::ShaderModule vert</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00289">GraphicsInternal.h:289</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_ae743cf0e5d1516ca41060ab8de001134"><div class="ttname"><a href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a></div><div class="ttdeci">vk::ShaderModule frag</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00290">GraphicsInternal.h:290</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">eve::graphics::webgpu::PipelineBuilder</a></div><div class="ttdoc">Fluent builder for wgpu::RenderPipeline.</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00019">PipelineBuilder.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_a2789d3ff0d7f0a052338759b1cd97713"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a2789d3ff0d7f0a052338759b1cd97713">eve::graphics::webgpu::PipelineBuilder::layout</a></div><div class="ttdeci">PipelineBuilder &amp; layout(wgpu::PipelineLayout l)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00027">PipelineBuilder.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_a28cfb5e0b7d2ca66f29ab8765ce3ea2e"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a28cfb5e0b7d2ca66f29ab8765ce3ea2e">eve::graphics::webgpu::PipelineBuilder::PipelineBuilder</a></div><div class="ttdeci">PipelineBuilder()=default</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_a40411e4572c351eb277b5c4514e5c20d"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a40411e4572c351eb277b5c4514e5c20d">eve::graphics::webgpu::PipelineBuilder::colorTarget</a></div><div class="ttdeci">PipelineBuilder &amp; colorTarget(WGPUTextureFormat format, eve::graphics::BlendMode mode)</div><div class="ttdoc">Set color target format + blend mode (Alpha default = no blend state override risk).</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8cpp_source.html#l00028">PipelineBuilder.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_a734971f9ae0b759d7011664d848752f5"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a734971f9ae0b759d7011664d848752f5">eve::graphics::webgpu::PipelineBuilder::sampleCount</a></div><div class="ttdeci">PipelineBuilder &amp; sampleCount(uint32_t count)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00051">PipelineBuilder.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_a8963768c47b2ad59dc4ae81ac41259cb"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a8963768c47b2ad59dc4ae81ac41259cb">eve::graphics::webgpu::PipelineBuilder::vertexLayout</a></div><div class="ttdeci">PipelineBuilder &amp; vertexLayout(uint64_t stride, wgpu::VertexStepMode stepMode, const wgpu::VertexAttribute *attrs, size_t attrCount)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8cpp_source.html#l00007">PipelineBuilder.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_ab5f5d7626a99f6f6aca7e87f713ca412"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab5f5d7626a99f6f6aca7e87f713ca412">eve::graphics::webgpu::PipelineBuilder::build</a></div><div class="ttdeci">wgpu::RenderPipeline build(const wgpu::Device &amp;device) const</div><div class="ttdoc">Create the pipeline. Throws on null device.</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8cpp_source.html#l00045">PipelineBuilder.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_ab973972c188e46ec8d3373375feee5cf"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab973972c188e46ec8d3373375feee5cf">eve::graphics::webgpu::PipelineBuilder::frontFace</a></div><div class="ttdeci">PipelineBuilder &amp; frontFace(wgpu::FrontFace f)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00043">PipelineBuilder.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_ac51b60b9ec78d4073b419a70a056be99"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ac51b60b9ec78d4073b419a70a056be99">eve::graphics::webgpu::PipelineBuilder::label</a></div><div class="ttdeci">PipelineBuilder &amp; label(const char *l)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00023">PipelineBuilder.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_ae9550b0934e09c35efafd1fdf2d41d6f"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ae9550b0934e09c35efafd1fdf2d41d6f">eve::graphics::webgpu::PipelineBuilder::cull</a></div><div class="ttdeci">PipelineBuilder &amp; cull(wgpu::CullMode c)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00039">PipelineBuilder.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1PipelineBuilder_html_aed230304c16e5ea852d9fa7df630bdad"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#aed230304c16e5ea852d9fa7df630bdad">eve::graphics::webgpu::PipelineBuilder::topology</a></div><div class="ttdeci">PipelineBuilder &amp; topology(wgpu::PrimitiveTopology t)</div><div class="ttdef"><b>Definition</b> <a href="PipelineBuilder_8h_source.html#l00035">PipelineBuilder.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html">eve::graphics::webgpu</a></div><div class="ttdef"><b>Definition</b> <a href="BindGroupLayoutBuilder_8cpp_source.html#l00005">BindGroupLayoutBuilder.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::BlendMode</a></div><div class="ttdeci">BlendMode</div><div class="ttdoc">Render-neutral 2D blend mode shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00011">RenderTypes.h:11</a></div></div>
+<div class="ttc" id="awgpu__types_8h_html"><div class="ttname"><a href="wgpu__types_8h.html">wgpu_types.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

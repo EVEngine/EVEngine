@@ -1,0 +1,303 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ParamSchema.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ParamSchema.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ParamSchema_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">   11</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">ParamKind</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044">Integer</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b">Boolean</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98">String</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10">Choice</a> };</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">   15</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1abeb235743bd6f366512153399c7ba0">   16</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1abeb235743bd6f366512153399c7ba0">displayName</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac3a2ae1ef90a23186092053bfc975436">   17</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac3a2ae1ef90a23186092053bfc975436">description</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a37b2d58e7d77dc0ee6d333642296f78f">   18</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a37b2d58e7d77dc0ee6d333642296f78f">category</a> = <span class="stringliteral">&quot;General&quot;</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1aaaab4a15f41b30b088739297a9a106">   19</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">ParamKind</a>                <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1aaaab4a15f41b30b088739297a9a106">kind</a>     = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98">ParamKind::String</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">   20</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1a301a43001346aa9b9e9a6c3372b8de">   21</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1a301a43001346aa9b9e9a6c3372b8de">hasMinimum</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#aa1d84bb6f85bc98f84cf67961eda5150">   22</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#aa1d84bb6f85bc98f84cf67961eda5150">hasMaximum</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a67837a8a1aa4ce13d819271c112bca85">   23</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a67837a8a1aa4ce13d819271c112bca85">minimum</a>    = 0.0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a17b12616033f758344f78e24abe4442f">   24</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a17b12616033f758344f78e24abe4442f">maximum</a>    = 0.0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a772908ec9a894d62d1d3ad66b6028f56">   25</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a772908ec9a894d62d1d3ad66b6028f56">step</a>       = 0.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a43c7f443efdaa425d3b6abc4069ce69e">   26</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a43c7f443efdaa425d3b6abc4069ce69e">choices</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ParamDescriptor.html#a4632df8740d29dd7bffdd6efe7ec9103">   27</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a4632df8740d29dd7bffdd6efe7ec9103">advanced</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">integer</a>(std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>, std::string label, <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a67837a8a1aa4ce13d819271c112bca85">minimum</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a17b12616033f758344f78e24abe4442f">maximum</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                   <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a772908ec9a894d62d1d3ad66b6028f56">step</a> = 1);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">floating</a>(std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>, std::string label, <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a67837a8a1aa4ce13d819271c112bca85">minimum</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a17b12616033f758344f78e24abe4442f">maximum</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a772908ec9a894d62d1d3ad66b6028f56">step</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a102f73b945448cd45a57c46d621ed9d3">boolean</a>(std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>, std::string label, <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>(std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>, std::string label, std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">choice</a>(std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">key</a>, std::string label, std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">defaultValue</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                  std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1ParamDescriptor.html#a43c7f443efdaa425d3b6abc4069ce69e">choices</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html">   52</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">   53</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">id</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">   54</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">displayName</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">   55</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">category</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">   56</a></span>    std::vector&lt;ParamDescriptor&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a33ad46a0ab773a432fce7b777cae54d9">grid</a>(std::string <span class="keywordtype">id</span>, std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">displayName</a>, std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">category</a>, <span class="keywordtype">int</span> minimumWidth,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                 <span class="keywordtype">int</span> minimumHeight, <span class="keywordtype">int</span> maximumWidth = 4096, <span class="keywordtype">int</span> maximumHeight = 4096);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a>* <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a6647e7de825221dcf5e00aeabf128936">find</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#abdb7ab396f52106fb392ae43e2b7040c">applyDefaults</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a>&amp; <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a81cb3a6ffea1f8bf390cea1fabbc43be">   71</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a81cb3a6ffea1f8bf390cea1fabbc43be">getParamCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(<a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a>.size()); }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa948476bd086423f9414444bfdf05137">   73</a></span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa948476bd086423f9414444bfdf05137">getId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">id</a>; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0dbb0cbab3f1521ba364374439d1812">   75</a></span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0dbb0cbab3f1521ba364374439d1812">getDisplayName</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">displayName</a>; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ace7a1889d7a45ffd6e7d56063c65c4f3">   77</a></span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ace7a1889d7a45ffd6e7d56063c65c4f3">getCategory</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">category</a>; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a8347bbac89342f005fee80b5a53fca38">getParamKey</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a72ffcc99a7ee2158f8036d67bc41892a">getParamLabel</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a811e54f1e9575e58598d00b1858ec49e">getParamDescription</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0c95cee7d306e9d3a10e528239e4792">getParamCategory</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#afcdd90b54c20bbe56d19e5630330d502">getParamKind</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a84c031aba23c89c12fc8c80a4aa71d4b">getParamDefault</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ac80dfd364ac39f16f93f2ad36831c15c">paramHasMinimum</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a98e03e86599c6f5acf84d090fb1c6ad4">paramHasMaximum</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a923bf71b653cfc132957aea02d7ed128">getParamMinimum</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a3a081bbabe4bc9a072f816bda08eee13">getParamMaximum</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a58489830236d8c21bc070251ab7c4f9d">getParamStep</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ade40b9e89c001781ab1427b01ef080ec">isParamAdvanced</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a2f7c6e3b0bad086934914bffc84d8d31">getParamChoiceCount</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::string <a class="code hl_function" href="structeve_1_1procgen_1_1RecipeDescriptor.html#af4784ea1a7fb629a4add7e1bc414c248">getParamChoice</a>(<span class="keywordtype">int</span> paramIndex, <span class="keywordtype">int</span> choiceIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a>* at(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>};</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Owning, typed generation parameters.</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00025">Params.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::ProcgenAttributeType::Float</a></div><div class="ttdeci">@ Float</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98">eve::procgen::ProcgenAttributeType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">eve::procgen::ParamKind</a></div><div class="ttdeci">ParamKind</div><div class="ttdoc">Semantic type used by schema-driven recipe parameter editors.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00011">ParamSchema.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98">eve::procgen::ParamKind::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b">eve::procgen::ParamKind::Boolean</a></div><div class="ttdeci">@ Boolean</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10">eve::procgen::ParamKind::Choice</a></div><div class="ttdeci">@ Choice</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044">eve::procgen::ParamKind::Integer</a></div><div class="ttdeci">@ Integer</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html">eve::procgen::ParamDescriptor</a></div><div class="ttdoc">UI-independent metadata for one procedural recipe parameter.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00014">ParamSchema.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a102f73b945448cd45a57c46d621ed9d3"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a102f73b945448cd45a57c46d621ed9d3">eve::procgen::ParamDescriptor::boolean</a></div><div class="ttdeci">static ParamDescriptor boolean(std::string key, std::string label, bool defaultValue)</div><div class="ttdoc">Construct a Boolean descriptor stored as zero or one in Params.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00047">ParamSchema.cpp:47</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a1597d71c4566cc8b9d36126e2bd38cad"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">eve::procgen::ParamDescriptor::choice</a></div><div class="ttdeci">static ParamDescriptor choice(std::string key, std::string label, std::string defaultValue, std::vector&lt; std::string &gt; choices)</div><div class="ttdoc">Construct a finite-choice string descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00065">ParamSchema.cpp:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a17b12616033f758344f78e24abe4442f"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a17b12616033f758344f78e24abe4442f">eve::procgen::ParamDescriptor::maximum</a></div><div class="ttdeci">double maximum</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00024">ParamSchema.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a1a301a43001346aa9b9e9a6c3372b8de"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a1a301a43001346aa9b9e9a6c3372b8de">eve::procgen::ParamDescriptor::hasMinimum</a></div><div class="ttdeci">bool hasMinimum</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00021">ParamSchema.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a1aaaab4a15f41b30b088739297a9a106"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a1aaaab4a15f41b30b088739297a9a106">eve::procgen::ParamDescriptor::kind</a></div><div class="ttdeci">ParamKind kind</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00019">ParamSchema.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a1abeb235743bd6f366512153399c7ba0"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a1abeb235743bd6f366512153399c7ba0">eve::procgen::ParamDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00016">ParamSchema.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a23afe53f0d046d7efaef069f8122f2d9"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">eve::procgen::ParamDescriptor::floating</a></div><div class="ttdeci">static ParamDescriptor floating(std::string key, std::string label, float defaultValue, float minimum, float maximum, float step)</div><div class="ttdoc">Construct a bounded floating-point descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00033">ParamSchema.cpp:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a37b2d58e7d77dc0ee6d333642296f78f"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a37b2d58e7d77dc0ee6d333642296f78f">eve::procgen::ParamDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00018">ParamSchema.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a43c7f443efdaa425d3b6abc4069ce69e"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a43c7f443efdaa425d3b6abc4069ce69e">eve::procgen::ParamDescriptor::choices</a></div><div class="ttdeci">std::vector&lt; std::string &gt; choices</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00026">ParamSchema.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a4632df8740d29dd7bffdd6efe7ec9103"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a4632df8740d29dd7bffdd6efe7ec9103">eve::procgen::ParamDescriptor::advanced</a></div><div class="ttdeci">bool advanced</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00027">ParamSchema.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a492cc079f2b29f9d1bc2e449938d5618"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a492cc079f2b29f9d1bc2e449938d5618">eve::procgen::ParamDescriptor::key</a></div><div class="ttdeci">std::string key</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00015">ParamSchema.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a67837a8a1aa4ce13d819271c112bca85"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a67837a8a1aa4ce13d819271c112bca85">eve::procgen::ParamDescriptor::minimum</a></div><div class="ttdeci">double minimum</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00023">ParamSchema.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a772908ec9a894d62d1d3ad66b6028f56"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a772908ec9a894d62d1d3ad66b6028f56">eve::procgen::ParamDescriptor::step</a></div><div class="ttdeci">double step</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00025">ParamSchema.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a8a9ba6eda1658d976ffb9821afe36b3e"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">eve::procgen::ParamDescriptor::integer</a></div><div class="ttdeci">static ParamDescriptor integer(std::string key, std::string label, int defaultValue, int minimum, int maximum, int step=1)</div><div class="ttdoc">Construct a bounded integer descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00019">ParamSchema.cpp:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_aa1d84bb6f85bc98f84cf67961eda5150"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#aa1d84bb6f85bc98f84cf67961eda5150">eve::procgen::ParamDescriptor::hasMaximum</a></div><div class="ttdeci">bool hasMaximum</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00022">ParamSchema.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_ac3a2ae1ef90a23186092053bfc975436"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#ac3a2ae1ef90a23186092053bfc975436">eve::procgen::ParamDescriptor::description</a></div><div class="ttdeci">std::string description</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00017">ParamSchema.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_ac44a43cba6a33e34c1868ac4116689c1"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#ac44a43cba6a33e34c1868ac4116689c1">eve::procgen::ParamDescriptor::defaultValue</a></div><div class="ttdeci">std::string defaultValue</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00020">ParamSchema.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html">eve::procgen::RecipeDescriptor</a></div><div class="ttdoc">Complete metadata and parameter schema shared by every procgen recipe family.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00052">ParamSchema.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a2f7c6e3b0bad086934914bffc84d8d31"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a2f7c6e3b0bad086934914bffc84d8d31">eve::procgen::RecipeDescriptor::getParamChoiceCount</a></div><div class="ttdeci">int getParamChoiceCount(int index) const</div><div class="ttdoc">Return the number of choices for one parameter.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00176">ParamSchema.cpp:176</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a33ad46a0ab773a432fce7b777cae54d9"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a33ad46a0ab773a432fce7b777cae54d9">eve::procgen::RecipeDescriptor::grid</a></div><div class="ttdeci">static RecipeDescriptor grid(std::string id, std::string displayName, std::string category, int minimumWidth, int minimumHeight, int maximumWidth=4096, int maximumHeight=4096)</div><div class="ttdoc">Create a schema with common seed, width and height parameters.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00073">ParamSchema.cpp:73</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a394d3142623324414da90bb29f5475d6"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">eve::procgen::RecipeDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00054">ParamSchema.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a3a081bbabe4bc9a072f816bda08eee13"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a3a081bbabe4bc9a072f816bda08eee13">eve::procgen::RecipeDescriptor::getParamMaximum</a></div><div class="ttdeci">float getParamMaximum(int index) const</div><div class="ttdoc">Return a numeric maximum.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00161">ParamSchema.cpp:161</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a58489830236d8c21bc070251ab7c4f9d"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a58489830236d8c21bc070251ab7c4f9d">eve::procgen::RecipeDescriptor::getParamStep</a></div><div class="ttdeci">float getParamStep(int index) const</div><div class="ttdoc">Return the suggested numeric editing step.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00166">ParamSchema.cpp:166</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a6647e7de825221dcf5e00aeabf128936"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a6647e7de825221dcf5e00aeabf128936">eve::procgen::RecipeDescriptor::find</a></div><div class="ttdeci">const ParamDescriptor * find(const std::string &amp;key) const</div><div class="ttdoc">Find one parameter descriptor by stable key.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00085">ParamSchema.cpp:85</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a72ffcc99a7ee2158f8036d67bc41892a"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a72ffcc99a7ee2158f8036d67bc41892a">eve::procgen::RecipeDescriptor::getParamLabel</a></div><div class="ttdeci">std::string getParamLabel(int index) const</div><div class="ttdoc">Return a parameter label by index.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00113">ParamSchema.cpp:113</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a811e54f1e9575e58598d00b1858ec49e"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a811e54f1e9575e58598d00b1858ec49e">eve::procgen::RecipeDescriptor::getParamDescription</a></div><div class="ttdeci">std::string getParamDescription(int index) const</div><div class="ttdoc">Return parameter help text by index.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00118">ParamSchema.cpp:118</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a81cb3a6ffea1f8bf390cea1fabbc43be"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a81cb3a6ffea1f8bf390cea1fabbc43be">eve::procgen::RecipeDescriptor::getParamCount</a></div><div class="ttdeci">int getParamCount() const</div><div class="ttdoc">Return the number of reflected parameters.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00071">ParamSchema.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a8347bbac89342f005fee80b5a53fca38"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a8347bbac89342f005fee80b5a53fca38">eve::procgen::RecipeDescriptor::getParamKey</a></div><div class="ttdeci">std::string getParamKey(int index) const</div><div class="ttdoc">Return a parameter key by index.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00108">ParamSchema.cpp:108</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a84c031aba23c89c12fc8c80a4aa71d4b"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a84c031aba23c89c12fc8c80a4aa71d4b">eve::procgen::RecipeDescriptor::getParamDefault</a></div><div class="ttdeci">std::string getParamDefault(int index) const</div><div class="ttdoc">Return the schema default encoded as text.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00141">ParamSchema.cpp:141</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a923bf71b653cfc132957aea02d7ed128"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a923bf71b653cfc132957aea02d7ed128">eve::procgen::RecipeDescriptor::getParamMinimum</a></div><div class="ttdeci">float getParamMinimum(int index) const</div><div class="ttdoc">Return a numeric minimum.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00156">ParamSchema.cpp:156</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a967beded2146229440430a44c744a1ba"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">eve::procgen::RecipeDescriptor::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00053">ParamSchema.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_a98e03e86599c6f5acf84d090fb1c6ad4"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#a98e03e86599c6f5acf84d090fb1c6ad4">eve::procgen::RecipeDescriptor::paramHasMaximum</a></div><div class="ttdeci">bool paramHasMaximum(int index) const</div><div class="ttdoc">Test whether a numeric maximum exists.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00151">ParamSchema.cpp:151</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_aa0c95cee7d306e9d3a10e528239e4792"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0c95cee7d306e9d3a10e528239e4792">eve::procgen::RecipeDescriptor::getParamCategory</a></div><div class="ttdeci">std::string getParamCategory(int index) const</div><div class="ttdoc">Return a parameter category by index.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00123">ParamSchema.cpp:123</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_aa0dbb0cbab3f1521ba364374439d1812"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0dbb0cbab3f1521ba364374439d1812">eve::procgen::RecipeDescriptor::getDisplayName</a></div><div class="ttdeci">std::string getDisplayName() const</div><div class="ttdoc">Return the human-readable recipe name.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00075">ParamSchema.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_aa218539902f2b84c0b47f622ee2c3245"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">eve::procgen::RecipeDescriptor::params</a></div><div class="ttdeci">std::vector&lt; ParamDescriptor &gt; params</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00056">ParamSchema.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_aa948476bd086423f9414444bfdf05137"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa948476bd086423f9414444bfdf05137">eve::procgen::RecipeDescriptor::getId</a></div><div class="ttdeci">std::string getId() const</div><div class="ttdoc">Return the stable recipe id.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00073">ParamSchema.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_abdb7ab396f52106fb392ae43e2b7040c"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#abdb7ab396f52106fb392ae43e2b7040c">eve::procgen::RecipeDescriptor::applyDefaults</a></div><div class="ttdeci">void applyDefaults(Params &amp;params) const</div><div class="ttdoc">Fill missing Params values from this schema.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00091">ParamSchema.cpp:91</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_ac80dfd364ac39f16f93f2ad36831c15c"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#ac80dfd364ac39f16f93f2ad36831c15c">eve::procgen::RecipeDescriptor::paramHasMinimum</a></div><div class="ttdeci">bool paramHasMinimum(int index) const</div><div class="ttdoc">Test whether a numeric minimum exists.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00146">ParamSchema.cpp:146</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_ace7a1889d7a45ffd6e7d56063c65c4f3"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#ace7a1889d7a45ffd6e7d56063c65c4f3">eve::procgen::RecipeDescriptor::getCategory</a></div><div class="ttdeci">std::string getCategory() const</div><div class="ttdoc">Return the recipe browser category.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00077">ParamSchema.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_ad355fa9373a2cad872537e86ccd80f36"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">eve::procgen::RecipeDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00055">ParamSchema.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_ade40b9e89c001781ab1427b01ef080ec"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#ade40b9e89c001781ab1427b01ef080ec">eve::procgen::RecipeDescriptor::isParamAdvanced</a></div><div class="ttdeci">bool isParamAdvanced(int index) const</div><div class="ttdoc">Test whether compact inspectors should hide the field.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00171">ParamSchema.cpp:171</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_af4784ea1a7fb629a4add7e1bc414c248"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#af4784ea1a7fb629a4add7e1bc414c248">eve::procgen::RecipeDescriptor::getParamChoice</a></div><div class="ttdeci">std::string getParamChoice(int paramIndex, int choiceIndex) const</div><div class="ttdoc">Return one choice.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00181">ParamSchema.cpp:181</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_afcdd90b54c20bbe56d19e5630330d502"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#afcdd90b54c20bbe56d19e5630330d502">eve::procgen::RecipeDescriptor::getParamKind</a></div><div class="ttdeci">std::string getParamKind(int index) const</div><div class="ttdoc">Return the portable parameter kind.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00128">ParamSchema.cpp:128</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

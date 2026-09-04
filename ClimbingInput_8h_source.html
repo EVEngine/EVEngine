@@ -1,0 +1,294 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingInput.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingInput.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingInput_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Climbing_8h.html">climbing/Climbing.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a101f693f72287a2819a364f64ca1c0ed">Jump</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a6a1c691bbf96b5c71a26173491b350cd">Climb</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a3e679cff5b3a6f6f8f32aead541a0a12">Drop</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3affc3dc096e3578a9474b7976953f0ef9">Sprint</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a497f1e75bc31c926497e67df9688f51d">Crouch</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">   23</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">ClimbingCoyoteState</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada76fbf0ccd7fcd64879c2ff2119dc15a4">Outside</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada4358876405775b10c44268aeeeec5f50">Eligible</a> };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a6124fff1b151030e77304d4dcf156c1b">   27</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>     <a class="code hl_variable" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a6124fff1b151030e77304d4dcf156c1b">command</a>             = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205a6a1c691bbf96b5c71a26173491b350cd">ClimbingCommand::Climb</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#aafbcb35fe8f49f23194996decf1e6976">   28</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#aafbcb35fe8f49f23194996decf1e6976">pressedTick</a>         = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#ab8f2e2977d9a799b5edac3869d8374e7">   29</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#ab8f2e2977d9a799b5edac3869d8374e7">expiryTick</a>          = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a9234f51ad8d44f839f8214981b03d576">   30</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ClimbingExecutionId</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a9234f51ad8d44f839f8214981b03d576">consumedExecutionId</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">ClimbingExecutionId::zero</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a2b8af6b3dbb714ea69a19bc97bee6860">   32</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a2b8af6b3dbb714ea69a19bc97bee6860">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingIntent.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingIntent.html#ac2f3e2a9026485d1091b501c39c9f381">   37</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                                 <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingIntent.html#ac2f3e2a9026485d1091b501c39c9f381">move</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingIntent.html#aebb44fbe9cf999031036505a5a6dd86e">   38</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                                 <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingIntent.html#aebb44fbe9cf999031036505a5a6dd86e">look</a>{0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingIntent.html#aaca79b3310f055f7483b480c827619c7">   39</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a928b802522ed77e2b18daefc33d6215a">ClimbingInputMode</a>                    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingIntent.html#aaca79b3310f055f7483b480c827619c7">mode</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a928b802522ed77e2b18daefc33d6215aaf1a76f66cca677c6e628d9ca58a6c8fc">ClimbingInputMode::Flow</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingIntent.html#a3222001966252f0ad197120a720a918d">   40</a></span>    std::vector&lt;BufferedClimbingCommand&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingIntent.html#a3222001966252f0ad197120a720a918d">commands</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingInputSystem.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingInputSystem.html">ClimbingInputSystem</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a409ab49657952ff3feb88e98c54df4f1">   52</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::size_t <a class="code hl_variable" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a409ab49657952ff3feb88e98c54df4f1">MaxBufferedCommands</a> = 16;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a798542b057cbe420a13e7e0b53c9f534">submit</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp; intent, <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                                  <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> pressedTick, std::uint64_t bufferTicks);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a798542b057cbe420a13e7e0b53c9f534">submit</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp; intent, <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                                                  <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>              pressedTick,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingProfileDefinition.html">ClimbingProfileDefinition</a>&amp; profile);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <span class="keyword">static</span> std::size_t <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a113bb2fb80c0866d1ad5a5feb8436dbe">prune</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp; intent, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> currentTick) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::optional&lt;BufferedClimbingCommand&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ac1cd7dd550cda7077060b357e9e21234">consume</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp;     intent,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                                                                                     <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>     command,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                                                                     <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> currentTick,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                                                     <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ClimbingExecutionId</a> executionId);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <span class="keyword">static</span> std::optional&lt;BufferedClimbingCommand&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ace7edbddbadbbd33bac689c3d4ec280a">peek</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp; intent,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                                     <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>       command,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                                                     <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>   currentTick) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">ClimbingCoyoteState</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a6e5f67d7c6cee3bf7654c63cf3c9e151">coyoteWindowState</a>(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> currentTick,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                                               <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> lastGroundedTick,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                               std::uint64_t        coyoteTicks) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>};</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="};">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html">   92</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html">ClimbingSelectionSystem</a> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingStart&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html#a812156935cec0424c6fc0adc964325a8">tryStart</a>(<a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a>&amp; runtime, <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                                             <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a>&amp; pose, <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a>&amp; intent,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                                                             <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                                             <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> lastGroundedTick);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>};</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aClimbing_8h_html"><div class="ttname"><a href="Climbing_8h.html">Climbing.h</a></div><div class="ttdoc">Deterministic climbing/parkour planning and capsule-constrained execution.</div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html">eve::climbing::ClimbingInputSystem</a></div><div class="ttdoc">Input-phase operations over a ClimbingIntent component.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00049">ClimbingInput.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_a113bb2fb80c0866d1ad5a5feb8436dbe"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a113bb2fb80c0866d1ad5a5feb8436dbe">eve::climbing::ClimbingInputSystem::prune</a></div><div class="ttdeci">static std::size_t prune(ClimbingIntent &amp;intent, eve::SimulationTick currentTick) noexcept</div><div class="ttdoc">Remove expired and already-consumed records; returns the number removed.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8cpp_source.html#l00048">ClimbingInput.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_a409ab49657952ff3feb88e98c54df4f1"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a409ab49657952ff3feb88e98c54df4f1">eve::climbing::ClimbingInputSystem::MaxBufferedCommands</a></div><div class="ttdeci">static constexpr std::size_t MaxBufferedCommands</div><div class="ttdoc">Hard safety bound preventing an untrusted producer from growing intent indefinitely.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00052">ClimbingInput.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_a6e5f67d7c6cee3bf7654c63cf3c9e151"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a6e5f67d7c6cee3bf7654c63cf3c9e151">eve::climbing::ClimbingInputSystem::coyoteWindowState</a></div><div class="ttdeci">static ClimbingCoyoteState coyoteWindowState(eve::SimulationTick currentTick, eve::SimulationTick lastGroundedTick, std::uint64_t coyoteTicks) noexcept</div><div class="ttdoc">Evaluate a grounded grace window without reading wall clock.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8cpp_source.html#l00085">ClimbingInput.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_a798542b057cbe420a13e7e0b53c9f534"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a798542b057cbe420a13e7e0b53c9f534">eve::climbing::ClimbingInputSystem::submit</a></div><div class="ttdeci">static eve::Result&lt; void &gt; submit(ClimbingIntent &amp;intent, ClimbingCommand command, eve::SimulationTick pressedTick, std::uint64_t bufferTicks)</div><div class="ttdoc">Queue one edge command with expiry derived from an exact tick budget.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8cpp_source.html#l00023">ClimbingInput.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_ac1cd7dd550cda7077060b357e9e21234"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ac1cd7dd550cda7077060b357e9e21234">eve::climbing::ClimbingInputSystem::consume</a></div><div class="ttdeci">static eve::Result&lt; std::optional&lt; BufferedClimbingCommand &gt; &gt; consume(ClimbingIntent &amp;intent, ClimbingCommand command, eve::SimulationTick currentTick, ClimbingExecutionId executionId)</div><div class="ttdoc">Atomically mark the oldest eligible command consumed by one committed execution.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8cpp_source.html#l00056">ClimbingInput.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingInputSystem_html_ace7edbddbadbbd33bac689c3d4ec280a"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ace7edbddbadbbd33bac689c3d4ec280a">eve::climbing::ClimbingInputSystem::peek</a></div><div class="ttdeci">static std::optional&lt; BufferedClimbingCommand &gt; peek(const ClimbingIntent &amp;intent, ClimbingCommand command, eve::SimulationTick currentTick) noexcept</div><div class="ttdoc">Observe the oldest eligible command without consuming or pruning intent.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8cpp_source.html#l00076">ClimbingInput.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingRuntime_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingRuntime.html">eve::climbing::ClimbingRuntime</a></div><div class="ttdoc">Owner-thread climbing planner and executor for one character.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00624">Climbing.h:624</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingSelectionSystem_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html">eve::climbing::ClimbingSelectionSystem</a></div><div class="ttdoc">PrePhysics selection transaction joining buffered input to one authoritative execution.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00092">ClimbingInput.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingSelectionSystem_html_a812156935cec0424c6fc0adc964325a8"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html#a812156935cec0424c6fc0adc964325a8">eve::climbing::ClimbingSelectionSystem::tryStart</a></div><div class="ttdeci">static eve::Result&lt; ClimbingStart &gt; tryStart(ClimbingRuntime &amp;runtime, physics::World3D &amp;world, const ClimbingPose &amp;pose, ClimbingIntent &amp;intent, ClimbingCommand command, eve::SimulationTick tick, eve::SimulationTick lastGroundedTick)</div><div class="ttdoc">Start the best candidate and consume its input edge exactly once.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingSelection_8cpp_source.html#l00188">ClimbingSelection.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a09080ee9f179ce130fde20d7ade864ad"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">eve::climbing::ClimbingCoyoteState</a></div><div class="ttdeci">ClimbingCoyoteState</div><div class="ttdoc">Named result of evaluating the deterministic grounded grace window.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00023">ClimbingInput.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a09080ee9f179ce130fde20d7ade864ada4358876405775b10c44268aeeeec5f50"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada4358876405775b10c44268aeeeec5f50">eve::climbing::ClimbingCoyoteState::Eligible</a></div><div class="ttdeci">@ Eligible</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a09080ee9f179ce130fde20d7ade864ada76fbf0ccd7fcd64879c2ff2119dc15a4"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada76fbf0ccd7fcd64879c2ff2119dc15a4">eve::climbing::ClimbingCoyoteState::Outside</a></div><div class="ttdeci">@ Outside</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a8903a62ead6e9a7d5b0d3182c41010e3a101f693f72287a2819a364f64ca1c0ed"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a101f693f72287a2819a364f64ca1c0ed">eve::climbing::ClimbingCommandRequirement::Jump</a></div><div class="ttdeci">@ Jump</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a8903a62ead6e9a7d5b0d3182c41010e3a3e679cff5b3a6f6f8f32aead541a0a12"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a3e679cff5b3a6f6f8f32aead541a0a12">eve::climbing::ClimbingCommandRequirement::Drop</a></div><div class="ttdeci">@ Drop</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a8903a62ead6e9a7d5b0d3182c41010e3a497f1e75bc31c926497e67df9688f51d"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a497f1e75bc31c926497e67df9688f51d">eve::climbing::ClimbingCommandRequirement::Crouch</a></div><div class="ttdeci">@ Crouch</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a8903a62ead6e9a7d5b0d3182c41010e3a6a1c691bbf96b5c71a26173491b350cd"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3a6a1c691bbf96b5c71a26173491b350cd">eve::climbing::ClimbingCommandRequirement::Climb</a></div><div class="ttdeci">@ Climb</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a8903a62ead6e9a7d5b0d3182c41010e3affc3dc096e3578a9474b7976953f0ef9"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a8903a62ead6e9a7d5b0d3182c41010e3affc3dc096e3578a9474b7976953f0ef9">eve::climbing::ClimbingCommandRequirement::Sprint</a></div><div class="ttdeci">@ Sprint</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a928b802522ed77e2b18daefc33d6215a"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a928b802522ed77e2b18daefc33d6215a">eve::climbing::ClimbingInputMode</a></div><div class="ttdeci">ClimbingInputMode</div><div class="ttdoc">Input interpretation used by candidate assist and deterministic selection policies.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00096">Climbing.h:96</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a928b802522ed77e2b18daefc33d6215aaf1a76f66cca677c6e628d9ca58a6c8fc"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a928b802522ed77e2b18daefc33d6215aaf1a76f66cca677c6e628d9ca58a6c8fc">eve::climbing::ClimbingInputMode::Flow</a></div><div class="ttdeci">@ Flow</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a9bbcccc9cd470c93e0033fff6a897205"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">eve::climbing::ClimbingCommand</a></div><div class="ttdeci">ClimbingCommand</div><div class="ttdoc">Edge and held commands understood by the climbing input phase.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00020">ClimbingInput.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a9bbcccc9cd470c93e0033fff6a897205a6a1c691bbf96b5c71a26173491b350cd"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205a6a1c691bbf96b5c71a26173491b350cd">eve::climbing::ClimbingCommand::Climb</a></div><div class="ttdeci">@ Climb</div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">eve::climbing::BufferedClimbingCommand</a></div><div class="ttdoc">One owning edge command with deterministic lifetime and consumption evidence.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00026">ClimbingInput.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html_a2b8af6b3dbb714ea69a19bc97bee6860"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a2b8af6b3dbb714ea69a19bc97bee6860">eve::climbing::BufferedClimbingCommand::operator==</a></div><div class="ttdeci">friend bool operator==(const BufferedClimbingCommand &amp;, const BufferedClimbingCommand &amp;)=default</div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html_a6124fff1b151030e77304d4dcf156c1b"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a6124fff1b151030e77304d4dcf156c1b">eve::climbing::BufferedClimbingCommand::command</a></div><div class="ttdeci">ClimbingCommand command</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00027">ClimbingInput.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html_a9234f51ad8d44f839f8214981b03d576"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#a9234f51ad8d44f839f8214981b03d576">eve::climbing::BufferedClimbingCommand::consumedExecutionId</a></div><div class="ttdeci">ClimbingExecutionId consumedExecutionId</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00030">ClimbingInput.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html_aafbcb35fe8f49f23194996decf1e6976"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#aafbcb35fe8f49f23194996decf1e6976">eve::climbing::BufferedClimbingCommand::pressedTick</a></div><div class="ttdeci">eve::SimulationTick pressedTick</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00028">ClimbingInput.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1BufferedClimbingCommand_html_ab8f2e2977d9a799b5edac3869d8374e7"><div class="ttname"><a href="structeve_1_1climbing_1_1BufferedClimbingCommand.html#ab8f2e2977d9a799b5edac3869d8374e7">eve::climbing::BufferedClimbingCommand::expiryTick</a></div><div class="ttdeci">eve::SimulationTick expiryTick</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00029">ClimbingInput.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingIntent_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingIntent.html">eve::climbing::ClimbingIntent</a></div><div class="ttdoc">Hot authoritative intent component; contains no device or callback pointers.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00036">ClimbingInput.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingIntent_html_a3222001966252f0ad197120a720a918d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingIntent.html#a3222001966252f0ad197120a720a918d">eve::climbing::ClimbingIntent::commands</a></div><div class="ttdeci">std::vector&lt; BufferedClimbingCommand &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00040">ClimbingInput.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingIntent_html_aaca79b3310f055f7483b480c827619c7"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingIntent.html#aaca79b3310f055f7483b480c827619c7">eve::climbing::ClimbingIntent::mode</a></div><div class="ttdeci">ClimbingInputMode mode</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00039">ClimbingInput.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingIntent_html_ac2f3e2a9026485d1091b501c39c9f381"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingIntent.html#ac2f3e2a9026485d1091b501c39c9f381">eve::climbing::ClimbingIntent::move</a></div><div class="ttdeci">Vec3 move</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00037">ClimbingInput.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingIntent_html_aebb44fbe9cf999031036505a5a6dd86e"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingIntent.html#aebb44fbe9cf999031036505a5a6dd86e">eve::climbing::ClimbingIntent::look</a></div><div class="ttdeci">Vec3 look</div><div class="ttdef"><b>Definition</b> <a href="ClimbingInput_8h_source.html#l00038">ClimbingInput.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingPose_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingPose.html">eve::climbing::ClimbingPose</a></div><div class="ttdoc">Input pose used for one deterministic candidate probe.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00274">Climbing.h:274</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingProfileDefinition_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingProfileDefinition.html">eve::climbing::ClimbingProfileDefinition</a></div><div class="ttdoc">Runtime profile controlling capsule geometry and probe limits.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00217">Climbing.h:217</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1Vec3_html"><div class="ttname"><a href="structeve_1_1climbing_1_1Vec3.html">eve::climbing::Vec3</a></div><div class="ttdoc">Small owning world-space vector used at climbing module boundaries.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingPrimitives_8h_source.html#l00017">ClimbingPrimitives.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

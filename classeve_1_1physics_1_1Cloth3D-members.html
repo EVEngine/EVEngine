@@ -1,0 +1,239 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::Cloth3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ab88d7470ab3c05f3cbc74a61482276b6">applyForce</a>(float fx, float fy, float fz)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a0144a02784819be75844e9570adcb9f6">clearBounds</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a2c7e66831949fc64260cc3430dc561fc">Cloth3D</a>(int cols, int rows, float spacing, float originX, float originY, float originZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ae9f0427d9c9aec0f11b9d21e4cf03147">Cloth3D</a>(const Cloth3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a313624ba2f442fb206bf2f5495e4391b">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a352f5ecb695c4ce214171bb0e27122d3">determinism</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a44d926c7da4eeb2de69b69d64177ebfb">draw</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a25acb5103b0735e7422c7aa05f53618c">getCollideWorld</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ae4ba8b905c80a54b7509ac6e87ea5e93">getColorA</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8ba060ad6d52ae71722b81aa72e04128">getColorB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a64d37ad9d3575c5d481e2811f1f12c2d">getColorG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3ea0177444d7dc52ba9100137d686a2a">getColorR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4de07cd88b8846833c7a4b84e1bb51ef">getCols</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abbcd6072285586b8a29247f437ba9018">getDamping</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a61c1f8e462c4b2f53f552b70e1739bea">getFoldStiffness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa0e8c6f25b834c5c7616b701cc10ee2c">getGrabIndex</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4c289497f46c0a5cf969839d34c28c07">getGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8ee3dbbb69bba8fa1174bb7853724b53">getGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa11c4b9061f446ddf50013ecce1b8684">getGravityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8c644106852cab3d1a0ca90dcaa4f4e3">getIterations</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a61079c79930d81ce47ea5e1fbdaecf0f">getMaxFoldAngle</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#afbbb9ba969e575930d3ac79d097617ee">getOriginX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a764f3651d26850041586c01fa584fbf2">getOriginY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a03e8b7213aae80d21c93d56c93c76e7e">getOriginZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ac34ab9e246ffcdd8db5eb3c2eaa1ed40">getParticleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8aa95e9a59d72903378ca91cccfa94a8">getParticleMass</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a71c1e04641fd06ec9e8572d3dc62aec4">getParticleSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a6f472c58bc9e18e9081757dd5016f97e">getParticleX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ace5cfd822dc5c26aba0955b06000141a">getParticleY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abba41e6c6a7998589c67cef998b35fbe">getParticleZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a312540bb4ac53343a2932d32dceb4c2b">getRows</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aaab6ab75019515a29d337ebe431a299f">getSelfCollision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ad7beb78102356f662cc1ed5797b8012c">getSpacing</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#afaeed1a85abe6281907215d2ed520e53">getStiffness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a51d1fa785e24ec83c79201eeb805d433">grabAt</a>(float x, float y, float z, float radius=0.3f)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a2965313753c4e634647d6a9b422eb591">interactAt</a>(float x, float y, float z, float radius, float strength)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4ebae72dad555458b97749b0ce1d38e6">isGrabbing</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a55fe01000a4e538d33d1a3e2cb42452c">isPinned</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9b5bb8e171e4b7da0cbad5530bf90ee8">kind</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3a904c8a3bec32fd21853dace6b5e071">moveGrab</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a901b3435d9cb6ca1c15df90051956042">observation</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4506228b1429ae878a065a7eceff7887">operator=</a>(const Cloth3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a0fb856292f87d67f42d0f52eebd4f5c6">pin</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a587fdb227f97a92d0f63e03f8c0cdedb">pinTopRow</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8c481e54c78378e4da7cbb6bf0ddb1ee">releaseGrab</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a869247cb94a034cd5217603cd947b2f3">reset</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a81f5d22780caee1c580e416f610288b9">restoreObservation</a>(const SimulationObservation &amp;observation) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a82a285fd73c0b8ea01e7707809dedef1">setBounds</a>(float x, float y, float z, float w, float h, float d)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3fe81da25dd71c26e3a20871f5fcec83">setCollideWorld</a>(World3D *world)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a5ab5bb459ff685515c97a6e52f153185">setColor</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa11e7a38f354be4c2a79429679996bda">setDamping</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#af1788b5b5536350a6207146c99d4a714">setFoldStiffness</a>(float k)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a04e7183a0056d945eb0a6102d6ed520e">setGravity</a>(float gx, float gy, float gz)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a98103830c76b7cb520ce35c3f62e71e9">setIterations</a>(int iterations)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ac09f4bfa956c346eb60ea343a5d1a023">setMaxFoldAngle</a>(float degrees)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ab7b1d87554652666d04e59ef8ce639f6">setParticleMass</a>(float mass)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abc6f40b73241a9c4f4e0a45425217096">setParticlePosition</a>(int index, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a95b1a7b5e835e72c06ab72138dee993d">setParticleSize</a>(float size)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a50f4c3389334e82884eb0630d62074a3">setSelfCollision</a>(bool on)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a5f04b4cee80a7e11235323dbbc719692">setStiffness</a>(float stiffness)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a66ecb3d6ba50b5721417cd8ab98d01e6">step</a>(const eve::SimulationStep &amp;step, const SimulationSettings &amp;settings) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a7fb2dd906065f77f049fa47fcca19a49">unpin</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9a463392710bd1685076b6904c659ab9">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a1449f7d4129da6a8b193d03e4b77c015">~Cloth3D</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

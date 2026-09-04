@@ -1,0 +1,311 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WeaponEffects.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeaponEffects.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeaponEffects_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="EffectContainer_8h.html">effects/EffectContainer.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">WeaponEffectKind</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed">Heat</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55">Jam</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908">Recoil</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a413d88a8cdaa595cd5eeea519ba46653">   24</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a413d88a8cdaa595cd5eeea519ba46653">heat</a>         = 0.0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a98785b30e24bc8dd9f9ab77e2b2d57d7">   25</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a98785b30e24bc8dd9f9ab77e2b2d57d7">maxHeat</a>      = 100.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a04fccae47c49c0eb77a72fc8a9b06f8f">   26</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a04fccae47c49c0eb77a72fc8a9b06f8f">jammed</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#abebc52c0da029d9b5c813ecbca1f28a3">   27</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#abebc52c0da029d9b5c813ecbca1f28a3">recoil</a>       = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#aaf01f7f40cfd81eaca40b04b975a66f3">   28</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectTarget.html#aaf01f7f40cfd81eaca40b04b975a66f3">blockedShots</a> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html">WeaponEffectDefinition</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a13e262257ae034eb7d4f08ad33a7c5ad">   33</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a13e262257ae034eb7d4f08ad33a7c5ad">id</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a0e64baa53025d1683749476543ad82ba">   34</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a0e64baa53025d1683749476543ad82ba">source</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a4da06cd920b27a9df4862cb381c9e2db">   35</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a4da06cd920b27a9df4862cb381c9e2db">duration</a>  = 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a5d8e1bcd1e1701d79236efd80c6c420b">   36</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a5d8e1bcd1e1701d79236efd80c6c420b">period</a>    = 0.0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a7bfb2db3beabf28b7f162af5468a55c1">   37</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a7bfb2db3beabf28b7f162af5468a55c1">magnitude</a> = 0.0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a47220041aa848f78287429445c68f9fe">   38</a></span>    <a class="code hl_struct" href="structeve_1_1effects_1_1EffectPolicy.html">effects::EffectPolicy</a>    <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a47220041aa848f78287429445c68f9fe">policy</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a8f5724197940376d1bfd9b1f892a4eec">   39</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">WeaponEffectKind</a>         <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a8f5724197940376d1bfd9b1f892a4eec">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed">WeaponEffectKind::Heat</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#abef42cb748c16a3ed044ab779af2e2c5">   40</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#abef42cb748c16a3ed044ab779af2e2c5">tags</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html">   44</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html">WeaponEffectUpdate</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#ab1c268ce8c75f0a7f652193eb66baf3a">   45</a></span>    <a class="code hl_struct" href="structeve_1_1effects_1_1EffectUpdateSummary.html">effects::EffectUpdateSummary</a> <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#ab1c268ce8c75f0a7f652193eb66baf3a">lifecycle</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a1efde31558bed326ebcfb8c3dd4c6513">   46</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a1efde31558bed326ebcfb8c3dd4c6513">settled</a> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a013e1e77860379d0fd9039f9dc0c760c">   47</a></span>    <span class="keywordtype">bool</span>                         <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a013e1e77860379d0fd9039f9dc0c760c">jammed</a>  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">   51</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">WeaponEffectSnapshot</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#af0d0030aa60000f73a00736d40583183">   52</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectContainer.html">effects::EffectContainer</a> <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#af0d0030aa60000f73a00736d40583183">effects</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#a9d1413dd75fa8f9ca75c856142c16457">   53</a></span>    <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#a9d1413dd75fa8f9ca75c856142c16457">target</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html">   57</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html">WeaponEffectExecutor</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#aaae08ae5987db59a9bc3a903a92f6672">validate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#a127baedfcee8b1c73d8f45dc7687be0b">applyImmediate</a>(<a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>&amp;            <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                                   <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1effects_1_1EffectInstance.html">effects::EffectInstance</a>&amp; effect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponEffectUpdate&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#ae5a8feab927d14df6a9cbd9dc85e175c">settle</a>(<a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>&amp;          <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                                         <a class="code hl_struct" href="structeve_1_1effects_1_1EffectUpdateSummary.html">effects::EffectUpdateSummary</a> lifecycle) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html">   70</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html">WeaponEffectAdapter</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;effects::EffectHandle&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#abdb2e1b59fc9bf02abc310e22fbf0dc9">apply</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectDefinition.html">WeaponEffectDefinition</a>&amp; definition,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                                           <a class="code hl_class" href="classeve_1_1SubjectRef.html">eve::SubjectRef</a>               subject);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a19ad4a4f35e2d514fba4fbebcf612f4b">remove</a>(<a class="code hl_struct" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponEffectUpdate&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#ab09207b32e78095ff7e599abb5a1c0a2">advance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">WeaponEffectSnapshot</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#af320c5e03c79189929bd9eb26cc52c3d">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#abf5a14ad98aa8b681b6c6cc8ac6d0798">restore</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">WeaponEffectSnapshot</a>&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#af320c5e03c79189929bd9eb26cc52c3d">snapshot</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;const effects::EffectInstance*&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a6cba30411537f7a1d87220be8ad5c8ae">resolve</a>(<a class="code hl_struct" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a969d402d4e98792daf84c6bc26e9bec0">   86</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a969d402d4e98792daf84c6bc26e9bec0">target</a>() noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a53d5161d7732a2aa014140a2e99ebc4a">   88</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a53d5161d7732a2aa014140a2e99ebc4a">target</a>() const noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectContainer.html">effects::EffectContainer</a> container_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEffectExecutor.html">WeaponEffectExecutor</a>     executor_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEffectTarget.html">WeaponEffectTarget</a>       target_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEffectContainer_8h_html"><div class="ttname"><a href="EffectContainer_8h.html">EffectContainer.h</a></div><div class="ttdoc">Owning effect storage and lifecycle-only executor.</div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectContainer_html"><div class="ttname"><a href="classeve_1_1effects_1_1EffectContainer.html">eve::effects::EffectContainer</a></div><div class="ttdoc">Owns active effect instances and their deterministic lifecycle events.</div><div class="ttdef"><b>Definition</b> <a href="EffectContainer_8h_source.html#l00031">EffectContainer.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html">eve::weapon::WeaponEffectAdapter</a></div><div class="ttdoc">Weapon adapter with a single common lifecycle owner.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00070">WeaponEffects.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_a19ad4a4f35e2d514fba4fbebcf612f4b"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a19ad4a4f35e2d514fba4fbebcf612f4b">eve::weapon::WeaponEffectAdapter::remove</a></div><div class="ttdeci">eve::Result&lt; void &gt; remove(effects::EffectHandle handle)</div><div class="ttdoc">Remove one generation-qualified effect handle.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00118">WeaponEffects.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_a53d5161d7732a2aa014140a2e99ebc4a"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a53d5161d7732a2aa014140a2e99ebc4a">eve::weapon::WeaponEffectAdapter::target</a></div><div class="ttdeci">const WeaponEffectTarget &amp; target() const noexcept</div><div class="ttdoc">Read the weapon target state.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00088">WeaponEffects.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_a6cba30411537f7a1d87220be8ad5c8ae"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a6cba30411537f7a1d87220be8ad5c8ae">eve::weapon::WeaponEffectAdapter::resolve</a></div><div class="ttdeci">eve::Result&lt; const effects::EffectInstance * &gt; resolve(effects::EffectHandle handle) const</div><div class="ttdoc">Resolve a live handle as a borrowed observation.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00148">WeaponEffects.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_a969d402d4e98792daf84c6bc26e9bec0"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#a969d402d4e98792daf84c6bc26e9bec0">eve::weapon::WeaponEffectAdapter::target</a></div><div class="ttdeci">WeaponEffectTarget &amp; target() noexcept</div><div class="ttdoc">Access the mutable weapon target state.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00086">WeaponEffects.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_ab09207b32e78095ff7e599abb5a1c0a2"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#ab09207b32e78095ff7e599abb5a1c0a2">eve::weapon::WeaponEffectAdapter::advance</a></div><div class="ttdeci">eve::Result&lt; WeaponEffectUpdate &gt; advance(const eve::SimulationStep &amp;step)</div><div class="ttdoc">Advance and settle weapon effects atomically.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00124">WeaponEffects.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_abdb2e1b59fc9bf02abc310e22fbf0dc9"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#abdb2e1b59fc9bf02abc310e22fbf0dc9">eve::weapon::WeaponEffectAdapter::apply</a></div><div class="ttdeci">eve::Result&lt; effects::EffectHandle &gt; apply(const WeaponEffectDefinition &amp;definition, eve::SubjectRef subject)</div><div class="ttdoc">Apply one typed weapon effect to a stable subject.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00083">WeaponEffects.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_abf5a14ad98aa8b681b6c6cc8ac6d0798"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#abf5a14ad98aa8b681b6c6cc8ac6d0798">eve::weapon::WeaponEffectAdapter::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const WeaponEffectSnapshot &amp;snapshot)</div><div class="ttdoc">Restore a snapshot and invalidate prior handles.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00139">WeaponEffects.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectAdapter_html_af320c5e03c79189929bd9eb26cc52c3d"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectAdapter.html#af320c5e03c79189929bd9eb26cc52c3d">eve::weapon::WeaponEffectAdapter::snapshot</a></div><div class="ttdeci">WeaponEffectSnapshot snapshot() const</div><div class="ttdoc">Capture effects and target state.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00137">WeaponEffects.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectExecutor_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectExecutor.html">eve::weapon::WeaponEffectExecutor</a></div><div class="ttdoc">Weapon executor applying heat, jam and recoil rules.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00057">WeaponEffects.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectExecutor_html_a127baedfcee8b1c73d8f45dc7687be0b"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#a127baedfcee8b1c73d8f45dc7687be0b">eve::weapon::WeaponEffectExecutor::applyImmediate</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyImmediate(WeaponEffectTarget &amp;target, const effects::EffectInstance &amp;effect) const</div><div class="ttdoc">Apply an immediate jam/recoil strategy to a staged target.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00034">WeaponEffects.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectExecutor_html_aaae08ae5987db59a9bc3a903a92f6672"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#aaae08ae5987db59a9bc3a903a92f6672">eve::weapon::WeaponEffectExecutor::validate</a></div><div class="ttdeci">eve::Result&lt; void &gt; validate(const WeaponEffectTarget &amp;target) const</div><div class="ttdoc">Validate heat and recoil invariants.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00026">WeaponEffects.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEffectExecutor_html_ae5a8feab927d14df6a9cbd9dc85e175c"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEffectExecutor.html#ae5a8feab927d14df6a9cbd9dc85e175c">eve::weapon::WeaponEffectExecutor::settle</a></div><div class="ttdeci">eve::Result&lt; WeaponEffectUpdate &gt; settle(WeaponEffectTarget &amp;target, effects::EffectUpdateSummary lifecycle) const</div><div class="ttdoc">Settle common periodic triggers through weapon policy.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8cpp_source.html#l00048">WeaponEffects.cpp:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a489117455b8dc6212979b67e5332e61e"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61e">eve::weapon::WeaponEffectKind</a></div><div class="ttdeci">WeaponEffectKind</div><div class="ttdoc">Weapon-specific effect strategy.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00020">WeaponEffects.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea64f83bc1f166dab01765a6094a187908">eve::weapon::WeaponEffectKind::Recoil</a></div><div class="ttdeci">@ Recoil</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea7d486371bb65b0633535ceba4189d8ed">eve::weapon::WeaponEffectKind::Heat</a></div><div class="ttdeci">@ Heat</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a489117455b8dc6212979b67e5332e61ea9155e3bad8e607ea48fd6f338f076a55">eve::weapon::WeaponEffectKind::Jam</a></div><div class="ttdeci">@ Jam</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectHandle_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectHandle.html">eve::effects::EffectHandle</a></div><div class="ttdoc">Generation-qualified local reference to a canonical effect instance.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00171">EffectTypes.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectInstance_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectInstance.html">eve::effects::EffectInstance</a></div><div class="ttdoc">One owned runtime effect fact.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00125">EffectTypes.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectPolicy_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectPolicy.html">eve::effects::EffectPolicy</a></div><div class="ttdoc">Independent policy dimensions used when applying an effect definition.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00051">EffectTypes.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectUpdateSummary_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectUpdateSummary.html">eve::effects::EffectUpdateSummary</a></div><div class="ttdoc">Summary returned by the lifecycle executor after one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00210">EffectTypes.h:210</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html">eve::weapon::WeaponEffectDefinition</a></div><div class="ttdoc">Typed weapon definition projected into the common lifecycle.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00032">WeaponEffects.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a0e64baa53025d1683749476543ad82ba"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a0e64baa53025d1683749476543ad82ba">eve::weapon::WeaponEffectDefinition::source</a></div><div class="ttdeci">std::string source</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00034">WeaponEffects.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a13e262257ae034eb7d4f08ad33a7c5ad"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a13e262257ae034eb7d4f08ad33a7c5ad">eve::weapon::WeaponEffectDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00033">WeaponEffects.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a47220041aa848f78287429445c68f9fe"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a47220041aa848f78287429445c68f9fe">eve::weapon::WeaponEffectDefinition::policy</a></div><div class="ttdeci">effects::EffectPolicy policy</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00038">WeaponEffects.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a4da06cd920b27a9df4862cb381c9e2db"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a4da06cd920b27a9df4862cb381c9e2db">eve::weapon::WeaponEffectDefinition::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00035">WeaponEffects.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a5d8e1bcd1e1701d79236efd80c6c420b"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a5d8e1bcd1e1701d79236efd80c6c420b">eve::weapon::WeaponEffectDefinition::period</a></div><div class="ttdeci">double period</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00036">WeaponEffects.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a7bfb2db3beabf28b7f162af5468a55c1"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a7bfb2db3beabf28b7f162af5468a55c1">eve::weapon::WeaponEffectDefinition::magnitude</a></div><div class="ttdeci">double magnitude</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00037">WeaponEffects.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_a8f5724197940376d1bfd9b1f892a4eec"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#a8f5724197940376d1bfd9b1f892a4eec">eve::weapon::WeaponEffectDefinition::kind</a></div><div class="ttdeci">WeaponEffectKind kind</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00039">WeaponEffects.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectDefinition_html_abef42cb748c16a3ed044ab779af2e2c5"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectDefinition.html#abef42cb748c16a3ed044ab779af2e2c5">eve::weapon::WeaponEffectDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00040">WeaponEffects.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectSnapshot_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html">eve::weapon::WeaponEffectSnapshot</a></div><div class="ttdoc">In-memory weapon effect snapshot.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00051">WeaponEffects.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectSnapshot_html_a9d1413dd75fa8f9ca75c856142c16457"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#a9d1413dd75fa8f9ca75c856142c16457">eve::weapon::WeaponEffectSnapshot::target</a></div><div class="ttdeci">WeaponEffectTarget target</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00053">WeaponEffects.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectSnapshot_html_af0d0030aa60000f73a00736d40583183"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectSnapshot.html#af0d0030aa60000f73a00736d40583183">eve::weapon::WeaponEffectSnapshot::effects</a></div><div class="ttdeci">effects::EffectContainer effects</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00052">WeaponEffects.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html">eve::weapon::WeaponEffectTarget</a></div><div class="ttdoc">Mutable weapon state interpreted by the typed executor.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00023">WeaponEffects.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html_a04fccae47c49c0eb77a72fc8a9b06f8f"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a04fccae47c49c0eb77a72fc8a9b06f8f">eve::weapon::WeaponEffectTarget::jammed</a></div><div class="ttdeci">bool jammed</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00026">WeaponEffects.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html_a413d88a8cdaa595cd5eeea519ba46653"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a413d88a8cdaa595cd5eeea519ba46653">eve::weapon::WeaponEffectTarget::heat</a></div><div class="ttdeci">double heat</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00024">WeaponEffects.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html_a98785b30e24bc8dd9f9ab77e2b2d57d7"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#a98785b30e24bc8dd9f9ab77e2b2d57d7">eve::weapon::WeaponEffectTarget::maxHeat</a></div><div class="ttdeci">double maxHeat</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00025">WeaponEffects.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html_aaf01f7f40cfd81eaca40b04b975a66f3"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#aaf01f7f40cfd81eaca40b04b975a66f3">eve::weapon::WeaponEffectTarget::blockedShots</a></div><div class="ttdeci">std::uint32_t blockedShots</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00028">WeaponEffects.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectTarget_html_abebc52c0da029d9b5c813ecbca1f28a3"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectTarget.html#abebc52c0da029d9b5c813ecbca1f28a3">eve::weapon::WeaponEffectTarget::recoil</a></div><div class="ttdeci">double recoil</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00027">WeaponEffects.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectUpdate_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectUpdate.html">eve::weapon::WeaponEffectUpdate</a></div><div class="ttdoc">Result of one weapon lifecycle step and domain settlement.</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00044">WeaponEffects.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectUpdate_html_a013e1e77860379d0fd9039f9dc0c760c"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a013e1e77860379d0fd9039f9dc0c760c">eve::weapon::WeaponEffectUpdate::jammed</a></div><div class="ttdeci">bool jammed</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00047">WeaponEffects.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectUpdate_html_a1efde31558bed326ebcfb8c3dd4c6513"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#a1efde31558bed326ebcfb8c3dd4c6513">eve::weapon::WeaponEffectUpdate::settled</a></div><div class="ttdeci">std::uint32_t settled</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00046">WeaponEffects.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEffectUpdate_html_ab1c268ce8c75f0a7f652193eb66baf3a"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEffectUpdate.html#ab1c268ce8c75f0a7f652193eb66baf3a">eve::weapon::WeaponEffectUpdate::lifecycle</a></div><div class="ttdeci">effects::EffectUpdateSummary lifecycle</div><div class="ttdef"><b>Definition</b> <a href="WeaponEffects_8h_source.html#l00045">WeaponEffects.h:45</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

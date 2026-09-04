@@ -1,0 +1,910 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1dev_1_1lsp" id="r_namespaceeve_1_1dev_1_1lsp"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1lsp.html">lsp</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1AgentAcceptanceCriterion.html">AgentAcceptanceCriterion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One explicit acceptance condition for a development objective.  <a href="structeve_1_1dev_1_1AgentAcceptanceCriterion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1AgentDevelopmentEvidence.html">AgentDevelopmentEvidence</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable evidence recorded against an acceptance condition.  <a href="structeve_1_1dev_1_1AgentDevelopmentEvidence.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1AgentDevelopmentResult.html">AgentDevelopmentResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured result for development-session state transitions.  <a href="structeve_1_1dev_1_1AgentDevelopmentResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AgentDevelopmentSession.html">AgentDevelopmentSession</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-owned state machine and evidence ledger for Agent game development.  <a href="classeve_1_1dev_1_1AgentDevelopmentSession.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1AiLogEntry.html">AiLogEntry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-engine AI / MCP session surface for DevTools.  <a href="classeve_1_1dev_1_1AiPanel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1Breakpoint.html">Breakpoint</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1CallFrame.html">CallFrame</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> call graph + dynamic data-flow tracer with backward slicing.  <a href="classeve_1_1dev_1_1CallGraph.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1ConsoleLine.html">ConsoleLine</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ConsolePanel.html">ConsolePanel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-engine runtime console / log ring buffer for DevTools.  <a href="classeve_1_1dev_1_1ConsolePanel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1DataFlowEdge.html">DataFlowEdge</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DebugAdapter.html">DebugAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal Debug Adapter Protocol (DAP) server for VS Code.  <a href="classeve_1_1dev_1_1DebugAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Debugger.html">Debugger</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script + frame debugger: pause/step, breakpoints, watches.  <a href="classeve_1_1dev_1_1Debugger.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platform-level script + render debugger / dynamic slicer front-end.  <a href="classeve_1_1dev_1_1DevTool.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1Immortal.html">Immortal</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-immortal singleton holder for DevTools objects.  <a href="structeve_1_1dev_1_1Immortal.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1InspectCapture.html">InspectCapture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。  <a href="structeve_1_1dev_1_1InspectCapture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1InspectView.html">InspectView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">场景巡检工具集（MCP 底层数据底座）。  <a href="structeve_1_1dev_1_1InspectView.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-process EveScript language service used by <code>eve language-server</code> and by unit tests. Owns a dedicated <a class="el" href="classeve_1_1Runtime.html">Runtime</a> so it can compile without a running game. JSON-RPC is optional; typed methods are the canonical API.  <a href="classeve_1_1dev_1_1LanguageServer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">LanguageSignatureHelp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding-contract signature shown while typing a call.  <a href="structeve_1_1dev_1_1LanguageSignatureHelp.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageSignatureParameter.html">LanguageSignatureParameter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One parameter in an LSP signature-help result.  <a href="structeve_1_1dev_1_1LanguageSignatureParameter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Embedded <a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> Context Protocol (MCP) server for AI-assisted game development.  <a href="classeve_1_1dev_1_1McpServer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ReloadSession.html">ReloadSession</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One state hot-reload transaction: capture → reload → restore.  <a href="classeve_1_1dev_1_1ReloadSession.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render-pipeline flow tracer with a Weiser-style backward slice.  <a href="classeve_1_1dev_1_1RenderFlow.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1RenderSliceResult.html">RenderSliceResult</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vision-model bridge for rendered-frame review (desktop / devtools only).  <a href="classeve_1_1dev_1_1RenderVision.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1ScenarioEvent.html">ScenarioEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One serializable event payload recorded from the event queue.  <a href="structeve_1_1dev_1_1ScenarioEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">All events consumed during one game frame.  <a href="structeve_1_1dev_1_1ScenarioFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A state-driven bug scenario: baseline snapshot + ordered per-frame inputs.  <a href="classeve_1_1dev_1_1ScenarioRecorder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1SliceCriterion.html">SliceCriterion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Criterion for a Weiser-style dynamic backward slice.  <a href="structeve_1_1dev_1_1SliceCriterion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1SliceResult.html">SliceResult</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script + native state snapshot for state hot reload.  <a href="classeve_1_1dev_1_1Snapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source location in a Squirrel (or synthetic) script.  <a href="structeve_1_1dev_1_1SourceLoc.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1StackFrameInfo.html">StackFrameInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1TraceEvent.html">TraceEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One recorded runtime event used by the dynamic slicer.  <a href="structeve_1_1dev_1_1TraceEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1VariableInfo.html">VariableInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1WatchEntry.html">WatchEntry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a951fdeeb6191bb717e170ad78a2520db" id="r_a951fdeeb6191bb717e170ad78a2520db"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">AgentDevelopmentPhase</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbaabfc3a65538a6ec86502b2b498b6b4a6">Discover</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba7f090bbab1cc7f9c08bf4e54d932d3c0">Modify</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbac5301693c4e792bcd5a479ef38fb8f8d">Run</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba4ca0accb888b0555a1334634ef52ed61">Observe</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba5a750f86ef41f22f852c43351e3ff383">Verify</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba556b050ce914d18480d6ea30308c7790">Recover</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbaae94f80b3ce82062a5dd7815daa04f9d">Complete</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba721c28f4c74928cc9e0bb3fef345e408">Aborted</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a951fdeeb6191bb717e170ad78a2520db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered stage of an Agent-driven game-development session.  <a href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">更多...</a><br /></td></tr>
+<tr class="separator:a951fdeeb6191bb717e170ad78a2520db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6040b03eff5c9d1d08de37359573fe94" id="r_a6040b03eff5c9d1d08de37359573fe94"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94">TraceKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94ac3755e61202abd74da5885d2e9c9160e">Call</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a988fd738de9c6d177440c5dcf69e73ce">Return</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">Line</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94adde5c8d4149c5072d2cb798706663e78">Def</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94aad8783089f828b927473fb61d51940ec">Use</a>
+<br />
+ }</td></tr>
+<tr class="separator:a6040b03eff5c9d1d08de37359573fe94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc374bc56a9141195794b66f3d2a4a77" id="r_afc374bc56a9141195794b66f3d2a4a77"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">PauseReason</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a">PauseKey</a>
+, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a7129472c5eb598faf47e4e877f2618fd">Breakpoint</a>
+, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d">Step</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">Exception</a>
+, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ad4e2713d1b1725a1592f9268589f990d">Snapshot</a>
+<br />
+ }</td></tr>
+<tr class="separator:afc374bc56a9141195794b66f3d2a4a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40236c11a050e4b825fee548c1f8d508" id="r_a40236c11a050e4b825fee548c1f8d508"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">RunMode</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09">Running</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a">Paused</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494">StepFrame</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924">StepInto</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6">StepOver</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061">StepOut</a>
+<br />
+ }</td></tr>
+<tr class="separator:a40236c11a050e4b825fee548c1f8d508"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136a38fcb4c3d0e3feb6391a73def286" id="r_a136a38fcb4c3d0e3feb6391a73def286"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">VarKind</a> : uint8_t { <a class="el" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829">Locals</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b">Globals</a> = 1
+ }</td></tr>
+<tr class="memdesc:a136a38fcb4c3d0e3feb6391a73def286"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where a variable tree node is rooted (used by containerChildren).  <a href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">更多...</a><br /></td></tr>
+<tr class="separator:a136a38fcb4c3d0e3feb6391a73def286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab49a3a83703ff21ee2c2d6261a453ac1" id="r_ab49a3a83703ff21ee2c2d6261a453ac1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a> : uint8_t { <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe">Continue</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d">Exit</a>
+ }</td></tr>
+<tr class="memdesc:ab49a3a83703ff21ee2c2d6261a453ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the stdio/JSON-RPC host should keep reading after one dispatch.  <a href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">更多...</a><br /></td></tr>
+<tr class="separator:ab49a3a83703ff21ee2c2d6261a453ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f91d69f07a12554a15d8bb895890172" id="r_a1f91d69f07a12554a15d8bb895890172"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">RenderEventKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15">FrameBegin</a> = 0
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666">FrameEnd</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">PassBegin</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">PassEnd</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">Target</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">Bind</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">Draw</a>
+, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd">Error</a>
+<br />
+ }</td></tr>
+<tr class="separator:a1f91d69f07a12554a15d8bb895890172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a50c0d15fceee032d160326bbc5ea4054" id="r_a50c0d15fceee032d160326bbc5ea4054"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a50c0d15fceee032d160326bbc5ea4054">isAgentDevelopmentTool</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a50c0d15fceee032d160326bbc5ea4054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a tool name belongs to the Agent development-session protocol.  <br /></td></tr>
+<tr class="separator:a50c0d15fceee032d160326bbc5ea4054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2adc3d8e6fd9ea85907bb3a6698cb608" id="r_a2adc3d8e6fd9ea85907bb3a6698cb608"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a2adc3d8e6fd9ea85907bb3a6698cb608">callAgentDevelopmentTool</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, Poco::JSON::Object::Ptr args)</td></tr>
+<tr class="memdesc:a2adc3d8e6fd9ea85907bb3a6698cb608"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one Agent development-session tool and return compact JSON.  <br /></td></tr>
+<tr class="separator:a2adc3d8e6fd9ea85907bb3a6698cb608"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a794a15a0ac4ebde55dea79438c1d2eb4" id="r_a794a15a0ac4ebde55dea79438c1d2eb4"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a794a15a0ac4ebde55dea79438c1d2eb4">agentDevelopmentToolSchemas</a> ()</td></tr>
+<tr class="memdesc:a794a15a0ac4ebde55dea79438c1d2eb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comma-separated MCP tool schema fragments without surrounding array brackets.  <br /></td></tr>
+<tr class="separator:a794a15a0ac4ebde55dea79438c1d2eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e0ef7722dc50dc33e0434645eaf323" id="r_a81e0ef7722dc50dc33e0434645eaf323"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a81e0ef7722dc50dc33e0434645eaf323">agentDevelopmentPhaseName</a> (<a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">AgentDevelopmentPhase</a> <a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>)</td></tr>
+<tr class="memdesc:a81e0ef7722dc50dc33e0434645eaf323"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable JSON protocol name for a development phase.  <br /></td></tr>
+<tr class="separator:a81e0ef7722dc50dc33e0434645eaf323"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e6b7cb095c071c904885994fedd2fe" id="r_a83e6b7cb095c071c904885994fedd2fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dev_1_1AgentDevelopmentResult.html">AgentDevelopmentResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a83e6b7cb095c071c904885994fedd2fe">parseAgentDevelopmentPhase</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">AgentDevelopmentPhase</a> *<a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>)</td></tr>
+<tr class="memdesc:a83e6b7cb095c071c904885994fedd2fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a stable JSON protocol phase name.  <br /></td></tr>
+<tr class="separator:a83e6b7cb095c071c904885994fedd2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a5c124f687b2444ac74cd2d061bd87f" id="r_a8a5c124f687b2444ac74cd2d061bd87f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a8a5c124f687b2444ac74cd2d061bd87f">mcpDevAttached</a> ()</td></tr>
+<tr class="memdesc:a8a5c124f687b2444ac74cd2d061bd87f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thin hooks so <a class="el" href="McpServer_8cpp.html">McpServer.cpp</a> need not include <a class="el" href="DevTool_8hpp.html">DevTool.hpp</a> (avoids a cycle).  <br /></td></tr>
+<tr class="separator:a8a5c124f687b2444ac74cd2d061bd87f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e441d95a53cfc2043ef81befb88b25" id="r_a46e441d95a53cfc2043ef81befb88b25"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a46e441d95a53cfc2043ef81befb88b25">mcpCallgraphEvents</a> ()</td></tr>
+<tr class="separator:a46e441d95a53cfc2043ef81befb88b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1daaba48ed7daf23cefebf5a539e0c23" id="r_a1daaba48ed7daf23cefebf5a539e0c23"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a1daaba48ed7daf23cefebf5a539e0c23">mcpCallgraphStackDepth</a> ()</td></tr>
+<tr class="separator:a1daaba48ed7daf23cefebf5a539e0c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e667ad808a1f68ec8105d869a3f784e" id="r_a6e667ad808a1f68ec8105d869a3f784e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a6e667ad808a1f68ec8105d869a3f784e">mcpLastReport</a> ()</td></tr>
+<tr class="separator:a6e667ad808a1f68ec8105d869a3f784e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a693239fc489d3b922b687dff8d4028c4" id="r_a693239fc489d3b922b687dff8d4028c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a693239fc489d3b922b687dff8d4028c4">mcpFormatError</a> (const std::string &amp;message)</td></tr>
+<tr class="separator:a693239fc489d3b922b687dff8d4028c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b2a5c53c272ad54aacc33421e36e84" id="r_a56b2a5c53c272ad54aacc33421e36e84"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a56b2a5c53c272ad54aacc33421e36e84">operator&lt;&lt;</a> (std::ostream &amp;<a class="el" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a>, <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a56b2a5c53c272ad54aacc33421e36e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a951fdeeb6191bb717e170ad78a2520db" name="a951fdeeb6191bb717e170ad78a2520db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a951fdeeb6191bb717e170ad78a2520db">&#9670;&#160;</a></span>AgentDevelopmentPhase</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">eve::dev::AgentDevelopmentPhase</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ordered stage of an Agent-driven game-development session. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dbaabfc3a65538a6ec86502b2b498b6b4a6" name="a951fdeeb6191bb717e170ad78a2520dbaabfc3a65538a6ec86502b2b498b6b4a6"></a>Discover&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dba7f090bbab1cc7f9c08bf4e54d932d3c0" name="a951fdeeb6191bb717e170ad78a2520dba7f090bbab1cc7f9c08bf4e54d932d3c0"></a>Modify&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dbac5301693c4e792bcd5a479ef38fb8f8d" name="a951fdeeb6191bb717e170ad78a2520dbac5301693c4e792bcd5a479ef38fb8f8d"></a>Run&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dba4ca0accb888b0555a1334634ef52ed61" name="a951fdeeb6191bb717e170ad78a2520dba4ca0accb888b0555a1334634ef52ed61"></a>Observe&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dba5a750f86ef41f22f852c43351e3ff383" name="a951fdeeb6191bb717e170ad78a2520dba5a750f86ef41f22f852c43351e3ff383"></a>Verify&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dba556b050ce914d18480d6ea30308c7790" name="a951fdeeb6191bb717e170ad78a2520dba556b050ce914d18480d6ea30308c7790"></a>Recover&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dbaae94f80b3ce82062a5dd7815daa04f9d" name="a951fdeeb6191bb717e170ad78a2520dbaae94f80b3ce82062a5dd7815daa04f9d"></a>Complete&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a951fdeeb6191bb717e170ad78a2520dba721c28f4c74928cc9e0bb3fef345e408" name="a951fdeeb6191bb717e170ad78a2520dba721c28f4c74928cc9e0bb3fef345e408"></a>Aborted&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentSession_8hpp_source.html">AgentDevelopmentSession.hpp</a> 第 <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab49a3a83703ff21ee2c2d6261a453ac1" name="ab49a3a83703ff21ee2c2d6261a453ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab49a3a83703ff21ee2c2d6261a453ac1">&#9670;&#160;</a></span>LspDispatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">eve::dev::LspDispatch</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the stdio/JSON-RPC host should keep reading after one dispatch. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe" name="ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe"></a>Continue&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d" name="ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d"></a>Exit&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="LanguageServer_8hpp_source.html">LanguageServer.hpp</a> 第 <a class="el" href="LanguageServer_8hpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc374bc56a9141195794b66f3d2a4a77" name="afc374bc56a9141195794b66f3d2a4a77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc374bc56a9141195794b66f3d2a4a77">&#9670;&#160;</a></span>PauseReason</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">eve::dev::PauseReason</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754" name="afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a" name="afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a"></a>PauseKey&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77a7129472c5eb598faf47e4e877f2618fd" name="afc374bc56a9141195794b66f3d2a4a77a7129472c5eb598faf47e4e877f2618fd"></a>Breakpoint&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d" name="afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d"></a>Step&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32" name="afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32"></a>Exception&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc374bc56a9141195794b66f3d2a4a77ad4e2713d1b1725a1592f9268589f990d" name="afc374bc56a9141195794b66f3d2a4a77ad4e2713d1b1725a1592f9268589f990d"></a>Snapshot&#160;</td><td class="fielddoc"><p>Script state was restored while the debugger was already paused. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Debugger_8hpp_source.html">Debugger.hpp</a> 第 <a class="el" href="Debugger_8hpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f91d69f07a12554a15d8bb895890172" name="a1f91d69f07a12554a15d8bb895890172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f91d69f07a12554a15d8bb895890172">&#9670;&#160;</a></span>RenderEventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">eve::dev::RenderEventKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15" name="a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15"></a>FrameBegin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666" name="a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666"></a>FrameEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68" name="a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68"></a>PassBegin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1" name="a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1"></a>PassEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5" name="a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5"></a>Target&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581" name="a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581"></a>Bind&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2" name="a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2"></a>Draw&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd" name="a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40236c11a050e4b825fee548c1f8d508" name="a40236c11a050e4b825fee548c1f8d508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40236c11a050e4b825fee548c1f8d508">&#9670;&#160;</a></span>RunMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">eve::dev::RunMode</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09" name="a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a" name="a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a"></a>Paused&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494" name="a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494"></a>StepFrame&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924" name="a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924"></a>StepInto&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6" name="a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6"></a>StepOver&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061" name="a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061"></a>StepOut&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Debugger_8hpp_source.html">Debugger.hpp</a> 第 <a class="el" href="Debugger_8hpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6040b03eff5c9d1d08de37359573fe94" name="a6040b03eff5c9d1d08de37359573fe94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6040b03eff5c9d1d08de37359573fe94">&#9670;&#160;</a></span>TraceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94">eve::dev::TraceKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6040b03eff5c9d1d08de37359573fe94ac3755e61202abd74da5885d2e9c9160e" name="a6040b03eff5c9d1d08de37359573fe94ac3755e61202abd74da5885d2e9c9160e"></a>Call&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6040b03eff5c9d1d08de37359573fe94a988fd738de9c6d177440c5dcf69e73ce" name="a6040b03eff5c9d1d08de37359573fe94a988fd738de9c6d177440c5dcf69e73ce"></a>Return&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4" name="a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4"></a>Line&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6040b03eff5c9d1d08de37359573fe94adde5c8d4149c5072d2cb798706663e78" name="a6040b03eff5c9d1d08de37359573fe94adde5c8d4149c5072d2cb798706663e78"></a>Def&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6040b03eff5c9d1d08de37359573fe94aad8783089f828b927473fb61d51940ec" name="a6040b03eff5c9d1d08de37359573fe94aad8783089f828b927473fb61d51940ec"></a>Use&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="CallGraph_8hpp_source.html">CallGraph.hpp</a> 第 <a class="el" href="CallGraph_8hpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a136a38fcb4c3d0e3feb6391a73def286" name="a136a38fcb4c3d0e3feb6391a73def286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a136a38fcb4c3d0e3feb6391a73def286">&#9670;&#160;</a></span>VarKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">eve::dev::VarKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Where a variable tree node is rooted (used by containerChildren). </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829" name="a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829"></a>Locals&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b" name="a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b"></a>Globals&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Debugger_8hpp_source.html">Debugger.hpp</a> 第 <a class="el" href="Debugger_8hpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a81e0ef7722dc50dc33e0434645eaf323" name="a81e0ef7722dc50dc33e0434645eaf323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e0ef7722dc50dc33e0434645eaf323">&#9670;&#160;</a></span>agentDevelopmentPhaseName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::dev::agentDevelopmentPhaseName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">AgentDevelopmentPhase</a>&#160;</td>
+          <td class="paramname"><em>phase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable JSON protocol name for a development phase. </p>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentSession_8cpp_source.html">AgentDevelopmentSession.cpp</a> 第 <a class="el" href="AgentDevelopmentSession_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba721c28f4c74928cc9e0bb3fef345e408">Aborted</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbaae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbaabfc3a65538a6ec86502b2b498b6b4a6">Discover</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba7f090bbab1cc7f9c08bf4e54d932d3c0">Modify</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba4ca0accb888b0555a1334634ef52ed61">Observe</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba556b050ce914d18480d6ea30308c7790">Recover</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbac5301693c4e792bcd5a479ef38fb8f8d">Run</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba5a750f86ef41f22f852c43351e3ff383">Verify</a>.</p>
+
+</div>
+</div>
+<a id="a794a15a0ac4ebde55dea79438c1d2eb4" name="a794a15a0ac4ebde55dea79438c1d2eb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a794a15a0ac4ebde55dea79438c1d2eb4">&#9670;&#160;</a></span>agentDevelopmentToolSchemas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::dev::agentDevelopmentToolSchemas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Comma-separated MCP tool schema fragments without surrounding array brackets. </p>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html">AgentDevelopmentMcp.cpp</a> 第 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2adc3d8e6fd9ea85907bb3a6698cb608" name="a2adc3d8e6fd9ea85907bb3a6698cb608"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2adc3d8e6fd9ea85907bb3a6698cb608">&#9670;&#160;</a></span>callAgentDevelopmentTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::callAgentDevelopmentTool </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Poco::JSON::Object::Ptr&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute one Agent development-session tool and return compact JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html">AgentDevelopmentMcp.cpp</a> 第 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba721c28f4c74928cc9e0bb3fef345e408">Aborted</a>, <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00028">eve::dev::AgentDevelopmentEvidence::artifact</a>, <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00024">eve::dev::AgentDevelopmentEvidence::criterionId</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AgentDevelopmentSession_8cpp_source.html#l00034">eve::dev::AgentDevelopmentSession::instance()</a>, <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00025">eve::dev::AgentDevelopmentEvidence::kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AgentDevelopmentSession_8cpp_source.html#l00152">parseAgentDevelopmentPhase()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00026">eve::dev::AgentDevelopmentEvidence::status</a> , 以及 <a class="el" href="AgentDevelopmentSession_8hpp_source.html#l00027">eve::dev::AgentDevelopmentEvidence::summary</a>.</p>
+
+</div>
+</div>
+<a id="a50c0d15fceee032d160326bbc5ea4054" name="a50c0d15fceee032d160326bbc5ea4054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50c0d15fceee032d160326bbc5ea4054">&#9670;&#160;</a></span>isAgentDevelopmentTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::isAgentDevelopmentTool </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether a tool name belongs to the Agent development-session protocol. </p>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html">AgentDevelopmentMcp.cpp</a> 第 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a46e441d95a53cfc2043ef81befb88b25" name="a46e441d95a53cfc2043ef81befb88b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e441d95a53cfc2043ef81befb88b25">&#9670;&#160;</a></span>mcpCallgraphEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::dev::mcpCallgraphEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00763">763</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CallGraph_8hpp_source.html#l00154">eve::dev::CallGraph::events()</a>, <a class="el" href="DevTool_8hpp_source.html#l00092">eve::dev::DevTool::graph()</a>, <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a> , 以及 <a class="el" href="CallGraph_8hpp_source.html#l00145">eve::dev::CallGraph::EventsView::size()</a>.</p>
+
+</div>
+</div>
+<a id="a1daaba48ed7daf23cefebf5a539e0c23" name="a1daaba48ed7daf23cefebf5a539e0c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1daaba48ed7daf23cefebf5a539e0c23">&#9670;&#160;</a></span>mcpCallgraphStackDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::dev::mcpCallgraphStackDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00765">765</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CallGraph_8cpp_source.html#l00211">eve::dev::CallGraph::currentStack()</a>, <a class="el" href="DevTool_8hpp_source.html#l00092">eve::dev::DevTool::graph()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a8a5c124f687b2444ac74cd2d061bd87f" name="a8a5c124f687b2444ac74cd2d061bd87f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a5c124f687b2444ac74cd2d061bd87f">&#9670;&#160;</a></span>mcpDevAttached()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::mcpDevAttached </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Thin hooks so <a class="el" href="McpServer_8cpp.html">McpServer.cpp</a> need not include <a class="el" href="DevTool_8hpp.html">DevTool.hpp</a> (avoids a cycle). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00761">761</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a> , 以及 <a class="el" href="DevTool_8hpp_source.html#l00087">eve::dev::DevTool::isAttached()</a>.</p>
+
+</div>
+</div>
+<a id="a693239fc489d3b922b687dff8d4028c4" name="a693239fc489d3b922b687dff8d4028c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a693239fc489d3b922b687dff8d4028c4">&#9670;&#160;</a></span>mcpFormatError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::mcpFormatError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00771">771</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DevTool_8cpp_source.html#l00650">eve::dev::DevTool::formatError()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a6e667ad808a1f68ec8105d869a3f784e" name="a6e667ad808a1f68ec8105d869a3f784e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e667ad808a1f68ec8105d869a3f784e">&#9670;&#160;</a></span>mcpLastReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::mcpLastReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00769">769</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DevTool_8cpp_source.html#l00121">eve::dev::DevTool::instance()</a> , 以及 <a class="el" href="DevTool_8hpp_source.html#l00110">eve::dev::DevTool::lastReport()</a>.</p>
+
+</div>
+</div>
+<a id="a56b2a5c53c272ad54aacc33421e36e84" name="a56b2a5c53c272ad54aacc33421e36e84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b2a5c53c272ad54aacc33421e36e84">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; eve::dev::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LanguageServer_8hpp_source.html">LanguageServer.hpp</a> 第 <a class="el" href="LanguageServer_8hpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe">Continue</a>, <a class="el" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d">Exit</a>, <a class="el" href="KernelGen_8cpp_source.html#l00125">os</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a83e6b7cb095c071c904885994fedd2fe" name="a83e6b7cb095c071c904885994fedd2fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e6b7cb095c071c904885994fedd2fe">&#9670;&#160;</a></span>parseAgentDevelopmentPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dev_1_1AgentDevelopmentResult.html">AgentDevelopmentResult</a> eve::dev::parseAgentDevelopmentPhase </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520db">AgentDevelopmentPhase</a> *&#160;</td>
+          <td class="paramname"><em>phase</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a stable JSON protocol phase name. </p>
+
+<p class="definition">在文件 <a class="el" href="AgentDevelopmentSession_8cpp_source.html">AgentDevelopmentSession.cpp</a> 第 <a class="el" href="AgentDevelopmentSession_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbaabfc3a65538a6ec86502b2b498b6b4a6">Discover</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba7f090bbab1cc7f9c08bf4e54d932d3c0">Modify</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba4ca0accb888b0555a1334634ef52ed61">Observe</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba556b050ce914d18480d6ea30308c7790">Recover</a>, <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dbac5301693c4e792bcd5a479ef38fb8f8d">Run</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a951fdeeb6191bb717e170ad78a2520dba5a750f86ef41f22f852c43351e3ff383">Verify</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AgentDevelopmentMcp_8cpp_source.html#l00085">callAgentDevelopmentTool()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

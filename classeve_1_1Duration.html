@@ -1,0 +1,619 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Duration类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Duration.html">Duration</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1Duration-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Duration类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Signed, fixed-resolution simulation duration in nanoseconds.  
+ <a href="classeve_1_1Duration.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Time_8h_source.html">Time.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a95e4d6a24c95aa26df77b33296008183" id="r_a95e4d6a24c95aa26df77b33296008183"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a95e4d6a24c95aa26df77b33296008183">Duration</a> () noexcept=default</td></tr>
+<tr class="memdesc:a95e4d6a24c95aa26df77b33296008183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a zero duration.  <br /></td></tr>
+<tr class="separator:a95e4d6a24c95aa26df77b33296008183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed456896f816a43555fa146cb1758bd2" id="r_aed456896f816a43555fa146cb1758bd2"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#aed456896f816a43555fa146cb1758bd2">Duration</a> (std::int64_t <a class="el" href="classeve_1_1Duration.html#a02d5084448d69f89a9855498af98c43c">nanoseconds</a>) noexcept</td></tr>
+<tr class="memdesc:aed456896f816a43555fa146cb1758bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a duration from exact nanoseconds.  <br /></td></tr>
+<tr class="separator:aed456896f816a43555fa146cb1758bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d5084448d69f89a9855498af98c43c" id="r_a02d5084448d69f89a9855498af98c43c"><td class="memItemLeft" align="right" valign="top">constexpr std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a02d5084448d69f89a9855498af98c43c">nanoseconds</a> () const noexcept</td></tr>
+<tr class="memdesc:a02d5084448d69f89a9855498af98c43c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the exact signed nanosecond representation.  <br /></td></tr>
+<tr class="separator:a02d5084448d69f89a9855498af98c43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab023911ce0a6b5948eeaf3f588557ee7" id="r_ab023911ce0a6b5948eeaf3f588557ee7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#ab023911ce0a6b5948eeaf3f588557ee7">seconds</a> () const noexcept</td></tr>
+<tr class="memdesc:ab023911ce0a6b5948eeaf3f588557ee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return this duration as seconds for legacy/presentation APIs.  <br /></td></tr>
+<tr class="separator:ab023911ce0a6b5948eeaf3f588557ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad703ed703e5b87f97ce451710f9ee671" id="r_ad703ed703e5b87f97ce451710f9ee671"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#ad703ed703e5b87f97ce451710f9ee671">isZero</a> () const noexcept</td></tr>
+<tr class="memdesc:ad703ed703e5b87f97ce451710f9ee671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this duration is exactly zero.  <br /></td></tr>
+<tr class="separator:ad703ed703e5b87f97ce451710f9ee671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd53b2ae9ec1942f2bafde94d6b8dec" id="r_a1dd53b2ae9ec1942f2bafde94d6b8dec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a1dd53b2ae9ec1942f2bafde94d6b8dec">tryAdd</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> other) const</td></tr>
+<tr class="memdesc:a1dd53b2ae9ec1942f2bafde94d6b8dec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two durations with overflow validation.  <br /></td></tr>
+<tr class="separator:a1dd53b2ae9ec1942f2bafde94d6b8dec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaa19cfbef8f64bacfc05d593d2923bc" id="r_abaa19cfbef8f64bacfc05d593d2923bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#abaa19cfbef8f64bacfc05d593d2923bc">scaled</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>) const</td></tr>
+<tr class="memdesc:abaa19cfbef8f64bacfc05d593d2923bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale a duration by a finite non-negative rate.  <br /></td></tr>
+<tr class="separator:abaa19cfbef8f64bacfc05d593d2923bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3623bb018fddaebe73fe6646d1ea3ebe" id="r_a3623bb018fddaebe73fe6646d1ea3ebe"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a3623bb018fddaebe73fe6646d1ea3ebe">fromNanoseconds</a> (std::int64_t <a class="el" href="classeve_1_1Duration.html#a02d5084448d69f89a9855498af98c43c">nanoseconds</a>) noexcept</td></tr>
+<tr class="memdesc:a3623bb018fddaebe73fe6646d1ea3ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an exact duration from nanoseconds.  <br /></td></tr>
+<tr class="separator:a3623bb018fddaebe73fe6646d1ea3ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de3e023afa73e0361442ee7a7097bde" id="r_a9de3e023afa73e0361442ee7a7097bde"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">zero</a> () noexcept</td></tr>
+<tr class="memdesc:a9de3e023afa73e0361442ee7a7097bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return zero duration.  <br /></td></tr>
+<tr class="separator:a9de3e023afa73e0361442ee7a7097bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c92226d339c430b6a3310a7f72a9c2b" id="r_a2c92226d339c430b6a3310a7f72a9c2b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a2c92226d339c430b6a3310a7f72a9c2b">fromSeconds</a> (double <a class="el" href="classeve_1_1Duration.html#ab023911ce0a6b5948eeaf3f588557ee7">seconds</a>)</td></tr>
+<tr class="memdesc:a2c92226d339c430b6a3310a7f72a9c2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert finite seconds to the nearest nanosecond.  <br /></td></tr>
+<tr class="separator:a2c92226d339c430b6a3310a7f72a9c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a29482c88652ed58311e85c8ef17c6b00" id="r_a29482c88652ed58311e85c8ef17c6b00"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#a29482c88652ed58311e85c8ef17c6b00">operator==</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a>) noexcept=default</td></tr>
+<tr class="separator:a29482c88652ed58311e85c8ef17c6b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc8ea07096a0a7731c2488235e225d07" id="r_adc8ea07096a0a7731c2488235e225d07"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Duration.html#adc8ea07096a0a7731c2488235e225d07">operator&lt;=&gt;</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a>) noexcept=default</td></tr>
+<tr class="separator:adc8ea07096a0a7731c2488235e225d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Signed, fixed-resolution simulation duration in nanoseconds. </p>
+<p>The integer representation avoids accumulating binary floating-point frame error in deterministic state. Conversion from seconds validates finiteness and range and returns a checked <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00041">41</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a95e4d6a24c95aa26df77b33296008183" name="a95e4d6a24c95aa26df77b33296008183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e4d6a24c95aa26df77b33296008183">&#9670;&#160;</a></span>Duration() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::Duration::Duration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a zero duration. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00016">fromSeconds()</a>, <a class="el" href="Time_8cpp_source.html#l00037">scaled()</a> , 以及 <a class="el" href="Time_8cpp_source.html#l00030">tryAdd()</a>.</p>
+
+</div>
+</div>
+<a id="aed456896f816a43555fa146cb1758bd2" name="aed456896f816a43555fa146cb1758bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed456896f816a43555fa146cb1758bd2">&#9670;&#160;</a></span>Duration() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::Duration::Duration </td>
+          <td>(</td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>nanoseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a duration from exact nanoseconds. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nanoseconds</td><td>Signed nanosecond value in this duration domain. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3623bb018fddaebe73fe6646d1ea3ebe" name="a3623bb018fddaebe73fe6646d1ea3ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3623bb018fddaebe73fe6646d1ea3ebe">&#9670;&#160;</a></span>fromNanoseconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classeve_1_1Duration.html">Duration</a> eve::Duration::fromNanoseconds </td>
+          <td>(</td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>nanoseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an exact duration from nanoseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="Production_8cpp_source.html#l00404">eve::production::WorkQueue::advance()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00181">eve::action::AbilityRuntime::advanceCooldowns()</a>, <a class="el" href="ClimbingCodec_8cpp_source.html#l00457">eve::climbing::decodeClimbingActionDefinition()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00237">eve::action::ActionTimeline::fromValue()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">eve::climbing::ClimbingRuntime::restore()</a>, <a class="el" href="Time_8cpp_source.html#l00065">eve::SimulationClock::SimulationClock()</a> , 以及 <a class="el" href="Timer_8cpp_source.html#l00018">eve::timer::Timer::Timer()</a>.</p>
+
+</div>
+</div>
+<a id="a2c92226d339c430b6a3310a7f72a9c2b" name="a2c92226d339c430b6a3310a7f72a9c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c92226d339c430b6a3310a7f72a9c2b">&#9670;&#160;</a></span>fromSeconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt; eve::Duration::fromSeconds </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert finite seconds to the nearest nanosecond. </p>
+<dl class="section return"><dt>返回</dt><dd>A checked duration, or Rejected for non-finite/out-of-range input. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Duration.html#a95e4d6a24c95aa26df77b33296008183">Duration()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="Time_8h_source.html#l00067">nanoseconds()</a>, <a class="el" href="Time_8cpp_source.html#l00028">seconds()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleOffscreenRuntime_8cpp_source.html#l00027">eve::particles_graphics_editing::ParticleEmitterOffscreenPresenter::draw()</a>, <a class="el" href="Production_8cpp_source.html#l00297">eve::production::WorkQueue::enqueue()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a>, <a class="el" href="RTS_8cpp_source.html#l02610">eve::rts::RTS::queueScriptResearch()</a>, <a class="el" href="RTS_8cpp_source.html#l02269">eve::rts::RTS::queueScriptUnit()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00377">eve::rts::RTSLockstep::RTSLockstep()</a>, <a class="el" href="RTS_8cpp_source.html#l01864">eve::rts::RTS::stepScript()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00438">eve::effects::EffectContainer::update()</a>, <a class="el" href="Animation_8cpp_source.html#l00499">eve::animation::Animation::update()</a>, <a class="el" href="AnimPlayer_8cpp_source.html#l00242">eve::animation::AnimPlayer::update()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00323">eve::animation::AnimStateMachine::update()</a> , 以及 <a class="el" href="ParticleSystem_8cpp_source.html#l00492">eve::particles::ParticleSimSystem::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad703ed703e5b87f97ce451710f9ee671" name="ad703ed703e5b87f97ce451710f9ee671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad703ed703e5b87f97ce451710f9ee671">&#9670;&#160;</a></span>isZero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::Duration::isZero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this duration is exactly zero. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00093">eve::combat::CombatAttributeRuntime::advance()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00181">eve::action::AbilityRuntime::advanceCooldowns()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">eve::weapon::ProjectileRuntime::update()</a>.</p>
+
+</div>
+</div>
+<a id="a02d5084448d69f89a9855498af98c43c" name="a02d5084448d69f89a9855498af98c43c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d5084448d69f89a9855498af98c43c">&#9670;&#160;</a></span>nanoseconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int64_t eve::Duration::nanoseconds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the exact signed nanosecond representation. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00181">eve::action::AbilityRuntime::advanceCooldowns()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="Climbing_8cpp_source.html#l01442">eve::climbing::ClimbingRuntime::cancel()</a>, <a class="el" href="Time_8cpp_source.html#l00016">fromSeconds()</a>, <a class="el" href="Time_8cpp_source.html#l00037">scaled()</a>, <a class="el" href="Time_8cpp_source.html#l00070">eve::SimulationClock::setFixedStep()</a>, <a class="el" href="Time_8cpp_source.html#l00065">eve::SimulationClock::SimulationClock()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00389">eve::rts::RTSLockstep::step()</a>, <a class="el" href="Action_8cpp_source.html#l00070">eve::action::ActionDefinition::validate()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00136">eve::action::ActionTimeline::validate()</a> , 以及 <a class="el" href="ClimbingCodec_8cpp_source.html#l00294">eve::climbing::validateClimbingActionDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="abaa19cfbef8f64bacfc05d593d2923bc" name="abaa19cfbef8f64bacfc05d593d2923bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaa19cfbef8f64bacfc05d593d2923bc">&#9670;&#160;</a></span>scaled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt; eve::Duration::scaled </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rate</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scale a duration by a finite non-negative rate. </p>
+<dl class="section return"><dt>返回</dt><dd>A checked rounded duration, or Rejected for invalid/range input. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Duration.html#a95e4d6a24c95aa26df77b33296008183">Duration()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="Time_8h_source.html#l00067">nanoseconds()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>.</p>
+
+</div>
+</div>
+<a id="ab023911ce0a6b5948eeaf3f588557ee7" name="ab023911ce0a6b5948eeaf3f588557ee7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab023911ce0a6b5948eeaf3f588557ee7">&#9670;&#160;</a></span>seconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::Duration::seconds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return this duration as seconds for legacy/presentation APIs. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatAttributes_8cpp_source.html#l00093">eve::combat::CombatAttributeRuntime::advance()</a>, <a class="el" href="Climbing_8cpp_source.html#l01442">eve::climbing::ClimbingRuntime::cancel()</a>, <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00086">eve::fluids::FluidSurfaceConstraintAdapter::evaluate()</a>, <a class="el" href="Time_8cpp_source.html#l00016">fromSeconds()</a>, <a class="el" href="Timer_8cpp_source.html#l00038">eve::timer::Timer::getDelta()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00216">eve::editor::ActionTimelineTarget::read()</a>, <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00043">eve::fluids::FluidSimulationAdapter::step()</a>, <a class="el" href="Fluids_8cpp_source.html#l00173">eve::fluids::FluidSimulator::step()</a>, <a class="el" href="Cloth_8cpp_source.html#l00573">eve::physics::Cloth::step()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l01071">eve::physics::Cloth3D::step()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00625">eve::physics::ClothGPU::step()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">eve::weapon::ProjectileRuntime::update()</a>.</p>
+
+</div>
+</div>
+<a id="a1dd53b2ae9ec1942f2bafde94d6b8dec" name="a1dd53b2ae9ec1942f2bafde94d6b8dec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dd53b2ae9ec1942f2bafde94d6b8dec">&#9670;&#160;</a></span>tryAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Duration.html">Duration</a> &gt; eve::Duration::tryAdd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add two durations with overflow validation. </p>
+<dl class="section return"><dt>返回</dt><dd>A checked sum, or Rejected if the signed range would overflow. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Duration.html#a95e4d6a24c95aa26df77b33296008183">Duration()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00372">eve::editor::ActionTimelineWidget::addStateAtCursor()</a>, <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00599">eve::editor::ActionTimelineEditor::paste()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">eve::action::ActionDefinition::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a9de3e023afa73e0361442ee7a7097bde" name="a9de3e023afa73e0361442ee7a7097bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de3e023afa73e0361442ee7a7097bde">&#9670;&#160;</a></span>zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classeve_1_1Duration.html">Duration</a> eve::Duration::zero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return zero duration. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00093">eve::action::AbilityRuntime::activate()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00372">eve::editor::ActionTimelineWidget::addStateAtCursor()</a>, <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00093">eve::combat::CombatAttributeRuntime::advance()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00181">eve::action::AbilityRuntime::advanceCooldowns()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00543">eve::editor::ActionTimelineEditor::boxSelect()</a>, <a class="el" href="Action_8cpp_source.html#l00536">eve::action::ActionRuntime::cancel()</a>, <a class="el" href="Climbing_8cpp_source.html#l01399">eve::climbing::ClimbingRuntime::climbUp()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00479">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="Timer_8cpp_source.html#l00069">eve::timer::Timer::getDeltaDuration()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00057">eve::action::AbilityRuntime::grant()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00695">eve::editor::ActionTimelineEditor::planPreview()</a>, <a class="el" href="Time_8cpp_source.html#l00159">eve::SimulationClock::reset()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00440">eve::editor::ActionTimelineEditor::resizeState()</a>, <a class="el" href="Time_8cpp_source.html#l00141">eve::SimulationClock::sample()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00174">eve::action::ActionTimeline::sample()</a>, <a class="el" href="AnimationRootMotionPreviewSource_8cpp_source.html#l00023">eve::editor::AnimationRootMotionPreviewSource::sampleRootMotion()</a>, <a class="el" href="ActionPreviewController_8cpp_source.html#l00083">eve::editor::ActionPreviewController::seek()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00674">eve::editor::ActionTimelineEditor::seek()</a>, <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00245">eve::climbing::ClimbingRuntime::transitionAnchor()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00135">eve::weapon::ProjectileRuntime::update()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00033">eve::action::AbilityDefinition::validate()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00136">eve::action::ActionTimeline::validate()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">eve::weapon::ProjectileDefinition::validate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="adc8ea07096a0a7731c2488235e225d07" name="adc8ea07096a0a7731c2488235e225d07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc8ea07096a0a7731c2488235e225d07">&#9670;&#160;</a></span>operator&lt;=&gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29482c88652ed58311e85c8ef17c6b00" name="a29482c88652ed58311e85c8ef17c6b00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29482c88652ed58311e85c8ef17c6b00">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool operator== </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Time_8h_source.html">Time.h</a></li>
+<li>src/engine/common/<a class="el" href="Time_8cpp_source.html">Time.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

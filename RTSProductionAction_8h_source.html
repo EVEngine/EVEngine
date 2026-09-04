@@ -1,0 +1,352 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSProductionAction.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSProductionAction.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSProductionAction_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceAccount_8h.html">common/ResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="CommandQueue_8h.html">orders/CommandQueue.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Production_8h.html">production/Production.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="AtomicResourcePayment_8h.html">transaction/AtomicResourcePayment.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Transaction_8h.html">transaction/Transaction.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>Building;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html">RTSProductionResourceReserve</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a699ffa7f9cb0595e712b43b721e78d7f">   26</a></span>    <a class="code hl_struct" href="structeve_1_1resource_1_1ResourceCost.html">resource::ResourceCost</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a699ffa7f9cb0595e712b43b721e78d7f">resource</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a883a9cfcbcdf558fff1b9dd5ea700b10">   27</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a883a9cfcbcdf558fff1b9dd5ea700b10">minimumPriority</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTSBuildRequest.html">RTSBuildRequest</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a034133b90521c41c6a4e9ba6b1468290">   39</a></span>    <a class="code hl_class" href="classeve_1_1production_1_1WorkQueue.html">production::WorkQueue</a>*      <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a034133b90521c41c6a4e9ba6b1468290">production</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#aea831874125ec6091290b28bb5b9ed87">   40</a></span>    <a class="code hl_class" href="classeve_1_1orders_1_1CommandQueue.html">orders::CommandQueue</a>*       <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#aea831874125ec6091290b28bb5b9ed87">orders</a>     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a01de9ea0ae523ee10b6675bd9fa44f82">   41</a></span>    <a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a>*      <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a01de9ea0ae523ee10b6675bd9fa44f82">action</a>     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a671618051e33ef1707e3879d65e2b1c1">   42</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a>* <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a671618051e33ef1707e3879d65e2b1c1">account</a>    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a04975557a7c4f2a722583b2aedbea880">   44</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a04975557a7c4f2a722583b2aedbea880">cost</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#ae7b544c46a33cb463211f62e9e4344ce">   45</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#ae7b544c46a33cb463211f62e9e4344ce">owner</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a3a0083607fc6880a5ea52e2fcb92bd86">   46</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a3a0083607fc6880a5ea52e2fcb92bd86">productionKind</a> = <span class="stringliteral">&quot;build&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a027e7100bf9f9ca3363e66a5d2249bbe">   47</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a027e7100bf9f9ca3363e66a5d2249bbe">product</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a8c4490ade46bc30e8db058ef860e6446">   48</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a8c4490ade46bc30e8db058ef860e6446">context</a>  = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{});</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a60338c6c9aa3e97aabb230ef3a8eda06">   49</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a>           <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a60338c6c9aa3e97aabb230ef3a8eda06">duration</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#acd05654d4cec05f74ec5fcf841913d12">   50</a></span>    <span class="keywordtype">int</span>                <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#acd05654d4cec05f74ec5fcf841913d12">priority</a> = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a1eed30dae24c7708058fc8443ca5dc21">   51</a></span>    std::vector&lt;RTSProductionResourceReserve&gt; <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a1eed30dae24c7708058fc8443ca5dc21">resourceReserves</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#ae46dfa75d424e48d46a1114e574653c8">   53</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#ae46dfa75d424e48d46a1114e574653c8">orderKind</a>           = <span class="stringliteral">&quot;build&quot;</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a322d77d2bb2b2bcecc394e6c6a8eb3c2">   54</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a322d77d2bb2b2bcecc394e6c6a8eb3c2">orderPriority</a>       = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#aed341c18a71b84489cf4680432483c70">   55</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#aed341c18a71b84489cf4680432483c70">orderTimeoutSeconds</a> = 0.0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a9064ca2546a438741ca6519061ad46af">   58</a></span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a9064ca2546a438741ca6519061ad46af">actionDefinition</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a7bd46bf9f1b407eb71a8fdfa134eaef1">   60</a></span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a7bd46bf9f1b407eb71a8fdfa134eaef1">actionRequest</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a845c09d026c34e5d29a36b5a9896a612">   62</a></span>    <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a>* <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a845c09d026c34e5d29a36b5a9896a612">effect</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a28f80a84a342348db0c6080900229429">   64</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a28f80a84a342348db0c6080900229429">tick</a> = <a class="code hl_typedef" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>(1);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a2978b11ee9ed2a645070bffb8ad6dda0">   66</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a2978b11ee9ed2a645070bffb8ad6dda0">actionDelta</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildRequest.html#a68c65663b878f01d89a8f4002bfbb7a6">   68</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildRequest.html#a68c65663b878f01d89a8f4002bfbb7a6">transactionId</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="};">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildReceipt.html">   72</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTSBuildReceipt.html">RTSBuildReceipt</a> {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildReceipt.html#aa21eb62e9567259f7f8f8746453d3620">   73</a></span>    <a class="code hl_struct" href="structeve_1_1transaction_1_1TransactionReceipt.html">transaction::TransactionReceipt</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildReceipt.html#aa21eb62e9567259f7f8f8746453d3620">transaction</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildReceipt.html#a48ba176bcf21383310b71af13c0affb3">   74</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildReceipt.html#a48ba176bcf21383310b71af13c0affb3">orderId</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildReceipt.html#ac58102a13c0a9e6c6fe3f76da45365d8">   75</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildReceipt.html#ac58102a13c0a9e6c6fe3f76da45365d8">productionTaskId</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSBuildReceipt.html#a369816d35af136de8ba19ea20477af69">   76</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">action::ActionExecutionId</a>       <a class="code hl_variable" href="structeve_1_1rts_1_1RTSBuildReceipt.html#a369816d35af136de8ba19ea20477af69">actionExecution</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="};">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html">   80</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html">RTSCancelProductionRequest</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a69afea46340eb07478cf0ff79934d34c">   81</a></span>    <a class="code hl_class" href="classeve_1_1production_1_1WorkQueue.html">production::WorkQueue</a>*      <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a69afea46340eb07478cf0ff79934d34c">production</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a7e035b522a3f5819b7c25a9b534cb80a">   82</a></span>    <a class="code hl_class" href="classeve_1_1orders_1_1CommandQueue.html">orders::CommandQueue</a>*       <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a7e035b522a3f5819b7c25a9b534cb80a">orders</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba6c5bf970a200fe91cb13315a7e2ee2">   83</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a>* <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba6c5bf970a200fe91cb13315a7e2ee2">account</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a337d7c8ebe33bcab0348387f3493530e">   84</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a>          <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a337d7c8ebe33bcab0348387f3493530e">refund</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba4e1622dddcce7fda00ad208f7db3bd">   85</a></span>    std::string                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba4e1622dddcce7fda00ad208f7db3bd">productionTaskId</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#accb348ad216fddf7f52befe3a0e25b27">   86</a></span>    std::string                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#accb348ad216fddf7f52befe3a0e25b27">orderId</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#ab19a7f3c5f4345a1b0ade5695ba2f0fd">   87</a></span>    std::string                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#ab19a7f3c5f4345a1b0ade5695ba2f0fd">reason</a> = <span class="stringliteral">&quot;production cancelled&quot;</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="};">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html">   91</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html">RTSCancelProductionReceipt</a> {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#aa72d41e10e422b14c616df0242ed0a93">   92</a></span>    <a class="code hl_struct" href="structeve_1_1resource_1_1Receipt.html">resource::Receipt</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#aa72d41e10e422b14c616df0242ed0a93">refund</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#add846b937673e35c8e3f67c96992b45f">   93</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#add846b937673e35c8e3f67c96992b45f">productionTaskId</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#a304cbf13a5cba10bf69736fbe37cd606">   94</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#a304cbf13a5cba10bf69736fbe37cd606">orderId</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>};</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="};">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html">  107</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html">RTSProductionActionAdapter</a> final {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;RTSBuildReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#adefcf4228e938373516113939f480445">build</a>(<a class="code hl_class" href="classeve_1_1rts_1_1Building.html">Building</a>&amp; building, <a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a>&amp; action,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                                            <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                                            <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>, std::string product,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                                            <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, std::string productionKind = <span class="stringliteral">&quot;unit&quot;</span>,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                                            <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0, std::string transactionId = {},</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                                            std::vector&lt;RTSProductionResourceReserve&gt; resourceReserves = {});</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;RTSBuildReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#adefcf4228e938373516113939f480445">build</a>(<a class="code hl_struct" href="structeve_1_1rts_1_1RTSBuildRequest.html">RTSBuildRequest</a> request);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;RTSCancelProductionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#acc75fc03a09f9fe20d16ad5827bec09b">cancel</a>(</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <a class="code hl_class" href="classeve_1_1rts_1_1Building.html">Building</a>&amp; building, <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, std::string productionTaskId,</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        std::string orderId, <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> refund, std::string reason = <span class="stringliteral">&quot;production cancelled&quot;</span>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;RTSCancelProductionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#acc75fc03a09f9fe20d16ad5827bec09b">cancel</a>(<a class="code hl_struct" href="structeve_1_1rts_1_1RTSCancelProductionRequest.html">RTSCancelProductionRequest</a> request);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>};</div>
+</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aAtomicResourcePayment_8h_html"><div class="ttname"><a href="AtomicResourcePayment_8h.html">AtomicResourcePayment.h</a></div><div class="ttdoc">Small transaction facade for a resource cost plus one domain effect.</div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aCommandQueue_8h_html"><div class="ttname"><a href="CommandQueue_8h.html">CommandQueue.h</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_ae8ae5102f9ee2a73efc07b521079dfc9"><div class="ttname"><a href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a></div><div class="ttdeci">eve::resource::IResourceAccount * account</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00036">DialoguePayment.cpp:36</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a66625d8d6c0894b4828b43f826a09b8f"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aProduction_8h_html"><div class="ttname"><a href="Production_8h.html">Production.h</a></div></div>
+<div class="ttc" id="aResourceAccount_8h_html"><div class="ttname"><a href="ResourceAccount_8h.html">ResourceAccount.h</a></div><div class="ttdoc">Strongly typed, transaction-friendly resource cost protocol.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTransaction_8h_html"><div class="ttname"><a href="Transaction_8h.html">Transaction.h</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00041">Time.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a9de3e023afa73e0361442ee7a7097bde"><div class="ttname"><a href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">eve::Duration::zero</a></div><div class="ttdeci">static constexpr Duration zero() noexcept</div><div class="ttdoc">Return zero duration.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00058">Time.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a></div><div class="ttdoc">Deterministic action lifecycle coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00474">Action.h:474</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1orders_1_1CommandQueue_html"><div class="ttname"><a href="classeve_1_1orders_1_1CommandQueue.html">eve::orders::CommandQueue</a></div><div class="ttdoc">Generic priority order queue with no gameplay or entity semantics.</div><div class="ttdef"><b>Definition</b> <a href="CommandQueue_8h_source.html#l00087">CommandQueue.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1production_1_1WorkQueue_html"><div class="ttname"><a href="classeve_1_1production_1_1WorkQueue.html">eve::production::WorkQueue</a></div><div class="ttdoc">Generic multi-owner, multi-slot continuous-progress work queue.</div><div class="ttdef"><b>Definition</b> <a href="Production_8h_source.html#l00054">Production.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a></div><div class="ttdoc">Immutable canonical multi-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00140">ResourceAccount.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1Building_html"><div class="ttname"><a href="classeve_1_1rts_1_1Building.html">eve::rts::Building</a></div><div class="ttdoc">RTS building domain root with placement and production composition.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00791">RTSTypes.h:791</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTSProductionActionAdapter_html"><div class="ttname"><a href="classeve_1_1rts_1_1RTSProductionActionAdapter.html">eve::rts::RTSProductionActionAdapter</a></div><div class="ttdoc">Coordinates Orders, Production, Action and resource payment.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00107">RTSProductionAction.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTSProductionActionAdapter_html_acc75fc03a09f9fe20d16ad5827bec09b"><div class="ttname"><a href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#acc75fc03a09f9fe20d16ad5827bec09b">eve::rts::RTSProductionActionAdapter::cancel</a></div><div class="ttdeci">static eve::Result&lt; RTSCancelProductionReceipt &gt; cancel(Building &amp;building, resource::IResourceAccount &amp;account, std::string productionTaskId, std::string orderId, resource::CostSpec refund, std::string reason=&quot;production cancelled&quot;)</div><div class="ttdoc">Cancel a building production task and refund its complete canonical cost atomically.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8cpp_source.html#l00383">RTSProductionAction.cpp:383</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTSProductionActionAdapter_html_adefcf4228e938373516113939f480445"><div class="ttname"><a href="classeve_1_1rts_1_1RTSProductionActionAdapter.html#adefcf4228e938373516113939f480445">eve::rts::RTSProductionActionAdapter::build</a></div><div class="ttdeci">static eve::Result&lt; RTSBuildReceipt &gt; build(Building &amp;building, action::ActionRuntime &amp;action, resource::IResourceAccount &amp;account, resource::CostSpec cost, std::string product, Duration duration, std::string productionKind=&quot;unit&quot;, int priority=0, std::string transactionId={}, std::vector&lt; RTSProductionResourceReserve &gt; resourceReserves={})</div><div class="ttdoc">Run the canonical build transaction against a live RTS Building.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8cpp_source.html#l00275">RTSProductionAction.cpp:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00119">Transaction.h:119</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00023">RTS.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_html_abfcfee3f5f9b1b38ed11b9c5f17cd675"><div class="ttname"><a href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a></div><div class="ttdeci">detail::StrongUint64&lt; detail::SimulationTickTag &gt; SimulationTick</div><div class="ttdoc">Deterministic simulation time step; it is not wall-clock time.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00029">Time.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionDefinition_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionDefinition.html">eve::action::ActionDefinition</a></div><div class="ttdoc">Immutable-by-convention definition of one action kind.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00088">Action.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionRequest_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionRequest.html">eve::action::ActionRequest</a></div><div class="ttdoc">One caller-owned request to instantiate an action execution.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00125">Action.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html">eve::resource::Receipt</a></div><div class="ttdoc">Receipt proving one atomic debit or credit was applied.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00286">ResourceAccount.h:286</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html">eve::resource::ResourceCost</a></div><div class="ttdoc">One positive resource and quantity pair in a canonical cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00112">ResourceAccount.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildReceipt_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildReceipt.html">eve::rts::RTSBuildReceipt</a></div><div class="ttdoc">Result of an accepted atomic RTS build/production command.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00072">RTSProductionAction.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildReceipt_html_a369816d35af136de8ba19ea20477af69"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildReceipt.html#a369816d35af136de8ba19ea20477af69">eve::rts::RTSBuildReceipt::actionExecution</a></div><div class="ttdeci">action::ActionExecutionId actionExecution</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00076">RTSProductionAction.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildReceipt_html_a48ba176bcf21383310b71af13c0affb3"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildReceipt.html#a48ba176bcf21383310b71af13c0affb3">eve::rts::RTSBuildReceipt::orderId</a></div><div class="ttdeci">std::string orderId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00074">RTSProductionAction.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildReceipt_html_aa21eb62e9567259f7f8f8746453d3620"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildReceipt.html#aa21eb62e9567259f7f8f8746453d3620">eve::rts::RTSBuildReceipt::transaction</a></div><div class="ttdeci">transaction::TransactionReceipt transaction</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00073">RTSProductionAction.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildReceipt_html_ac58102a13c0a9e6c6fe3f76da45365d8"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildReceipt.html#ac58102a13c0a9e6c6fe3f76da45365d8">eve::rts::RTSBuildReceipt::productionTaskId</a></div><div class="ttdeci">std::string productionTaskId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00075">RTSProductionAction.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html">eve::rts::RTSBuildRequest</a></div><div class="ttdoc">Caller-owned inputs for one atomic RTS build or production command.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00038">RTSProductionAction.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a01de9ea0ae523ee10b6675bd9fa44f82"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a01de9ea0ae523ee10b6675bd9fa44f82">eve::rts::RTSBuildRequest::action</a></div><div class="ttdeci">action::ActionRuntime * action</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00041">RTSProductionAction.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a027e7100bf9f9ca3363e66a5d2249bbe"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a027e7100bf9f9ca3363e66a5d2249bbe">eve::rts::RTSBuildRequest::product</a></div><div class="ttdeci">std::string product</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00047">RTSProductionAction.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a034133b90521c41c6a4e9ba6b1468290"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a034133b90521c41c6a4e9ba6b1468290">eve::rts::RTSBuildRequest::production</a></div><div class="ttdeci">production::WorkQueue * production</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00039">RTSProductionAction.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a04975557a7c4f2a722583b2aedbea880"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a04975557a7c4f2a722583b2aedbea880">eve::rts::RTSBuildRequest::cost</a></div><div class="ttdeci">resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00044">RTSProductionAction.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a1eed30dae24c7708058fc8443ca5dc21"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a1eed30dae24c7708058fc8443ca5dc21">eve::rts::RTSBuildRequest::resourceReserves</a></div><div class="ttdeci">std::vector&lt; RTSProductionResourceReserve &gt; resourceReserves</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00051">RTSProductionAction.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a28f80a84a342348db0c6080900229429"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a28f80a84a342348db0c6080900229429">eve::rts::RTSBuildRequest::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdoc">Tick used when the Action lifecycle is advanced.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00064">RTSProductionAction.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a2978b11ee9ed2a645070bffb8ad6dda0"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a2978b11ee9ed2a645070bffb8ad6dda0">eve::rts::RTSBuildRequest::actionDelta</a></div><div class="ttdeci">Duration actionDelta</div><div class="ttdoc">Duration consumed by the Action lifecycle at commit.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00066">RTSProductionAction.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a322d77d2bb2b2bcecc394e6c6a8eb3c2"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a322d77d2bb2b2bcecc394e6c6a8eb3c2">eve::rts::RTSBuildRequest::orderPriority</a></div><div class="ttdeci">int orderPriority</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00054">RTSProductionAction.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a3a0083607fc6880a5ea52e2fcb92bd86"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a3a0083607fc6880a5ea52e2fcb92bd86">eve::rts::RTSBuildRequest::productionKind</a></div><div class="ttdeci">std::string productionKind</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00046">RTSProductionAction.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a60338c6c9aa3e97aabb230ef3a8eda06"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a60338c6c9aa3e97aabb230ef3a8eda06">eve::rts::RTSBuildRequest::duration</a></div><div class="ttdeci">Duration duration</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00049">RTSProductionAction.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a671618051e33ef1707e3879d65e2b1c1"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a671618051e33ef1707e3879d65e2b1c1">eve::rts::RTSBuildRequest::account</a></div><div class="ttdeci">resource::IResourceAccount * account</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00042">RTSProductionAction.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a68c65663b878f01d89a8f4002bfbb7a6"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a68c65663b878f01d89a8f4002bfbb7a6">eve::rts::RTSBuildRequest::transactionId</a></div><div class="ttdeci">std::string transactionId</div><div class="ttdoc">Optional stable transaction id; empty derives from the product.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00068">RTSProductionAction.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a7bd46bf9f1b407eb71a8fdfa134eaef1"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a7bd46bf9f1b407eb71a8fdfa134eaef1">eve::rts::RTSBuildRequest::actionRequest</a></div><div class="ttdeci">action::ActionRequest actionRequest</div><div class="ttdoc">Optional custom action request; its action id is normalized below.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00060">RTSProductionAction.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a845c09d026c34e5d29a36b5a9896a612"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a845c09d026c34e5d29a36b5a9896a612">eve::rts::RTSBuildRequest::effect</a></div><div class="ttdeci">transaction::ITransactionParticipant * effect</div><div class="ttdoc">Optional domain effect staged in the same transaction.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00062">RTSProductionAction.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a8c4490ade46bc30e8db058ef860e6446"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a8c4490ade46bc30e8db058ef860e6446">eve::rts::RTSBuildRequest::context</a></div><div class="ttdeci">eve::Value context</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00048">RTSProductionAction.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_a9064ca2546a438741ca6519061ad46af"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#a9064ca2546a438741ca6519061ad46af">eve::rts::RTSBuildRequest::actionDefinition</a></div><div class="ttdeci">action::ActionDefinition actionDefinition</div><div class="ttdoc">Optional custom action definition; an invalid id gets a build id.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00058">RTSProductionAction.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_acd05654d4cec05f74ec5fcf841913d12"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#acd05654d4cec05f74ec5fcf841913d12">eve::rts::RTSBuildRequest::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00050">RTSProductionAction.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_ae46dfa75d424e48d46a1114e574653c8"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#ae46dfa75d424e48d46a1114e574653c8">eve::rts::RTSBuildRequest::orderKind</a></div><div class="ttdeci">std::string orderKind</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00053">RTSProductionAction.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_ae7b544c46a33cb463211f62e9e4344ce"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#ae7b544c46a33cb463211f62e9e4344ce">eve::rts::RTSBuildRequest::owner</a></div><div class="ttdeci">std::string owner</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00045">RTSProductionAction.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_aea831874125ec6091290b28bb5b9ed87"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#aea831874125ec6091290b28bb5b9ed87">eve::rts::RTSBuildRequest::orders</a></div><div class="ttdeci">orders::CommandQueue * orders</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00040">RTSProductionAction.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSBuildRequest_html_aed341c18a71b84489cf4680432483c70"><div class="ttname"><a href="structeve_1_1rts_1_1RTSBuildRequest.html#aed341c18a71b84489cf4680432483c70">eve::rts::RTSBuildRequest::orderTimeoutSeconds</a></div><div class="ttdeci">double orderTimeoutSeconds</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00055">RTSProductionAction.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionReceipt_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html">eve::rts::RTSCancelProductionReceipt</a></div><div class="ttdoc">Result of a production cancellation whose queues and refund all committed.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00091">RTSProductionAction.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionReceipt_html_a304cbf13a5cba10bf69736fbe37cd606"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#a304cbf13a5cba10bf69736fbe37cd606">eve::rts::RTSCancelProductionReceipt::orderId</a></div><div class="ttdeci">std::string orderId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00094">RTSProductionAction.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionReceipt_html_aa72d41e10e422b14c616df0242ed0a93"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#aa72d41e10e422b14c616df0242ed0a93">eve::rts::RTSCancelProductionReceipt::refund</a></div><div class="ttdeci">resource::Receipt refund</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00092">RTSProductionAction.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionReceipt_html_add846b937673e35c8e3f67c96992b45f"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionReceipt.html#add846b937673e35c8e3f67c96992b45f">eve::rts::RTSCancelProductionReceipt::productionTaskId</a></div><div class="ttdeci">std::string productionTaskId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00093">RTSProductionAction.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html">eve::rts::RTSCancelProductionRequest</a></div><div class="ttdoc">Caller-owned inputs for atomically cancelling one paid production task.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00080">RTSProductionAction.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_a337d7c8ebe33bcab0348387f3493530e"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a337d7c8ebe33bcab0348387f3493530e">eve::rts::RTSCancelProductionRequest::refund</a></div><div class="ttdeci">resource::CostSpec refund</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00084">RTSProductionAction.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_a69afea46340eb07478cf0ff79934d34c"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a69afea46340eb07478cf0ff79934d34c">eve::rts::RTSCancelProductionRequest::production</a></div><div class="ttdeci">production::WorkQueue * production</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00081">RTSProductionAction.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_a7e035b522a3f5819b7c25a9b534cb80a"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#a7e035b522a3f5819b7c25a9b534cb80a">eve::rts::RTSCancelProductionRequest::orders</a></div><div class="ttdeci">orders::CommandQueue * orders</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00082">RTSProductionAction.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_ab19a7f3c5f4345a1b0ade5695ba2f0fd"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#ab19a7f3c5f4345a1b0ade5695ba2f0fd">eve::rts::RTSCancelProductionRequest::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00087">RTSProductionAction.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_aba4e1622dddcce7fda00ad208f7db3bd"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba4e1622dddcce7fda00ad208f7db3bd">eve::rts::RTSCancelProductionRequest::productionTaskId</a></div><div class="ttdeci">std::string productionTaskId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00085">RTSProductionAction.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_aba6c5bf970a200fe91cb13315a7e2ee2"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#aba6c5bf970a200fe91cb13315a7e2ee2">eve::rts::RTSCancelProductionRequest::account</a></div><div class="ttdeci">resource::IResourceAccount * account</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00083">RTSProductionAction.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSCancelProductionRequest_html_accb348ad216fddf7f52befe3a0e25b27"><div class="ttname"><a href="structeve_1_1rts_1_1RTSCancelProductionRequest.html#accb348ad216fddf7f52befe3a0e25b27">eve::rts::RTSCancelProductionRequest::orderId</a></div><div class="ttdeci">std::string orderId</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00086">RTSProductionAction.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSProductionResourceReserve_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSProductionResourceReserve.html">eve::rts::RTSProductionResourceReserve</a></div><div class="ttdoc">Resource amount protected from production requests below a configured priority.</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00025">RTSProductionAction.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSProductionResourceReserve_html_a699ffa7f9cb0595e712b43b721e78d7f"><div class="ttname"><a href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a699ffa7f9cb0595e712b43b721e78d7f">eve::rts::RTSProductionResourceReserve::resource</a></div><div class="ttdeci">resource::ResourceCost resource</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00026">RTSProductionAction.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSProductionResourceReserve_html_a883a9cfcbcdf558fff1b9dd5ea700b10"><div class="ttname"><a href="structeve_1_1rts_1_1RTSProductionResourceReserve.html#a883a9cfcbcdf558fff1b9dd5ea700b10">eve::rts::RTSProductionResourceReserve::minimumPriority</a></div><div class="ttdeci">int minimumPriority</div><div class="ttdef"><b>Definition</b> <a href="RTSProductionAction_8h_source.html#l00027">RTSProductionAction.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1transaction_1_1TransactionReceipt_html"><div class="ttname"><a href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a></div><div class="ttdoc">Observable summary returned after an atomic participant commit.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00088">Transaction.h:88</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

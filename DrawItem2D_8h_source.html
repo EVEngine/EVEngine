@@ -1,0 +1,298 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/DrawItem2D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DrawItem2D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DrawItem2D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="BlendMode_8h.html">graphics/BlendMode.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Quad_8h.html">graphics/Quad.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Texture_8h.html">graphics/Texture.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>Camera2D;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">x</a> = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">y</a> = 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">w</a> = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">h</a> = 0.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">depthY</a> = 0.f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#af2b24a9b7572e93f57e389e8173e782c">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#af2b24a9b7572e93f57e389e8173e782c">rotation</a> = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#aec21f6da63c5d0ae8971d7701bf3837c">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aec21f6da63c5d0ae8971d7701bf3837c">anchorX</a> = 0.5f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a83443a4757c3063affab958188b67dc6">anchorY</a> = 0.5f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a8fc359df7dfaccee3500aa14ace8e39b">   28</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a8fc359df7dfaccee3500aa14ace8e39b">flipX</a> = <span class="keyword">false</span>, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a02ae7b9cf01cab6ed58027db36b9f777">flipY</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ab7b7b011438ccc947cd45e205137b20a">   31</a></span>    <span class="keywordtype">int</span>  <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab7b7b011438ccc947cd45e205137b20a">order</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a83fb9f66f6f550daabc2104350e2fa6c">   32</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a83fb9f66f6f550daabc2104350e2fa6c">hasOrder</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">   33</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">color</a>{1.f, 1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">layer</a> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a2c9b7a0fb3f191e506241a74b33bcc10">   36</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a2c9b7a0fb3f191e506241a74b33bcc10">blend</a> = <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">   37</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">   38</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">normal</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">   39</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Quad.html">Quad</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">quad</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">   40</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">shader</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">   41</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">canvas</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">   42</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">camera</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">   43</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">receiveLight</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">   44</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">litPath</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a479a867d5f97db9364e096c6c97f6e11">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a479a867d5f97db9364e096c6c97f6e11">sceneColorDistortion</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#ab445db9ec75cb5bc73b08ee90027cebc">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab445db9ec75cb5bc73b08ee90027cebc">distortionStrength</a> = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">   49</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">hasUV</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a34f2da8061390e0de226ce3601189238">   51</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a34f2da8061390e0de226ce3601189238">rotatedUV</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">u0</a> = 0.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a532e00f2a7d4c7541f65f643cc0767b5">v0</a> = 0.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a520405c99335d2a5f4910851c1ff1aae">u1</a> = 1.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aab49a210f7dc5b3de131c34220847421">v1</a> = 1.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">camX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab95036e946a431bdce7bae0bbb93f0e1">camY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ac2cc2a77ac8b9734c0c859fcdc5487df">camZoom</a> = 1.f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">   55</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">camValid</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">   56</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">camClear</a>{0.1f, 0.1f, 0.12f, 1.f};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a162803ce357f7b43e271b65edb6b6bc1">camAmbientR</a> = 0.15f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab08de2647c342c3b1bfe4e57de88b64a">camAmbientG</a> = 0.15f, <a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">camAmbientB</a> = 0.18f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">   60</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">sortDrawItems2D</a>(std::vector&lt;DrawItem2D&gt; &amp;items) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::stable_sort(items.begin(), items.end(), [](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        const bool aOff = a.canvas != nullptr;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        const bool bOff = b.canvas != nullptr;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        if (aOff != bOff) return aOff &amp;&amp; !bOff;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        if (a.canvas != b.canvas) return a.canvas &lt; b.canvas;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        if (a.layer != b.layer) return a.layer &lt; b.layer;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        if (a.hasOrder &amp;&amp; b.hasOrder &amp;&amp; a.order != b.order) return a.order &lt; b.order;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        if (a.depthY != b.depthY) return a.depthY &lt; b.depthY;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="comment">// Do not use pipeline/texture state as a tie-breaker: alpha compositing is</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="comment">// order-dependent. stable_sort preserves submission order for equal visual keys,</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="comment">// while the backend still batches adjacent compatible items.</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        return false;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    });</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBlendMode_8h_html"><div class="ttname"><a href="BlendMode_8h.html">BlendMode.h</a></div></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aQuad_8h_html"><div class="ttname"><a href="Quad_8h.html">Quad.h</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aTexture_8h_html"><div class="ttname"><a href="Texture_8h.html">Texture.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html">eve::graphics::Camera2D</a></div><div class="ttdoc">Declarative 2D camera (viewport center + zoom).</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8h_source.html#l00018">RenderSystem.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Quad_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Quad.html">eve::graphics::Quad</a></div><div class="ttdoc">Pixel-space sub-rectangle of a Texture (atlas cell / sprite frame). UV conversion uses the texture's ...</div><div class="ttdef"><b>Definition</b> <a href="Quad_8h_source.html#l00009">Quad.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ac57a2ef893af9fa844685a5c63c0d9a9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">eve::graphics::sortDrawItems2D</a></div><div class="ttdeci">void sortDrawItems2D(std::vector&lt; DrawItem2D &gt; &amp;items)</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00060">DrawItem2D.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::BlendMode</a></div><div class="ttdeci">BlendMode</div><div class="ttdoc">Render-neutral 2D blend mode shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00011">RenderTypes.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::BlendMode::Alpha</a></div><div class="ttdeci">@ Alpha</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html">eve::graphics::DrawItem2D</a></div><div class="ttdoc">Shared 2D draw queue item (sprites + tiles).</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00018">DrawItem2D.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a02ae7b9cf01cab6ed58027db36b9f777"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a02ae7b9cf01cab6ed58027db36b9f777">eve::graphics::DrawItem2D::flipY</a></div><div class="ttdeci">bool flipY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00028">DrawItem2D.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a0c568107cb4eb1d7228cda45236fa434"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">eve::graphics::DrawItem2D::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00020">DrawItem2D.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a111c9cf42eb3c95e7c134e33397d94a8"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">eve::graphics::DrawItem2D::camClear</a></div><div class="ttdeci">Color camClear</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00056">DrawItem2D.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a162803ce357f7b43e271b65edb6b6bc1"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a162803ce357f7b43e271b65edb6b6bc1">eve::graphics::DrawItem2D::camAmbientR</a></div><div class="ttdeci">float camAmbientR</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00057">DrawItem2D.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a2022347fd63e0767ff0b2462169f075d"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">eve::graphics::DrawItem2D::hasUV</a></div><div class="ttdeci">bool hasUV</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00049">DrawItem2D.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a2747cfc821b0f82c0e5a0c534111fa58"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">eve::graphics::DrawItem2D::camAmbientB</a></div><div class="ttdeci">float camAmbientB</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00057">DrawItem2D.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a2c9b7a0fb3f191e506241a74b33bcc10"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a2c9b7a0fb3f191e506241a74b33bcc10">eve::graphics::DrawItem2D::blend</a></div><div class="ttdeci">BlendMode blend</div><div class="ttdoc">2D quad blending (alpha / additive / opaque).</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00036">DrawItem2D.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a34f2da8061390e0de226ce3601189238"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a34f2da8061390e0de226ce3601189238">eve::graphics::DrawItem2D::rotatedUV</a></div><div class="ttdeci">bool rotatedUV</div><div class="ttdoc">Atlas-packed rotated region: corner UVs are remapped (rotated 90°).</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00051">DrawItem2D.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a479a867d5f97db9364e096c6c97f6e11"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a479a867d5f97db9364e096c6c97f6e11">eve::graphics::DrawItem2D::sceneColorDistortion</a></div><div class="ttdeci">bool sceneColorDistortion</div><div class="ttdoc">Sample and perturb the resolved 3D scene instead of drawing the texture color.</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00046">DrawItem2D.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a520405c99335d2a5f4910851c1ff1aae"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a520405c99335d2a5f4910851c1ff1aae">eve::graphics::DrawItem2D::u1</a></div><div class="ttdeci">float u1</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00052">DrawItem2D.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a532e00f2a7d4c7541f65f643cc0767b5"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a532e00f2a7d4c7541f65f643cc0767b5">eve::graphics::DrawItem2D::v0</a></div><div class="ttdeci">float v0</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00052">DrawItem2D.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a68889a095074058fdf81f07210f83ba4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">eve::graphics::DrawItem2D::receiveLight</a></div><div class="ttdeci">bool receiveLight</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00043">DrawItem2D.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a6be74c8789d88216e2913e9adb5122f6"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">eve::graphics::DrawItem2D::camX</a></div><div class="ttdeci">float camX</div><div class="ttdoc">Screen-space camera already resolved; if cameraEntity set, RenderSystem resolves.</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00054">DrawItem2D.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a71153f41788c0cc99aa7b55c5d27c9c9"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">eve::graphics::DrawItem2D::u0</a></div><div class="ttdeci">float u0</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00052">DrawItem2D.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a71a9aa09a5ed5fa39bc95281da9df984"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">eve::graphics::DrawItem2D::color</a></div><div class="ttdeci">Color color</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00033">DrawItem2D.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a7a7d897f0508827281fb687bcf725478"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">eve::graphics::DrawItem2D::canvas</a></div><div class="ttdeci">Canvas * canvas</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00041">DrawItem2D.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a83443a4757c3063affab958188b67dc6"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a83443a4757c3063affab958188b67dc6">eve::graphics::DrawItem2D::anchorY</a></div><div class="ttdeci">float anchorY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00027">DrawItem2D.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a838deb0b22ef3b498ec1e2a2da00e903"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">eve::graphics::DrawItem2D::camValid</a></div><div class="ttdeci">bool camValid</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00055">DrawItem2D.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a83fb9f66f6f550daabc2104350e2fa6c"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a83fb9f66f6f550daabc2104350e2fa6c">eve::graphics::DrawItem2D::hasOrder</a></div><div class="ttdeci">bool hasOrder</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00032">DrawItem2D.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a8b7ae99074f55ea4ba608e6beece47d4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">eve::graphics::DrawItem2D::layer</a></div><div class="ttdeci">int layer</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00034">DrawItem2D.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a8fc359df7dfaccee3500aa14ace8e39b"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a8fc359df7dfaccee3500aa14ace8e39b">eve::graphics::DrawItem2D::flipX</a></div><div class="ttdeci">bool flipX</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00028">DrawItem2D.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a9e3888519d315c9d5a3d7a90b1ce092e"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">eve::graphics::DrawItem2D::normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00038">DrawItem2D.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_aab49a210f7dc5b3de131c34220847421"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#aab49a210f7dc5b3de131c34220847421">eve::graphics::DrawItem2D::v1</a></div><div class="ttdeci">float v1</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00052">DrawItem2D.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab08de2647c342c3b1bfe4e57de88b64a"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab08de2647c342c3b1bfe4e57de88b64a">eve::graphics::DrawItem2D::camAmbientG</a></div><div class="ttdeci">float camAmbientG</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00057">DrawItem2D.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab445db9ec75cb5bc73b08ee90027cebc"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab445db9ec75cb5bc73b08ee90027cebc">eve::graphics::DrawItem2D::distortionStrength</a></div><div class="ttdeci">float distortionStrength</div><div class="ttdoc">Maximum displacement in screen pixels for sceneColorDistortion.</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00048">DrawItem2D.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab7b7b011438ccc947cd45e205137b20a"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab7b7b011438ccc947cd45e205137b20a">eve::graphics::DrawItem2D::order</a></div><div class="ttdeci">int order</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00031">DrawItem2D.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab95036e946a431bdce7bae0bbb93f0e1"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab95036e946a431bdce7bae0bbb93f0e1">eve::graphics::DrawItem2D::camY</a></div><div class="ttdeci">float camY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00054">DrawItem2D.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ac2cc2a77ac8b9734c0c859fcdc5487df"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ac2cc2a77ac8b9734c0c859fcdc5487df">eve::graphics::DrawItem2D::camZoom</a></div><div class="ttdeci">float camZoom</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00054">DrawItem2D.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ac64eff41c30ded2f47e8a89d0caa1fcb"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">eve::graphics::DrawItem2D::shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00040">DrawItem2D.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ad3c7bc9c777d9c49f6d5add3e336ff2c"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">eve::graphics::DrawItem2D::camera</a></div><div class="ttdeci">Camera2D * camera</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00042">DrawItem2D.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ad68ec315288a9d3c346a79e89eb98ce4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">eve::graphics::DrawItem2D::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00019">DrawItem2D.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae01ee809f16b5bdcd9043e79c2b2a284"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">eve::graphics::DrawItem2D::texture</a></div><div class="ttdeci">Texture * texture</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00037">DrawItem2D.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae51186ada81b5027c81d789ea98900f0"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">eve::graphics::DrawItem2D::depthY</a></div><div class="ttdeci">float depthY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00023">DrawItem2D.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae663f58c7a1d042da7c73ee26bbec906"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">eve::graphics::DrawItem2D::w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00021">DrawItem2D.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_aeb72351345554dc5f93e937b0daa4a97"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">eve::graphics::DrawItem2D::quad</a></div><div class="ttdeci">Quad * quad</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00039">DrawItem2D.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_aec21f6da63c5d0ae8971d7701bf3837c"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#aec21f6da63c5d0ae8971d7701bf3837c">eve::graphics::DrawItem2D::anchorX</a></div><div class="ttdeci">float anchorX</div><div class="ttdoc">Normalized transform pivot; (0,0) top-left, (0.5,0.5) center.</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00027">DrawItem2D.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_af064312392030d25c1cd1585e7b0b273"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">eve::graphics::DrawItem2D::h</a></div><div class="ttdeci">float h</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00022">DrawItem2D.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_af2b24a9b7572e93f57e389e8173e782c"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#af2b24a9b7572e93f57e389e8173e782c">eve::graphics::DrawItem2D::rotation</a></div><div class="ttdeci">float rotation</div><div class="ttdoc">Degrees, clockwise, around the rectangle center (screen Y-down).</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00025">DrawItem2D.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_afc7119c5e9d080fca5748de64943d373"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">eve::graphics::DrawItem2D::litPath</a></div><div class="ttdeci">bool litPath</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00044">DrawItem2D.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

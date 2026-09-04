@@ -1,0 +1,273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 攀爬与跑酷模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">攀爬与跑酷模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>攀爬与跑酷模块</h1>
+<p><b>脚本入口：</b> <code>eve.Climbing()</code>；默认加载槽位为 <code>climbing</code>。</p>
+<p><code>Climbing</code> 将跑酷动作拆为“几何探测 → 硬校验 → 确定性选择 → 胶囊体约束执行”。当前能力覆盖矮墙翻越、撑越、登台、空中抓边、Braced/Free Hang、climb-up、drop、沿边横移、内外转角、跨锚点跳跃、向下攀爬，以及梯子的 mount/climb/dismount。动作差异由 definition 描述，不写死在角色控制器里。</p>
+<h2>最小用法</h2>
+<div class="fragment"><div class="line">local physics = eve.Physics();</div>
+<div class="line">local climbing = eve.Climbing();</div>
+<div class="line">local world = physics.newWorld3D(0, -9.8, 0, true);</div>
+<div class="line"> </div>
+<div class="line">local created = climbing.newRuntime();</div>
+<div class="line">if (!created.ok) throw created.error.message;</div>
+<div class="line">local mover = created.value; // owned；模块卸载或 release 后句柄失效</div>
+<div class="line"> </div>
+<div class="line">local configured = mover.setProfile(</div>
+<div class="line">    0.30, 1.80, 0.03, // capsule radius / height / skin</div>
+<div class="line">    1.20, 1.80,       // forward probe / max obstacle height</div>
+<div class="line">    0.65, 0.20, -1); // top normal, warp budget, physics mask</div>
+<div class="line">if (!configured.ok) throw configured.error.message;</div>
+<div class="line"> </div>
+<div class="line">local mantle = mover.upsertAction(</div>
+<div class="line">    &quot;core:mantle&quot;, 0.55, 1.25, 0.0,</div>
+<div class="line">    0.60, 0.60, 0.70, 0); // duration, landing forward, apex, selection bias</div>
+<div class="line">if (!mantle.ok) throw mantle.error.message;</div>
+</div><!-- fragment --><p>完整动作可以通过 <code>upsertActionKind</code> 指定 <code>vault</code>、<code>mantle</code>、<code>ledge_grab</code> 或 <code>climb_up</code>，并提供悬挂偏移、双手间距和取消窗口。该入口会自动建立稳定动画 notify 契约；调用 <code>validateActionClip(actionId, clip)</code> 验证 clip 后才能启动动作。缺失 <code>contact.left_hand</code>、<code>contact.right_hand</code> 或 <code>land</code> 会返回 <code>climbing.animation.notify_missing</code>，不会在运行时猜测默认帧。</p>
+<p>角色请求动作时，将脚底世界坐标、水平朝向、速度、角色刚体 ID 和确定性 tick 传给 <code>tryBegin</code>：</p>
+<div class="fragment"><div class="line">local begin = mover.tryBegin(world, feetX, feetY, feetZ,</div>
+<div class="line">                             forwardX, forwardZ, speed,</div>
+<div class="line">                             characterBodyId, simulationTick);</div>
+<div class="line">if (begin.ok) {</div>
+<div class="line">    // begin.value.actionId / topPoint / landingFeet 是 owning Value，能安全跨查询读取。</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>空中抓边使用 <code>tryBeginMode</code>，额外提交垂直速度与 grounded 状态。到达 <code>hanging</code> 后可调用 <code>climbUp(tick)</code> 或 <code>drop(tick)</code>；悬挂会持续验证 body-local 动态锚点、平台 速度和角色 capsule clearance。</p>
+<p>执行期间，每个模拟 tick 调一次 <code>advance</code>：</p>
+<div class="fragment"><div class="line">local step = mover.advance(world, simulationTick, fixedDt);</div>
+<div class="line">if (step.ok) {</div>
+<div class="line">    character.setPosition(step.value.feet.x, step.value.feet.y, step.value.feet.z);</div>
+<div class="line">    animGraph.setParameter(&quot;climbingAction&quot;, step.value.actionId);</div>
+<div class="line">    animGraph.setParameter(&quot;climbingTime&quot;, step.value.normalizedTime);</div>
+<div class="line">}</div>
+<div class="line">local events = mover.drainEvents(); // PostPhysics/PostSimulation 阶段</div>
+<div class="line">if (!events.ok) throw events.error.message;</div>
+<div class="line">foreach (event in events.value) gameEvents.publish(event);</div>
+</div><!-- fragment --><p><code>desiredDelta</code> 是轨迹/动画希望得到的位移，<code>actualDelta</code> 是物理胶囊体真正允许的位移，<code>warpResidual</code> 是两者之差。超过 profile 的 <code>maxWarpResidual</code> 时 phase 变为 <code>failed</code>，不会穿透障碍。</p>
+<h2>API 快查</h2>
+<ul>
+<li><code>Climbing.getName()</code> → <code>"Climbing"</code></li>
+<li><code>Climbing.newRuntime()</code> → <code>Result&lt;owned ClimbingRuntime&gt;</code></li>
+<li><code>Climbing.newAnchorGraphJson(json, world, body)</code> → <code>Result&lt;owned ClimbingAnchorGraph&gt;</code></li>
+<li><code>Climbing.bakeAnchorGraphJson(requestJson)</code> → <code>Result&lt;{ graphJson, buildSettingsHash, ledgeNodeCount, ladderNodeCount }&gt;</code></li>
+<li><code>Climbing.inspectAnchorGraphJson(graphJson)</code> → renderer-neutral owning editor overlay</li>
+<li><code>ClimbingAnchorGraph.node(nodeId)</code> / <code>generation()</code> / <code>reservationCount()</code></li>
+<li><code>ClimbingAnchorGraph.planRoute(startNodeId, goalNodeId, avoidFull, agentId, executionId, maxVisitedNodes)</code>：在当前 graph generation 上返回确定性最短 owning route；owner id 必须同时为零或同时非零</li>
+<li><code>ClimbingAnchorGraph.reloadJson(json)</code>：原子发布新图并返回 <code>invalidatedOccupants</code></li>
+<li><code>ClimbingAnchorGraph.release()</code> / <code>isStale()</code></li>
+<li><code>ClimbingRuntime.ownership()</code> → <code>"owned"</code></li>
+<li><code>ClimbingRuntime.setProfile(radius, height, skin, probeDistance, obstacleHeight, minTopNormalY, maxWarpResidual, maskBits)</code></li>
+<li><code>ClimbingRuntime.setProfileJson(json)</code> / <code>reloadProfileJson(json)</code>：规范 profile JSON 的初始安装与原子热重载</li>
+<li><code>ClimbingRuntime.upsertAction(id, minHeight, maxHeight, minSpeed, duration, landingForward, apexHeight, selectionBias)</code></li>
+<li><code>ClimbingRuntime.upsertActionKind(id, kind, ..., hangBodyOffset, hangFeetBelowLedge, handSpacing, cancelStart, cancelEnd)</code></li>
+<li><code>ClimbingRuntime.validateActionClip(actionId, clip)</code></li>
+<li><code>ClimbingRuntime.tryBegin(world, feetX, feetY, feetZ, forwardX, forwardZ, speed, ignoredBodyId, tick)</code></li>
+<li><code>ClimbingRuntime.tryBeginMode(world, ..., ignoredBodyId, verticalSpeed, grounded, tick)</code></li>
+<li><code>ClimbingRuntime.tryBeginAnchor(graph, world, nodeId, agentId, actionId, ..., tick)</code></li>
+<li><code>ClimbingRuntime.transitionAnchor(graph, world, targetNodeId, edgeKind, actionId, tick)</code></li>
+<li><code>ClimbingRuntime.currentAnchor()</code> → <code>{ graphId, nodeId, graphGeneration }</code></li>
+<li><code>ClimbingRuntime.advance(world, tick, fixedDt)</code></li>
+<li><code>ClimbingRuntime.climbUp(tick)</code> / <code>drop(tick)</code></li>
+<li><code>ClimbingRuntime.cancel(reason, tick)</code>：稳定值包括 <code>player_request</code>、<code>drop_requested</code>、<code>link_stale</code>、<code>anchor_stale</code>、<code>motion_blocked</code>、<code>warp_budget_exceeded</code>、<code>definition_reloaded</code></li>
+<li><code>ClimbingRuntime.drainEvents()</code>：仿真后原子取走 owning 事件批次；事件含稳定 kind、actionId、tick 与 executionId</li>
+<li><code>ClimbingRuntime.inspect()</code> → owning debug snapshot</li>
+<li><code>ClimbingRuntime.setDebugCapture(enabled)</code>：关闭时立即释放候选、query、cost 与 motion evidence</li>
+<li><code>ClimbingRuntime.snapshotJson()</code> / <code>restoreJson(json, world)</code></li>
+<li><code>ClimbingRuntime.definitionGeneration()</code> → 十进制字符串（避免脚本整数溢出）</li>
+<li><code>ClimbingRuntime.release()</code> / <code>isStale()</code></li>
+</ul>
+<h2>C++ definition 与存档契约</h2>
+<p><code>ClimbingProfileDefinition</code> 和 <code>ClimbingActionDefinition</code> 使用规范化 <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code> codec：schema 分别为 <code>evengine.climbing-profile</code> v4 与 <code>evengine.climbing-action</code> v4；解码同时接受 N-1（v3）。解码会先构造并验证完整 owning candidate，再一次性返回； 已知字段有误时整份拒绝。未知根字段保存在 <code>extensionMetadata</code> 并在再次编码时原样输出， 方便编辑器和插件往返处理更高层 metadata。</p>
+<p><code>inputBufferTicks</code> 与 <code>coyoteTicks</code> 是 profile 的版本化权威配置，默认分别为 8 和 6 tick。输入窗口只使用 <code>SimulationTick</code>，不读取 wall clock。普通 Grounded/Airborne 移动也由同一 profile 的加速度、制动、空中控制、重力、跳跃速度、最大坡度、step height 和 ground snap 驱动，并通过 Physics owning capsule mover 写回实际位移。</p>
+<p>C++ 输入适配层提交 <code>ClimbingCommand::Climb</code>，所有公开模块与类型统一使用 <code>climbing</code> 命名； <code>parkour</code> 仅作为动作分类和 action id/tag 使用，不存在公开 <code>traversal</code> 模块或 API。 <code>ClimbingInputMode::Flow</code> 偏向速度连续性和 combo，<code>Precision</code> 提高显式朝向、镜头意图与 目标距离的权重。评分在量化后以 action/body/shape identity 稳定决胜，并对刚执行过的 动作施加 definition 中声明的重复惩罚。 候选准备成功后才消费输入并提交 <code>ClimbingExecutionId</code>，所以预检失败不会吞键或部分改变 权威状态。</p>
+<p><code>ClimbingRuntime::snapshot()</code> 输出 <code>evengine.climbing-runtime</code> v4，并包含当前 profile、 definition generation、活动 action snapshot 与尚未派发的事件队列。<code>restore(value, world)</code> 支持 v4 与 N-1（v3；历史 v2/v1/v0 仍可迁移）， 并在发布前重新解析 profile、pinned action、candidate、计时、动态平台 body/shape/world 句柄； 未知新版本或 stale link 都不会部分改变当前 runtime。Physics 句柄是 进程内身份，跨进程存档需要场景层先通过持久 ID 重建 Physics world，再调用 restore。</p>
+<p>活动 execution 固定开始/分支时的不可变 action snapshot。<code>reloadProfile</code>、 <code>reloadProfileJson</code> 与 <code>upsertAction</code> 都先完整验证候选定义，再递增 generation 并一次发布； 活动动作继续使用旧 snapshot，新动作使用新 generation。普通 <code>setProfile</code> 仍是初始配置入口， 活动期调用返回 <code>conflict</code>。</p>
+<h2>动画与姿态适配</h2>
+<p>Climbing 直接验证 <code>AnimClip</code> 的语义 notify，但不会跨帧持有 clip 指针。 <code>applyClimbingPose</code> 是同步 C++ adapter：把 <code>ClimbingAdvance</code> 的左右手 anchor 与 <code>contactWeight</code> 交给 Animation 内置 <code>TwoBoneIK</code> constraint stack。它不保存 skeleton/pose 裸指针；游戏应在动画图输出 base pose 后、skinning 前调用。最终角色位移始终使用 Physics 返回的 <code>actualDelta</code>。</p>
+<p><code>ClimbingMotionInput</code> 可为每个 fixed tick 提交动画 root translation、root yaw、朝向与 pelvis offset。Definition 用 <code>warpWindows</code> 显式开启 horizontal、vertical、facing 通道，并分别限制逐 tick 修正和整段动作预算。Mantle/climb-up 的完整胶囊路径采用 “先抬升到台面净空、再越过边缘、最后落脚”的确定性轨迹；预检与实际执行共享同一函数。 pelvis 超出 <code>maxPelvisDeviation</code> 时本 tick 原子拒绝，warp 在最后窗口仍不能收敛时以 <code>climbing.warp.budget_exceeded</code> 结束，不会传送穿墙。</p>
+<p><code>collision.compact</code> notify 在同一 simulation tick 把物理 mover 切换到 profile 的 <code>compactCapsuleHeight</code>，状态保持到 <code>land</code>；<code>branch.open</code> / <code>branch.close</code> 按 notify 顺序 更新 <code>branchWindowOpen</code>。这些状态进入 runtime snapshot，而不只是一帧动画提示。</p>
+<p>Animation binding 会把稳定 clip identity、graph node id、root bone 和 mirror policy 固定进 活动 execution；<code>graphNodeId</code> 是由游戏动画 adapter 解析的外部稳定 ID，Climbing 不持有 动画图节点指针。<code>ClimbingAdvance</code> 输出已解析的 clip/graph/root/mirror 信息与 <code>branchComboTag</code>，镜像 pose 的真正生成仍由 presentation adapter 负责。使用 MotionMatcher 的角色在动作开始时显式让出 locomotion provider 给 AnimGraph one-shot，动作结束后再按 fixed tick 恢复 MotionMatcher，不让两套系统同时拥有姿态。</p>
+<p><code>inspect()</code> 的 bounded owning snapshot 包含 probe/query 线段与胶囊、每个 action 的 hard reject code、量化 bias/height/distance cost，以及 planned/actual/residual capsule motion。 它还包含 broad-phase/query/mover 计数与预算状态。探测先执行固定容量、稳定排序的 owning broad phase，再进行窄相查询；热路径不读取 Physics 的“最近查询”缓存。关闭 HUD 时调用 <code>setDebugCapture(false)</code>，稳定预热后的 debug-off probe 路径不会产生逐 tick heap allocation。</p>
+<h2>显式 Anchor Graph</h2>
+<p>复杂 ledge、转角、梯子、pole 与 beam 使用版本化 C++ <code>ClimbingAnchorGraphDefinition</code> （schema <code>evengine.climbing-anchor-graph</code> v2，接受 N-1 v1）。节点保存 body-local position、法线/切线、 左右手与脚 socket、语义 kind、tags 和 1–8 个占用 slot；有向边描述 shimmy、corner、 jump、drop、mount、dismount 或 climb。codec 会保留未知 metadata，并规范化节点、边和 tag 顺序；重复 identity、悬空 edge、非正交 frame 或越界 slot 会整图拒绝。</p>
+<p><code>ClimbingAnchorGraphInstance::bind</code> 只保存 Physics world/body 的代际句柄，不跨帧持有 <code>World3D</code>/<code>Body3D</code> 指针。<code>nodeRef</code> 返回 graph-generation-qualified reference； <code>resolveNode</code> 每次从 body-local frame 重建世界 socket 与 point velocity，所以运动平台 平移/旋转后仍使用当前锚点，body 销毁或旧 generation 会返回 <code>stale_handle</code>。</p>
+<p><code>ClimbingAnchorNodeRef</code> 同时带 <code>graphId</code>、node id 与 graph generation，不同图即使节点同名、 代数相同也不能混用。<code>reserve</code> 为 agent + execution 确定性选择最低空闲 slot，返回不可伪造的 owning credential； <code>release</code> 校验 reservation id、generation、node、slot、agent 和 execution。图热重载先完整验证 新候选，再一次发布并返回排序后的 <code>invalidatedOccupants</code>，由 gameplay 在安全窗口取消 或显式迁移；旧 node reference 与 reservation token 均立即 stale。</p>
+<p>runtime v4 snapshot 保存 graph handle/epoch、node identity、slot、occupant 与 reservation claim generation。恢复到另一个 runtime 时，仍存活的 claim 会原子转移并使旧 runtime 的凭证 stale； 旧 runtime 已析构时只会重获原 slot，不会挤掉已有占用。重复恢复同一旧 snapshot 返回 conflict， 因此任意时刻只有一个 runtime 能释放该 slot。graph 与 Physics handle 仍是进程内 identity； 跨进程读取前必须由场景层按持久资源 ID 重建并重映射这些 link。</p>
+<p>编辑器或关卡工具使用 <code>evengine.climbing-anchor-bake-request</code> v1 提交 body-local 语义几何： ledge 折线可带逐点墙面法线，ladder 提交底部、up/normal、宽度、间距和 rung 数量。 <code>bakeClimbingAnchorGraph</code> 确定性生成 ledge/corner、shimmy 边、ladder rungs 以及 mount/climb/dismount 边，并将 source geometry content id 与全部 build settings/source 采样纳入稳定 <code>fnv1a64</code> build hash。输入候选完整验证成功后才返回 graph，不会发布半张图。</p>
+<p><code>inspectClimbingAnchorGraphAuthoring</code>（脚本入口 <code>inspectAnchorGraphJson</code>）返回完整 owning、 渲染无关的 node/edge overlay，包含 frame、手脚 socket、slot 和语义类型。高层 Editor 或 Graphics adapter 可以选择颜色与绘制方式；<code>climbing</code> 本身不反向依赖这两个高层模块。</p>
+<h2>生命周期与确定性</h2>
+<ul>
+<li>Runtime 由 <code>Climbing</code> 模块独占，脚本代理是 owned；不要保存 C++ 裸指针。</li>
+<li>Runtime 不持有 <code>World3D</code> 指针。候选保存 world/body/shape 的代际句柄，跨帧使用时重新验证。</li>
+<li>探测会临时设置 Physics query filter 和忽略角色自身，返回前恢复原状态。</li>
+<li>选择分数按毫米量化，并以 action ID、body ID、shape ID 稳定决胜；同一输入与世界快照产生同一排序。</li>
+<li>时间只来自调用方注入的 tick 与 fixed dt；重复或倒退 tick 返回 <code>conflict</code>。</li>
+<li>started/contact/hanging/drop/land/completed/cancelled/failed 由 runtime 的单一有界队列拥有； <code>advance</code>、<code>drop</code>、<code>cancel</code> 不调用未知代码。游戏必须在仿真阶段结束后调用 <code>drainEvents()</code>， 再派发脚本或回调。批次会先从 runtime 脱离，因此回调重入产生的新事件留给下一次 drain； 队列达到 64 条时，新状态变更以 <code>conflict</code> 原子退回，不会静默丢事件。</li>
+<li>游戏适配层把 <code>actionId + normalizedTime + desired/actualDelta</code> 喂给动画图，并在同一帧应用可选手部 pose constraint；物理位移始终以 <code>actualDelta</code> 为准。</li>
+<li>stamina 不在 Climbing 内复制。profile 采用 <code>RequireProvider</code> 时必须声明稳定 <code>staminaAdapter</code>，运行时只接受 identity 完全匹配的 authority；不匹配会在输入消费和 execution 创建之前返回错误。</li>
+<li>action 的 <code>eventMetadata</code> 随 started/contact/land/terminal 事件一同进入 owning 队列和 snapshot；事件消费者不必再反查可能已热重载的 definition。 </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

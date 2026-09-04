@@ -1,0 +1,280 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorSimulationPreview.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorSimulationPreview.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorSimulationPreview_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorProtocol_8h.html">editor/EditorProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationObjectSample.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SimulationObjectSample.html">SimulationObjectSample</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationObjectSample.html#adf37472137dde39a1c9f7cd15179f6fa">   14</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#adf37472137dde39a1c9f7cd15179f6fa">object</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationObjectSample.html#abdf39a134f1b4da0249af07ec0984e82">   15</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#abdf39a134f1b4da0249af07ec0984e82">positionX</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#a57d33a4da4b6420f50a76a0c204b0d5f">positionY</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#ad894c33698508888feb9df9d5da2dbfd">positionZ</a> = 0.0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationObjectSample.html#a6f9efcd7b3c91a3d559500336a2edca6">   16</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#a0f65d44ccab69af95ca933a5e68ffdd2">rotationX</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#a27375a98caea22eddeae1bf6c51b602e">rotationY</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#a38a1f3b89d8621f3bd5dffd28a21cc56">rotationZ</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationObjectSample.html#a6f9efcd7b3c91a3d559500336a2edca6">rotationW</a> = 1.0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationPreviewFrame.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SimulationPreviewFrame.html">SimulationPreviewFrame</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a76633f14ea673d977c24be2384e6cea2">   21</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a76633f14ea673d977c24be2384e6cea2">tick</a> = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a5c63fe52c353c0d884a640377a40e4db">   22</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a5c63fe52c353c0d884a640377a40e4db">time</a> = 0.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#ac82f58de116191d6270a1033f8d78dc9">   23</a></span>    std::vector&lt;SimulationObjectSample&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationPreviewFrame.html#ac82f58de116191d6270a1033f8d78dc9">objects</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SimulationBakeResult.html">SimulationBakeResult</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html#a526ba0faf43d203ded5dbcadc0689433">   28</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationBakeResult.html#a526ba0faf43d203ded5dbcadc0689433">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html#aabbacc868163d9aa48390cc91fb5d638">   29</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationBakeResult.html#aabbacc868163d9aa48390cc91fb5d638">sourceRevision</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html#ae615765d48c00990fae009b536851dba">   30</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationBakeResult.html#ae615765d48c00990fae009b536851dba">fixedDelta</a> = 0.0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html#a667f7dbcdcd2a9c686866e2ded4f9575">   31</a></span>    std::vector&lt;SimulationPreviewFrame&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationBakeResult.html#a667f7dbcdcd2a9c686866e2ded4f9575">frames</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SimulationBakeResult.html#a98b68d87a666426af7cbd67b361b3656">   32</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SimulationBakeResult.html#a98b68d87a666426af7cbd67b361b3656">diagnostics</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">IEditorSimulationBackend</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#af781d40b32c3c4610fbbe534d538c1d4">   38</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#af781d40b32c3c4610fbbe534d538c1d4">~IEditorSimulationBackend</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#ab7d2134c43fec6bb622c336a5426c2fa">   40</a></span>    <span class="keyword">virtual</span> std::unique_ptr&lt;IEditorSimulationBackend&gt; <a class="code hl_function" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#ab7d2134c43fec6bb622c336a5426c2fa">cloneForPreview</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#a42dab2408711bcf1339b568c0b21791b">   42</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#a42dab2408711bcf1339b568c0b21791b">step</a>(std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <span class="keywordtype">double</span> fixedDelta) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#aef737fd3e97bf4016268e7d53c3466c7">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;std::vector&lt;SimulationObjectSample&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1editor_1_1IEditorSimulationBackend.html#aef737fd3e97bf4016268e7d53c3466c7">capture</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SimulationPreviewController.html">   48</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1SimulationPreviewController.html">SimulationPreviewController</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#a580c19e835f1a2ed6c0b4ab3150d9630">setFixedDelta</a>(<span class="keywordtype">double</span> seconds);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SimulationPreviewController.html#a13a68499ab9fd981a357c66e0a6bd0ab">   53</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#a13a68499ab9fd981a357c66e0a6bd0ab">setPaused</a>(<span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#abacf7494c09a0b6f8f881d6f0fe6be23">paused</a>) { paused_ = <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#abacf7494c09a0b6f8f881d6f0fe6be23">paused</a>; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SimulationPreviewController.html#abacf7494c09a0b6f8f881d6f0fe6be23">   55</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#abacf7494c09a0b6f8f881d6f0fe6be23">paused</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> paused_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SimulationPreviewFrame&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#ad339dc11d5df66c47d731fec7baed7ed">singleStep</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">IEditorSimulationBackend</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SimulationPreviewFrame&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#ae119ba1fb43b6bd07a0cf03f90d2e64e">update</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">IEditorSimulationBackend</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1SimulationBakeResult.html">SimulationBakeResult</a> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#a909d959417af355a28cadd5439e93c34">bake</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">IEditorSimulationBackend</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::uint64_t sourceRevision,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                              <span class="keywordtype">int</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>, <span class="keywordtype">int</span> maxSteps = 10000) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1SimulationPreviewController.html#a5455161ca5d80cb8a0a1b8f68a7fcd09">rewind</a>();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SimulationPreviewFrame&gt;</a> advance(<a class="code hl_class" href="classeve_1_1editor_1_1IEditorSimulationBackend.html">IEditorSimulationBackend</a>&amp; backend,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                 std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">bool</span> paused_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">double</span> fixedDelta_ = 1.0 / 60.0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::uint64_t tick_ = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::unique_ptr&lt;IEditorSimulationBackend&gt; previewBackend_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorProtocol_8h_html"><div class="ttname"><a href="EditorProtocol_8h.html">EditorProtocol.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ab4ae7205573977222eadd0795db193e2"><div class="ttname"><a href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a></div><div class="ttdeci">int steps</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00112">PrototypeKit.cpp:112</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorSimulationBackend_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorSimulationBackend.html">eve::editor::IEditorSimulationBackend</a></div><div class="ttdoc">Cloneable backend boundary for physics/crowd/fluid editor simulation previews.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00036">EditorSimulationPreview.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorSimulationBackend_html_a42dab2408711bcf1339b568c0b21791b"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorSimulationBackend.html#a42dab2408711bcf1339b568c0b21791b">eve::editor::IEditorSimulationBackend::step</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; step(std::uint64_t tick, double fixedDelta)=0</div><div class="ttdoc">Advance exactly one fixed deterministic step.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorSimulationBackend_html_ab7d2134c43fec6bb622c336a5426c2fa"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorSimulationBackend.html#ab7d2134c43fec6bb622c336a5426c2fa">eve::editor::IEditorSimulationBackend::cloneForPreview</a></div><div class="ttdeci">virtual std::unique_ptr&lt; IEditorSimulationBackend &gt; cloneForPreview() const =0</div><div class="ttdoc">Clone complete simulation state so preview never mutates the live world.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorSimulationBackend_html_aef737fd3e97bf4016268e7d53c3466c7"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorSimulationBackend.html#aef737fd3e97bf4016268e7d53c3466c7">eve::editor::IEditorSimulationBackend::capture</a></div><div class="ttdeci">virtual EditorResult&lt; std::vector&lt; SimulationObjectSample &gt; &gt; capture() const =0</div><div class="ttdoc">Capture stable object transforms after the current step.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorSimulationBackend_html_af781d40b32c3c4610fbbe534d538c1d4"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorSimulationBackend.html#af781d40b32c3c4610fbbe534d538c1d4">eve::editor::IEditorSimulationBackend::~IEditorSimulationBackend</a></div><div class="ttdeci">virtual ~IEditorSimulationBackend()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html">eve::editor::SimulationPreviewController</a></div><div class="ttdoc">Pause/single-step/bake controller shared by simulation editor modules.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00048">EditorSimulationPreview.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_a13a68499ab9fd981a357c66e0a6bd0ab"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#a13a68499ab9fd981a357c66e0a6bd0ab">eve::editor::SimulationPreviewController::setPaused</a></div><div class="ttdeci">void setPaused(bool paused)</div><div class="ttdoc">Pause or resume interactive preview stepping.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00053">EditorSimulationPreview.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_a5455161ca5d80cb8a0a1b8f68a7fcd09"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#a5455161ca5d80cb8a0a1b8f68a7fcd09">eve::editor::SimulationPreviewController::rewind</a></div><div class="ttdeci">void rewind()</div><div class="ttdoc">Reset preview clock and discard the isolated preview clone.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8cpp_source.html#l00053">EditorSimulationPreview.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_a580c19e835f1a2ed6c0b4ab3150d9630"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#a580c19e835f1a2ed6c0b4ab3150d9630">eve::editor::SimulationPreviewController::setFixedDelta</a></div><div class="ttdeci">EditorResult&lt; void &gt; setFixedDelta(double seconds)</div><div class="ttdoc">Set the fixed preview delta in seconds.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8cpp_source.html#l00009">EditorSimulationPreview.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_a909d959417af355a28cadd5439e93c34"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#a909d959417af355a28cadd5439e93c34">eve::editor::SimulationPreviewController::bake</a></div><div class="ttdeci">SimulationBakeResult bake(const IEditorSimulationBackend &amp;source, std::uint64_t sourceRevision, int steps, int maxSteps=10000) const</div><div class="ttdoc">Bake a bounded non-destructive trajectory from a fresh source clone.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8cpp_source.html#l00067">EditorSimulationPreview.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_abacf7494c09a0b6f8f881d6f0fe6be23"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#abacf7494c09a0b6f8f881d6f0fe6be23">eve::editor::SimulationPreviewController::paused</a></div><div class="ttdeci">bool paused() const</div><div class="ttdoc">Return whether automatic preview advance is paused.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00055">EditorSimulationPreview.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_ad339dc11d5df66c47d731fec7baed7ed"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#ad339dc11d5df66c47d731fec7baed7ed">eve::editor::SimulationPreviewController::singleStep</a></div><div class="ttdeci">EditorResult&lt; SimulationPreviewFrame &gt; singleStep(const IEditorSimulationBackend &amp;source)</div><div class="ttdoc">Advance one step even while paused, without mutating the live backend.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8cpp_source.html#l00042">EditorSimulationPreview.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SimulationPreviewController_html_ae119ba1fb43b6bd07a0cf03f90d2e64e"><div class="ttname"><a href="classeve_1_1editor_1_1SimulationPreviewController.html#ae119ba1fb43b6bd07a0cf03f90d2e64e">eve::editor::SimulationPreviewController::update</a></div><div class="ttdeci">EditorResult&lt; SimulationPreviewFrame &gt; update(const IEditorSimulationBackend &amp;source)</div><div class="ttdoc">Advance only when unpaused. Paused calls return NoOp.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8cpp_source.html#l00058">EditorSimulationPreview.cpp:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html">eve::editor::SimulationBakeResult</a></div><div class="ttdoc">Non-destructive baked preview trajectory and diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00027">EditorSimulationPreview.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html_a526ba0faf43d203ded5dbcadc0689433"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html#a526ba0faf43d203ded5dbcadc0689433">eve::editor::SimulationBakeResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00028">EditorSimulationPreview.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html_a667f7dbcdcd2a9c686866e2ded4f9575"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html#a667f7dbcdcd2a9c686866e2ded4f9575">eve::editor::SimulationBakeResult::frames</a></div><div class="ttdeci">std::vector&lt; SimulationPreviewFrame &gt; frames</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00031">EditorSimulationPreview.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html_a98b68d87a666426af7cbd67b361b3656"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html#a98b68d87a666426af7cbd67b361b3656">eve::editor::SimulationBakeResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00032">EditorSimulationPreview.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html_aabbacc868163d9aa48390cc91fb5d638"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html#aabbacc868163d9aa48390cc91fb5d638">eve::editor::SimulationBakeResult::sourceRevision</a></div><div class="ttdeci">std::uint64_t sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00029">EditorSimulationPreview.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationBakeResult_html_ae615765d48c00990fae009b536851dba"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationBakeResult.html#ae615765d48c00990fae009b536851dba">eve::editor::SimulationBakeResult::fixedDelta</a></div><div class="ttdeci">double fixedDelta</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00030">EditorSimulationPreview.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html">eve::editor::SimulationObjectSample</a></div><div class="ttdoc">Stable transform sample captured from one simulation object.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00013">EditorSimulationPreview.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_a0f65d44ccab69af95ca933a5e68ffdd2"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#a0f65d44ccab69af95ca933a5e68ffdd2">eve::editor::SimulationObjectSample::rotationX</a></div><div class="ttdeci">double rotationX</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00016">EditorSimulationPreview.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_a27375a98caea22eddeae1bf6c51b602e"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#a27375a98caea22eddeae1bf6c51b602e">eve::editor::SimulationObjectSample::rotationY</a></div><div class="ttdeci">double rotationY</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00016">EditorSimulationPreview.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_a38a1f3b89d8621f3bd5dffd28a21cc56"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#a38a1f3b89d8621f3bd5dffd28a21cc56">eve::editor::SimulationObjectSample::rotationZ</a></div><div class="ttdeci">double rotationZ</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00016">EditorSimulationPreview.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_a57d33a4da4b6420f50a76a0c204b0d5f"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#a57d33a4da4b6420f50a76a0c204b0d5f">eve::editor::SimulationObjectSample::positionY</a></div><div class="ttdeci">double positionY</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00015">EditorSimulationPreview.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_a6f9efcd7b3c91a3d559500336a2edca6"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#a6f9efcd7b3c91a3d559500336a2edca6">eve::editor::SimulationObjectSample::rotationW</a></div><div class="ttdeci">double rotationW</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00016">EditorSimulationPreview.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_abdf39a134f1b4da0249af07ec0984e82"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#abdf39a134f1b4da0249af07ec0984e82">eve::editor::SimulationObjectSample::positionX</a></div><div class="ttdeci">double positionX</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00015">EditorSimulationPreview.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_ad894c33698508888feb9df9d5da2dbfd"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#ad894c33698508888feb9df9d5da2dbfd">eve::editor::SimulationObjectSample::positionZ</a></div><div class="ttdeci">double positionZ</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00015">EditorSimulationPreview.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationObjectSample_html_adf37472137dde39a1c9f7cd15179f6fa"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationObjectSample.html#adf37472137dde39a1c9f7cd15179f6fa">eve::editor::SimulationObjectSample::object</a></div><div class="ttdeci">std::string object</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00014">EditorSimulationPreview.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationPreviewFrame_html"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationPreviewFrame.html">eve::editor::SimulationPreviewFrame</a></div><div class="ttdoc">One deterministic editor-preview simulation frame.</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00020">EditorSimulationPreview.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationPreviewFrame_html_a5c63fe52c353c0d884a640377a40e4db"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a5c63fe52c353c0d884a640377a40e4db">eve::editor::SimulationPreviewFrame::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00022">EditorSimulationPreview.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationPreviewFrame_html_a76633f14ea673d977c24be2384e6cea2"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationPreviewFrame.html#a76633f14ea673d977c24be2384e6cea2">eve::editor::SimulationPreviewFrame::tick</a></div><div class="ttdeci">std::uint64_t tick</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00021">EditorSimulationPreview.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SimulationPreviewFrame_html_ac82f58de116191d6270a1033f8d78dc9"><div class="ttname"><a href="structeve_1_1editor_1_1SimulationPreviewFrame.html#ac82f58de116191d6270a1033f8d78dc9">eve::editor::SimulationPreviewFrame::objects</a></div><div class="ttdeci">std::vector&lt; SimulationObjectSample &gt; objects</div><div class="ttdef"><b>Definition</b> <a href="EditorSimulationPreview_8h_source.html#l00023">EditorSimulationPreview.h:23</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

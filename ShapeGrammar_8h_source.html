@@ -1,0 +1,270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ShapeGrammar.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ShapeGrammar.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ShapeGrammar_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ShapeModuleVariant.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1ShapeModuleVariant.html">ShapeModuleVariant</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4ef07a1ca8a7666165b19f73279bb407">   14</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4ef07a1ca8a7666165b19f73279bb407">asset</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a1d3f3ed041b1d93d2294587d129f3550">   15</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a1d3f3ed041b1d93d2294587d129f3550">length</a> = 1.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4fc0c1bb4403b3c3c908993d8f1d6d3a">   16</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4fc0c1bb4403b3c3c908993d8f1d6d3a">weight</a> = 1.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ShapeGrammar.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a32feee88cd39a5286ed44e1e9fee5897">clear</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa9ab4ae1c3aef590902654e59da59406">addModule</a>(<span class="keyword">const</span> std::string&amp; symbol, <span class="keyword">const</span> std::string&amp; asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                   <span class="keywordtype">float</span> weight = 1.f);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a278f37a1eb333f81261e1a0f279763ca">removeModule</a>(<span class="keyword">const</span> std::string&amp; symbol);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a9819f06b213edb742d2a427c93790a71">hasModule</a>(<span class="keyword">const</span> std::string&amp; symbol) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">getModuleCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a05cdcab39f74c3d7a1e6ad40e6c1865c">getModuleSymbol</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa2920560579a2b2873822fa966d67d67">getVariantCount</a>(<span class="keyword">const</span> std::string&amp; symbol) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#ab3358b748472e2659292c7813129e4d7">getVariantAsset</a>(<span class="keyword">const</span> std::string&amp; symbol, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">float</span>       <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a431ad22d7c850e1e92965ea99cb9fb03">getVariantLength</a>(<span class="keyword">const</span> std::string&amp; symbol, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a6accc3129f2ada8fe915ad2c6a9e16e4">validate</a>(<span class="keyword">const</span> std::string&amp; grammar);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>* <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#ac4bb658843490ca9572a7fe26fb43b95">generate</a>(<span class="keyword">const</span> std::string&amp; grammar, <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>* controlPoints, uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                       <span class="keywordtype">bool</span> acceptIncomplete);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a563a96f781dbb6bc4d9f28ad74395022">getError</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#af8659ca7cd8ccd9b593ce2b00e263d61">debugReport</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">struct </span>Element {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        std::string          symbol;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        std::vector&lt;Element&gt; <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordtype">int</span>                  repeatMin = 1;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordtype">int</span>                  repeatMax = 1;  <span class="comment">// -1 = fill available length</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    };</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">struct </span>Parser {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">size_t</span>             <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a> = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        std::string        <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        std::vector&lt;Element&gt; sequence(<span class="keywordtype">char</span> terminator = <span class="charliteral">&#39;\0&#39;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">void</span> skipWhitespace();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    };</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">float</span> elementMinLength(<span class="keyword">const</span> Element&amp; element) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">float</span> sequenceMinLength(<span class="keyword">const</span> std::vector&lt;Element&gt;&amp; sequence, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span>  expandSequence(<span class="keyword">const</span> std::vector&lt;Element&gt;&amp; sequence, <span class="keywordtype">float</span> available,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                         std::vector&lt;std::string&gt;&amp; symbols, <span class="keywordtype">float</span>&amp; used) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ShapeModuleVariant.html">ShapeModuleVariant</a>* chooseVariant(<span class="keyword">const</span> std::string&amp; symbol, uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::unordered_map&lt;std::string, std::vector&lt;ShapeModuleVariant&gt;&gt; modules_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::vector&lt;std::string&gt; moduleOrder_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    std::string              error_;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">int</span>                      lastSymbolCount_ = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span>                    lastUsedLength_  = 0.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">float</span>                    lastSplineLength_ = 0.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>};</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a93ed9b546e7fadad14615c5ef0065277"><div class="ttname"><a href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a></div><div class="ttdeci">int children</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00177">TreeMesh.cpp:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00056">PointSet.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html">eve::procgen::ShapeGrammar</a></div><div class="ttdoc">Module-based shape grammar expanded continuously along a 3D polyline.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00027">ShapeGrammar.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a05cdcab39f74c3d7a1e6ad40e6c1865c"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a05cdcab39f74c3d7a1e6ad40e6c1865c">eve::procgen::ShapeGrammar::getModuleSymbol</a></div><div class="ttdeci">std::string getModuleSymbol(int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00085">ShapeGrammar.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a278f37a1eb333f81261e1a0f279763ca"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a278f37a1eb333f81261e1a0f279763ca">eve::procgen::ShapeGrammar::removeModule</a></div><div class="ttdeci">bool removeModule(const std::string &amp;symbol)</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00078">ShapeGrammar.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a32feee88cd39a5286ed44e1e9fee5897"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a32feee88cd39a5286ed44e1e9fee5897">eve::procgen::ShapeGrammar::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove every registered symbol and diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00058">ShapeGrammar.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a4147bd0ebeb0ee8b10b6c4beb0f1aa1c"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">eve::procgen::ShapeGrammar::getModuleCount</a></div><div class="ttdeci">int getModuleCount() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00084">ShapeGrammar.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a431ad22d7c850e1e92965ea99cb9fb03"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a431ad22d7c850e1e92965ea99cb9fb03">eve::procgen::ShapeGrammar::getVariantLength</a></div><div class="ttdeci">float getVariantLength(const std::string &amp;symbol, int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00098">ShapeGrammar.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a563a96f781dbb6bc4d9f28ad74395022"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a563a96f781dbb6bc4d9f28ad74395022">eve::procgen::ShapeGrammar::getError</a></div><div class="ttdeci">std::string getError() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00182">ShapeGrammar.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a6accc3129f2ada8fe915ad2c6a9e16e4"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a6accc3129f2ada8fe915ad2c6a9e16e4">eve::procgen::ShapeGrammar::validate</a></div><div class="ttdeci">bool validate(const std::string &amp;grammar)</div><div class="ttdoc">Parse and validate grammar without generating output.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00105">ShapeGrammar.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a9819f06b213edb742d2a427c93790a71"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a9819f06b213edb742d2a427c93790a71">eve::procgen::ShapeGrammar::hasModule</a></div><div class="ttdeci">bool hasModule(const std::string &amp;symbol) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00083">ShapeGrammar.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_aa2920560579a2b2873822fa966d67d67"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#aa2920560579a2b2873822fa966d67d67">eve::procgen::ShapeGrammar::getVariantCount</a></div><div class="ttdeci">int getVariantCount(const std::string &amp;symbol) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00088">ShapeGrammar.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_aa9ab4ae1c3aef590902654e59da59406"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#aa9ab4ae1c3aef590902654e59da59406">eve::procgen::ShapeGrammar::addModule</a></div><div class="ttdeci">bool addModule(const std::string &amp;symbol, const std::string &amp;asset, float length, float weight=1.f)</div><div class="ttdoc">Register a weighted asset variant for a symbol.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00067">ShapeGrammar.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_ab3358b748472e2659292c7813129e4d7"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#ab3358b748472e2659292c7813129e4d7">eve::procgen::ShapeGrammar::getVariantAsset</a></div><div class="ttdeci">std::string getVariantAsset(const std::string &amp;symbol, int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00092">ShapeGrammar.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_ac4bb658843490ca9572a7fe26fb43b95"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#ac4bb658843490ca9572a7fe26fb43b95">eve::procgen::ShapeGrammar::generate</a></div><div class="ttdeci">PointSet * generate(const std::string &amp;grammar, PointSet *controlPoints, uint32_t seed, bool acceptIncomplete)</div><div class="ttdoc">Expand grammar along control points.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00131">ShapeGrammar.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_af8659ca7cd8ccd9b593ce2b00e263d61"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#af8659ca7cd8ccd9b593ce2b00e263d61">eve::procgen::ShapeGrammar::debugReport</a></div><div class="ttdeci">std::string debugReport() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00183">ShapeGrammar.cpp:183</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ShapeModuleVariant_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ShapeModuleVariant.html">eve::procgen::ShapeModuleVariant</a></div><div class="ttdoc">One weighted asset variant represented by a shape-grammar symbol.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00013">ShapeGrammar.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ShapeModuleVariant_html_a1d3f3ed041b1d93d2294587d129f3550"><div class="ttname"><a href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a1d3f3ed041b1d93d2294587d129f3550">eve::procgen::ShapeModuleVariant::length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00015">ShapeGrammar.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ShapeModuleVariant_html_a4ef07a1ca8a7666165b19f73279bb407"><div class="ttname"><a href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4ef07a1ca8a7666165b19f73279bb407">eve::procgen::ShapeModuleVariant::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00014">ShapeGrammar.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ShapeModuleVariant_html_a4fc0c1bb4403b3c3c908993d8f1d6d3a"><div class="ttname"><a href="structeve_1_1procgen_1_1ShapeModuleVariant.html#a4fc0c1bb4403b3c3c908993d8f1d6d3a">eve::procgen::ShapeModuleVariant::weight</a></div><div class="ttdeci">float weight</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00016">ShapeGrammar.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveMeshRecipe.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveMeshRecipe.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveMeshRecipe_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="CaveMesh_8h.html">procgen/algorithms/CaveMesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CaveMeshInternal_8h.html">procgen/algorithms/CaveMeshInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="MarchingCubes_8h.html">procgen/algorithms/MarchingCubes.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a519e43f0f4f67d67e6cbca36ad7bc649">   10</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a519e43f0f4f67d67e6cbca36ad7bc649">registerCaveMeshRecipe</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">MeshRecipeRegistry</a>&amp; registry) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> cave{<span class="stringliteral">&quot;mesh.cave&quot;</span>, <span class="stringliteral">&quot;Limestone Cave&quot;</span>, <span class="stringliteral">&quot;Mesh&quot;</span>, {}};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    cave.<a class="code hl_variable" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a>.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;seed&quot;</span>, <span class="stringliteral">&quot;Seed&quot;</span>, 1, 0, 2147483647));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">ParamDescriptor::choice</a>(<span class="stringliteral">&quot;style&quot;</span>, <span class="stringliteral">&quot;Cave Style&quot;</span>, <span class="stringliteral">&quot;mixed&quot;</span>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                                                  {<span class="stringliteral">&quot;cavern&quot;</span>, <span class="stringliteral">&quot;tunnels&quot;</span>, <span class="stringliteral">&quot;vertical&quot;</span>, <span class="stringliteral">&quot;labyrinth&quot;</span>, <span class="stringliteral">&quot;mixed&quot;</span>}));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">ParamDescriptor::choice</a>(<span class="stringliteral">&quot;genesis&quot;</span>, <span class="stringliteral">&quot;Cave Genesis&quot;</span>, <span class="stringliteral">&quot;epigene&quot;</span>, {<span class="stringliteral">&quot;epigene&quot;</span>, <span class="stringliteral">&quot;hypogene&quot;</span>, <span class="stringliteral">&quot;mixed&quot;</span>}));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;resolution&quot;</span>, <span class="stringliteral">&quot;Resolution&quot;</span>, 40, 12, 128));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;width&quot;</span>, <span class="stringliteral">&quot;World Width&quot;</span>, 30.f, 1.f, 1000.f, 0.5f));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;height&quot;</span>, <span class="stringliteral">&quot;World Height&quot;</span>, 12.f, 1.f, 1000.f, 0.5f));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;depth&quot;</span>, <span class="stringliteral">&quot;World Depth&quot;</span>, 24.f, 1.f, 1000.f, 0.5f));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;chambers&quot;</span>, <span class="stringliteral">&quot;Chambers&quot;</span>, 7, 1, 64));</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;branches&quot;</span>, <span class="stringliteral">&quot;Branches&quot;</span>, 4, 0, 32));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;tunnelRadius&quot;</span>, <span class="stringliteral">&quot;Tunnel Radius&quot;</span>, 0.16f, 0.04f, 0.4f, 0.01f));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;chamberScale&quot;</span>, <span class="stringliteral">&quot;Chamber Scale&quot;</span>, 1.f, 0.35f, 2.5f, 0.05f));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;chamberHierarchy&quot;</span>, <span class="stringliteral">&quot;Chamber Size Hierarchy&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;passageVariation&quot;</span>, <span class="stringliteral">&quot;Passage Scale Variation&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;chamberIrregularity&quot;</span>, <span class="stringliteral">&quot;Chamber Low-frequency Relief&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;roughness&quot;</span>, <span class="stringliteral">&quot;Wall Roughness&quot;</span>, 0.12f, 0.f, 0.45f, 0.01f));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;multiscaleRoughness&quot;</span>, <span class="stringliteral">&quot;Multi-scale Wall Relief&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;erosion&quot;</span>, <span class="stringliteral">&quot;Karst Erosion&quot;</span>, 0.55f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;bedding&quot;</span>, <span class="stringliteral">&quot;Bedding Dissolution&quot;</span>, 0.6f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;fractureDissolution&quot;</span>, <span class="stringliteral">&quot;Joint Dissolution&quot;</span>, 0.55f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;vadoseIncision&quot;</span>, <span class="stringliteral">&quot;Stream Incision&quot;</span>, 0.35f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;waterTableCorrosion&quot;</span>, <span class="stringliteral">&quot;Water-table Corrosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopErosion&quot;</span>, <span class="stringliteral">&quot;Flow Scallops&quot;</span>, 0.45f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopScale&quot;</span>, <span class="stringliteral">&quot;Scallop Scale&quot;</span>, 0.12f, 0.04f, 0.32f, 0.01f));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopHydraulicScaling&quot;</span>, <span class="stringliteral">&quot;Flow-scaled Scallops&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopScaleVariability&quot;</span>, <span class="stringliteral">&quot;Scallop Scale Variability&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopFlowSeparation&quot;</span>, <span class="stringliteral">&quot;Scallop Flow Separation&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;scallopFlowHistory&quot;</span>, <span class="stringliteral">&quot;Multi-stage Scallop Overprint&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;hydraulicErosion&quot;</span>, <span class="stringliteral">&quot;Hydraulic Erosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;mixingCorrosion&quot;</span>, <span class="stringliteral">&quot;Confluence Mixing Corrosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;lithologicHeterogeneity&quot;</span>, <span class="stringliteral">&quot;Lithologic Selective Erosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;floodAbrasion&quot;</span>, <span class="stringliteral">&quot;Sediment-laden Flood Abrasion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;floodPlucking&quot;</span>, <span class="stringliteral">&quot;Fracture-controlled Flood Plucking&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;constrictionScour&quot;</span>, <span class="stringliteral">&quot;Constriction Pool Scour&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;knickpointErosion&quot;</span>, <span class="stringliteral">&quot;Knickpoint Erosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;streamBedKarren&quot;</span>, <span class="stringliteral">&quot;Stream-bed Karren&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;eddyPotholes&quot;</span>, <span class="stringliteral">&quot;Eddy Potholes&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;potholeGravelSize&quot;</span>, <span class="stringliteral">&quot;Pothole Gravel Size&quot;</span>, 0.5f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;breakdownScour&quot;</span>, <span class="stringliteral">&quot;Breakdown-block Scour&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;dripstones&quot;</span>, <span class="stringliteral">&quot;Dripstone Pairs&quot;</span>, 12, 0, 64));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;dripstoneScale&quot;</span>, <span class="stringliteral">&quot;Dripstone Scale&quot;</span>, 0.7f, 0.25f, 1.5f, 0.05f));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">ParamDescriptor::choice</a>(<span class="stringliteral">&quot;stalagmiteShape&quot;</span>, <span class="stringliteral">&quot;Stalagmite Shape&quot;</span>, <span class="stringliteral">&quot;mixed&quot;</span>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                  {<span class="stringliteral">&quot;conical&quot;</span>, <span class="stringliteral">&quot;columnar&quot;</span>, <span class="stringliteral">&quot;flatTop&quot;</span>, <span class="stringliteral">&quot;mixed&quot;</span>}));</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;normalSmoothing&quot;</span>, <span class="stringliteral">&quot;Normal Smoothing&quot;</span>, 0.78f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;flowstones&quot;</span>, <span class="stringliteral">&quot;Flowstone Patches&quot;</span>, 7, 0, 32));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;curtains&quot;</span>, <span class="stringliteral">&quot;Cave Curtains&quot;</span>, 5, 0, 32));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;flowstoneScale&quot;</span>, <span class="stringliteral">&quot;Flowstone Scale&quot;</span>, 0.75f, 0.25f, 1.5f, 0.05f));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    cave.params.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;surfaceRefinement&quot;</span>, <span class="stringliteral">&quot;Surface Refinement&quot;</span>, 0, 0, 2));</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    cave.params.push_back(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;refinementThreshold&quot;</span>, <span class="stringliteral">&quot;Refinement Error&quot;</span>, 0.0015f, 0.0001f, 0.02f, 0.0001f));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">auto</span> advanced = [&amp;cave](<a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> param) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        param.advanced = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        cave.params.push_back(std::move(param));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    };</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;nx&quot;</span>, <span class="stringliteral">&quot;X Resolution&quot;</span>, 40, 8, 128));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;ny&quot;</span>, <span class="stringliteral">&quot;Y Resolution&quot;</span>, 24, 8, 128));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;nz&quot;</span>, <span class="stringliteral">&quot;Z Resolution&quot;</span>, 40, 8, 128));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;fractureCount&quot;</span>, <span class="stringliteral">&quot;Joint Planes&quot;</span>, 5, 0, 24));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;waterTableLevel&quot;</span>, <span class="stringliteral">&quot;Highest Water-table Level&quot;</span>, 0.18f, -0.8f, 0.8f, 0.01f));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;waterTableStages&quot;</span>, <span class="stringliteral">&quot;Water-table Stages&quot;</span>, 1, 1, 4));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;waterTableDrop&quot;</span>, <span class="stringliteral">&quot;Water-table Stage Drop&quot;</span>, 0.18f, 0.05f, 0.5f, 0.01f));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;waterTableFluctuation&quot;</span>, <span class="stringliteral">&quot;Water-table Fluctuation&quot;</span>, 0.35f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    advanced(</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;fractureApertureVariability&quot;</span>, <span class="stringliteral">&quot;Joint Aperture Variability&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    advanced(</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;fractureStressControl&quot;</span>, <span class="stringliteral">&quot;Stress-controlled Joint Branching&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    advanced(</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;fractureFlowFeedback&quot;</span>, <span class="stringliteral">&quot;Aperture-flow Joint Channelization&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;hydraulicGradient&quot;</span>, <span class="stringliteral">&quot;Hydraulic Gradient&quot;</span>, 0.35f, 0.01f, 2.f, 0.01f));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;recharge&quot;</span>, <span class="stringliteral">&quot;Recharge&quot;</span>, 0.65f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;flowFocusing&quot;</span>, <span class="stringliteral">&quot;Flow Focusing&quot;</span>, 0.7f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;damkohler&quot;</span>, <span class="stringliteral">&quot;Effective Damkohler&quot;</span>, 0.002f, 0.00005f, 0.05f, 0.00005f));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;transportG&quot;</span>, <span class="stringliteral">&quot;Transverse Transport G&quot;</span>, 1.f, 0.1f, 5.f, 0.1f));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;sedimentLoad&quot;</span>, <span class="stringliteral">&quot;Flood Sediment Load&quot;</span>, 0.55f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;pluckingBlockScale&quot;</span>, <span class="stringliteral">&quot;Plucked Block Scale&quot;</span>, 0.1f, 0.04f, 0.2f, 0.01f));</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;microstructure&quot;</span>, <span class="stringliteral">&quot;Rock Microstructure&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;roughnessFlowCoupling&quot;</span>, <span class="stringliteral">&quot;Rough-wall Mass Transfer&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;surfaceSlopeReactivity&quot;</span>, <span class="stringliteral">&quot;Geometry-controlled Surface Reactivity&quot;</span>, 0.f, 0.f,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                       1.f, 0.01f));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;reactivePatchiness&quot;</span>, <span class="stringliteral">&quot;Correlated Reactive Patches&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;condensationCorrosion&quot;</span>, <span class="stringliteral">&quot;Condensation Corrosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;biogenicCorrosion&quot;</span>, <span class="stringliteral">&quot;Biogenic Corrosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;mineralArmoring&quot;</span>, <span class="stringliteral">&quot;Secondary-mineral Armoring&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;condensationFaceting&quot;</span>, <span class="stringliteral">&quot;Condensation Faceting&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;differentialVeinErosion&quot;</span>, <span class="stringliteral">&quot;Differential Vein Erosion&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;breakdown&quot;</span>, <span class="stringliteral">&quot;Breakdown&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;breakdownEvents&quot;</span>, <span class="stringliteral">&quot;Breakdown Events&quot;</span>, 4, 0, 16));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;sedimentDeposition&quot;</span>, <span class="stringliteral">&quot;Sediment Deposition&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;paragenesis&quot;</span>, <span class="stringliteral">&quot;Sediment-driven Paragenesis&quot;</span>, 0.f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;sedimentBars&quot;</span>, <span class="stringliteral">&quot;Sediment Bars&quot;</span>, 4, 0, 16));</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;microporosityAccess&quot;</span>, <span class="stringliteral">&quot;Accessible Microporosity&quot;</span>, 0.55f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">ParamDescriptor::floating</a>(<span class="stringliteral">&quot;permeabilityContrast&quot;</span>, <span class="stringliteral">&quot;Permeability Contrast&quot;</span>, 0.65f, 0.f, 1.f, 0.01f));</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;cupolas&quot;</span>, <span class="stringliteral">&quot;Ceiling Cupolas&quot;</span>, 6, 0, 32));</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    advanced(<a class="code hl_function" href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">ParamDescriptor::integer</a>(<span class="stringliteral">&quot;feeders&quot;</span>, <span class="stringliteral">&quot;Rising Feeders&quot;</span>, 4, 0, 24));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    registry.<a class="code hl_function" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html#a276784e26b24b87b02dce72e2ff2dd01">registerRecipe</a>(std::move(cave), <a class="code hl_function" href="namespaceeve_1_1procgen.html#a3263377e4f02b20a2f287069cdbe9b48">caveMeshGenerator</a>());</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveMeshInternal_8h_html"><div class="ttname"><a href="CaveMeshInternal_8h.html">CaveMeshInternal.h</a></div></div>
+<div class="ttc" id="aCaveMesh_8h_html"><div class="ttname"><a href="CaveMesh_8h.html">CaveMesh.h</a></div></div>
+<div class="ttc" id="aMarchingCubes_8h_html"><div class="ttname"><a href="MarchingCubes_8h.html">MarchingCubes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshRecipeRegistry_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">eve::procgen::MeshRecipeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8h_source.html#l00040">MarchingCubes.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshRecipeRegistry_html_a276784e26b24b87b02dce72e2ff2dd01"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshRecipeRegistry.html#a276784e26b24b87b02dce72e2ff2dd01">eve::procgen::MeshRecipeRegistry::registerRecipe</a></div><div class="ttdeci">void registerRecipe(const std::string &amp;id, MeshRecipeFn fn)</div><div class="ttdoc">Register a recipe without metadata.</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00452">MarchingCubes.cpp:452</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a3263377e4f02b20a2f287069cdbe9b48"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a3263377e4f02b20a2f287069cdbe9b48">eve::procgen::caveMeshGenerator</a></div><div class="ttdeci">MeshRecipeFn caveMeshGenerator()</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l01784">CaveMesh.cpp:1784</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a519e43f0f4f67d67e6cbca36ad7bc649"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a519e43f0f4f67d67e6cbca36ad7bc649">eve::procgen::registerCaveMeshRecipe</a></div><div class="ttdeci">void registerCaveMeshRecipe(MeshRecipeRegistry &amp;registry)</div><div class="ttdoc">Register the deterministic three-dimensional limestone cave recipe.</div><div class="ttdef"><b>Definition</b> <a href="CaveMeshRecipe_8cpp_source.html#l00010">CaveMeshRecipe.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html">eve::procgen::ParamDescriptor</a></div><div class="ttdoc">UI-independent metadata for one procedural recipe parameter.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00014">ParamSchema.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a1597d71c4566cc8b9d36126e2bd38cad"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a1597d71c4566cc8b9d36126e2bd38cad">eve::procgen::ParamDescriptor::choice</a></div><div class="ttdeci">static ParamDescriptor choice(std::string key, std::string label, std::string defaultValue, std::vector&lt; std::string &gt; choices)</div><div class="ttdoc">Construct a finite-choice string descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00065">ParamSchema.cpp:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a23afe53f0d046d7efaef069f8122f2d9"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a23afe53f0d046d7efaef069f8122f2d9">eve::procgen::ParamDescriptor::floating</a></div><div class="ttdeci">static ParamDescriptor floating(std::string key, std::string label, float defaultValue, float minimum, float maximum, float step)</div><div class="ttdoc">Construct a bounded floating-point descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00033">ParamSchema.cpp:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html_a8a9ba6eda1658d976ffb9821afe36b3e"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html#a8a9ba6eda1658d976ffb9821afe36b3e">eve::procgen::ParamDescriptor::integer</a></div><div class="ttdeci">static ParamDescriptor integer(std::string key, std::string label, int defaultValue, int minimum, int maximum, int step=1)</div><div class="ttdoc">Construct a bounded integer descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8cpp_source.html#l00019">ParamSchema.cpp:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html">eve::procgen::RecipeDescriptor</a></div><div class="ttdoc">Complete metadata and parameter schema shared by every procgen recipe family.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00052">ParamSchema.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html_aa218539902f2b84c0b47f622ee2c3245"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">eve::procgen::RecipeDescriptor::params</a></div><div class="ttdeci">std::vector&lt; ParamDescriptor &gt; params</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00056">ParamSchema.h:56</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

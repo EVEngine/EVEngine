@@ -1,0 +1,430 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::ISimulationBackend类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">ISimulationBackend</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1ISimulationBackend-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::ISimulationBackend类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Minimal observable contract for physics simulation providers.  
+ <a href="classeve_1_1physics_1_1ISimulationBackend.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::ISimulationBackend 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1ISimulationBackend.png" usemap="#eve::physics::ISimulationBackend_map" alt=""/>
+  <map id="eve::physics::ISimulationBackend_map" name="eve::physics::ISimulationBackend_map">
+<area href="classeve_1_1fluids_1_1FluidSimulator.html" title="GPU-backed surface fluid simulator (falls back to the CPU solver)." alt="eve::fluids::FluidSimulator" shape="rect" coords="0,56,197,80"/>
+<area href="classeve_1_1physics_1_1Cloth.html" title="Interactive 2D cloth — Verlet particles + distance constraints. Pixel space (same convention as Box2D..." alt="eve::physics::Cloth" shape="rect" coords="207,56,404,80"/>
+<area href="classeve_1_1physics_1_1Cloth3D.html" title="Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up,..." alt="eve::physics::Cloth3D" shape="rect" coords="414,56,611,80"/>
+<area href="classeve_1_1physics_1_1ClothGPU.html" title="GPU-accelerated 2D cloth — Verlet integration and distance-constraint relaxation run in a Vulkan comp..." alt="eve::physics::ClothGPU" shape="rect" coords="621,56,818,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a247d718f8968b22c8b1ee121d2790f7e" id="r_a247d718f8968b22c8b1ee121d2790f7e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a> ()=default</td></tr>
+<tr class="memdesc:a247d718f8968b22c8b1ee121d2790f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the backend; borrowed domain state is not destroyed.  <br /></td></tr>
+<tr class="separator:a247d718f8968b22c8b1ee121d2790f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e5cb31452eaadf312522b2ddaafa0b" id="r_a29e5cb31452eaadf312522b2ddaafa0b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">step</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;step, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings)=0</td></tr>
+<tr class="memdesc:a29e5cb31452eaadf312522b2ddaafa0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the borrowed solver state by one checked fixed step.  <br /></td></tr>
+<tr class="separator:a29e5cb31452eaadf312522b2ddaafa0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11a8e09cf239e3899592c779d48a5032" id="r_a11a8e09cf239e3899592c779d48a5032"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">observation</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a11a8e09cf239e3899592c779d48a5032"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns completed-step observables by value.  <br /></td></tr>
+<tr class="separator:a11a8e09cf239e3899592c779d48a5032"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82a8e64a28853aa0c51da564a5b136ae" id="r_a82a8e64a28853aa0c51da564a5b136ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">kind</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a82a8e64a28853aa0c51da564a5b136ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the provider family.  <br /></td></tr>
+<tr class="separator:a82a8e64a28853aa0c51da564a5b136ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac16a11fbede61795119d03f323c3809c" id="r_ac16a11fbede61795119d03f323c3809c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">determinism</a> () const noexcept=0</td></tr>
+<tr class="memdesc:ac16a11fbede61795119d03f323c3809c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the provider's replay/determinism guarantee.  <br /></td></tr>
+<tr class="separator:ac16a11fbede61795119d03f323c3809c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0afa52c7c90a1575bed612e94332f41e" id="r_a0afa52c7c90a1575bed612e94332f41e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">restoreObservation</a> (const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;)</td></tr>
+<tr class="memdesc:a0afa52c7c90a1575bed612e94332f41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores progress metadata after the owner restores its state.  <br /></td></tr>
+<tr class="separator:a0afa52c7c90a1575bed612e94332f41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Minimal observable contract for physics simulation providers. </p>
+<p>The backend borrows domain-owned state and must be destroyed before that state. Implementations own no graphics or presentation resources. Calls are simulation-thread affine and must not run concurrently with another mutation of the same domain state. A failed step leaves observation and domain state unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00139">139</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a247d718f8968b22c8b1ee121d2790f7e" name="a247d718f8968b22c8b1ee121d2790f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a247d718f8968b22c8b1ee121d2790f7e">&#9670;&#160;</a></span>~ISimulationBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::physics::ISimulationBackend::~ISimulationBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases the backend; borrowed domain state is not destroyed. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac16a11fbede61795119d03f323c3809c" name="ac16a11fbede61795119d03f323c3809c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac16a11fbede61795119d03f323c3809c">&#9670;&#160;</a></span>determinism()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> eve::physics::ISimulationBackend::determinism </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the provider's replay/determinism guarantee. </p>
+<dl class="section return"><dt>返回</dt><dd>The declared determinism level. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a687cf27498399faa0cfcd51d842a2b7d">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#a48d5cb3c63209a32b2ad4e32521673dc">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a352f5ecb695c4ce214171bb0e27122d3">eve::physics::Cloth3D</a> , 以及 <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#ad1feb8cc7f341d1af022412b7235a78b">eve::physics::ClothGPU</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a82a8e64a28853aa0c51da564a5b136ae" name="a82a8e64a28853aa0c51da564a5b136ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82a8e64a28853aa0c51da564a5b136ae">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> eve::physics::ISimulationBackend::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Identifies the provider family. </p>
+<dl class="section return"><dt>返回</dt><dd>CPU, GPU, or a named test accelerator. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#a5c03f4ab2e7f4ac560c5b0dd9bec1479">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9b5bb8e171e4b7da0cbad5530bf90ee8">eve::physics::Cloth3D</a> , 以及 <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#a5b7536f25c046cb86cfb047dd9e880c3">eve::physics::ClothGPU</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a11a8e09cf239e3899592c779d48a5032" name="a11a8e09cf239e3899592c779d48a5032"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a8e09cf239e3899592c779d48a5032">&#9670;&#160;</a></span>observation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> eve::physics::ISimulationBackend::observation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns completed-step observables by value. </p>
+<dl class="section return"><dt>返回</dt><dd>A snapshot that remains valid after the backend changes. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#abc1cfd1988276ee8404303f186c21fe7">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a901b3435d9cb6ca1c15df90051956042">eve::physics::Cloth3D</a> , 以及 <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#aebd8e42062b5bc49556aa7008f2165fd">eve::physics::ClothGPU</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0afa52c7c90a1575bed612e94332f41e" name="a0afa52c7c90a1575bed612e94332f41e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0afa52c7c90a1575bed612e94332f41e">&#9670;&#160;</a></span>restoreObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::ISimulationBackend::restoreObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restores progress metadata after the owner restores its state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">observation</td><td>Completed-step observation to install. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when supported, or Unsupported when the backend cannot restore metadata without rebuilding its state. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This operation changes only backend-owned progress metadata; callers must restore the domain state atomically as one unit. </dd></dl>
+
+<p>被 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a056047cb3fd29e36473d5019c3c88b47">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#a0b9bbeea00eb9f412ff57d83544bb325">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a81f5d22780caee1c580e416f610288b9">eve::physics::Cloth3D</a> , 以及 <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#a48b5be0c287681061d38b4a479dbb641">eve::physics::ClothGPU</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a29e5cb31452eaadf312522b2ddaafa0b" name="a29e5cb31452eaadf312522b2ddaafa0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e5cb31452eaadf312522b2ddaafa0b">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::ISimulationBackend::step </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advances the borrowed solver state by one checked fixed step. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">step</td><td>Injected tick and duration; tick must increase strictly. </td></tr>
+    <tr><td class="paramname">settings</td><td>Solver policy for this step. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied with updated state, or a structured rejection/failure. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#ad48ba6445d52aef0e5108eec9679dfbf">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#a670eb894e20c2abb88f274cbd9f8739e">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a66ecb3d6ba50b5721417cd8ab98d01e6">eve::physics::Cloth3D</a> , 以及 <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#a13d988681b5bc63d4dbb49ac13cd0c63">eve::physics::ClothGPU</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

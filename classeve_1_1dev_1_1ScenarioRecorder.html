@@ -1,0 +1,946 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::ScenarioRecorder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1dev_1_1ScenarioRecorder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::ScenarioRecorder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A state-driven bug scenario: baseline snapshot + ordered per-frame inputs.  
+ <a href="classeve_1_1dev_1_1ScenarioRecorder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a03d431013e409ab110f6cf39cc32ce4d" id="r_a03d431013e409ab110f6cf39cc32ce4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a03d431013e409ab110f6cf39cc32ce4d">ScenarioRecorder</a> (const <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;)=delete</td></tr>
+<tr class="separator:a03d431013e409ab110f6cf39cc32ce4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac95ea2a3310dbde02ca6c39899968c17" id="r_ac95ea2a3310dbde02ca6c39899968c17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#ac95ea2a3310dbde02ca6c39899968c17">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;)=delete</td></tr>
+<tr class="separator:ac95ea2a3310dbde02ca6c39899968c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad16478204c501660434fb1e43e55bd" id="r_a6ad16478204c501660434fb1e43e55bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a6ad16478204c501660434fb1e43e55bd">begin</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:a6ad16478204c501660434fb1e43e55bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start recording: capture the baseline snapshot and observe the event queue.  <br /></td></tr>
+<tr class="separator:a6ad16478204c501660434fb1e43e55bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e031220280abfb00afde65dd68c2e4c" id="r_a4e031220280abfb00afde65dd68c2e4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a4e031220280abfb00afde65dd68c2e4c">markFrame</a> ()</td></tr>
+<tr class="memdesc:a4e031220280abfb00afde65dd68c2e4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a new frame bucket; no-op unless recording.  <br /></td></tr>
+<tr class="separator:a4e031220280abfb00afde65dd68c2e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f5365f59bff53aa085e218b3acac8d3" id="r_a0f5365f59bff53aa085e218b3acac8d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a0f5365f59bff53aa085e218b3acac8d3">end</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:a0f5365f59bff53aa085e218b3acac8d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop recording and persist the scenario to a JSON file.  <br /></td></tr>
+<tr class="separator:a0f5365f59bff53aa085e218b3acac8d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f4009aa15f80360ccf51bc0c932fd03" id="r_a4f4009aa15f80360ccf51bc0c932fd03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a4f4009aa15f80360ccf51bc0c932fd03">cancel</a> ()</td></tr>
+<tr class="memdesc:a4f4009aa15f80360ccf51bc0c932fd03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abort recording and restore the previous event observer.  <br /></td></tr>
+<tr class="separator:a4f4009aa15f80360ccf51bc0c932fd03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d6fe0d52594543a212994d7d2c8c366" id="r_a7d6fe0d52594543a212994d7d2c8c366"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7d6fe0d52594543a212994d7d2c8c366">recording</a> () const</td></tr>
+<tr class="memdesc:a7d6fe0d52594543a212994d7d2c8c366"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while a scenario is being recorded.  <br /></td></tr>
+<tr class="separator:a7d6fe0d52594543a212994d7d2c8c366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99cda03b81feee37b8ca3a0715b7e038" id="r_a99cda03b81feee37b8ca3a0715b7e038"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a99cda03b81feee37b8ca3a0715b7e038">beginReplay</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:a99cda03b81feee37b8ca3a0715b7e038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a scenario and restore its baseline snapshot onto the VM.  <br /></td></tr>
+<tr class="separator:a99cda03b81feee37b8ca3a0715b7e038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c65cfb76013ef5ccbec8f48ca75a991" id="r_a0c65cfb76013ef5ccbec8f48ca75a991"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a0c65cfb76013ef5ccbec8f48ca75a991">stageFrame</a> ()</td></tr>
+<tr class="memdesc:a0c65cfb76013ef5ccbec8f48ca75a991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-push the next recorded frame's events into the event queue.  <br /></td></tr>
+<tr class="separator:a0c65cfb76013ef5ccbec8f48ca75a991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a72dc56cf774b77d88f90e4bcaa07d1" id="r_a7a72dc56cf774b77d88f90e4bcaa07d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7a72dc56cf774b77d88f90e4bcaa07d1">replaying</a> () const</td></tr>
+<tr class="memdesc:a7a72dc56cf774b77d88f90e4bcaa07d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while a replay is in progress with frames remaining.  <br /></td></tr>
+<tr class="separator:a7a72dc56cf774b77d88f90e4bcaa07d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a410f4aebf0f4708273c1f9071b8ad084" id="r_a410f4aebf0f4708273c1f9071b8ad084"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a410f4aebf0f4708273c1f9071b8ad084">framesRemaining</a> () const</td></tr>
+<tr class="memdesc:a410f4aebf0f4708273c1f9071b8ad084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of frames remaining to stage.  <br /></td></tr>
+<tr class="separator:a410f4aebf0f4708273c1f9071b8ad084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a010c8705befda82c156a0f8df411777d" id="r_a010c8705befda82c156a0f8df411777d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a010c8705befda82c156a0f8df411777d">setErrorInfo</a> (const std::string &amp;report, const std::string &amp;site)</td></tr>
+<tr class="memdesc:a010c8705befda82c156a0f8df411777d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by <a class="el" href="classeve_1_1dev_1_1DevTool.html" title="Platform-level script + render debugger / dynamic slicer front-end.">DevTool</a> when a script error is dumped during recording.  <br /></td></tr>
+<tr class="separator:a010c8705befda82c156a0f8df411777d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac71fbbd7401a96f7be48e35a01ab18a" id="r_aac71fbbd7401a96f7be48e35a01ab18a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#aac71fbbd7401a96f7be48e35a01ab18a">onEventConsumed</a> (const <a class="el" href="classeve_1_1platform__event_1_1Message.html">eve::platform_event::Message</a> &amp;msg)</td></tr>
+<tr class="memdesc:aac71fbbd7401a96f7be48e35a01ab18a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoked by the event poll observer for every consumed message.  <br /></td></tr>
+<tr class="separator:aac71fbbd7401a96f7be48e35a01ab18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87ca8029edfe45f5255b9990dfeaa44b" id="r_a87ca8029edfe45f5255b9990dfeaa44b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a87ca8029edfe45f5255b9990dfeaa44b">detachObserver</a> ()</td></tr>
+<tr class="memdesc:a87ca8029edfe45f5255b9990dfeaa44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure the event observer is detached (restore previous); safe to call repeatedly.  <br /></td></tr>
+<tr class="separator:a87ca8029edfe45f5255b9990dfeaa44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0e4181df6d04c686a13b0329fdb666" id="r_a9a0e4181df6d04c686a13b0329fdb666"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">baseline</a> () const</td></tr>
+<tr class="separator:a9a0e4181df6d04c686a13b0329fdb666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f18c04077f8bcefa80eb2c0592f8318" id="r_a7f18c04077f8bcefa80eb2c0592f8318"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">frames</a> () const</td></tr>
+<tr class="separator:a7f18c04077f8bcefa80eb2c0592f8318"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f46fdb6999365c82a82bc717dbd314e" id="r_a5f46fdb6999365c82a82bc717dbd314e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">errorReport</a> () const</td></tr>
+<tr class="separator:a5f46fdb6999365c82a82bc717dbd314e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f15a9c994d241b4922e6d15d05d132c" id="r_a2f15a9c994d241b4922e6d15d05d132c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">errorSite</a> () const</td></tr>
+<tr class="separator:a2f15a9c994d241b4922e6d15d05d132c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad89a8e12caaae4a4d46b4604a51d1830" id="r_ad89a8e12caaae4a4d46b4604a51d1830"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#ad89a8e12caaae4a4d46b4604a51d1830">instance</a> ()</td></tr>
+<tr class="separator:ad89a8e12caaae4a4d46b4604a51d1830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1b684ffb2d9f1883ad92aa4e209fd25" id="r_af1b684ffb2d9f1883ad92aa4e209fd25"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#af1b684ffb2d9f1883ad92aa4e209fd25">save</a> (const std::string &amp;<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">baseline</a>, const std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; &amp;<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">frames</a>, const std::string &amp;<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">errorReport</a>, const std::string &amp;<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">errorSite</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:af1b684ffb2d9f1883ad92aa4e209fd25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persist a scenario to a JSON file (used for both record and replay paths).  <br /></td></tr>
+<tr class="separator:af1b684ffb2d9f1883ad92aa4e209fd25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7867f742d9c4b43ff2fde44139204fa4" id="r_a7867f742d9c4b43ff2fde44139204fa4"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7867f742d9c4b43ff2fde44139204fa4">load</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">baseline</a>, std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; *<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">frames</a>, std::string *<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">errorReport</a>, std::string *<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">errorSite</a>, std::string *err=nullptr)</td></tr>
+<tr class="memdesc:a7867f742d9c4b43ff2fde44139204fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a scenario from a JSON file into the given outputs.  <br /></td></tr>
+<tr class="separator:a7867f742d9c4b43ff2fde44139204fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A state-driven bug scenario: baseline snapshot + ordered per-frame inputs. </p>
+<p>The engine treats itself as stateless (recoverable game state lives in script variables), so restoring the baseline snapshot and re-injecting the recorded per-frame input/event stream reproduces the original run deterministically (given deterministic game logic and RNG seeds).</p>
+<p>Record: <a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a> captures the baseline, an observer on the event module records every consumed message per frame (<a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a4e031220280abfb00afde65dd68c2e4c" title="Begin a new frame bucket; no-op unless recording.">markFrame()</a>), <a class="el" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end()</a> persists the scenario to a JSON file alongside the error report.</p>
+<p>Replay: <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a99cda03b81feee37b8ca3a0715b7e038" title="Load a scenario and restore its baseline snapshot onto the VM.">beginReplay()</a> restores the baseline, then each <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html#a0c65cfb76013ef5ccbec8f48ca75a991" title="Re-push the next recorded frame&#39;s events into the event queue.">stageFrame()</a> re-pushes one recorded frame's events into the event queue; the caller advances one game frame between calls and watches for the error to reproduce. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00047">47</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a03d431013e409ab110f6cf39cc32ce4d" name="a03d431013e409ab110f6cf39cc32ce4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03d431013e409ab110f6cf39cc32ce4d">&#9670;&#160;</a></span>ScenarioRecorder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::ScenarioRecorder::ScenarioRecorder </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9a0e4181df6d04c686a13b0329fdb666" name="a9a0e4181df6d04c686a13b0329fdb666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0e4181df6d04c686a13b0329fdb666">&#9670;&#160;</a></span>baseline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::ScenarioRecorder::baseline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ad16478204c501660434fb1e43e55bd" name="a6ad16478204c501660434fb1e43e55bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad16478204c501660434fb1e43e55bd">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::begin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start recording: capture the baseline snapshot and observe the event queue. </p>
+<dl class="section return"><dt>返回</dt><dd>false when the VM is null or the baseline capture fails. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00074">cancel()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00434">eve::dev::Snapshot::capture()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00286">eve::dev::Snapshot::instance()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a99cda03b81feee37b8ca3a0715b7e038" name="a99cda03b81feee37b8ca3a0715b7e038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99cda03b81feee37b8ca3a0715b7e038">&#9670;&#160;</a></span>beginReplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::beginReplay </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a scenario and restore its baseline snapshot onto the VM. </p>
+<dl class="section return"><dt>返回</dt><dd>false when the file is invalid or restore fails. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a4f4009aa15f80360ccf51bc0c932fd03" name="a4f4009aa15f80360ccf51bc0c932fd03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f4009aa15f80360ccf51bc0c932fd03">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::ScenarioRecorder::cancel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Abort recording and restore the previous event observer. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00029">detachObserver()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00036">begin()</a>, <a class="el" href="DevTool_8cpp_source.html#l00189">eve::dev::DevTool::detach()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a87ca8029edfe45f5255b9990dfeaa44b" name="a87ca8029edfe45f5255b9990dfeaa44b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87ca8029edfe45f5255b9990dfeaa44b">&#9670;&#160;</a></span>detachObserver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::ScenarioRecorder::detachObserver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ensure the event observer is detached (restore previous); safe to call repeatedly. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlatformEvent_8h_source.html#l00134">eve::platform_event::PlatformEvent::setPollObserver()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00074">cancel()</a> , 以及 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00062">end()</a>.</p>
+
+</div>
+</div>
+<a id="a0f5365f59bff53aa085e218b3acac8d3" name="a0f5365f59bff53aa085e218b3acac8d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f5365f59bff53aa085e218b3acac8d3">&#9670;&#160;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::end </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop recording and persist the scenario to a JSON file. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Destination file (e.g. "scenario_boss.json"). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>false when not recording or the file cannot be written. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00029">detachObserver()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00151">save()</a>.</p>
+
+</div>
+</div>
+<a id="a5f46fdb6999365c82a82bc717dbd314e" name="a5f46fdb6999365c82a82bc717dbd314e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f46fdb6999365c82a82bc717dbd314e">&#9670;&#160;</a></span>errorReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::ScenarioRecorder::errorReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a2f15a9c994d241b4922e6d15d05d132c" name="a2f15a9c994d241b4922e6d15d05d132c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f15a9c994d241b4922e6d15d05d132c">&#9670;&#160;</a></span>errorSite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::ScenarioRecorder::errorSite </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f18c04077f8bcefa80eb2c0592f8318" name="a7f18c04077f8bcefa80eb2c0592f8318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f18c04077f8bcefa80eb2c0592f8318">&#9670;&#160;</a></span>frames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; &amp; eve::dev::ScenarioRecorder::frames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a410f4aebf0f4708273c1f9071b8ad084" name="a410f4aebf0f4708273c1f9071b8ad084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a410f4aebf0f4708273c1f9071b8ad084">&#9670;&#160;</a></span>framesRemaining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::ScenarioRecorder::framesRemaining </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of frames remaining to stage. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ad89a8e12caaae4a4d46b4604a51d1830" name="ad89a8e12caaae4a4d46b4604a51d1830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad89a8e12caaae4a4d46b4604a51d1830">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp; eve::dev::ScenarioRecorder::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00189">eve::dev::DevTool::detach()</a>, <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00712">eve::dev::DevTool::notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a7867f742d9c4b43ff2fde44139204fa4" name="a7867f742d9c4b43ff2fde44139204fa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7867f742d9c4b43ff2fde44139204fa4">&#9670;&#160;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>baseline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; *&#160;</td>
+          <td class="paramname"><em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>errorReport</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>errorSite</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load a scenario from a JSON file into the given outputs. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenarioRecorder_8h_source.html#l00022">eve::dev::ScenarioEvent::args</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="ScenarioRecorder_8h_source.html#l00027">eve::dev::ScenarioFrame::frame</a>, <a class="el" href="ScenarioRecorder_8h_source.html#l00021">eve::dev::ScenarioEvent::name</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+</div>
+</div>
+<a id="a4e031220280abfb00afde65dd68c2e4c" name="a4e031220280abfb00afde65dd68c2e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e031220280abfb00afde65dd68c2e4c">&#9670;&#160;</a></span>markFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::ScenarioRecorder::markFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin a new frame bucket; no-op unless recording. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="aac71fbbd7401a96f7be48e35a01ab18a" name="aac71fbbd7401a96f7be48e35a01ab18a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac71fbbd7401a96f7be48e35a01ab18a">&#9670;&#160;</a></span>onEventConsumed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::ScenarioRecorder::onEventConsumed </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1platform__event_1_1Message.html">eve::platform_event::Message</a> &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invoked by the event poll observer for every consumed message. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="ScenarioRecorder_8h_source.html#l00022">eve::dev::ScenarioEvent::args</a>, <a class="el" href="PlatformEvent_8h_source.html#l00083">eve::platform_event::Message::args</a>, <a class="el" href="structeve_1_1platform__event_1_1Variant.html#ae1e6b22411e031461894e4456af07999a1686a6c336b71b36d77354cea19a8b52">eve::platform_event::Variant::Int</a>, <a class="el" href="ScenarioRecorder_8h_source.html#l00021">eve::dev::ScenarioEvent::name</a>, <a class="el" href="PlatformEvent_8h_source.html#l00082">eve::platform_event::Message::name</a>, <a class="el" href="structeve_1_1platform__event_1_1Variant.html#ae1e6b22411e031461894e4456af07999a4da8b7eb2c3f2007cf8238334401ef51">eve::platform_event::Variant::Nil</a> , 以及 <a class="el" href="structeve_1_1platform__event_1_1Variant.html#ae1e6b22411e031461894e4456af07999a27118326006d3829667a400ad23d5d98">eve::platform_event::Variant::String</a>.</p>
+
+</div>
+</div>
+<a id="ac95ea2a3310dbde02ca6c39899968c17" name="ac95ea2a3310dbde02ca6c39899968c17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac95ea2a3310dbde02ca6c39899968c17">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp; eve::dev::ScenarioRecorder::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d6fe0d52594543a212994d7d2c8c366" name="a7d6fe0d52594543a212994d7d2c8c366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d6fe0d52594543a212994d7d2c8c366">&#9670;&#160;</a></span>recording()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::recording </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True while a scenario is being recorded. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a7a72dc56cf774b77d88f90e4bcaa07d1" name="a7a72dc56cf774b77d88f90e4bcaa07d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a72dc56cf774b77d88f90e4bcaa07d1">&#9670;&#160;</a></span>replaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::replaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True while a replay is in progress with frames remaining. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a> 第 <a class="el" href="ScenarioRecorder_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1b684ffb2d9f1883ad92aa4e209fd25" name="af1b684ffb2d9f1883ad92aa4e209fd25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b684ffb2d9f1883ad92aa4e209fd25">&#9670;&#160;</a></span>save()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::save </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>baseline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorReport</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorSite</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Persist a scenario to a JSON file (used for both record and replay paths). </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00118">eve::Value::set()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00062">end()</a>.</p>
+
+</div>
+</div>
+<a id="a010c8705befda82c156a0f8df411777d" name="a010c8705befda82c156a0f8df411777d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a010c8705befda82c156a0f8df411777d">&#9670;&#160;</a></span>setErrorInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::ScenarioRecorder::setErrorInfo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>report</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>site</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Called by <a class="el" href="classeve_1_1dev_1_1DevTool.html" title="Platform-level script + render debugger / dynamic slicer front-end.">DevTool</a> when a script error is dumped during recording. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00712">eve::dev::DevTool::notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a0c65cfb76013ef5ccbec8f48ca75a991" name="a0c65cfb76013ef5ccbec8f48ca75a991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c65cfb76013ef5ccbec8f48ca75a991">&#9670;&#160;</a></span>stageFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::ScenarioRecorder::stageFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-push the next recorded frame's events into the event queue. </p>
+<dl class="section return"><dt>返回</dt><dd>false when replay is exhausted (all frames staged) or not replaying. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a> 第 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="ScenarioRecorder_8h_source.html#l00028">eve::dev::ScenarioFrame::events</a> , 以及 <a class="el" href="PlatformEvent_8h_source.html#l00041">eve::platform_event::Variant::makeString()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="ScenarioRecorder_8h_source.html">ScenarioRecorder.h</a></li>
+<li>src/engine/devtools/<a class="el" href="ScenarioRecorder_8cpp_source.html">ScenarioRecorder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

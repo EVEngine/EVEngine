@@ -1,0 +1,352 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/pixelworld/PixelMaterial.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_72f5911f7825619aacf57c36184744ad.html">pixelworld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PixelMaterial.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PixelMaterial_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1pixelworld.html">eve::pixelworld</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">   14</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> : std::uint16_t {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">Air</a> = 0,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2">Stone</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca">Sand</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18">Water</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344">Oil</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb">Fire</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b">Steam</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98">Wood</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7">Ice</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e">Lava</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404">Smoke</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f">Gunpowder</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e">Acid</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">   31</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">MaterialState</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07">Empty</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa">Solid</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7">Powder</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774">Liquid</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c">Gas</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9">Energy</a> };</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">MaterialDefinition</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aec33f46ec09c5ea81143ca7a3317a715">   35</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <span class="keywordtype">id</span> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a4807f13bc18f9347c56f3d630be6469a">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a4807f13bc18f9347c56f3d630be6469a">name</a> = <span class="stringliteral">&quot;air&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a950f2e73189979bb90a6a73ddc30f450">   37</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">MaterialState</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a950f2e73189979bb90a6a73ddc30f450">state</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07">MaterialState::Empty</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aa9c61d5bc8faf12dce1aebef08ef17a6">   38</a></span>    std::uint16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aa9c61d5bc8faf12dce1aebef08ef17a6">density</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#adcf37e473188d766f010fcb3466d7dab">   39</a></span>    std::uint8_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#adcf37e473188d766f010fcb3466d7dab">viscosity</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a84155239025fdf72b9357b4ebf16f821">   40</a></span>    std::uint8_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a84155239025fdf72b9357b4ebf16f821">thermalConductivity</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a26d077196292208f465e99c4bdfe1d51">   41</a></span>    std::uint16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a26d077196292208f465e99c4bdfe1d51">heatCapacity</a> = 1;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a0508a9d9c06dc66702081ea37d8eb549">   42</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a0508a9d9c06dc66702081ea37d8eb549">ignitionTemperature</a> = 32767;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a6c154867bf3bb218099531bc7044df29">   43</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a6c154867bf3bb218099531bc7044df29">meltingTemperature</a> = 32767;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a1da0fe353986b028eaa079f21d5d3dde">   44</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a1da0fe353986b028eaa079f21d5d3dde">boilingTemperature</a> = 32767;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad4ad5f3eac1b0825572f33fd8c350495">   45</a></span>    std::uint16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad4ad5f3eac1b0825572f33fd8c350495">defaultLifetime</a> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aee85c74a584d15f56130ca399ce5b182">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aee85c74a584d15f56130ca399ce5b182">flammable</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad725ee673976c1bd80ee672446f37799">   47</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad725ee673976c1bd80ee672446f37799">defaultTemperature</a> = 20;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ae7e34c38f6fb04769e1b6157f40c8b40">   48</a></span>    std::uint16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ae7e34c38f6fb04769e1b6157f40c8b40">blastResistance</a> = 100;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a14ee63d52086c842a45cd2ef34016985">   50</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a14ee63d52086c842a45cd2ef34016985">displayRgba</a> = 0xFF00FFFFU;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a3fc426f3292561d0e9d45360c2b197bd">   52</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a3fc426f3292561d0e9d45360c2b197bd">tags</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">   56</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">TemperatureDirection</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584">AtOrBelow</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e">AtOrAbove</a> };</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">MaterialPhaseRule</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aa96e6bcac0ad8162890d646bf8a6b456">   60</a></span>    std::string <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aa96e6bcac0ad8162890d646bf8a6b456">id</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#acb356f263748550a4e3fd5b421999885">   61</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#acb356f263748550a4e3fd5b421999885">source</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#ae5657f78774d25938155048c8c2d8b54">   62</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#ae5657f78774d25938155048c8c2d8b54">result</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a306c5b64187340ea4af33ab7c2c53f0e">   63</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">TemperatureDirection</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a306c5b64187340ea4af33ab7c2c53f0e">direction</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e">TemperatureDirection::AtOrAbove</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a75b757b4c89f4f2582f4c2c39c0667b2">   64</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a75b757b4c89f4f2582f4c2c39c0667b2">threshold</a> = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a1e556c2535a86b3220b78ca2619a6965">   65</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a1e556c2535a86b3220b78ca2619a6965">temperatureDelta</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aabac1c7435d3aa694e965c4a9458408b">   66</a></span>    std::int32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aabac1c7435d3aa694e965c4a9458408b">priority</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">   70</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">MaterialReactionRule</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a52c17e1486b2c372dd76c1fc59175f9e">   71</a></span>    std::string <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a52c17e1486b2c372dd76c1fc59175f9e">id</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#aa096a359052c1bfb5dad3056a4d72031">   72</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#aa096a359052c1bfb5dad3056a4d72031">first</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a5ca9ccc631e618e9986f2a342b0984cb">   73</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a5ca9ccc631e618e9986f2a342b0984cb">second</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad18ff580cf4c030a86a8fb16bb1ac333">   74</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad18ff580cf4c030a86a8fb16bb1ac333">firstResult</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a1b9c75f7a332fe2535a554dd5b4195a6">   75</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a1b9c75f7a332fe2535a554dd5b4195a6">secondResult</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">MaterialId::Air</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a4ebe6838526d2a185c53c0450e523b07">   76</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a4ebe6838526d2a185c53c0450e523b07">minimumTemperature</a> = -32768;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ab54a691467ccf697cb510805fa144c69">   77</a></span>    std::int16_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ab54a691467ccf697cb510805fa144c69">heatDelta</a> = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad6b4d8e6728dee6c5aefa29900ca111f">   78</a></span>    std::int32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad6b4d8e6728dee6c5aefa29900ca111f">priority</a> = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="};">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">   82</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MaterialCatalog&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a901de539d64a257172a8552b8d417ede">create</a>(</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        std::vector&lt;MaterialDefinition&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a4dad729497c32eb75a1fac3a08e9e72b">definitions</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        std::vector&lt;MaterialReactionRule&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a3f27e2239f6333adb5e7c8c46de0897e">reactions</a> = {},</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::vector&lt;MaterialPhaseRule&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a540a4c4addac757921d703de2f879b12">phaseRules</a> = {});</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a3d5f1a251dd41ba916d68ed4a623ef40">builtIn</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MaterialId&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a561246c71e1bc25a469451cb08e54fa6">resolve</a>(std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">MaterialDefinition</a>&amp; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a286575d2ab0a3d744ab42c7005c7fea1">definition</a>(<a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::span&lt;const MaterialDefinition&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a4dad729497c32eb75a1fac3a08e9e72b">definitions</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    std::span&lt;const MaterialReactionRule&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a3f27e2239f6333adb5e7c8c46de0897e">reactions</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::span&lt;const MaterialPhaseRule&gt; <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a540a4c4addac757921d703de2f879b12">phaseRules</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a2c565132ff722564bfe2a60d4de56722">canReact</a>(<a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#afbb2d350f4599682dde6a37098970e66">canPhaseTransition</a>(<a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::uint64_t <a class="code hl_function" href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a5a030ea7ebfcdcf05f9bf09085826535">fingerprint</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::vector&lt;MaterialDefinition&gt; definitions_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::vector&lt;MaterialReactionRule&gt; reactions_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    std::vector&lt;MaterialPhaseRule&gt; phaseRules_;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::vector&lt;std::uint8_t&gt; reactionMask_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::vector&lt;std::uint8_t&gt; phaseMask_;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::uint64_t fingerprint_ = 0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>};</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve::pixelworld</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html">eve::pixelworld::MaterialCatalog</a></div><div class="ttdoc">Owning immutable material and reaction table used by one PixelWorld.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00082">PixelMaterial.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a286575d2ab0a3d744ab42c7005c7fea1"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a286575d2ab0a3d744ab42c7005c7fea1">eve::pixelworld::MaterialCatalog::definition</a></div><div class="ttdeci">const MaterialDefinition &amp; definition(MaterialId id) const noexcept</div><div class="ttdoc">Resolve a validated id; invalid ids safely project to air.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00234">PixelMaterial.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a2c565132ff722564bfe2a60d4de56722"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a2c565132ff722564bfe2a60d4de56722">eve::pixelworld::MaterialCatalog::canReact</a></div><div class="ttdeci">bool canReact(MaterialId id) const noexcept</div><div class="ttdoc">Whether this material participates in at least one binary reaction.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00242">PixelMaterial.cpp:242</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a3d5f1a251dd41ba916d68ed4a623ef40"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a3d5f1a251dd41ba916d68ed4a623ef40">eve::pixelworld::MaterialCatalog::builtIn</a></div><div class="ttdeci">static MaterialCatalog builtIn()</div><div class="ttdoc">Construct the engine's canonical built-in catalog.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00151">PixelMaterial.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a3f27e2239f6333adb5e7c8c46de0897e"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a3f27e2239f6333adb5e7c8c46de0897e">eve::pixelworld::MaterialCatalog::reactions</a></div><div class="ttdeci">std::span&lt; const MaterialReactionRule &gt; reactions() const noexcept</div><div class="ttdoc">Borrow immutable canonical-priority reaction rules.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00240">PixelMaterial.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a4dad729497c32eb75a1fac3a08e9e72b"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a4dad729497c32eb75a1fac3a08e9e72b">eve::pixelworld::MaterialCatalog::definitions</a></div><div class="ttdeci">std::span&lt; const MaterialDefinition &gt; definitions() const noexcept</div><div class="ttdoc">Borrow immutable definitions until this catalog is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00239">PixelMaterial.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a540a4c4addac757921d703de2f879b12"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a540a4c4addac757921d703de2f879b12">eve::pixelworld::MaterialCatalog::phaseRules</a></div><div class="ttdeci">std::span&lt; const MaterialPhaseRule &gt; phaseRules() const noexcept</div><div class="ttdoc">Borrow immutable canonical-priority phase rules.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00241">PixelMaterial.cpp:241</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a561246c71e1bc25a469451cb08e54fa6"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a561246c71e1bc25a469451cb08e54fa6">eve::pixelworld::MaterialCatalog::resolve</a></div><div class="ttdeci">eve::Result&lt; MaterialId &gt; resolve(std::string_view name) const</div><div class="ttdoc">Resolve a stable name or return a structured NotFound diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00226">PixelMaterial.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a5a030ea7ebfcdcf05f9bf09085826535"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a5a030ea7ebfcdcf05f9bf09085826535">eve::pixelworld::MaterialCatalog::fingerprint</a></div><div class="ttdeci">std::uint64_t fingerprint() const noexcept</div><div class="ttdoc">Stable deterministic fingerprint included in world snapshots.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00250">PixelMaterial.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_a901de539d64a257172a8552b8d417ede"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#a901de539d64a257172a8552b8d417ede">eve::pixelworld::MaterialCatalog::create</a></div><div class="ttdeci">static eve::Result&lt; MaterialCatalog &gt; create(std::vector&lt; MaterialDefinition &gt; definitions, std::vector&lt; MaterialReactionRule &gt; reactions={}, std::vector&lt; MaterialPhaseRule &gt; phaseRules={})</div><div class="ttdoc">Validate and own a complete catalog candidate transactionally.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00038">PixelMaterial.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html_afbb2d350f4599682dde6a37098970e66"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#afbb2d350f4599682dde6a37098970e66">eve::pixelworld::MaterialCatalog::canPhaseTransition</a></div><div class="ttdeci">bool canPhaseTransition(MaterialId id) const noexcept</div><div class="ttdoc">Whether this material owns at least one phase transition rule.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00246">PixelMaterial.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html">eve::pixelworld</a></div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00011">PixelMaterial.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">eve::pixelworld::MaterialId</a></div><div class="ttdeci">MaterialId</div><div class="ttdoc">Compact stable material identifier stored in each authoritative cell.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00014">PixelMaterial.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e">eve::pixelworld::MaterialId::Lava</a></div><div class="ttdeci">@ Lava</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18">eve::pixelworld::MaterialId::Water</a></div><div class="ttdeci">@ Water</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344">eve::pixelworld::MaterialId::Oil</a></div><div class="ttdeci">@ Oil</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2">eve::pixelworld::MaterialId::Stone</a></div><div class="ttdeci">@ Stone</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b">eve::pixelworld::MaterialId::Steam</a></div><div class="ttdeci">@ Steam</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7">eve::pixelworld::MaterialId::Ice</a></div><div class="ttdeci">@ Ice</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98">eve::pixelworld::MaterialId::Wood</a></div><div class="ttdeci">@ Wood</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">eve::pixelworld::MaterialId::Air</a></div><div class="ttdeci">@ Air</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f">eve::pixelworld::MaterialId::Gunpowder</a></div><div class="ttdeci">@ Gunpowder</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404">eve::pixelworld::MaterialId::Smoke</a></div><div class="ttdeci">@ Smoke</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb">eve::pixelworld::MaterialId::Fire</a></div><div class="ttdeci">@ Fire</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca">eve::pixelworld::MaterialId::Sand</a></div><div class="ttdeci">@ Sand</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e">eve::pixelworld::MaterialId::Acid</a></div><div class="ttdeci">@ Acid</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_abcc326673c23520ade75952619b97fd8"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">eve::pixelworld::TemperatureDirection</a></div><div class="ttdeci">TemperatureDirection</div><div class="ttdoc">Comparison direction for a deterministic temperature transition.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00056">PixelMaterial.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584">eve::pixelworld::TemperatureDirection::AtOrBelow</a></div><div class="ttdeci">@ AtOrBelow</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e">eve::pixelworld::TemperatureDirection::AtOrAbove</a></div><div class="ttdeci">@ AtOrAbove</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deee"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">eve::pixelworld::MaterialState</a></div><div class="ttdeci">MaterialState</div><div class="ttdoc">Broad movement class for one pixel material.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00031">PixelMaterial.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774">eve::pixelworld::MaterialState::Liquid</a></div><div class="ttdeci">@ Liquid</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9">eve::pixelworld::MaterialState::Energy</a></div><div class="ttdeci">@ Energy</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c">eve::pixelworld::MaterialState::Gas</a></div><div class="ttdeci">@ Gas</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7">eve::pixelworld::MaterialState::Powder</a></div><div class="ttdeci">@ Powder</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07">eve::pixelworld::MaterialState::Empty</a></div><div class="ttdeci">@ Empty</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa">eve::pixelworld::MaterialState::Solid</a></div><div class="ttdeci">@ Solid</div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html">eve::pixelworld::MaterialDefinition</a></div><div class="ttdoc">Immutable validated properties for one catalog material.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00034">PixelMaterial.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a0508a9d9c06dc66702081ea37d8eb549"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a0508a9d9c06dc66702081ea37d8eb549">eve::pixelworld::MaterialDefinition::ignitionTemperature</a></div><div class="ttdeci">std::int16_t ignitionTemperature</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00042">PixelMaterial.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a14ee63d52086c842a45cd2ef34016985"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a14ee63d52086c842a45cd2ef34016985">eve::pixelworld::MaterialDefinition::displayRgba</a></div><div class="ttdeci">std::uint32_t displayRgba</div><div class="ttdoc">Canonical preview/render color encoded as 0xRRGGBBAA.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00050">PixelMaterial.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a1da0fe353986b028eaa079f21d5d3dde"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a1da0fe353986b028eaa079f21d5d3dde">eve::pixelworld::MaterialDefinition::boilingTemperature</a></div><div class="ttdeci">std::int16_t boilingTemperature</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00044">PixelMaterial.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a26d077196292208f465e99c4bdfe1d51"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a26d077196292208f465e99c4bdfe1d51">eve::pixelworld::MaterialDefinition::heatCapacity</a></div><div class="ttdeci">std::uint16_t heatCapacity</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00041">PixelMaterial.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a3fc426f3292561d0e9d45360c2b197bd"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a3fc426f3292561d0e9d45360c2b197bd">eve::pixelworld::MaterialDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdoc">Canonical sorted semantic tags used by authoring and rule queries.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00052">PixelMaterial.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a4807f13bc18f9347c56f3d630be6469a"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a4807f13bc18f9347c56f3d630be6469a">eve::pixelworld::MaterialDefinition::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00036">PixelMaterial.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a6c154867bf3bb218099531bc7044df29"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a6c154867bf3bb218099531bc7044df29">eve::pixelworld::MaterialDefinition::meltingTemperature</a></div><div class="ttdeci">std::int16_t meltingTemperature</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00043">PixelMaterial.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a84155239025fdf72b9357b4ebf16f821"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a84155239025fdf72b9357b4ebf16f821">eve::pixelworld::MaterialDefinition::thermalConductivity</a></div><div class="ttdeci">std::uint8_t thermalConductivity</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00040">PixelMaterial.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_a950f2e73189979bb90a6a73ddc30f450"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#a950f2e73189979bb90a6a73ddc30f450">eve::pixelworld::MaterialDefinition::state</a></div><div class="ttdeci">MaterialState state</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00037">PixelMaterial.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_aa9c61d5bc8faf12dce1aebef08ef17a6"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aa9c61d5bc8faf12dce1aebef08ef17a6">eve::pixelworld::MaterialDefinition::density</a></div><div class="ttdeci">std::uint16_t density</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00038">PixelMaterial.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_ad4ad5f3eac1b0825572f33fd8c350495"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad4ad5f3eac1b0825572f33fd8c350495">eve::pixelworld::MaterialDefinition::defaultLifetime</a></div><div class="ttdeci">std::uint16_t defaultLifetime</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00045">PixelMaterial.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_ad725ee673976c1bd80ee672446f37799"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ad725ee673976c1bd80ee672446f37799">eve::pixelworld::MaterialDefinition::defaultTemperature</a></div><div class="ttdeci">std::int16_t defaultTemperature</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00047">PixelMaterial.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_adcf37e473188d766f010fcb3466d7dab"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#adcf37e473188d766f010fcb3466d7dab">eve::pixelworld::MaterialDefinition::viscosity</a></div><div class="ttdeci">std::uint8_t viscosity</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00039">PixelMaterial.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_ae7e34c38f6fb04769e1b6157f40c8b40"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#ae7e34c38f6fb04769e1b6157f40c8b40">eve::pixelworld::MaterialDefinition::blastResistance</a></div><div class="ttdeci">std::uint16_t blastResistance</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00048">PixelMaterial.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialDefinition_html_aee85c74a584d15f56130ca399ce5b182"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#aee85c74a584d15f56130ca399ce5b182">eve::pixelworld::MaterialDefinition::flammable</a></div><div class="ttdeci">bool flammable</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00046">PixelMaterial.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">eve::pixelworld::MaterialPhaseRule</a></div><div class="ttdoc">Data-driven phase transition evaluated after heat diffusion.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00059">PixelMaterial.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_a1e556c2535a86b3220b78ca2619a6965"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a1e556c2535a86b3220b78ca2619a6965">eve::pixelworld::MaterialPhaseRule::temperatureDelta</a></div><div class="ttdeci">std::int16_t temperatureDelta</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00065">PixelMaterial.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_a306c5b64187340ea4af33ab7c2c53f0e"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a306c5b64187340ea4af33ab7c2c53f0e">eve::pixelworld::MaterialPhaseRule::direction</a></div><div class="ttdeci">TemperatureDirection direction</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00063">PixelMaterial.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_a75b757b4c89f4f2582f4c2c39c0667b2"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#a75b757b4c89f4f2582f4c2c39c0667b2">eve::pixelworld::MaterialPhaseRule::threshold</a></div><div class="ttdeci">std::int16_t threshold</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00064">PixelMaterial.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_aa96e6bcac0ad8162890d646bf8a6b456"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aa96e6bcac0ad8162890d646bf8a6b456">eve::pixelworld::MaterialPhaseRule::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00060">PixelMaterial.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_aabac1c7435d3aa694e965c4a9458408b"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#aabac1c7435d3aa694e965c4a9458408b">eve::pixelworld::MaterialPhaseRule::priority</a></div><div class="ttdeci">std::int32_t priority</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00066">PixelMaterial.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_acb356f263748550a4e3fd5b421999885"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#acb356f263748550a4e3fd5b421999885">eve::pixelworld::MaterialPhaseRule::source</a></div><div class="ttdeci">MaterialId source</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00061">PixelMaterial.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialPhaseRule_html_ae5657f78774d25938155048c8c2d8b54"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#ae5657f78774d25938155048c8c2d8b54">eve::pixelworld::MaterialPhaseRule::result</a></div><div class="ttdeci">MaterialId result</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00062">PixelMaterial.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">eve::pixelworld::MaterialReactionRule</a></div><div class="ttdoc">Deterministically ordered binary material reaction.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00070">PixelMaterial.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_a1b9c75f7a332fe2535a554dd5b4195a6"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a1b9c75f7a332fe2535a554dd5b4195a6">eve::pixelworld::MaterialReactionRule::secondResult</a></div><div class="ttdeci">MaterialId secondResult</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00075">PixelMaterial.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_a4ebe6838526d2a185c53c0450e523b07"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a4ebe6838526d2a185c53c0450e523b07">eve::pixelworld::MaterialReactionRule::minimumTemperature</a></div><div class="ttdeci">std::int16_t minimumTemperature</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00076">PixelMaterial.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_a52c17e1486b2c372dd76c1fc59175f9e"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a52c17e1486b2c372dd76c1fc59175f9e">eve::pixelworld::MaterialReactionRule::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00071">PixelMaterial.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_a5ca9ccc631e618e9986f2a342b0984cb"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#a5ca9ccc631e618e9986f2a342b0984cb">eve::pixelworld::MaterialReactionRule::second</a></div><div class="ttdeci">MaterialId second</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00073">PixelMaterial.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_aa096a359052c1bfb5dad3056a4d72031"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#aa096a359052c1bfb5dad3056a4d72031">eve::pixelworld::MaterialReactionRule::first</a></div><div class="ttdeci">MaterialId first</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00072">PixelMaterial.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_ab54a691467ccf697cb510805fa144c69"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ab54a691467ccf697cb510805fa144c69">eve::pixelworld::MaterialReactionRule::heatDelta</a></div><div class="ttdeci">std::int16_t heatDelta</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00077">PixelMaterial.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_ad18ff580cf4c030a86a8fb16bb1ac333"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad18ff580cf4c030a86a8fb16bb1ac333">eve::pixelworld::MaterialReactionRule::firstResult</a></div><div class="ttdeci">MaterialId firstResult</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00074">PixelMaterial.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1MaterialReactionRule_html_ad6b4d8e6728dee6c5aefa29900ca111f"><div class="ttname"><a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#ad6b4d8e6728dee6c5aefa29900ca111f">eve::pixelworld::MaterialReactionRule::priority</a></div><div class="ttdeci">std::int32_t priority</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00078">PixelMaterial.h:78</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

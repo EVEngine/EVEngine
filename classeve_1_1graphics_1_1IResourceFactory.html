@@ -1,0 +1,1684 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::IResourceFactory类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">IResourceFactory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1IResourceFactory-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::IResourceFactory类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> / mesh / shader / canvas creation and release.  
+ <a href="classeve_1_1graphics_1_1IResourceFactory.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IResourceFactory_8h_source.html">IResourceFactory.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::IResourceFactory 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1IResourceFactory.png" usemap="#eve::graphics::IResourceFactory_map" alt=""/>
+  <map id="eve::graphics::IResourceFactory_map" name="eve::graphics::IResourceFactory_map">
+<area href="classeve_1_1graphics_1_1Graphics.html" alt="eve::graphics::Graphics" shape="rect" coords="102,56,297,80"/>
+<area href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html" alt="eve::graphics::vulkan::Graphics" shape="rect" coords="0,112,195,136"/>
+<area href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html" alt="eve::graphics::webgpu::Graphics" shape="rect" coords="205,112,400,136"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac1c1e4c1e2b5b51a91b825849fb13e0a" id="r_ac1c1e4c1e2b5b51a91b825849fb13e0a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1c1e4c1e2b5b51a91b825849fb13e0a">~IResourceFactory</a> ()=default</td></tr>
+<tr class="separator:ac1c1e4c1e2b5b51a91b825849fb13e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d3f7a0f592185fa38c8fdbda3892382" id="r_a7d3f7a0f592185fa38c8fdbda3892382"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a7d3f7a0f592185fa38c8fdbda3892382">newTexture</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, const uint8_t *rgba, bool <a class="el" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>=false, bool <a class="el" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>=false)=0</td></tr>
+<tr class="separator:a7d3f7a0f592185fa38c8fdbda3892382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acccd461d429dca2c591f885c29cc0a58" id="r_acccd461d429dca2c591f885c29cc0a58"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#acccd461d429dca2c591f885c29cc0a58">newTexture</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, const uint8_t *rgba, const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>)=0</td></tr>
+<tr class="separator:acccd461d429dca2c591f885c29cc0a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a887e434d0b4d9d72029e8da826ffa54f" id="r_a887e434d0b4d9d72029e8da826ffa54f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a887e434d0b4d9d72029e8da826ffa54f">newCubemap</a> (int faceSize, const uint8_t *rgbaFaces)=0</td></tr>
+<tr class="separator:a887e434d0b4d9d72029e8da826ffa54f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd67efcfb1b77017b4b10f2f32ef4f6e" id="r_afd67efcfb1b77017b4b10f2f32ef4f6e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afd67efcfb1b77017b4b10f2f32ef4f6e">newCubemap</a> (int faceSize, const uint8_t *rgbaFaces, const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>)=0</td></tr>
+<tr class="separator:afd67efcfb1b77017b4b10f2f32ef4f6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13eccdb5cb04744f7e70c0b07be02bb9" id="r_a13eccdb5cb04744f7e70c0b07be02bb9"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a13eccdb5cb04744f7e70c0b07be02bb9">newTexture</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data)=0</td></tr>
+<tr class="separator:a13eccdb5cb04744f7e70c0b07be02bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef0070ca64d27095a7b40d0c4cd7eb43" id="r_aef0070ca64d27095a7b40d0c4cd7eb43"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aef0070ca64d27095a7b40d0c4cd7eb43">newTexture</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>)=0</td></tr>
+<tr class="separator:aef0070ca64d27095a7b40d0c4cd7eb43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae22556294f4ccf7731807f85c227a57e" id="r_ae22556294f4ccf7731807f85c227a57e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ae22556294f4ccf7731807f85c227a57e">newTextureFromImageData</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, bool <a class="el" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>=false, bool <a class="el" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>=false)=0</td></tr>
+<tr class="separator:ae22556294f4ccf7731807f85c227a57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de093c273f0fe33beed6532163d2dc2" id="r_a3de093c273f0fe33beed6532163d2dc2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a3de093c273f0fe33beed6532163d2dc2">newTextureFromImageData</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>)=0</td></tr>
+<tr class="separator:a3de093c273f0fe33beed6532163d2dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a819231cdb9258c0aad704f3b975a2782" id="r_a819231cdb9258c0aad704f3b975a2782"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a819231cdb9258c0aad704f3b975a2782">newTextureWithSampler</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, bool <a class="el" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>, bool <a class="el" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>, bool generateMipmaps, float maxAnisotropy, const std::string &amp;<a class="el" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>, const std::string &amp;<a class="el" href="SceneLoader_8cpp.html#a7ff9ea9faba6452397840da54a677bfe">mipmap</a>, float lodBias=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)=0</td></tr>
+<tr class="separator:a819231cdb9258c0aad704f3b975a2782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a275ebc6f392ce1d917da8ca0c72a6229" id="r_a275ebc6f392ce1d917da8ca0c72a6229"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a275ebc6f392ce1d917da8ca0c72a6229">setTextureSampler</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture, const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp;sampler)=0</td></tr>
+<tr class="separator:a275ebc6f392ce1d917da8ca0c72a6229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade27edda90dcebb8c821d96ef5c727d1" id="r_ade27edda90dcebb8c821d96ef5c727d1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ade27edda90dcebb8c821d96ef5c727d1">newTextureFromFile</a> (const std::string &amp;filename)=0</td></tr>
+<tr class="separator:ade27edda90dcebb8c821d96ef5c727d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ba78c5e5e1ccf5e188c5a2ffd767ab" id="r_ac1ba78c5e5e1ccf5e188c5a2ffd767ab"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">newTextureFromFileRepeated</a> (const std::string &amp;filename, bool <a class="el" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>, bool <a class="el" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>)=0</td></tr>
+<tr class="separator:ac1ba78c5e5e1ccf5e188c5a2ffd767ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86dc2defd091b04e02df33ab4c7d6803" id="r_a86dc2defd091b04e02df33ab4c7d6803"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a86dc2defd091b04e02df33ab4c7d6803">reloadTextureFromFile</a> (const std::string &amp;filename)=0</td></tr>
+<tr class="separator:a86dc2defd091b04e02df33ab4c7d6803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ecfd2fb281000bfc8e7cd0f4ca506e3" id="r_a0ecfd2fb281000bfc8e7cd0f4ca506e3"><td class="memItemLeft" align="right" valign="top">virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0ecfd2fb281000bfc8e7cd0f4ca506e3">getMaxAnisotropy</a> () const =0</td></tr>
+<tr class="separator:a0ecfd2fb281000bfc8e7cd0f4ca506e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbf75e5ba5f97271237354ea28dbe7f8" id="r_adbf75e5ba5f97271237354ea28dbe7f8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#adbf75e5ba5f97271237354ea28dbe7f8">releaseTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)=0</td></tr>
+<tr class="separator:adbf75e5ba5f97271237354ea28dbe7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a29a007ac152798f2a091c9ff6732f" id="r_af5a29a007ac152798f2a091c9ff6732f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#af5a29a007ac152798f2a091c9ff6732f">newMeshFromAssimp</a> (const ::aiMesh &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)=0</td></tr>
+<tr class="separator:af5a29a007ac152798f2a091c9ff6732f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5302a7b59b7aa1f9f3ddf6baf4f369" id="r_aff5302a7b59b7aa1f9f3ddf6baf4f369"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aff5302a7b59b7aa1f9f3ddf6baf4f369">newMeshFromAssimp</a> (const ::aiMesh &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, const aiMatrix4x4 &amp;worldTransform)=0</td></tr>
+<tr class="separator:aff5302a7b59b7aa1f9f3ddf6baf4f369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f94ab97738af03d0de220f77657848" id="r_a98f94ab97738af03d0de220f77657848"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a98f94ab97738af03d0de220f77657848">newMeshFromArrays</a> (const float *posXYZ, const float *nrmXYZ, const float *uvST, int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, const uint32_t *<a class="el" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, int <a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>)=0</td></tr>
+<tr class="separator:a98f94ab97738af03d0de220f77657848"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0831158498daceb7d2b39052e6fd5e02" id="r_a0831158498daceb7d2b39052e6fd5e02"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0831158498daceb7d2b39052e6fd5e02">updateMeshVertices</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, const float *posXYZ, const float *nrmXYZ, const float *uvST, int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, const uint32_t *<a class="el" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, int <a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>)=0</td></tr>
+<tr class="separator:a0831158498daceb7d2b39052e6fd5e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe34b54084fecbe5eebf2e6f50d11ccb" id="r_afe34b54084fecbe5eebf2e6f50d11ccb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afe34b54084fecbe5eebf2e6f50d11ccb">bakeMeshMorph</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)=0</td></tr>
+<tr class="separator:afe34b54084fecbe5eebf2e6f50d11ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88b1e82bc12beea69205e4aa57ec2b90" id="r_a88b1e82bc12beea69205e4aa57ec2b90"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a88b1e82bc12beea69205e4aa57ec2b90">newMeshSphere</a> (int slices, int stacks)=0</td></tr>
+<tr class="separator:a88b1e82bc12beea69205e4aa57ec2b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9070038431b83e6304b7e1d24949e50f" id="r_a9070038431b83e6304b7e1d24949e50f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a9070038431b83e6304b7e1d24949e50f">newMeshCylinder</a> (int slices, int stacks, bool caps)=0</td></tr>
+<tr class="separator:a9070038431b83e6304b7e1d24949e50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5aa1d5cbb5d3c01235aa03122debbc0" id="r_ad5aa1d5cbb5d3c01235aa03122debbc0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ad5aa1d5cbb5d3c01235aa03122debbc0">newMeshCube</a> (float size)=0</td></tr>
+<tr class="separator:ad5aa1d5cbb5d3c01235aa03122debbc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77a43e6150b61416d5daf63c7b5adeab" id="r_a77a43e6150b61416d5daf63c7b5adeab"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a77a43e6150b61416d5daf63c7b5adeab">releaseMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)=0</td></tr>
+<tr class="separator:a77a43e6150b61416d5daf63c7b5adeab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fd984f68cb7652fbb805eaee76c6f50" id="r_a8fd984f68cb7652fbb805eaee76c6f50"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a8fd984f68cb7652fbb805eaee76c6f50">newShaderFromSpv</a> (const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td></tr>
+<tr class="separator:a8fd984f68cb7652fbb805eaee76c6f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a053b3c141f8dbf7170c4434cd693d3" id="r_a5a053b3c141f8dbf7170c4434cd693d3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a5a053b3c141f8dbf7170c4434cd693d3">newShaderFromSpvFile</a> (const std::string &amp;vertPath, const std::string &amp;fragPath)=0</td></tr>
+<tr class="separator:a5a053b3c141f8dbf7170c4434cd693d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a085b6dd10968fe48949ede801549f781" id="r_a085b6dd10968fe48949ede801549f781"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a085b6dd10968fe48949ede801549f781">newShader</a> (const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</td></tr>
+<tr class="separator:a085b6dd10968fe48949ede801549f781"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0b6c0bd837d3eade1833dc59045121" id="r_aaa0b6c0bd837d3eade1833dc59045121"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aaa0b6c0bd837d3eade1833dc59045121">newShaderFromWgsl</a> (const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</td></tr>
+<tr class="memdesc:aaa0b6c0bd837d3eade1833dc59045121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 2D custom shader from WGSL source (WebGPU backend). Empty vert → default textured vertex shader. The fragment WGSL declares the shared 2D bindings (color texture 0, depth texture 1, sampler 2, depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points. Vulkan throws (uses SPIR-V via newShaderFromSpv).  <br /></td></tr>
+<tr class="separator:aaa0b6c0bd837d3eade1833dc59045121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdc1430176b5ff2fed83cbadf1437d27" id="r_abdc1430176b5ff2fed83cbadf1437d27"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#abdc1430176b5ff2fed83cbadf1437d27">newMeshShaderFromSpv</a> (const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td></tr>
+<tr class="separator:abdc1430176b5ff2fed83cbadf1437d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab67d98661130ef04a1b9aa9bcaae00ab" id="r_ab67d98661130ef04a1b9aa9bcaae00ab"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ab67d98661130ef04a1b9aa9bcaae00ab">newMeshShaderFromWgsl</a> (const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</td></tr>
+<tr class="separator:ab67d98661130ef04a1b9aa9bcaae00ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0292eb1ae8de3f1a2e81b61f142f974e" id="r_a0292eb1ae8de3f1a2e81b61f142f974e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0292eb1ae8de3f1a2e81b61f142f974e">newMeshShader</a> (const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</td></tr>
+<tr class="separator:a0292eb1ae8de3f1a2e81b61f142f974e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72cd0a743063451736462575fff527a7" id="r_a72cd0a743063451736462575fff527a7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a72cd0a743063451736462575fff527a7">newHairShaderFromSpv</a> (const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td></tr>
+<tr class="separator:a72cd0a743063451736462575fff527a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbdadc9978622cef72895cc8e4f4c518" id="r_afbdadc9978622cef72895cc8e4f4c518"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afbdadc9978622cef72895cc8e4f4c518">releaseShader</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)=0</td></tr>
+<tr class="separator:afbdadc9978622cef72895cc8e4f4c518"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3812ae22c02892eb1dff4ed5decdb62f" id="r_a3812ae22c02892eb1dff4ed5decdb62f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a3812ae22c02892eb1dff4ed5decdb62f">newCanvas</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)=0</td></tr>
+<tr class="separator:a3812ae22c02892eb1dff4ed5decdb62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6537ec293e87d4a3e33ad5319b84199c" id="r_a6537ec293e87d4a3e33ad5319b84199c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a6537ec293e87d4a3e33ad5319b84199c">newFont</a> (<a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *data, std::string charset)=0</td></tr>
+<tr class="separator:a6537ec293e87d4a3e33ad5319b84199c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> / mesh / shader / canvas creation and release. </p>
+
+<p class="definition">在文件 <a class="el" href="IResourceFactory_8h_source.html">IResourceFactory.h</a> 第 <a class="el" href="IResourceFactory_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac1c1e4c1e2b5b51a91b825849fb13e0a" name="ac1c1e4c1e2b5b51a91b825849fb13e0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c1e4c1e2b5b51a91b825849fb13e0a">&#9670;&#160;</a></span>~IResourceFactory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::graphics::IResourceFactory::~IResourceFactory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="afe34b54084fecbe5eebf2e6f50d11ccb" name="afe34b54084fecbe5eebf2e6f50d11ccb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe34b54084fecbe5eebf2e6f50d11ccb">&#9670;&#160;</a></span>bakeMeshMorph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::bakeMeshMorph </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a30584de6af68f401ddb10c0931b80649">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a466a382a2daef3c1a4220860bbb854f5">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab21cf68d8790e0b495b27ef571be9b33">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0ecfd2fb281000bfc8e7cd0f4ca506e3" name="a0ecfd2fb281000bfc8e7cd0f4ca506e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ecfd2fb281000bfc8e7cd0f4ca506e3">&#9670;&#160;</a></span>getMaxAnisotropy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual float eve::graphics::IResourceFactory::getMaxAnisotropy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9da2a4d9a970ba157c8ea78f236ef52b">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0749f5f4092612fe3ebbdf010b92f46f">eve::graphics::vulkan::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a19d0d84dbdb34a47afd8dc4fd244bf7b">eve::graphics::webgpu::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a3812ae22c02892eb1dff4ed5decdb62f" name="a3812ae22c02892eb1dff4ed5decdb62f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3812ae22c02892eb1dff4ed5decdb62f">&#9670;&#160;</a></span>newCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> * eve::graphics::IResourceFactory::newCanvas </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a72b57f6ba5f2e1f42e91670121cee033">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#ae16c67af3fd9b18a0ad5bd31d9563519">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad9a66a0461ee3ce7ceab6e4d468f2f84">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a887e434d0b4d9d72029e8da826ffa54f" name="a887e434d0b4d9d72029e8da826ffa54f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a887e434d0b4d9d72029e8da826ffa54f">&#9670;&#160;</a></span>newCubemap() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newCubemap </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>faceSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgbaFaces</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a03aad1144e841341ce314dbe85f2bd72">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a03f776d2d37e9b834f4d7d134870d1d8">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afd67efcfb1b77017b4b10f2f32ef4f6e" name="afd67efcfb1b77017b4b10f2f32ef4f6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd67efcfb1b77017b4b10f2f32ef4f6e">&#9670;&#160;</a></span>newCubemap() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newCubemap </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>faceSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgbaFaces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abdcd52f1d00a9039b596d8e4fc7c4f1f">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a58773ce4dad5727c2040a277e678013c">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afc498258291be943fc349d9241b72bbe">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a6537ec293e87d4a3e33ad5319b84199c" name="a6537ec293e87d4a3e33ad5319b84199c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6537ec293e87d4a3e33ad5319b84199c">&#9670;&#160;</a></span>newFont()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> * eve::graphics::IResourceFactory::newFont </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>charset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a80f144f5eff7ed4f5ee10efc9f163281">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a72cd0a743063451736462575fff527a7" name="a72cd0a743063451736462575fff527a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72cd0a743063451736462575fff527a7">&#9670;&#160;</a></span>newHairShaderFromSpv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newHairShaderFromSpv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vertSpv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>fragSpv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae9f21c78c09788242259dc1faf117c8a">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a6f0432003f3093fbaef648a0d775ede6">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8caa4a0c8e68cb47188155a32ae68cdc">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ad5aa1d5cbb5d3c01235aa03122debbc0" name="ad5aa1d5cbb5d3c01235aa03122debbc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5aa1d5cbb5d3c01235aa03122debbc0">&#9670;&#160;</a></span>newMeshCube()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshCube </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a670c280e2292b5b12821eda906dd5f1d">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a9070038431b83e6304b7e1d24949e50f" name="a9070038431b83e6304b7e1d24949e50f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9070038431b83e6304b7e1d24949e50f">&#9670;&#160;</a></span>newMeshCylinder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshCylinder </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>stacks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>caps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a6c6c6a0842571cc869fa1a88221f3986">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a8308bf7c77abe8c0f93bf15469505e10">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a236c93bcf40cc29776ee03c31f28f9a1">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a98f94ab97738af03d0de220f77657848" name="a98f94ab97738af03d0de220f77657848"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98f94ab97738af03d0de220f77657848">&#9670;&#160;</a></span>newMeshFromArrays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshFromArrays </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>uvST</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a80f78e43295c2e13df36de5242901c08">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a9becad5b090478d77d7bbcbb707a737c">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMeshFactoryAdapter_8cpp_source.html#l00016">eve::asset_graphics::GraphicsMeshFactoryAdapter::uploadMesh()</a>.</p>
+
+</div>
+</div>
+<a id="af5a29a007ac152798f2a091c9ff6732f" name="af5a29a007ac152798f2a091c9ff6732f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5a29a007ac152798f2a091c9ff6732f">&#9670;&#160;</a></span>newMeshFromAssimp() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshFromAssimp </td>
+          <td>(</td>
+          <td class="paramtype">const ::aiMesh &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a9652725c4972a23e35e0f078b1b79e83">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a2cc1d6ad43f1ee0091c64226a5dafdda">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a51209192a922894d3e1c02b1d4233c9e">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aff5302a7b59b7aa1f9f3ddf6baf4f369" name="aff5302a7b59b7aa1f9f3ddf6baf4f369"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff5302a7b59b7aa1f9f3ddf6baf4f369">&#9670;&#160;</a></span>newMeshFromAssimp() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshFromAssimp </td>
+          <td>(</td>
+          <td class="paramtype">const ::aiMesh &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const aiMatrix4x4 &amp;&#160;</td>
+          <td class="paramname"><em>worldTransform</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8a0f320cc1961b3d59646f32870679d7">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#aee0126fd9d6b97cc16036f386a389105">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a52893d576ca5acb6bccdb8736bc0e511">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0292eb1ae8de3f1a2e81b61f142f974e" name="a0292eb1ae8de3f1a2e81b61f142f974e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0292eb1ae8de3f1a2e81b61f142f974e">&#9670;&#160;</a></span>newMeshShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newMeshShader </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>vertGlsl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fragGlsl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8f4c00fbaf57404a16742f3f3ba2132a">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a0dbadfc45e6438388d2e839cf3251a47">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a33c4364594c779b44c2916c94e97544c">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="abdc1430176b5ff2fed83cbadf1437d27" name="abdc1430176b5ff2fed83cbadf1437d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdc1430176b5ff2fed83cbadf1437d27">&#9670;&#160;</a></span>newMeshShaderFromSpv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newMeshShaderFromSpv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vertSpv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>fragSpv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a6395faac872da37fdecf1cbc8428ece4">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a64581fc986010ebb644a2224fa05dc00">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab67d98661130ef04a1b9aa9bcaae00ab" name="ab67d98661130ef04a1b9aa9bcaae00ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab67d98661130ef04a1b9aa9bcaae00ab">&#9670;&#160;</a></span>newMeshShaderFromWgsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newMeshShaderFromWgsl </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>vertWgsl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fragWgsl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae4affeb9fc6873ca3548403c2e4674ea">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a3e2a1d4acfde72e98fd18cf90ac56830">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#add0361cd46aef3e9c12a33a0cb08d430">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a88b1e82bc12beea69205e4aa57ec2b90" name="a88b1e82bc12beea69205e4aa57ec2b90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88b1e82bc12beea69205e4aa57ec2b90">&#9670;&#160;</a></span>newMeshSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::IResourceFactory::newMeshSphere </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>stacks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a1fd452b9910ac6d09429d348cd3d7ff3">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a1e433b63954829a6ef1106eef571d5e7">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ae5de75437ddd1784f06f6dec5f9d6a8e">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a085b6dd10968fe48949ede801549f781" name="a085b6dd10968fe48949ede801549f781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a085b6dd10968fe48949ede801549f781">&#9670;&#160;</a></span>newShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newShader </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>vertGlsl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fragGlsl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a4eae781e2c6cfc65594c30e0e3d1c4ef">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a9dc04997d2c41d2dcd7ddfc14de0080c">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a73956a6011f01f650ce43354f5958102">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8fd984f68cb7652fbb805eaee76c6f50" name="a8fd984f68cb7652fbb805eaee76c6f50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fd984f68cb7652fbb805eaee76c6f50">&#9670;&#160;</a></span>newShaderFromSpv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newShaderFromSpv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vertSpv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>fragSpv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac64ce8b8da59b469f4bad3ffb278d546">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a716ac4f00f2e29a0231739133c828ee0">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a5a053b3c141f8dbf7170c4434cd693d3" name="a5a053b3c141f8dbf7170c4434cd693d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a053b3c141f8dbf7170c4434cd693d3">&#9670;&#160;</a></span>newShaderFromSpvFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newShaderFromSpvFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>vertPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fragPath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0addc2a93995e2ae8746198aa2f7590c">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a14481610655471222dbe55f52d180872">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af3823403312e4d65f8d29c86c7e230eb">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aaa0b6c0bd837d3eade1833dc59045121" name="aaa0b6c0bd837d3eade1833dc59045121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0b6c0bd837d3eade1833dc59045121">&#9670;&#160;</a></span>newShaderFromWgsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::IResourceFactory::newShaderFromWgsl </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>vertWgsl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fragWgsl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a 2D custom shader from WGSL source (WebGPU backend). Empty vert → default textured vertex shader. The fragment WGSL declares the shared 2D bindings (color texture 0, depth texture 1, sampler 2, depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points. Vulkan throws (uses SPIR-V via newShaderFromSpv). </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeeb75243c900b1a320e27f7a69077fd2">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#ad4739da034fa92340ad164ffb114191f">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a31d03936b778979af34ce8b3019b4d1d">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a13eccdb5cb04744f7e70c0b07be02bb9" name="a13eccdb5cb04744f7e70c0b07be02bb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13eccdb5cb04744f7e70c0b07be02bb9">&#9670;&#160;</a></span>newTexture() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a4a227778994b2fad67bf53127321538c">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a6ad3b3ffc5997b3ef77183d1328c90ca">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a3c361a23e9c4ac9379a27a537114cf0b">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aef0070ca64d27095a7b40d0c4cd7eb43" name="aef0070ca64d27095a7b40d0c4cd7eb43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef0070ca64d27095a7b40d0c4cd7eb43">&#9670;&#160;</a></span>newTexture() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af689a46073c2df83d605fafffb9964e8">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a295d3568a32a4f4617d855dba61b1444">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ae675fe0cbca885fdc535b5d909f74224">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7d3f7a0f592185fa38c8fdbda3892382" name="a7d3f7a0f592185fa38c8fdbda3892382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d3f7a0f592185fa38c8fdbda3892382">&#9670;&#160;</a></span>newTexture() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgba</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatU</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatV</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a684fb94c63f7d877ccc6a56557e25dd5">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsImageFactoryAdapter_8cpp_source.html#l00018">eve::asset_graphics::GraphicsImageFactoryAdapter::uploadRgba8()</a>.</p>
+
+</div>
+</div>
+<a id="acccd461d429dca2c591f885c29cc0a58" name="acccd461d429dca2c591f885c29cc0a58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acccd461d429dca2c591f885c29cc0a58">&#9670;&#160;</a></span>newTexture() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgba</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aba39f87e25735cb4414c1b31f860edbe">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a493102364087c2c4e8579f5c833b024e">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa5e90e581a33f11767f1d47d4dd57e5d">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ade27edda90dcebb8c821d96ef5c727d1" name="ade27edda90dcebb8c821d96ef5c727d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade27edda90dcebb8c821d96ef5c727d1">&#9670;&#160;</a></span>newTextureFromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTextureFromFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aca7740a60d138ac4d8cc8dfb7ac72e7d">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a4d99a178ef01b206b0f8886eb059ef1f">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa32e256e0cf514fb5cce92c0390b8211">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac1ba78c5e5e1ccf5e188c5a2ffd767ab" name="ac1ba78c5e5e1ccf5e188c5a2ffd767ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">&#9670;&#160;</a></span>newTextureFromFileRepeated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTextureFromFileRepeated </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatV</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab6af4b6ca786bbd9f71914288ba60813">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae22556294f4ccf7731807f85c227a57e" name="ae22556294f4ccf7731807f85c227a57e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae22556294f4ccf7731807f85c227a57e">&#9670;&#160;</a></span>newTextureFromImageData() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTextureFromImageData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatU</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatV</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9403086b93ed0794c14fa1d324bba85f">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a3de093c273f0fe33beed6532163d2dc2" name="a3de093c273f0fe33beed6532163d2dc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3de093c273f0fe33beed6532163d2dc2">&#9670;&#160;</a></span>newTextureFromImageData() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTextureFromImageData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ae76d87a536d9fb01b56de10babc5393e">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a819231cdb9258c0aad704f3b975a2782" name="a819231cdb9258c0aad704f3b975a2782"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a819231cdb9258c0aad704f3b975a2782">&#9670;&#160;</a></span>newTextureWithSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::IResourceFactory::newTextureWithSampler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>repeatV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>generateMipmaps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxAnisotropy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mipmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lodBias</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a27f0e01e4e2fd648d067103570985c06">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a77a43e6150b61416d5daf63c7b5adeab" name="a77a43e6150b61416d5daf63c7b5adeab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77a43e6150b61416d5daf63c7b5adeab">&#9670;&#160;</a></span>releaseMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::releaseMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a0d2adbb7692aeb1df1d02e0a0e766a48">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0eb7976ddf9e5fb3aa99910c8beef309">eve::graphics::vulkan::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#ac3a722b095ddca507a52d032f94387d0">eve::graphics::webgpu::Graphics</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMeshFactoryAdapter_8cpp_source.html#l00027">eve::asset_graphics::GraphicsMeshFactoryAdapter::releaseMesh()</a>.</p>
+
+</div>
+</div>
+<a id="afbdadc9978622cef72895cc8e4f4c518" name="afbdadc9978622cef72895cc8e4f4c518"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbdadc9978622cef72895cc8e4f4c518">&#9670;&#160;</a></span>releaseShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::releaseShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a96ec5608f72af815cf792cd627b01005">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af1f48194661b4a84ba7869ca51ddcf25">eve::graphics::vulkan::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a7a23e8980db607ed8f8a70054d03dda4">eve::graphics::webgpu::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="adbf75e5ba5f97271237354ea28dbe7f8" name="adbf75e5ba5f97271237354ea28dbe7f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbf75e5ba5f97271237354ea28dbe7f8">&#9670;&#160;</a></span>releaseTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::releaseTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a313ee9f1fe7214965367067610d978e7">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#adce0b464a5a0734fb168fd6b342262ef">eve::graphics::vulkan::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#acdf201684f89d3e146cb2536772c368b">eve::graphics::webgpu::Graphics</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsImageFactoryAdapter_8cpp_source.html#l00036">eve::asset_graphics::GraphicsImageFactoryAdapter::releaseImage()</a>.</p>
+
+</div>
+</div>
+<a id="a86dc2defd091b04e02df33ab4c7d6803" name="a86dc2defd091b04e02df33ab4c7d6803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86dc2defd091b04e02df33ab4c7d6803">&#9670;&#160;</a></span>reloadTextureFromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::reloadTextureFromFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a593a3ca253788d0c1e0f79ce0ad3677a">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#ab056a5c286c4f01cfb990dbfdc855bae">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a7928b8d4ae9501e7c4c44d2e3efe1392">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a275ebc6f392ce1d917da8ca0c72a6229" name="a275ebc6f392ce1d917da8ca0c72a6229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a275ebc6f392ce1d917da8ca0c72a6229">&#9670;&#160;</a></span>setTextureSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::graphics::IResourceFactory::setTextureSampler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp;&#160;</td>
+          <td class="paramname"><em>sampler</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aa072f4ed971f1d3fdae318643dd6ad40">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#abe2239d6518bded299b938eeefe17e62">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#abe68c37b242cd928376e5177dfae4b68">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0831158498daceb7d2b39052e6fd5e02" name="a0831158498daceb7d2b39052e6fd5e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0831158498daceb7d2b39052e6fd5e02">&#9670;&#160;</a></span>updateMeshVertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IResourceFactory::updateMeshVertices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>uvST</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aa914859cb0db297dbf9a348134a68288">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a6dc1691350fb4abb5b5b88cc125743cc">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="IResourceFactory_8h_source.html">IResourceFactory.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

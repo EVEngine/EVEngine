@@ -1,0 +1,707 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WeaponSystem.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeaponSystem.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeaponSystem_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="WeaponSystem_8h.html">weapon/WeaponSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="WeaponAttributes_8h.html">weapon/WeaponAttributes.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="WeaponLogic_8h.html">weapon/WeaponLogic.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>std::unordered_map&lt;std::string, IWeaponLogic*&gt;&amp; logicRegistry() {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, IWeaponLogic*&gt; registry;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> registry;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><a class="code hl_typedef" href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">WeaponEventSink</a>&amp; eventSink() {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">WeaponEventSink</a> sink;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> sink;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">void</span> pushEvent(<span class="keyword">const</span> WeaponEvent&amp; e) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (eventSink()) eventSink()(e);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">float</span> angleDelta(<span class="keywordtype">float</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = std::fmod(<a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a> - <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a> + 180.f, 360.f);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> &lt; 0.f) <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> += 360.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> - 180.f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">class </span>HitscanLogic : <span class="keyword">public</span> IWeaponLogic {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;hitscan&quot;</span>; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">bool</span>        canFire(<span class="keyword">const</span> WeaponEntity&amp;)<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span>        fire(WeaponEntity&amp;, <span class="keyword">const</span> AttackRequest&amp;)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span>        update(WeaponEntity&amp;, <span class="keywordtype">float</span>)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">class </span>ProjectileLogic : <span class="keyword">public</span> IWeaponLogic {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;projectile&quot;</span>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">bool</span>        canFire(<span class="keyword">const</span> WeaponEntity&amp;)<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span>        fire(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> AttackRequest&amp; req)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (IProjectileService* svc = eve::cap::query&lt;IProjectileService&gt;()) svc-&gt;spawnProjectile(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, req);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> update(WeaponEntity&amp;, <span class="keywordtype">float</span>)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">class </span>MeleeLogic : <span class="keyword">public</span> IWeaponLogic {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;melee&quot;</span>; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span>        canFire(<span class="keyword">const</span> WeaponEntity&amp;)<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span>        fire(WeaponEntity&amp;, <span class="keyword">const</span> AttackRequest&amp;)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span>        update(WeaponEntity&amp;, <span class="keywordtype">float</span>)<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>HitscanLogic    gHitscan;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>ProjectileLogic gProjectile;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>MeleeLogic      gMelee;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">const</span> WeaponDefinition* defOf(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.definition()-&gt;def; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keywordtype">bool</span> usesStageMachine(<span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> def != <span class="keyword">nullptr</span> &amp;&amp; def-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728">WeaponKind::Ranged</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keywordtype">void</span> pushFireEvent(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, <span class="keyword">const</span> AttackRequest&amp; req, <span class="keywordtype">int</span> ammo) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    WeaponEvent e;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    e.type        = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb">WeaponEventType::Fire</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    e.weaponId    = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    e.defId       = def-&gt;id;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    e.ammoLeft    = ammo;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    e.x           = req.muzzleX;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    e.y           = req.muzzleY;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    e.z           = req.muzzleZ;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    e.arc         = req.arcAngle;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    e.aoe         = req.aoeRadius;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    e.spread      = req.spread;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    e.pellets     = std::max(1, req.pelletCount);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    e.recoilPitch = def-&gt;recoilPitch;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    e.recoilYaw   = def-&gt;recoilYaw;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    e.damageType  = def-&gt;damageType;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    e.element     = def-&gt;element;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    pushEvent(e);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keywordtype">void</span> updateFeel(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// 散布回稳：从当前连射散布衰减回 spreadMin。</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (def-&gt;spreadRecover &gt; 0.f &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread &gt; def-&gt;spreadMin) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread = std::max(def-&gt;spreadMin, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread - def-&gt;spreadRecover * dt);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// 后坐回正：向 0 收敛。</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (def-&gt;recoilRecover &gt; 0.f) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = std::min(std::fabs(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilPitch), def-&gt;recoilRecover * dt);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilPitch += <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilPitch &gt; 0.f ? -<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = std::min(std::fabs(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilYaw), def-&gt;recoilRecover * dt);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilYaw += <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilYaw &gt; 0.f ? -<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> : <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keywordtype">float</span> applyBloom(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">if</span> (def-&gt;spreadPerShot &gt; 0.f &amp;&amp; def-&gt;spreadMax &gt; def-&gt;spreadMin) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread = std::min(def-&gt;spreadMax, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread + def-&gt;spreadPerShot);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;currentSpread;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="keywordtype">int</span> spawnPellets(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, AttackRequest&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = std::max(1, def-&gt;projectile.pelletCount);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.pelletCount = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.pelletIndex = i;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            logic-&gt;fire(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>}</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="keywordtype">void</span> pushEmptyEvent(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    WeaponEvent e;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    e.type     = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07">WeaponEventType::Empty</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    e.weaponId = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    e.defId    = def-&gt;id;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    e.ammoLeft = 0;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    pushEvent(e);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keywordtype">void</span> pushReloadEnd(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, <span class="keywordtype">int</span> ammo) {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    WeaponEvent e;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    e.type     = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb">WeaponEventType::ReloadEnd</a>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    e.weaponId = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    e.defId    = def-&gt;id;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    e.ammoLeft = ammo;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    pushEvent(e);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">// 热武器（ranged）：成熟管线</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="keywordtype">bool</span> canFireRanged(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource.reloading || <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;jammed) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown &gt; 0.f) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource.value &lt;= 0.f) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">const</span> IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">return</span> logic == <span class="keyword">nullptr</span> || logic-&gt;canFire(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="keywordtype">bool</span> tryFireRanged(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> AttackRequest&amp; req, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">if</span> (!canFireRanged(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource.value -= 1.f;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> effSpread = applyBloom(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilPitch += def-&gt;recoilPitch;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilYaw   += def-&gt;recoilYaw;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    AttackRequest <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = req;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.yaw           = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;yaw;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.pitch         = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;pitch;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.spread        = effSpread;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> pellets = spawnPellets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown = def-&gt;cooldown;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;selector == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2">FireMode::Burst</a> &amp;&amp; def-&gt;burstSize &gt; 1) {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining = def-&gt;burstSize - 1;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstTimer     = def-&gt;burstInterval;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.pelletCount = pellets;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    pushFireEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource.value));</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource.value &lt;= 0.f) pushEmptyEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="keywordtype">void</span> updateRanged(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">auto</span>     <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    Resource&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>     = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown = std::max(0.f, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown - dt);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    updateFeel(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, dt);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="comment">// 自动装填：弹匣打空、冷却结束且有备弹时自动开始（事件照发，游戏侧可覆盖/取消）。</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading &amp;&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &lt;= 0.f &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown &lt;= 0.f &amp;&amp; !<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;jammed) {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#abe8a9a58a83131dbb7cef4a7010ff93d">WeaponSystem::startReload</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="comment">// 装填推进</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloadProgress += dt;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloadProgress &gt;= def-&gt;reloadTime) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> missing = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.max) - <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keywordflow">if</span> (def-&gt;reserveSize &lt; 0) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value = <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.max;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (AmmoPoolEntity* pool = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;ammoPool) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> take = std::min(missing, pool-&gt;state()-&gt;count);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value += <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(take);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                pool-&gt;state()-&gt;count -= take;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> take = std::min(missing, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reserve);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value += <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(take);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reserve -= take;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloadProgress = 0.f;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            pushReloadEnd(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value));</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="comment">// 连发续射（第一次扣弹在 tryFire，续发在这里）</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining &gt; 0) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstTimer -= dt;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstTimer &lt;= 0.f) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &gt; 0.f) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value -= 1.f;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                AttackRequest req;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>                req.yaw     = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;yaw;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                req.pitch   = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;pitch;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                req.spread  = applyBloom(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilPitch += def-&gt;recoilPitch;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;recoilYaw   += def-&gt;recoilYaw;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> pellets = spawnPellets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, req);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown = def-&gt;cooldown;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining--;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstTimer = def-&gt;burstInterval;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                req.pelletCount = pellets;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                pushFireEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, req, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value));</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &lt;= 0.f) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining = 0;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                    pushEmptyEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                }</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining = 0;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            }</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        }</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    }</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) logic-&gt;update(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, dt);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#af13f305df467859a5deff437be5e6dad">WeaponSystem::updateAim</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, dt);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>}</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="comment">// 阶段机（近战 / 法杖 / 导弹等非热武器形态）</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span><span class="keywordtype">bool</span> canAttackStage(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage != <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">AttackStage::Idle</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;jammed) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown &gt; 0.f) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keyword">const</span> Resource&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">ResourceKind::Mana</a> || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9">ResourceKind::Stamina</a>) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keyword">const</span> <span class="keyword">auto</span> attribute = <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">ResourceKind::Mana</a> ? <a class="code hl_variable" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a3f7ba980928e3480fd904fedb034574d">WeaponAttributeAdapter::manaAttribute</a></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                                                            : <a class="code hl_variable" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a542211562c14b6b125b3f59410082a91">WeaponAttributeAdapter::staminaAttribute</a>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keyword">auto</span>       current   = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a215ac29189e4fb4fa3eedfc139d75d88">WeaponAttributeAdapter::read</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, attribute);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">if</span> (!current) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            current.ignore(<span class="stringliteral">&quot;legacy bool canFire cannot expose weapon attribute diagnostics&quot;</span>);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        }</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.infinite &amp;&amp; current.value() &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.cost)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.infinite &amp;&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &lt; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.cost) {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    }</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keyword">const</span> IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">return</span> logic == <span class="keyword">nullptr</span> || logic-&gt;canFire(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>}</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="keywordtype">bool</span> tryAttackStage(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> AttackRequest&amp; req, <span class="keyword">const</span> WeaponDefinition* def) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">if</span> (!canAttackStage(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keyword">auto</span>     <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    Resource&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>     = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">ResourceKind::Mana</a> || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9">ResourceKind::Stamina</a>) {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a> = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a89e63748ff7119f566cf47b1388a6f92">WeaponAttributeAdapter::consumeTriggerResource</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a>) {</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            <a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a>.ignore(<span class="stringliteral">&quot;legacy bool tryFire cannot expose weapon attribute diagnostics&quot;</span>);</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        }</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.infinite) {</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value = std::max(0.f, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value - <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.cost);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    }</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage       = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055">AttackStage::Windup</a>;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer  = 0.f;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;lastRequest = req;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) logic-&gt;begin(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, req);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    WeaponEvent e;</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    e.type     = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6">WeaponEventType::WindupStart</a>;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    e.weaponId = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    e.defId    = def-&gt;id;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    e.ammoLeft = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    pushEvent(e);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>}</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span><span class="keywordtype">void</span> updateStage(WeaponEntity&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> WeaponDefinition* def, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown = std::max(0.f, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;cooldown - dt);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    updateFeel(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, dt);</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="comment">// 资源回复（法力 / 充能）</span></div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    Resource&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.regen &gt; 0.f &amp;&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &lt; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.max) <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value = std::min(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.max, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value + <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.regen * dt);</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keyword">const</span> AttackStageSpec* stages = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stages != <span class="keyword">nullptr</span> ? <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stages : &amp;def-&gt;stages;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer += dt;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055">AttackStage::Windup</a> &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer &gt;= stages-&gt;windupTime) {</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="comment">// Windup → Active：命中/生效时刻</span></div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage      = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d">AttackStage::Active</a>;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer = 0.f;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        AttackRequest req = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;lastRequest;</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        req.yaw           = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;yaw;</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        req.pitch         = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim()-&gt;pitch;</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        req.spread        = applyBloom(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> pellets = spawnPellets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, req);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        req.pelletCount   = pellets;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        pushFireEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, req, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value));</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.infinite &amp;&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &lt;= 0.f) pushEmptyEvent(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d">AttackStage::Active</a>) {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) logic-&gt;channel(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;lastRequest, dt);</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer &gt;= stages-&gt;activeTime) {</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage      = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790">AttackStage::Recover</a>;</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer = 0.f;</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) logic-&gt;end(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;lastRequest);</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            WeaponEvent e;</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            e.type     = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e">WeaponEventType::AttackEnd</a>;</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            e.weaponId = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            e.defId    = def-&gt;id;</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>            e.ammoLeft = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value);</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            pushEvent(e);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        }</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage == <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790">AttackStage::Recover</a> &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer &gt;= stages-&gt;recoverTime) {</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stage      = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">AttackStage::Idle</a>;</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;stageTimer = 0.f;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    }</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keywordflow">if</span> (IWeaponLogic* logic = <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(def-&gt;logic)) logic-&gt;update(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, dt);</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#af13f305df467859a5deff437be5e6dad">WeaponSystem::updateAim</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, dt);</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>}</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span> </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span> </div>
+<div class="foldopen" id="foldopen00364" data-start="{" data-end="}">
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">  364</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">WeaponSystem::registerLogic</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1IWeaponLogic.html">IWeaponLogic</a>* logic) {</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <span class="keywordflow">if</span> (logic == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    logicRegistry()[logic-&gt;<a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#aa173d08fa46f85dc6142aefc2eb1f45c">name</a>()] = logic;</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>}</div>
+</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span> </div>
+<div class="foldopen" id="foldopen00369" data-start="{" data-end="}">
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">  369</a></span><a class="code hl_class" href="classeve_1_1weapon_1_1IWeaponLogic.html">IWeaponLogic</a>* <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">WeaponSystem::findLogic</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    <span class="keyword">auto</span> it = logicRegistry().find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    <span class="keywordflow">return</span> it == logicRegistry().<a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#a9421f11bf6d502797d96938d0c53b678">end</a>() ? nullptr : it-&gt;second;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>}</div>
+</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#afe232fa71106e62dbb5e72f2803ae651">  374</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#afe232fa71106e62dbb5e72f2803ae651">WeaponSystem::logicCount</a>() { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(logicRegistry().size()); }</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#a7e5c4766cc8a6718dae17757ed2dde52">  376</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a7e5c4766cc8a6718dae17757ed2dde52">WeaponSystem::setEventSink</a>(<a class="code hl_typedef" href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">WeaponEventSink</a> sink) { eventSink() = std::move(sink); }</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span> </div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#adb1964e34cb5ff5ba6b00994007b54f8">  378</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#adb1964e34cb5ff5ba6b00994007b54f8">WeaponSystem::emitEvent</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEvent.html">WeaponEvent</a>&amp; e) { pushEvent(e); }</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
+<div class="foldopen" id="foldopen00380" data-start="{" data-end="}">
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#a2d5f93150191c2adc76906e9b966bfea">  380</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a2d5f93150191c2adc76906e9b966bfea">WeaponSystem::update</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>* def = defOf(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">if</span> (def == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    <span class="keywordflow">if</span> (usesStageMachine(def)) {</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        updateStage(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, dt);</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        updateRanged(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def, dt);</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    }</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>}</div>
+</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
+<div class="foldopen" id="foldopen00390" data-start="{" data-end="}">
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#abd412e8a170ba4e8b73be45b4f2acb78">  390</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#abd412e8a170ba4e8b73be45b4f2acb78">WeaponSystem::tryFire</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req) {</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>* def = defOf(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    <span class="keywordflow">if</span> (def == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    <span class="keywordflow">if</span> (usesStageMachine(def)) <span class="keywordflow">return</span> tryAttackStage(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, req, def);</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>    <span class="keywordflow">return</span> tryFireRanged(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, req, def);</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>}</div>
+</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
+<div class="foldopen" id="foldopen00397" data-start="{" data-end="}">
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#a417310b60b5c1b78a0a0782c913821a6">  397</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a417310b60b5c1b78a0a0782c913821a6">WeaponSystem::canFire</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) {</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>* def = defOf(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    <span class="keywordflow">if</span> (def == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <span class="keywordflow">if</span> (usesStageMachine(def)) <span class="keywordflow">return</span> canAttackStage(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    <span class="keywordflow">return</span> canFireRanged(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, def);</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>}</div>
+</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span> </div>
+<div class="foldopen" id="foldopen00404" data-start="{" data-end="}">
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#abe8a9a58a83131dbb7cef4a7010ff93d">  404</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#abe8a9a58a83131dbb7cef4a7010ff93d">WeaponSystem::startReload</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) {</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>* def = defOf(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    <span class="keywordflow">if</span> (def == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="keyword">auto</span>     <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state();</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <a class="code hl_struct" href="structeve_1_1weapon_1_1Resource.html">Resource</a>&amp; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>     = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;resource;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value &gt;= <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.max) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1weapon_1_1AmmoPoolEntity.html">AmmoPoolEntity</a>* pool = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;ammoPool) {</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>        <span class="keywordflow">if</span> (pool-&gt;state()-&gt;count &lt;= 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (def-&gt;<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponDefinition.html#a05e56ccf99256cdb8f793b0407ac6a83">reserveSize</a> == 0 || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reserve &lt;= 0) {</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    }</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span> </div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloading      = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.reloadProgress = 0.f;</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;burstRemaining = 0;</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span> </div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponEvent.html">WeaponEvent</a> e;</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    e.<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEvent.html#a9357c1059a3e9700642a7306eaa91c4e">type</a>     = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1">WeaponEventType::ReloadStart</a>;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    e.<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEvent.html#a9814c1e5b140a961240c954bc07af3dd">weaponId</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.identity()-&gt;id;</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    e.<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEvent.html#a4bf9ef265498625132aba41b964128a9">defId</a>    = def-&gt;<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponDefinition.html#ab32b9f78f20969d921655fd4e8dcd107">id</a>;</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    e.<a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponEvent.html#a288e4e6c4a089890ce08c3b0ebb08352">ammoLeft</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value);</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    pushEvent(e);</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>}</div>
+</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
+<div class="foldopen" id="foldopen00428" data-start="{" data-end="}">
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#abc6397c026cdbca5093848753ad30c6d">  428</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#abc6397c026cdbca5093848753ad30c6d">WeaponSystem::cancelReload</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) {</div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state()-&gt;resource.reloading      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>    <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.state()-&gt;resource.reloadProgress = 0.f;</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>}</div>
+</div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span> </div>
+<div class="foldopen" id="foldopen00433" data-start="{" data-end="}">
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponSystem.html#af13f305df467859a5deff437be5e6dad">  433</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#af13f305df467859a5deff437be5e6dad">WeaponSystem::updateAim</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>    <span class="keyword">auto</span> aim = <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.aim();</div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>    <span class="keywordflow">if</span> (aim-&gt;turnSpeed &lt;= 0.f) {</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>        aim-&gt;yaw   = aim-&gt;desiredYaw;</div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>        aim-&gt;pitch = aim-&gt;desiredPitch;</div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    }</div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>   = aim-&gt;turnSpeed * dt;</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dyaw   = angleDelta(aim-&gt;yaw, aim-&gt;desiredYaw);</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dpitch = aim-&gt;desiredPitch - aim-&gt;pitch;</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>    aim-&gt;yaw += (std::fabs(dyaw) &lt;= <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) ? dyaw : (dyaw &gt; 0.f ? <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a> : -<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    aim-&gt;pitch += (std::fabs(dpitch) &lt;= <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) ? dpitch : (dpitch &gt; 0.f ? <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a> : -<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>    <span class="keywordflow">return</span> std::fabs(angleDelta(aim-&gt;yaw, aim-&gt;desiredYaw)) &lt; 0.01f &amp;&amp;</div>
+<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>           std::fabs(aim-&gt;pitch - aim-&gt;desiredPitch) &lt; 0.01f;</div>
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>}</div>
+</div>
+<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span> </div>
+<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span> </div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span><span class="comment">// 静态注册内置逻辑（链接期执行，模块加载即生效）。</span></div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span> </div>
+<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span><span class="keyword">struct </span>BuiltinLogicRegistrar {</div>
+<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>    BuiltinLogicRegistrar() {</div>
+<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>        <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">WeaponSystem::registerLogic</a>(&amp;gHitscan);</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>        <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">WeaponSystem::registerLogic</a>(&amp;gProjectile);</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>        <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">WeaponSystem::registerLogic</a>(&amp;gMelee);</div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>    }</div>
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>};</div>
+<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span> </div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>BuiltinLogicRegistrar gBuiltinRegistrar;</div>
+<div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span> </div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aWeaponAttributes_8h_html"><div class="ttname"><a href="WeaponAttributes_8h.html">WeaponAttributes.h</a></div><div class="ttdoc">Selective canonical mana/stamina adapter for weapons.</div></div>
+<div class="ttc" id="aWeaponLogic_8h_html"><div class="ttname"><a href="WeaponLogic_8h.html">WeaponLogic.h</a></div></div>
+<div class="ttc" id="aWeaponSystem_8h_html"><div class="ttname"><a href="WeaponSystem_8h.html">WeaponSystem.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1AmmoPoolEntity_html"><div class="ttname"><a href="classeve_1_1weapon_1_1AmmoPoolEntity.html">eve::weapon::AmmoPoolEntity</a></div><div class="ttdoc">共享弹药池实体：多把武器共用的备用弹药，装填时从池中取。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00473">WeaponTypes.h:473</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html">eve::weapon::IWeaponLogic</a></div><div class="ttdoc">武器逻辑接口：注册到 WeaponSystem 的可插拔行为。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00022">WeaponLogic.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_a9421f11bf6d502797d96938d0c53b678"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#a9421f11bf6d502797d96938d0c53b678">eve::weapon::IWeaponLogic::end</a></div><div class="ttdeci">virtual void end(WeaponEntity &amp;w, const AttackRequest &amp;req)</div><div class="ttdoc">阶段机进入 Recover 时调用（默认空实现）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00052">WeaponLogic.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_aa173d08fa46f85dc6142aefc2eb1f45c"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#aa173d08fa46f85dc6142aefc2eb1f45c">eve::weapon::IWeaponLogic::name</a></div><div class="ttdeci">virtual const char * name() const =0</div><div class="ttdoc">稳定名字（&quot;hitscan&quot; / &quot;projectile&quot; / &quot;melee&quot; / 自定义名）。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponAttributeAdapter_html_a215ac29189e4fb4fa3eedfc139d75d88"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a215ac29189e4fb4fa3eedfc139d75d88">eve::weapon::WeaponAttributeAdapter::read</a></div><div class="ttdeci">static eve::Result&lt; double &gt; read(WeaponEntity &amp;weapon, std::string_view attribute)</div><div class="ttdoc">Read a selected final mana/stamina attribute.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAttributes_8cpp_source.html#l00112">WeaponAttributes.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponAttributeAdapter_html_a3f7ba980928e3480fd904fedb034574d"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a3f7ba980928e3480fd904fedb034574d">eve::weapon::WeaponAttributeAdapter::manaAttribute</a></div><div class="ttdeci">static constexpr std::string_view manaAttribute</div><div class="ttdef"><b>Definition</b> <a href="WeaponAttributes_8h_source.html#l00026">WeaponAttributes.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponAttributeAdapter_html_a542211562c14b6b125b3f59410082a91"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a542211562c14b6b125b3f59410082a91">eve::weapon::WeaponAttributeAdapter::staminaAttribute</a></div><div class="ttdeci">static constexpr std::string_view staminaAttribute</div><div class="ttdef"><b>Definition</b> <a href="WeaponAttributes_8h_source.html#l00028">WeaponAttributes.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponAttributeAdapter_html_a89e63748ff7119f566cf47b1388a6f92"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a89e63748ff7119f566cf47b1388a6f92">eve::weapon::WeaponAttributeAdapter::consumeTriggerResource</a></div><div class="ttdeci">static eve::Result&lt; void &gt; consumeTriggerResource(WeaponEntity &amp;weapon)</div><div class="ttdoc">Consume the current weapon's canonical Mana/Stamina trigger cost.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAttributes_8cpp_source.html#l00134">WeaponAttributes.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEntity_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEntity.html">eve::weapon::WeaponEntity</a></div><div class="ttdoc">武器实体：数据全部在组件里，行为在 WeaponSystem。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00274">WeaponTypes.h:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_a2d5f93150191c2adc76906e9b966bfea"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#a2d5f93150191c2adc76906e9b966bfea">eve::weapon::WeaponSystem::update</a></div><div class="ttdeci">static void update(WeaponEntity &amp;w, float dt)</div><div class="ttdoc">每帧推进：冷却 / 连发 / 装填 / 炮口旋转 / 逻辑自身。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00380">WeaponSystem.cpp:380</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_a3e748ff051744e5f8880c4b052628edd"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#a3e748ff051744e5f8880c4b052628edd">eve::weapon::WeaponSystem::findLogic</a></div><div class="ttdeci">static IWeaponLogic * findLogic(const std::string &amp;name)</div><div class="ttdoc">按名字取逻辑；未注册返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00369">WeaponSystem.cpp:369</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_a417310b60b5c1b78a0a0782c913821a6"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#a417310b60b5c1b78a0a0782c913821a6">eve::weapon::WeaponSystem::canFire</a></div><div class="ttdeci">static bool canFire(WeaponEntity &amp;w)</div><div class="ttdoc">是否可开火（未装填/未卡壳/冷却完毕/有弹药/逻辑放行）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00397">WeaponSystem.cpp:397</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_a58eba807f9eadf9aad10fac80a9166f6"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#a58eba807f9eadf9aad10fac80a9166f6">eve::weapon::WeaponSystem::registerLogic</a></div><div class="ttdeci">static void registerLogic(IWeaponLogic *logic)</div><div class="ttdoc">注册武器逻辑实现；同名替换。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00364">WeaponSystem.cpp:364</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_a7e5c4766cc8a6718dae17757ed2dde52"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#a7e5c4766cc8a6718dae17757ed2dde52">eve::weapon::WeaponSystem::setEventSink</a></div><div class="ttdeci">static void setEventSink(WeaponEventSink sink)</div><div class="ttdoc">注册事件汇（替换旧的；传 nullptr 清空）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00376">WeaponSystem.cpp:376</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_abc6397c026cdbca5093848753ad30c6d"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#abc6397c026cdbca5093848753ad30c6d">eve::weapon::WeaponSystem::cancelReload</a></div><div class="ttdeci">static void cancelReload(WeaponEntity &amp;w)</div><div class="ttdoc">打断装填。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00428">WeaponSystem.cpp:428</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_abd412e8a170ba4e8b73be45b4f2acb78"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#abd412e8a170ba4e8b73be45b4f2acb78">eve::weapon::WeaponSystem::tryFire</a></div><div class="ttdeci">static bool tryFire(WeaponEntity &amp;w, const FireRequest &amp;req)</div><div class="ttdoc">尝试开火；满足条件时扣弹药、调逻辑、推事件并返回 true。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00390">WeaponSystem.cpp:390</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_abe8a9a58a83131dbb7cef4a7010ff93d"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#abe8a9a58a83131dbb7cef4a7010ff93d">eve::weapon::WeaponSystem::startReload</a></div><div class="ttdeci">static void startReload(WeaponEntity &amp;w)</div><div class="ttdoc">开始装填（有备用弹药且弹匣不满时生效）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00404">WeaponSystem.cpp:404</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_adb1964e34cb5ff5ba6b00994007b54f8"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#adb1964e34cb5ff5ba6b00994007b54f8">eve::weapon::WeaponSystem::emitEvent</a></div><div class="ttdeci">static void emitEvent(const WeaponEvent &amp;e)</div><div class="ttdoc">向事件汇推一条事件（模块/脚本便捷入口）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00378">WeaponSystem.cpp:378</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_af13f305df467859a5deff437be5e6dad"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#af13f305df467859a5deff437be5e6dad">eve::weapon::WeaponSystem::updateAim</a></div><div class="ttdeci">static bool updateAim(WeaponEntity &amp;w, float dt)</div><div class="ttdoc">炮口朝目标旋转；返回本帧是否到位。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00433">WeaponSystem.cpp:433</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponSystem_html_afe232fa71106e62dbb5e72f2803ae651"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponSystem.html#afe232fa71106e62dbb5e72f2803ae651">eve::weapon::WeaponSystem::logicCount</a></div><div class="ttdeci">static int logicCount()</div><div class="ttdoc">已注册逻辑数量。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8cpp_source.html#l00374">WeaponSystem.cpp:374</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a123b3b5117966e0d538897311695377bac2f329a17c18a701dbe1e96e03858728">eve::weapon::WeaponKind::Ranged</a></div><div class="ttdeci">@ Ranged</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a2391a0fbc70c78dacf99d7b15f5d327f"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a2391a0fbc70c78dacf99d7b15f5d327f">eve::weapon::WeaponEventSink</a></div><div class="ttdeci">std::function&lt; void(const WeaponEvent &amp;)&gt; WeaponEventSink</div><div class="ttdoc">事件汇：由 Weapon 模块（或测试）注册，把事件写入自己的队列。</div><div class="ttdef"><b>Definition</b> <a href="WeaponSystem_8h_source.html#l00019">WeaponSystem.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a3d501c93b1c2ecdb8ca9ffc8ef9c7055">eve::weapon::AttackStage::Windup</a></div><div class="ttdeci">@ Windup</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a4d3d769b812b6faa6b76e1a8abaece2d">eve::weapon::AttackStage::Active</a></div><div class="ttdeci">@ Active</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085a556b050ce914d18480d6ea30308c7790">eve::weapon::AttackStage::Recover</a></div><div class="ttdeci">@ Recover</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">eve::weapon::AttackStage::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2"><div class="ttname"><a href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7ac134fae30efdd1105b52a457a4bddac2">eve::weapon::FireMode::Burst</a></div><div class="ttdeci">@ Burst</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a230adeab56d08f03b2d45604c24505a6">eve::weapon::WeaponEventType::WindupStart</a></div><div class="ttdeci">@ WindupStart</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6a90a263fa0d92f49236c58871f50a6cd1">eve::weapon::WeaponEventType::ReloadStart</a></div><div class="ttdeci">@ ReloadStart</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6abd2b7e5f85a6ea65065c4ebc6d7c95bb">eve::weapon::WeaponEventType::Fire</a></div><div class="ttdeci">@ Fire</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ace2c8aed9c2fa0cfbed56cbda4d8bf07">eve::weapon::WeaponEventType::Empty</a></div><div class="ttdeci">@ Empty</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae46ee1248d73d68f518d2bdce5f1a6bb">eve::weapon::WeaponEventType::ReloadEnd</a></div><div class="ttdeci">@ ReloadEnd</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e"><div class="ttname"><a href="namespaceeve_1_1weapon.html#acb99d66d6b2f2767ef7387627c0871d6ae70ca354484f126fb9b4d632adb3508e">eve::weapon::WeaponEventType::AttackEnd</a></div><div class="ttdeci">@ AttackEnd</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7"><div class="ttname"><a href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">eve::weapon::ResourceKind::Mana</a></div><div class="ttdeci">@ Mana</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9"><div class="ttname"><a href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9">eve::weapon::ResourceKind::Stamina</a></div><div class="ttdeci">@ Stamina</div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1AttackRequest_html"><div class="ttname"><a href="structeve_1_1weapon_1_1AttackRequest.html">eve::weapon::AttackRequest</a></div><div class="ttdoc">一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00202">WeaponTypes.h:202</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1Resource_html"><div class="ttname"><a href="structeve_1_1weapon_1_1Resource.html">eve::weapon::Resource</a></div><div class="ttdoc">运行时触发资源（实体组件）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00260">WeaponTypes.h:260</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponDefinition_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponDefinition.html">eve::weapon::WeaponDefinition</a></div><div class="ttdoc">武器模板（registerWeaponsFromJson 注册，进程级注册表）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00130">WeaponTypes.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponDefinition_html_a05e56ccf99256cdb8f793b0407ac6a83"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponDefinition.html#a05e56ccf99256cdb8f793b0407ac6a83">eve::weapon::WeaponDefinition::reserveSize</a></div><div class="ttdeci">int reserveSize</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00190">WeaponTypes.h:190</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponDefinition_html_ab32b9f78f20969d921655fd4e8dcd107"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponDefinition.html#ab32b9f78f20969d921655fd4e8dcd107">eve::weapon::WeaponDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00131">WeaponTypes.h:131</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEvent_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEvent.html">eve::weapon::WeaponEvent</a></div><div class="ttdoc">武器事件（帧缓存，脚本轮询，与 building/rpg 风格一致）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00233">WeaponTypes.h:233</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEvent_html_a288e4e6c4a089890ce08c3b0ebb08352"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEvent.html#a288e4e6c4a089890ce08c3b0ebb08352">eve::weapon::WeaponEvent::ammoLeft</a></div><div class="ttdeci">int ammoLeft</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00238">WeaponTypes.h:238</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEvent_html_a4bf9ef265498625132aba41b964128a9"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEvent.html#a4bf9ef265498625132aba41b964128a9">eve::weapon::WeaponEvent::defId</a></div><div class="ttdeci">std::string defId</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00236">WeaponTypes.h:236</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEvent_html_a9357c1059a3e9700642a7306eaa91c4e"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEvent.html#a9357c1059a3e9700642a7306eaa91c4e">eve::weapon::WeaponEvent::type</a></div><div class="ttdeci">WeaponEventType type</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00234">WeaponTypes.h:234</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponEvent_html_a9814c1e5b140a961240c954bc07af3dd"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponEvent.html#a9814c1e5b140a961240c954bc07af3dd">eve::weapon::WeaponEvent::weaponId</a></div><div class="ttdeci">std::string weaponId</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00235">WeaponTypes.h:235</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8cpp_html_a5923b9221705546ddd88c92230707bd5"><div class="ttname"><a href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a></div><div class="ttdeci">bool consumed</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8cpp_source.html#l00179">Graphics.cpp:179</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

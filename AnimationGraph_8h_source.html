@@ -1,0 +1,264 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation_editing/AnimationGraph.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3a11c95fd6ffff214691f99b8cbdfe86.html">animation_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimationGraph.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimationGraph_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimationEditingTypes_8h.html">animation_editing/AnimationEditingTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditingGraph_8h.html">editing/EditingGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>AnimStateMachine;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">using </span>editing::GraphConnectionDecision;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">using </span>editing::GraphDocumentData;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">using </span>editing::GraphEdgeRecord;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">editing::GraphNodeId</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">using </span>editing::GraphNodeRecord;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">editing::GraphPinDirection</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">editing::GraphPinId</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">using </span>editing::GraphPinRecord;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">using </span>editing::IGraphDomainProvider;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">   30</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a08ef75433c447fb585e8c91cb6d2ff92">   31</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">Revision</a> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a08ef75433c447fb585e8c91cb6d2ff92">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a0d7682afc58838ec26e0c1daa7c1d7e1">   32</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a0d7682afc58838ec26e0c1daa7c1d7e1">definition</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a221fd26d202b1e28a0736d24afef1885">   33</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a221fd26d202b1e28a0736d24afef1885">diagnostics</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">   43</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">AnimationStateGraphDomain</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IGraphDomainProvider.html">IGraphDomainProvider</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a7361350a4344bcd6b7f70ac53e0f8b31">   45</a></span>    std::string <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a7361350a4344bcd6b7f70ac53e0f8b31">domain</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;animation.state&quot;</span>; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#af7f980d9eb0e98b32a198a23435aebda">canConnect</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;GraphNodeRecord&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#ab83f5ca94ffdcbebab6774a69d8aa89e">makeStateNode</a>(<span class="keyword">const</span> GraphNodeId&amp; <span class="keywordtype">id</span>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                                <span class="keyword">const</span> std::string&amp; clipAsset) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;GraphNodeRecord&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#aac055a9eac5f0c886e64b6bc5a927aff">makeTransitionNode</a>(<span class="keyword">const</span> GraphNodeId&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_struct" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a8763c1c4cfbd0b1238b0fdd6ccfff694">compile</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html">   58</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html">AnimationStateGraphRuntimeBuilder</a> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">   60</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">ClipResolver</a> = std::function&lt;<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a>*(<span class="keyword">const</span> std::string&amp; asset)&gt;;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;animation::AnimStateMachine*&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a2d8fb12791033824689ddd3115b1368d">build</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                     <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>* skeleton,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                     <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">ClipResolver</a>&amp; clips) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}  <span class="comment">// namespace eve::animation_editing</span></div>
+<div class="ttc" id="aAnimationEditingTypes_8h_html"><div class="ttname"><a href="AnimationEditingTypes_8h.html">AnimationEditingTypes.h</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aEditingGraph_8h_html"><div class="ttname"><a href="EditingGraph_8h.html">EditingGraph.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00079">AnimClip.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">eve::animation_editing::AnimationStateGraphDomain</a></div><div class="ttdoc">animation.state graph domain matching AnimStateMachine semantics.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00043">AnimationGraph.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_a7361350a4344bcd6b7f70ac53e0f8b31"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a7361350a4344bcd6b7f70ac53e0f8b31">eve::animation_editing::AnimationStateGraphDomain::domain</a></div><div class="ttdeci">std::string domain() const override</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00045">AnimationGraph.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_a8763c1c4cfbd0b1238b0fdd6ccfff694"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a8763c1c4cfbd0b1238b0fdd6ccfff694">eve::animation_editing::AnimationStateGraphDomain::compile</a></div><div class="ttdeci">AnimationGraphCompileResult compile(const GraphDocumentData &amp;graph) const</div><div class="ttdoc">Validate and compile a graph into a deterministic runtime-neutral definition.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00094">AnimationGraph.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_aac055a9eac5f0c886e64b6bc5a927aff"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#aac055a9eac5f0c886e64b6bc5a927aff">eve::animation_editing::AnimationStateGraphDomain::makeTransitionNode</a></div><div class="ttdeci">EditorResult&lt; GraphNodeRecord &gt; makeTransitionNode(const GraphNodeId &amp;id) const</div><div class="ttdoc">Construct a transition node with default blend metadata.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00072">AnimationGraph.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_ab83f5ca94ffdcbebab6774a69d8aa89e"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#ab83f5ca94ffdcbebab6774a69d8aa89e">eve::animation_editing::AnimationStateGraphDomain::makeStateNode</a></div><div class="ttdeci">EditorResult&lt; GraphNodeRecord &gt; makeStateNode(const GraphNodeId &amp;id, const std::string &amp;clipAsset) const</div><div class="ttdoc">Construct a state node referencing one animation clip asset.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00054">AnimationGraph.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_af7f980d9eb0e98b32a198a23435aebda"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#af7f980d9eb0e98b32a198a23435aebda">eve::animation_editing::AnimationStateGraphDomain::canConnect</a></div><div class="ttdeci">GraphConnectionDecision canConnect(const GraphPinRecord &amp;from, const GraphPinRecord &amp;to) const override</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00040">AnimationGraph.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html">eve::animation_editing::AnimationStateGraphRuntimeBuilder</a></div><div class="ttdoc">Optional bridge constructing the real animation runtime from a validated graph.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00058">AnimationGraph.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder_html_a2d8fb12791033824689ddd3115b1368d"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a2d8fb12791033824689ddd3115b1368d">eve::animation_editing::AnimationStateGraphRuntimeBuilder::build</a></div><div class="ttdeci">EditorResult&lt; animation::AnimStateMachine * &gt; build(const GraphDocumentData &amp;graph, animation::AnimSkeleton *skeleton, const ClipResolver &amp;clips) const</div><div class="ttdoc">Build an AnimStateMachine; caller owns the returned machine.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraphRuntime_8cpp_source.html#l00027">AnimationGraphRuntime.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder_html_a7f3af0e6c4cb3dcc59161478a8063bfe"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#a7f3af0e6c4cb3dcc59161478a8063bfe">eve::animation_editing::AnimationStateGraphRuntimeBuilder::ClipResolver</a></div><div class="ttdeci">std::function&lt; animation::AnimClip *(const std::string &amp;asset)&gt; ClipResolver</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00060">AnimationGraph.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::editing::IGraphDomainProvider</a></div><div class="ttdoc">Domain-owned typed connection policy.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00075">EditingGraph.h:75</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationClip_8cpp_source.html#l00010">AnimationClip.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_abd0364993d148fecd66206167e6c0834"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">eve::animation_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00016">SkeletonOverlay.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a221db3c7c688755f69f7707f6f44b6ea"><div class="ttname"><a href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">eve::editing::GraphPinDirection</a></div><div class="ttdeci">GraphPinDirection</div><div class="ttdoc">Direction of a typed graph pin.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00012">EditingGraph.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a81debce673234f46d7ab5705ba7cead2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">eve::editing::GraphPinId</a></div><div class="ttdeci">StrongId&lt; GraphPinIdTag &gt; GraphPinId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00066">EditingIds.h:66</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a90a3849ec29f2fe1ce5c2322b5c1f3f6"><div class="ttname"><a href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">eve::editing::GraphNodeId</a></div><div class="ttdeci">StrongId&lt; GraphNodeIdTag &gt; GraphNodeId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00065">EditingIds.h:65</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">eve::animation_editing::AnimationGraphCompileResult</a></div><div class="ttdoc">Compilation result for a stable-reference animation state graph asset.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00029">AnimationGraph.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a08ef75433c447fb585e8c91cb6d2ff92"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a08ef75433c447fb585e8c91cb6d2ff92">eve::animation_editing::AnimationGraphCompileResult::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00031">AnimationGraph.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a0d7682afc58838ec26e0c1daa7c1d7e1"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a0d7682afc58838ec26e0c1daa7c1d7e1">eve::animation_editing::AnimationGraphCompileResult::definition</a></div><div class="ttdeci">std::string definition</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00032">AnimationGraph.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a221fd26d202b1e28a0736d24afef1885"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a221fd26d202b1e28a0736d24afef1885">eve::animation_editing::AnimationGraphCompileResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00033">AnimationGraph.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1AnimationGraphCompileResult_html_a3a5cd686a17d94589d849afeb88b5810"><div class="ttname"><a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#a3a5cd686a17d94589d849afeb88b5810">eve::animation_editing::AnimationGraphCompileResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8h_source.html#l00030">AnimationGraph.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphConnectionDecision_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphConnectionDecision.html">eve::editing::GraphConnectionDecision</a></div><div class="ttdoc">Result of domain-specific connection validation.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00048">EditingGraph.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html">eve::editing::GraphDocumentData</a></div><div class="ttdoc">Immutable graph document value sent to a domain compiler.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00038">EditingGraph.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html">eve::editing::GraphPinRecord</a></div><div class="ttdoc">Stable typed pin owned by a graph node.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00015">EditingGraph.h:15</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

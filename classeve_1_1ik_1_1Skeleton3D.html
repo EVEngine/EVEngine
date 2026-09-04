@@ -1,0 +1,1162 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ik::Skeleton3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ik.html">ik</a></li><li class="navelem"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ik_1_1Skeleton3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ik::Skeleton3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d). Local angles are yaw/pitch in the parent bone frame.  
+ <a href="classeve_1_1ik_1_1Skeleton3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a64ced0bbc0af24b78aeb0cf9c9c04f25" id="r_a64ced0bbc0af24b78aeb0cf9c9c04f25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a64ced0bbc0af24b78aeb0cf9c9c04f25">Skeleton3D</a> ()</td></tr>
+<tr class="separator:a64ced0bbc0af24b78aeb0cf9c9c04f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a620579c712f382b865d8ad18c274a444" id="r_a620579c712f382b865d8ad18c274a444"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a620579c712f382b865d8ad18c274a444">~Skeleton3D</a> ()=default</td></tr>
+<tr class="separator:a620579c712f382b865d8ad18c274a444"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad7f9b757c8a44264ea97d2a6fd40c25" id="r_aad7f9b757c8a44264ea97d2a6fd40c25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#aad7f9b757c8a44264ea97d2a6fd40c25">Skeleton3D</a> (const <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;)=delete</td></tr>
+<tr class="separator:aad7f9b757c8a44264ea97d2a6fd40c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e4d802a9abd71f3b1bd5334fbe926a" id="r_a91e4d802a9abd71f3b1bd5334fbe926a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a91e4d802a9abd71f3b1bd5334fbe926a">operator=</a> (const <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a91e4d802a9abd71f3b1bd5334fbe926a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f05ceedb930035795ed6f28b06c57c" id="r_a71f05ceedb930035795ed6f28b06c57c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a71f05ceedb930035795ed6f28b06c57c">createBone</a> (int <a class="el" href="EvpackSceneTemplateLoader_8cpp.html#a93ab3208ae9cc07c59eb4e4c5d4ab2e4">parentId</a>, float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a71f05ceedb930035795ed6f28b06c57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affd345db239e2182de42c1eb62ef2db2" id="r_affd345db239e2182de42c1eb62ef2db2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#affd345db239e2182de42c1eb62ef2db2">getBoneCount</a> () const</td></tr>
+<tr class="separator:affd345db239e2182de42c1eb62ef2db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afceb6b27c45471e5c62819e85d869d48" id="r_afceb6b27c45471e5c62819e85d869d48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#afceb6b27c45471e5c62819e85d869d48">getRootId</a> () const</td></tr>
+<tr class="separator:afceb6b27c45471e5c62819e85d869d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68521496ff2fb74b673ec24c5d67166" id="r_af68521496ff2fb74b673ec24c5d67166"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#af68521496ff2fb74b673ec24c5d67166">getParent</a> (int boneId) const</td></tr>
+<tr class="separator:af68521496ff2fb74b673ec24c5d67166"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d6b429c32a53d87bb088d8d419f6c07" id="r_a5d6b429c32a53d87bb088d8d419f6c07"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a5d6b429c32a53d87bb088d8d419f6c07">getChildCount</a> (int boneId) const</td></tr>
+<tr class="separator:a5d6b429c32a53d87bb088d8d419f6c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcfdabd3d7d314d15d8de9b058baacc3" id="r_adcfdabd3d7d314d15d8de9b058baacc3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#adcfdabd3d7d314d15d8de9b058baacc3">getChild</a> (int boneId, int childIndex) const</td></tr>
+<tr class="separator:adcfdabd3d7d314d15d8de9b058baacc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17333e56304ef9c23b29334a992bb991" id="r_a17333e56304ef9c23b29334a992bb991"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a17333e56304ef9c23b29334a992bb991">getLength</a> (int boneId) const</td></tr>
+<tr class="separator:a17333e56304ef9c23b29334a992bb991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7b31f78ed3d7b04aee7f97951bd0f7" id="r_a2d7b31f78ed3d7b04aee7f97951bd0f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a2d7b31f78ed3d7b04aee7f97951bd0f7">setLength</a> (int boneId, float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>)</td></tr>
+<tr class="separator:a2d7b31f78ed3d7b04aee7f97951bd0f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0940003ea396610075e696f82bc5d7a6" id="r_a0940003ea396610075e696f82bc5d7a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a0940003ea396610075e696f82bc5d7a6">setPosition</a> (int boneId, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a0940003ea396610075e696f82bc5d7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d33cb3b312876d37f9814fefe5f2fe" id="r_ad6d33cb3b312876d37f9814fefe5f2fe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ad6d33cb3b312876d37f9814fefe5f2fe">getX</a> (int boneId) const</td></tr>
+<tr class="separator:ad6d33cb3b312876d37f9814fefe5f2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb86aa9a95227975e609f9c33cd4d0bc" id="r_acb86aa9a95227975e609f9c33cd4d0bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#acb86aa9a95227975e609f9c33cd4d0bc">getY</a> (int boneId) const</td></tr>
+<tr class="separator:acb86aa9a95227975e609f9c33cd4d0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7dd3ad8ba1257d1e9f05d13fac41f3a" id="r_ab7dd3ad8ba1257d1e9f05d13fac41f3a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ab7dd3ad8ba1257d1e9f05d13fac41f3a">getZ</a> (int boneId) const</td></tr>
+<tr class="separator:ab7dd3ad8ba1257d1e9f05d13fac41f3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94a60aebcdd887b375852a6f65b00a82" id="r_a94a60aebcdd887b375852a6f65b00a82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a94a60aebcdd887b375852a6f65b00a82">setOrientation</a> (int boneId, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a94a60aebcdd887b375852a6f65b00a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae323bad193ecb50a3ad63358a6cfc8c6" id="r_ae323bad193ecb50a3ad63358a6cfc8c6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ae323bad193ecb50a3ad63358a6cfc8c6">getOrientationX</a> (int boneId) const</td></tr>
+<tr class="separator:ae323bad193ecb50a3ad63358a6cfc8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf88de2b698cd15026b3ff35b965d654" id="r_acf88de2b698cd15026b3ff35b965d654"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#acf88de2b698cd15026b3ff35b965d654">getOrientationY</a> (int boneId) const</td></tr>
+<tr class="separator:acf88de2b698cd15026b3ff35b965d654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab46a8ebf1d0fcd0f5b01d1937253f927" id="r_ab46a8ebf1d0fcd0f5b01d1937253f927"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ab46a8ebf1d0fcd0f5b01d1937253f927">getOrientationZ</a> (int boneId) const</td></tr>
+<tr class="separator:ab46a8ebf1d0fcd0f5b01d1937253f927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8900bc5acf20c98456a98cfbd96c8b9b" id="r_a8900bc5acf20c98456a98cfbd96c8b9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a8900bc5acf20c98456a98cfbd96c8b9b">setRotation</a> (int boneId, float yaw, float pitch)</td></tr>
+<tr class="separator:a8900bc5acf20c98456a98cfbd96c8b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5f595a5c5d2e56db84f7570018fd70e" id="r_af5f595a5c5d2e56db84f7570018fd70e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#af5f595a5c5d2e56db84f7570018fd70e">getRotationYaw</a> (int boneId) const</td></tr>
+<tr class="separator:af5f595a5c5d2e56db84f7570018fd70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a724e51e8612d72c355f2f6466b561053" id="r_a724e51e8612d72c355f2f6466b561053"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a724e51e8612d72c355f2f6466b561053">getRotationPitch</a> (int boneId) const</td></tr>
+<tr class="separator:a724e51e8612d72c355f2f6466b561053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11f6969ad4c091480870e2818fcc7d95" id="r_a11f6969ad4c091480870e2818fcc7d95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a11f6969ad4c091480870e2818fcc7d95">setConstraints</a> (int boneId, float minYaw, float minPitch, float maxYaw, float maxPitch)</td></tr>
+<tr class="separator:a11f6969ad4c091480870e2818fcc7d95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab519cd432da98333e4c150b1d8a36536" id="r_ab519cd432da98333e4c150b1d8a36536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ab519cd432da98333e4c150b1d8a36536">clearConstraints</a> (int boneId)</td></tr>
+<tr class="separator:ab519cd432da98333e4c150b1d8a36536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00084755c671e968ac6e91c93b01d8d" id="r_ad00084755c671e968ac6e91c93b01d8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ad00084755c671e968ac6e91c93b01d8d">hasConstraints</a> (int boneId) const</td></tr>
+<tr class="separator:ad00084755c671e968ac6e91c93b01d8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a959cfa107c7532fc89bf6bf091a9135f" id="r_a959cfa107c7532fc89bf6bf091a9135f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a959cfa107c7532fc89bf6bf091a9135f">initStraightPose</a> (float rootX=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float rootY=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float rootZ=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a959cfa107c7532fc89bf6bf091a9135f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6896cddf3b74f77c19215636f9b5b9af" id="r_a6896cddf3b74f77c19215636f9b5b9af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a6896cddf3b74f77c19215636f9b5b9af">bind</a> ()</td></tr>
+<tr class="separator:a6896cddf3b74f77c19215636f9b5b9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a453bebd7a7c56683a5e4a72eea7382f5" id="r_a453bebd7a7c56683a5e4a72eea7382f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a453bebd7a7c56683a5e4a72eea7382f5">forwardKinematics</a> ()</td></tr>
+<tr class="separator:a453bebd7a7c56683a5e4a72eea7382f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6ae5d566f5baca99514a1f244dcb657" id="r_ad6ae5d566f5baca99514a1f244dcb657"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#ad6ae5d566f5baca99514a1f244dcb657">updateRotations</a> ()</td></tr>
+<tr class="separator:ad6ae5d566f5baca99514a1f244dcb657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac9e535688b6d24ea4c734bd97c28032" id="r_aac9e535688b6d24ea4c734bd97c28032"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#aac9e535688b6d24ea4c734bd97c28032">totalLengthTo</a> (int boneId) const</td></tr>
+<tr class="separator:aac9e535688b6d24ea4c734bd97c28032"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c5e352d84970fcbc0e940d4de9b539e" id="r_a2c5e352d84970fcbc0e940d4de9b539e"><td class="memItemLeft" align="right" valign="top">::ik::skeleton3d &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a2c5e352d84970fcbc0e940d4de9b539e">native</a> ()</td></tr>
+<tr class="separator:a2c5e352d84970fcbc0e940d4de9b539e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b60c82486b7eabab205002242b1a6cb" id="r_a4b60c82486b7eabab205002242b1a6cb"><td class="memItemLeft" align="right" valign="top">::ik::ecs3d &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a4b60c82486b7eabab205002242b1a6cb">state</a> ()</td></tr>
+<tr class="separator:a4b60c82486b7eabab205002242b1a6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91cff647fcde4067d8677eb4cd9f4dc0" id="r_a91cff647fcde4067d8677eb4cd9f4dc0"><td class="memItemLeft" align="right" valign="top">const ::ik::skeleton3d &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a91cff647fcde4067d8677eb4cd9f4dc0">native</a> () const</td></tr>
+<tr class="separator:a91cff647fcde4067d8677eb4cd9f4dc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41c833c7abe8b2623ed4c08ac58e0e2e" id="r_a41c833c7abe8b2623ed4c08ac58e0e2e"><td class="memItemLeft" align="right" valign="top">const ::ik::ecs3d &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a41c833c7abe8b2623ed4c08ac58e0e2e">state</a> () const</td></tr>
+<tr class="separator:a41c833c7abe8b2623ed4c08ac58e0e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d). Local angles are yaw/pitch in the parent bone frame. </p>
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a64ced0bbc0af24b78aeb0cf9c9c04f25" name="a64ced0bbc0af24b78aeb0cf9c9c04f25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ced0bbc0af24b78aeb0cf9c9c04f25">&#9670;&#160;</a></span>Skeleton3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Skeleton3D::Skeleton3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a620579c712f382b865d8ad18c274a444" name="a620579c712f382b865d8ad18c274a444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620579c712f382b865d8ad18c274a444">&#9670;&#160;</a></span>~Skeleton3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Skeleton3D::~Skeleton3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad7f9b757c8a44264ea97d2a6fd40c25" name="aad7f9b757c8a44264ea97d2a6fd40c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7f9b757c8a44264ea97d2a6fd40c25">&#9670;&#160;</a></span>Skeleton3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Skeleton3D::Skeleton3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6896cddf3b74f77c19215636f9b5b9af" name="a6896cddf3b74f77c19215636f9b5b9af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6896cddf3b74f77c19215636f9b5b9af">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::bind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab519cd432da98333e4c150b1d8a36536" name="ab519cd432da98333e4c150b1d8a36536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab519cd432da98333e4c150b1d8a36536">&#9670;&#160;</a></span>clearConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::clearConstraints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71f05ceedb930035795ed6f28b06c57c" name="a71f05ceedb930035795ed6f28b06c57c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f05ceedb930035795ed6f28b06c57c">&#9670;&#160;</a></span>createBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::createBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>parentId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8h_source.html#l00016">eve::ui::WidgetDesc::id</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a> , 以及 <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00049">parentId</a>.</p>
+
+</div>
+</div>
+<a id="a453bebd7a7c56683a5e4a72eea7382f5" name="a453bebd7a7c56683a5e4a72eea7382f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a453bebd7a7c56683a5e4a72eea7382f5">&#9670;&#160;</a></span>forwardKinematics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::forwardKinematics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affd345db239e2182de42c1eb62ef2db2" name="affd345db239e2182de42c1eb62ef2db2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd345db239e2182de42c1eb62ef2db2">&#9670;&#160;</a></span>getBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::getBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01275">eve::particles::ParticleEmitter::attachToSkeleton3D()</a>.</p>
+
+</div>
+</div>
+<a id="adcfdabd3d7d314d15d8de9b058baacc3" name="adcfdabd3d7d314d15d8de9b058baacc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcfdabd3d7d314d15d8de9b058baacc3">&#9670;&#160;</a></span>getChild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::getChild </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>childIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+</div>
+</div>
+<a id="a5d6b429c32a53d87bb088d8d419f6c07" name="a5d6b429c32a53d87bb088d8d419f6c07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d6b429c32a53d87bb088d8d419f6c07">&#9670;&#160;</a></span>getChildCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::getChildCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17333e56304ef9c23b29334a992bb991" name="a17333e56304ef9c23b29334a992bb991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17333e56304ef9c23b29334a992bb991">&#9670;&#160;</a></span>getLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae323bad193ecb50a3ad63358a6cfc8c6" name="ae323bad193ecb50a3ad63358a6cfc8c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae323bad193ecb50a3ad63358a6cfc8c6">&#9670;&#160;</a></span>getOrientationX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getOrientationX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf88de2b698cd15026b3ff35b965d654" name="acf88de2b698cd15026b3ff35b965d654"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf88de2b698cd15026b3ff35b965d654">&#9670;&#160;</a></span>getOrientationY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getOrientationY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab46a8ebf1d0fcd0f5b01d1937253f927" name="ab46a8ebf1d0fcd0f5b01d1937253f927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab46a8ebf1d0fcd0f5b01d1937253f927">&#9670;&#160;</a></span>getOrientationZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getOrientationZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af68521496ff2fb74b673ec24c5d67166" name="af68521496ff2fb74b673ec24c5d67166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af68521496ff2fb74b673ec24c5d67166">&#9670;&#160;</a></span>getParent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::getParent </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+</div>
+</div>
+<a id="afceb6b27c45471e5c62819e85d869d48" name="afceb6b27c45471e5c62819e85d869d48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afceb6b27c45471e5c62819e85d869d48">&#9670;&#160;</a></span>getRootId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Skeleton3D::getRootId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a724e51e8612d72c355f2f6466b561053" name="a724e51e8612d72c355f2f6466b561053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a724e51e8612d72c355f2f6466b561053">&#9670;&#160;</a></span>getRotationPitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getRotationPitch </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5f595a5c5d2e56db84f7570018fd70e" name="af5f595a5c5d2e56db84f7570018fd70e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5f595a5c5d2e56db84f7570018fd70e">&#9670;&#160;</a></span>getRotationYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getRotationYaw </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6d33cb3b312876d37f9814fefe5f2fe" name="ad6d33cb3b312876d37f9814fefe5f2fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d33cb3b312876d37f9814fefe5f2fe">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb86aa9a95227975e609f9c33cd4d0bc" name="acb86aa9a95227975e609f9c33cd4d0bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb86aa9a95227975e609f9c33cd4d0bc">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7dd3ad8ba1257d1e9f05d13fac41f3a" name="ab7dd3ad8ba1257d1e9f05d13fac41f3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7dd3ad8ba1257d1e9f05d13fac41f3a">&#9670;&#160;</a></span>getZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::getZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad00084755c671e968ac6e91c93b01d8d" name="ad00084755c671e968ac6e91c93b01d8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad00084755c671e968ac6e91c93b01d8d">&#9670;&#160;</a></span>hasConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Skeleton3D::hasConstraints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a959cfa107c7532fc89bf6bf091a9135f" name="a959cfa107c7532fc89bf6bf091a9135f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a959cfa107c7532fc89bf6bf091a9135f">&#9670;&#160;</a></span>initStraightPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::initStraightPose </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rootX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rootY</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rootZ</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c5e352d84970fcbc0e940d4de9b539e" name="a2c5e352d84970fcbc0e940d4de9b539e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c5e352d84970fcbc0e940d4de9b539e">&#9670;&#160;</a></span>native() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">::ik::skeleton3d &amp; eve::ik::Skeleton3D::native </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Solver3D_8cpp_source.html#l00065">eve::ik::Solver3D::solve()</a> , 以及 <a class="el" href="Solver3D_8cpp_source.html#l00086">eve::ik::Solver3D::step()</a>.</p>
+
+</div>
+</div>
+<a id="a91cff647fcde4067d8677eb4cd9f4dc0" name="a91cff647fcde4067d8677eb4cd9f4dc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91cff647fcde4067d8677eb4cd9f4dc0">&#9670;&#160;</a></span>native() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ::ik::skeleton3d &amp; eve::ik::Skeleton3D::native </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91e4d802a9abd71f3b1bd5334fbe926a" name="a91e4d802a9abd71f3b1bd5334fbe926a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91e4d802a9abd71f3b1bd5334fbe926a">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp; eve::ik::Skeleton3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a11f6969ad4c091480870e2818fcc7d95" name="a11f6969ad4c091480870e2818fcc7d95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11f6969ad4c091480870e2818fcc7d95">&#9670;&#160;</a></span>setConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::setConstraints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxPitch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d7b31f78ed3d7b04aee7f97951bd0f7" name="a2d7b31f78ed3d7b04aee7f97951bd0f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d7b31f78ed3d7b04aee7f97951bd0f7">&#9670;&#160;</a></span>setLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::setLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+</div>
+</div>
+<a id="a94a60aebcdd887b375852a6f65b00a82" name="a94a60aebcdd887b375852a6f65b00a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94a60aebcdd887b375852a6f65b00a82">&#9670;&#160;</a></span>setOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::setOrientation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a0940003ea396610075e696f82bc5d7a6" name="a0940003ea396610075e696f82bc5d7a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0940003ea396610075e696f82bc5d7a6">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a8900bc5acf20c98456a98cfbd96c8b9b" name="a8900bc5acf20c98456a98cfbd96c8b9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8900bc5acf20c98456a98cfbd96c8b9b">&#9670;&#160;</a></span>setRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::setRotation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b60c82486b7eabab205002242b1a6cb" name="a4b60c82486b7eabab205002242b1a6cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b60c82486b7eabab205002242b1a6cb">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">::ik::ecs3d &amp; eve::ik::Skeleton3D::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Solver3D_8cpp_source.html#l00065">eve::ik::Solver3D::solve()</a> , 以及 <a class="el" href="Solver3D_8cpp_source.html#l00086">eve::ik::Solver3D::step()</a>.</p>
+
+</div>
+</div>
+<a id="a41c833c7abe8b2623ed4c08ac58e0e2e" name="a41c833c7abe8b2623ed4c08ac58e0e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41c833c7abe8b2623ed4c08ac58e0e2e">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ::ik::ecs3d &amp; eve::ik::Skeleton3D::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a> 第 <a class="el" href="Skeleton3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac9e535688b6d24ea4c734bd97c28032" name="aac9e535688b6d24ea4c734bd97c28032"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac9e535688b6d24ea4c734bd97c28032">&#9670;&#160;</a></span>totalLengthTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Skeleton3D::totalLengthTo </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6ae5d566f5baca99514a1f244dcb657" name="ad6ae5d566f5baca99514a1f244dcb657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6ae5d566f5baca99514a1f244dcb657">&#9670;&#160;</a></span>updateRotations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Skeleton3D::updateRotations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a> 第 <a class="el" href="Skeleton3D_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ik/<a class="el" href="Skeleton3D_8h_source.html">Skeleton3D.h</a></li>
+<li>src/modules/ik/<a class="el" href="Skeleton3D_8cpp_source.html">Skeleton3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

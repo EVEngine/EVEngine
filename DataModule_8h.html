@@ -1,0 +1,236 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/data/DataModule.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5f3cda9c86f9ccc1b89531476dd8cb5c.html">data</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">DataModule.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="CompressedData_8h_source.html">CompressedData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Compressor_8h_source.html">Compressor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="HashFunction_8h_source.html">HashFunction.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="DataView_8h_source.html">DataView.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ByteData_8h_source.html">ByteData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JsonDocument_8h_source.html">JsonDocument.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="XmlDocument_8h_source.html">XmlDocument.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Module_8h_source.html">common/Module.h</a>&quot;</code><br />
+<code>#include &lt;string&gt;</code><br />
+</div>
+<p><a href="DataModule_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1DataModule.html">eve::data::DataModule</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1data" id="r_namespaceeve_1_1data"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html">eve::data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8ffa901ca36028108bc29f760a49d790" id="r_a8ffa901ca36028108bc29f760a49d790"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">eve::data::ContainerType</a> { <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873">eve::data::CONTAINER_DATA</a>
+, <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03">eve::data::CONTAINER_STRING</a>
+, <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732">eve::data::CONTAINER_MAX_ENUM</a>
+ }</td></tr>
+<tr class="separator:a8ffa901ca36028108bc29f760a49d790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a457cedb68714d4cb60fd3bb3810f64ca" id="r_a457cedb68714d4cb60fd3bb3810f64ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a457cedb68714d4cb60fd3bb3810f64ca">eve::data::compress</a> (std::string format, const char *rawbytes, size_t rawsize, int level=-1)</td></tr>
+<tr class="memdesc:a457cedb68714d4cb60fd3bb3810f64ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compresses a block of memory using the given compression format.  <br /></td></tr>
+<tr class="separator:a457cedb68714d4cb60fd3bb3810f64ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a627fde537f02a56846d0c025896c4ae0" id="r_a627fde537f02a56846d0c025896c4ae0"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a627fde537f02a56846d0c025896c4ae0">eve::data::decompress</a> (<a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *data, size_t &amp;decompressedsize)</td></tr>
+<tr class="memdesc:a627fde537f02a56846d0c025896c4ae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses existing compressed data into raw bytes.  <br /></td></tr>
+<tr class="separator:a627fde537f02a56846d0c025896c4ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9eaf87d2796296cb836774bdaaeaa9c" id="r_af9eaf87d2796296cb836774bdaaeaa9c"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#af9eaf87d2796296cb836774bdaaeaa9c">eve::data::decompress</a> (std::string format, const char *cbytes, size_t compressedsize, size_t &amp;rawsize)</td></tr>
+<tr class="memdesc:af9eaf87d2796296cb836774bdaaeaa9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses existing compressed data into raw bytes.  <br /></td></tr>
+<tr class="separator:af9eaf87d2796296cb836774bdaaeaa9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c87650a45564a608303fbe8b1b489a8" id="r_a0c87650a45564a608303fbe8b1b489a8"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a0c87650a45564a608303fbe8b1b489a8">eve::data::encode</a> (std::string format, const char *src, size_t srclen, size_t &amp;dstlen, size_t linelen=0)</td></tr>
+<tr class="memdesc:a0c87650a45564a608303fbe8b1b489a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes raw bytes (e.g. hex / base64) into a text buffer.  <br /></td></tr>
+<tr class="separator:a0c87650a45564a608303fbe8b1b489a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6803aa09ea28b695c3bd8b7dc1b11890" id="r_a6803aa09ea28b695c3bd8b7dc1b11890"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a6803aa09ea28b695c3bd8b7dc1b11890">eve::data::decode</a> (std::string format, const char *src, size_t srclen, size_t &amp;dstlen)</td></tr>
+<tr class="memdesc:a6803aa09ea28b695c3bd8b7dc1b11890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes a text buffer (hex / base64) back into raw bytes.  <br /></td></tr>
+<tr class="separator:a6803aa09ea28b695c3bd8b7dc1b11890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad61f925811a6e50d1826eb26ad724ff2" id="r_ad61f925811a6e50d1826eb26ad724ff2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">eve::data::hash</a> (std::string <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>, <a class="el" href="classeve_1_1Data.html">Data</a> *<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>)</td></tr>
+<tr class="memdesc:ad61f925811a6e50d1826eb26ad724ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash the input, producing an set of bytes as output.  <br /></td></tr>
+<tr class="separator:ad61f925811a6e50d1826eb26ad724ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7165e6c6da3d0c80e524e81382225fca" id="r_a7165e6c6da3d0c80e524e81382225fca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a7165e6c6da3d0c80e524e81382225fca">eve::data::hash</a> (std::string <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>, const char *<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, uint64_t size)</td></tr>
+<tr class="separator:a7165e6c6da3d0c80e524e81382225fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cefdd674ae1ab6d6a6d846a372e7fed" id="r_a1cefdd674ae1ab6d6a6d846a372e7fed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a1cefdd674ae1ab6d6a6d846a372e7fed">eve::data::hash</a> (std::string <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>, <a class="el" href="classeve_1_1Data.html">Data</a> *<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, <a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="separator:a1cefdd674ae1ab6d6a6d846a372e7fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a60f7d8b856792e8606946ee1f2904" id="r_ad7a60f7d8b856792e8606946ee1f2904"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#ad7a60f7d8b856792e8606946ee1f2904">eve::data::hash</a> (std::string <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>, const char *<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, uint64_t size, <a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="separator:ad7a60f7d8b856792e8606946ee1f2904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_import 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import.html">asset_import</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_import 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1asset__import_1_1detail" id="r_namespaceeve_1_1asset__import_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser and allocation budgets applied to untrusted importer inputs.  <a href="structeve_1_1asset__import_1_1AssetImportLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html">CanonicalScatterRule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deterministic terrain scatter rule, independent of source engine nodes.  <a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">CanonicalTerrainInput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully parsed source terrain ready for canonical archive construction.  <a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html">CanonicalTerrainInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One baked instance in canonical right-handed metre coordinates.  <a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html">CanonicalTerrainLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One canonical terrain material layer after source-engine mapping.  <a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Untrusted <code>.gltf</code>/<code>.glb</code> input plus explicitly supplied external URI bytes.  <a href="structeve_1_1asset__import_1_1GltfImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1ImageImportRequest.html">ImageImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Untrusted encoded image input and its explicit semantic settings.  <a href="structeve_1_1asset__import_1_1ImageImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1ImportFinding.html">ImportFinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One auditable source-feature outcome emitted by an importer.  <a href="structeve_1_1asset__import_1_1ImportFinding.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common stable package metadata supplied by an import transaction.  <a href="structeve_1_1asset__import_1_1ImportPackageIdentity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1ImportSourceMapping.html">ImportSourceMapping</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable source object to canonical asset identity mapping for reimport diagnostics.  <a href="structeve_1_1asset__import_1_1ImportSourceMapping.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1LegacyAnimationImportRequest.html">LegacyAnimationImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning request for the non-production <code>EVA 1</code> animation text fixture.  <a href="structeve_1_1asset__import_1_1LegacyAnimationImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, validated source archive candidate not yet published to disk/database.  <a href="structeve_1_1asset__import_1_1PreparedAssetImport.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory Unity project slice; keys are normalized project-relative paths.  <a href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1UnrealProjectImportRequest.html">UnrealProjectImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uncooked Unreal content slice plus a versioned data-only adapter descriptor.  <a href="structeve_1_1asset__import_1_1UnrealProjectImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a9e0746065f3ae65164d83fcd032cf8fc" id="r_a9e0746065f3ae65164d83fcd032cf8fc"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fc">ImageColorSpace</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fca6858e3b6de38cea509e739e9536e4e5c">Srgb</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fca32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+ }</td></tr>
+<tr class="memdesc:a9e0746065f3ae65164d83fcd032cf8fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit source color semantics; importers never infer platform defaults.  <a href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fc">更多...</a><br /></td></tr>
+<tr class="separator:a9e0746065f3ae65164d83fcd032cf8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9272fac0c2a56ea8d1b52460da89c472" id="r_a9272fac0c2a56ea8d1b52460da89c472"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472">ImportDisposition</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca">Translated</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a3b451d93dcdfb1d029eefcff097efe76">Baked</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a0f48058a1215612cb4a761a94909b6dd">PreservedSource</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472ab4080bdf74febf04d578ff105cce9d3f">Unsupported</a>
+ }</td></tr>
+<tr class="memdesc:a9272fac0c2a56ea8d1b52460da89c472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import disposition required for every encountered source feature.  <a href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472">更多...</a><br /></td></tr>
+<tr class="separator:a9272fac0c2a56ea8d1b52460da89c472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:adce1b9dcc49c61d13207726c9a864ce0" id="r_adce1b9dcc49c61d13207726c9a864ce0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#adce1b9dcc49c61d13207726c9a864ce0">prepareImageImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1ImageImportRequest.html">ImageImportRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:adce1b9dcc49c61d13207726c9a864ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode image metadata and prepare one canonical <code><a class="el" href="namespaceeve_1_1image.html">eve.image</a></code> source asset.  <br /></td></tr>
+<tr class="separator:adce1b9dcc49c61d13207726c9a864ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8cb4ae4eddbd7ea13dadc73c2073be" id="r_aec8cb4ae4eddbd7ea13dadc73c2073be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#aec8cb4ae4eddbd7ea13dadc73c2073be">prepareGltfImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:aec8cb4ae4eddbd7ea13dadc73c2073be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode triangle primitives from glTF 2.0 into canonical typed mesh blobs.  <br /></td></tr>
+<tr class="separator:aec8cb4ae4eddbd7ea13dadc73c2073be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dedcb81d816f445d30ad879338c3fd6" id="r_a6dedcb81d816f445d30ad879338c3fd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a6dedcb81d816f445d30ad879338c3fd6">prepareLegacyAnimationImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1LegacyAnimationImportRequest.html">LegacyAnimationImportRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a6dedcb81d816f445d30ad879338c3fd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a legacy text fixture into canonical skeleton and animation-clip assets.  <br /></td></tr>
+<tr class="separator:a6dedcb81d816f445d30ad879338c3fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18451bf0d41f432041055984176a7804" id="r_a18451bf0d41f432041055984176a7804"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a18451bf0d41f432041055984176a7804">prepareCanonicalTerrainImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;package, const <a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">CanonicalTerrainInput</a> &amp;<a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, std::string_view importer, const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:a18451bf0d41f432041055984176a7804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build <code>eve.terrain</code>, terrain material, PCG and instance assets from canonical input.  <br /></td></tr>
+<tr class="separator:a18451bf0d41f432041055984176a7804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf3e920dbd5f698bfc77b156d03feb2" id="r_aebf3e920dbd5f698bfc77b156d03feb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#aebf3e920dbd5f698bfc77b156d03feb2">prepareUnityProjectImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:aebf3e920dbd5f698bfc77b156d03feb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse Unity Force Text YAML and <code>.meta</code> GUIDs without running Unity.  <br /></td></tr>
+<tr class="separator:aebf3e920dbd5f698bfc77b156d03feb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71d0f4643986c69b9092113a146e00ba" id="r_a71d0f4643986c69b9092113a146e00ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a71d0f4643986c69b9092113a146e00ba">prepareUnrealM4Import</a> (const <a class="el" href="structeve_1_1asset__import_1_1UnrealProjectImportRequest.html">UnrealProjectImportRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a71d0f4643986c69b9092113a146e00ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import an M⁴-style Landscape/material/grass slice without launching Unreal.  <br /></td></tr>
+<tr class="separator:a71d0f4643986c69b9092113a146e00ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a9e0746065f3ae65164d83fcd032cf8fc" name="a9e0746065f3ae65164d83fcd032cf8fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e0746065f3ae65164d83fcd032cf8fc">&#9670;&#160;</a></span>ImageColorSpace</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fc">eve::asset_import::ImageColorSpace</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit source color semantics; importers never infer platform defaults. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9e0746065f3ae65164d83fcd032cf8fca6858e3b6de38cea509e739e9536e4e5c" name="a9e0746065f3ae65164d83fcd032cf8fca6858e3b6de38cea509e739e9536e4e5c"></a>Srgb&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e0746065f3ae65164d83fcd032cf8fca32a843da6ea40ab3b17a3421ccdf671b" name="a9e0746065f3ae65164d83fcd032cf8fca32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AssetImporter_8h_source.html">AssetImporter.h</a> 第 <a class="el" href="AssetImporter_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9272fac0c2a56ea8d1b52460da89c472" name="a9272fac0c2a56ea8d1b52460da89c472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9272fac0c2a56ea8d1b52460da89c472">&#9670;&#160;</a></span>ImportDisposition</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472">eve::asset_import::ImportDisposition</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Import disposition required for every encountered source feature. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca" name="a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca"></a>Translated&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9272fac0c2a56ea8d1b52460da89c472a3b451d93dcdfb1d029eefcff097efe76" name="a9272fac0c2a56ea8d1b52460da89c472a3b451d93dcdfb1d029eefcff097efe76"></a>Baked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9272fac0c2a56ea8d1b52460da89c472a0f48058a1215612cb4a761a94909b6dd" name="a9272fac0c2a56ea8d1b52460da89c472a0f48058a1215612cb4a761a94909b6dd"></a>PreservedSource&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9272fac0c2a56ea8d1b52460da89c472ab4080bdf74febf04d578ff105cce9d3f" name="a9272fac0c2a56ea8d1b52460da89c472ab4080bdf74febf04d578ff105cce9d3f"></a>Unsupported&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AssetImporter_8h_source.html">AssetImporter.h</a> 第 <a class="el" href="AssetImporter_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a18451bf0d41f432041055984176a7804" name="a18451bf0d41f432041055984176a7804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18451bf0d41f432041055984176a7804">&#9670;&#160;</a></span>prepareCanonicalTerrainImport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareCanonicalTerrainImport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;&#160;</td>
+          <td class="paramname"><em>package</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">CanonicalTerrainInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build <code>eve.terrain</code>, terrain material, PCG and instance assets from canonical input. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">package</td><td>Stable package identity and provenance. </td></tr>
+    <tr><td class="paramname">terrain</td><td>Parsed canonical terrain values. </td></tr>
+    <tr><td class="paramname">importer</td><td>Stable adapter identifier recorded in provenance. </td></tr>
+    <tr><td class="paramname">limits</td><td>Allocation limits shared with source parsers. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning <code>.eva</code> candidate with typed binary height/instance blobs. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8cpp_source.html">TerrainImporter.cpp</a> 第 <a class="el" href="TerrainImporter_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00151">eve::detail::Id128&lt; Tag &gt;::child()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00115">definition</a>, <a class="el" href="Identity_8h_source.html#l00122">eve::detail::Id128&lt; Tag &gt;::format()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00255">instances</a>, <a class="el" href="Utf8Validation_8cpp_source.html#l00005">eve::isValidUtf8()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="AssetImporter_8h_source.html#l00018">eve::asset_import::AssetImportLimits::maximumAssets</a>, <a class="el" href="AssetImporter_8h_source.html#l00017">eve::asset_import::AssetImportLimits::maximumDecodedBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00021">eve::asset_import::AssetImportLimits::maximumStringBytes</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="TerrainImporter_8cpp_source.html#l00049">prepareCanonicalTerrainImport()</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainImporter_8cpp_source.html#l00049">prepareCanonicalTerrainImport()</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00350">prepareUnityProjectImport()</a> , 以及 <a class="el" href="UnrealImporter_8cpp_source.html#l00126">prepareUnrealM4Import()</a>.</p>
+
+</div>
+</div>
+<a id="aec8cb4ae4eddbd7ea13dadc73c2073be" name="aec8cb4ae4eddbd7ea13dadc73c2073be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8cb4ae4eddbd7ea13dadc73c2073be">&#9670;&#160;</a></span>prepareGltfImport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareGltfImport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode triangle primitives from glTF 2.0 into canonical typed mesh blobs. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate with one <code>eve.mesh</code> per primitive. @thread Worker-safe. @reentrancy Does not execute extensions, scripts, callbacks, filesystem or network access. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>v1 accepts float POSITION/NORMAL/TEXCOORD_0 and unsigned scalar indices; unsupported primitive modes or sparse/compressed accessors fail explicitly. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GltfImporter_8cpp_source.html">GltfImporter.cpp</a> 第 <a class="el" href="GltfImporter_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImportCommon_8h_source.html#l00047">eve::asset_import::detail::assetRef()</a>, <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="Identity_8h_source.html#l00151">eve::detail::Id128&lt; Tag &gt;::child()</a>, <a class="el" href="AssetImporter_8h_source.html#l00052">eve::asset_import::GltfImportRequest::documentBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00082">eve::asset_import::PreparedAssetImport::entries</a>, <a class="el" href="EvaManifest_8h_source.html#l00069">eve::asset::EvaManifest::entrypoints</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="AssetImporter_8h_source.html#l00083">eve::asset_import::PreparedAssetImport::findings</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="AssetImporter_8h_source.html#l00054">eve::asset_import::GltfImportRequest::limits</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="AssetImporter_8h_source.html#l00018">eve::asset_import::AssetImportLimits::maximumAssets</a>, <a class="el" href="AssetImporter_8h_source.html#l00017">eve::asset_import::AssetImportLimits::maximumDecodedBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00021">eve::asset_import::AssetImportLimits::maximumStringBytes</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="AssetImporter_8h_source.html#l00050">eve::asset_import::GltfImportRequest::package</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="ImportCommon_8h_source.html#l00017">eve::asset_import::detail::sha256()</a>, <a class="el" href="AssetImporter_8h_source.html#l00084">eve::asset_import::PreparedAssetImport::sourceMappings</a>, <a class="el" href="AssetImporter_8h_source.html#l00051">eve::asset_import::GltfImportRequest::sourceName</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca">Translated</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="adce1b9dcc49c61d13207726c9a864ce0" name="adce1b9dcc49c61d13207726c9a864ce0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adce1b9dcc49c61d13207726c9a864ce0">&#9670;&#160;</a></span>prepareImageImport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareImageImport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1ImageImportRequest.html">ImageImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode image metadata and prepare one canonical <code><a class="el" href="namespaceeve_1_1image.html">eve.image</a></code> source asset. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate or structured format/size diagnostics. @thread Worker-safe. @reentrancy Does not execute callbacks or perform filesystem/network access. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ImageImporter_8cpp_source.html">ImageImporter.cpp</a> 第 <a class="el" href="ImageImporter_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImportCommon_8h_source.html#l00047">eve::asset_import::detail::assetRef()</a>, <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="Identity_8h_source.html#l00151">eve::detail::Id128&lt; Tag &gt;::child()</a>, <a class="el" href="AssetImporter_8h_source.html#l00043">eve::asset_import::ImageImportRequest::colorSpace</a>, <a class="el" href="CanonicalImageCook_8cpp_source.html#l00164">eve::asset::cookCanonicalImageRgba8()</a>, <a class="el" href="AssetImporter_8h_source.html#l00042">eve::asset_import::ImageImportRequest::encodedBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00082">eve::asset_import::PreparedAssetImport::entries</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="AssetImporter_8h_source.html#l00083">eve::asset_import::PreparedAssetImport::findings</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00075">info</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AssetImporter_8h_source.html#l00045">eve::asset_import::ImageImportRequest::limits</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="AssetImporter_8h_source.html#l00017">eve::asset_import::AssetImportLimits::maximumDecodedBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00016">eve::asset_import::AssetImportLimits::maximumSourceBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00021">eve::asset_import::AssetImportLimits::maximumStringBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00040">eve::asset_import::ImageImportRequest::package</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="ImportCommon_8h_source.html#l00017">eve::asset_import::detail::sha256()</a>, <a class="el" href="AssetImporter_8h_source.html#l00084">eve::asset_import::PreparedAssetImport::sourceMappings</a>, <a class="el" href="AssetImporter_8h_source.html#l00041">eve::asset_import::ImageImportRequest::sourceName</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9e0746065f3ae65164d83fcd032cf8fca6858e3b6de38cea509e739e9536e4e5c">Srgb</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca">Translated</a> , 以及 <a class="el" href="AssetImporter_8h_source.html#l00044">eve::asset_import::ImageImportRequest::usage</a>.</p>
+
+</div>
+</div>
+<a id="a6dedcb81d816f445d30ad879338c3fd6" name="a6dedcb81d816f445d30ad879338c3fd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dedcb81d816f445d30ad879338c3fd6">&#9670;&#160;</a></span>prepareLegacyAnimationImport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareLegacyAnimationImport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1LegacyAnimationImportRequest.html">LegacyAnimationImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a legacy text fixture into canonical skeleton and animation-clip assets. </p>
+<dl class="section remark"><dt>备注</dt><dd>Converts centimeters to meters and reflects source +Z into canonical -Z. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LegacyAnimationImporter_8cpp_source.html">LegacyAnimationImporter.cpp</a> 第 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImportCommon_8h_source.html#l00047">eve::asset_import::detail::assetRef()</a>, <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="Identity_8h_source.html#l00151">eve::detail::Id128&lt; Tag &gt;::child()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="LegacyAnimationImporter_8h_source.html#l00011">eve::asset_import::LegacyAnimationImportRequest::package</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">eve::asset::RuntimeRequired</a>, <a class="el" href="ImportCommon_8h_source.html#l00017">eve::asset_import::detail::sha256()</a>, <a class="el" href="LegacyAnimationImporter_8h_source.html#l00012">eve::asset_import::LegacyAnimationImportRequest::sourceName</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LegacyAnimationImporter_8h_source.html#l00013">eve::asset_import::LegacyAnimationImportRequest::text</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca">Translated</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aebf3e920dbd5f698bfc77b156d03feb2" name="aebf3e920dbd5f698bfc77b156d03feb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf3e920dbd5f698bfc77b156d03feb2">&#9670;&#160;</a></span>prepareUnityProjectImport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareUnityProjectImport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse Unity Force Text YAML and <code>.meta</code> GUIDs without running Unity. </p>
+<dl class="section return"><dt>返回</dt><dd>Canonical terrain/PCG/instances and prefab scene-template candidate. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Supports TerrainData heightmap/layers/trees and GameObject/Transform. MonoBehaviour and custom shader records are retained in the audit report as unsupported. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UnityImporter_8cpp_source.html">UnityImporter.cpp</a> 第 <a class="el" href="UnityImporter_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnityImporter_8h_source.html#l00015">eve::asset_import::UnityProjectImportRequest::files</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="UnityImporter_8h_source.html#l00018">eve::asset_import::UnityProjectImportRequest::limits</a>, <a class="el" href="AssetImporter_8h_source.html#l00016">eve::asset_import::AssetImportLimits::maximumSourceBytes</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="UnityImporter_8h_source.html#l00014">eve::asset_import::UnityProjectImportRequest::package</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">prefab</a>, <a class="el" href="UnityImporter_8h_source.html#l00017">eve::asset_import::UnityProjectImportRequest::prefabPath</a>, <a class="el" href="TerrainImporter_8cpp_source.html#l00049">prepareCanonicalTerrainImport()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a> , 以及 <a class="el" href="UnityImporter_8h_source.html#l00016">eve::asset_import::UnityProjectImportRequest::terrainDataPath</a>.</p>
+
+</div>
+</div>
+<a id="a71d0f4643986c69b9092113a146e00ba" name="a71d0f4643986c69b9092113a146e00ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d0f4643986c69b9092113a146e00ba">&#9670;&#160;</a></span>prepareUnrealM4Import()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt; eve::asset_import::prepareUnrealM4Import </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1UnrealProjectImportRequest.html">UnrealProjectImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Import an M⁴-style Landscape/material/grass slice without launching Unreal. </p>
+<dl class="section return"><dt>返回</dt><dd>Canonical terrain, material, PCG and instance assets plus per-feature findings. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The descriptor schema is <code>eve.unreal-landscape-import</code> v1. It maps source R16/texture files and data-only M⁴ parameters. Native Blueprint/RVT/VHFM/Nanite behavior is never executed and must be listed as unsupported or baked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UnrealImporter_8cpp_source.html">UnrealImporter.cpp</a> 第 <a class="el" href="UnrealImporter_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnrealImporter_8h_source.html#l00016">eve::asset_import::UnrealProjectImportRequest::descriptorPath</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnrealImporter_8h_source.html#l00015">eve::asset_import::UnrealProjectImportRequest::files</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00255">instances</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="UnrealImporter_8h_source.html#l00017">eve::asset_import::UnrealProjectImportRequest::limits</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="AssetImporter_8h_source.html#l00017">eve::asset_import::AssetImportLimits::maximumDecodedBytes</a>, <a class="el" href="AssetImporter_8h_source.html#l00016">eve::asset_import::AssetImportLimits::maximumSourceBytes</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TerrainImporter_8h_source.html#l00014">eve::asset_import::CanonicalTerrainLayer::name</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="UnrealImporter_8h_source.html#l00014">eve::asset_import::UnrealProjectImportRequest::package</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="TerrainImporter_8cpp_source.html#l00049">prepareCanonicalTerrainImport()</a>, <a class="el" href="TerrainImporter_8h_source.html#l00035">eve::asset_import::CanonicalTerrainInstance::prototype</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="ImportCommon_8h_source.html#l00017">eve::asset_import::detail::sha256()</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472a532220dbf680ea98d665427b145e72ca">Translated</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="namespaceeve_1_1asset__import.html#a9272fac0c2a56ea8d1b52460da89c472ab4080bdf74febf04d578ff105cce9d3f">Unsupported</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="TerrainImporter_8h_source.html#l00043">eve::asset_import::CanonicalTerrainInput::width</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

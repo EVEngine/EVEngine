@@ -1,0 +1,445 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::CaveScallopInput结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html">CaveScallopInput</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1CaveScallopInput-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::CaveScallopInput结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad0515cda72a35a71ce5605b7d666a267" id="r_ad0515cda72a35a71ce5605b7d666a267"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#ad0515cda72a35a71ce5605b7d666a267">along</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad0515cda72a35a71ce5605b7d666a267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51c940b3f636cfee9922d732295c2a6a" id="r_a51c940b3f636cfee9922d732295c2a6a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a51c940b3f636cfee9922d732295c2a6a">angle</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a51c940b3f636cfee9922d732295c2a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c21c134e3d0eecef5f2e3e39f2292b" id="r_a13c21c134e3d0eecef5f2e3e39f2292b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a13c21c134e3d0eecef5f2e3e39f2292b">distance</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a13c21c134e3d0eecef5f2e3e39f2292b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabc6684acf52ea6182d64aa222cc32d7" id="r_aabc6684acf52ea6182d64aa222cc32d7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#aabc6684acf52ea6182d64aa222cc32d7">radius</a> = 0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aabc6684acf52ea6182d64aa222cc32d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c80eddc52901265bee95441741f6f4" id="r_ab1c80eddc52901265bee95441741f6f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#ab1c80eddc52901265bee95441741f6f4">hydraulicIntensity</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab1c80eddc52901265bee95441741f6f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50c18ffd85ec85305dce1de114977902" id="r_a50c18ffd85ec85305dce1de114977902"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a50c18ffd85ec85305dce1de114977902">baseScale</a> = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a50c18ffd85ec85305dce1de114977902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c6b6a8a2d23c72e2d66503a19beae99" id="r_a2c6b6a8a2d23c72e2d66503a19beae99"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2c6b6a8a2d23c72e2d66503a19beae99">hydraulicScaling</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2c6b6a8a2d23c72e2d66503a19beae99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0468b98d4c4260656e2eb9ac9a91f9e3" id="r_a0468b98d4c4260656e2eb9ac9a91f9e3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a0468b98d4c4260656e2eb9ac9a91f9e3">maturity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0468b98d4c4260656e2eb9ac9a91f9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a63d55fd46a1a9235608a19035541e" id="r_a99a63d55fd46a1a9235608a19035541e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a99a63d55fd46a1a9235608a19035541e">bendUndercut</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a99a63d55fd46a1a9235608a19035541e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7093302c08d5a7c275fe7c3ef0f9f95" id="r_ae7093302c08d5a7c275fe7c3ef0f9f95"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#ae7093302c08d5a7c275fe7c3ef0f9f95">bendStrength</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae7093302c08d5a7c275fe7c3ef0f9f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40d828e90cc0219c4ec0f1cee6c837d6" id="r_a40d828e90cc0219c4ec0f1cee6c837d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a40d828e90cc0219c4ec0f1cee6c837d6">outerBankAngle</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a40d828e90cc0219c4ec0f1cee6c837d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f926584852b35def2fb95d95b0afcd" id="r_a92f926584852b35def2fb95d95b0afcd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a92f926584852b35def2fb95d95b0afcd">scaleVariability</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a92f926584852b35def2fb95d95b0afcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d8e8c97ad8bbadb3c63f92681d67342" id="r_a7d8e8c97ad8bbadb3c63f92681d67342"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a7d8e8c97ad8bbadb3c63f92681d67342">flowSeparation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7d8e8c97ad8bbadb3c63f92681d67342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e517380bfb0632a5bf09270121de084" id="r_a2e517380bfb0632a5bf09270121de084"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2e517380bfb0632a5bf09270121de084">seed</a> = 0</td></tr>
+<tr class="separator:a2e517380bfb0632a5bf09270121de084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00010">10</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ad0515cda72a35a71ce5605b7d666a267" name="ad0515cda72a35a71ce5605b7d666a267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0515cda72a35a71ce5605b7d666a267">&#9670;&#160;</a></span>along</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::along = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveScallopHistory_8cpp_source.html#l00018">eve::procgen::sampleCaveScallopHistory()</a>.</p>
+
+</div>
+</div>
+<a id="a51c940b3f636cfee9922d732295c2a6a" name="a51c940b3f636cfee9922d732295c2a6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51c940b3f636cfee9922d732295c2a6a">&#9670;&#160;</a></span>angle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::angle = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a50c18ffd85ec85305dce1de114977902" name="a50c18ffd85ec85305dce1de114977902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50c18ffd85ec85305dce1de114977902">&#9670;&#160;</a></span>baseScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::baseScale = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveScallopHistory_8cpp_source.html#l00018">eve::procgen::sampleCaveScallopHistory()</a>.</p>
+
+</div>
+</div>
+<a id="ae7093302c08d5a7c275fe7c3ef0f9f95" name="ae7093302c08d5a7c275fe7c3ef0f9f95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7093302c08d5a7c275fe7c3ef0f9f95">&#9670;&#160;</a></span>bendStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::bendStrength = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a99a63d55fd46a1a9235608a19035541e" name="a99a63d55fd46a1a9235608a19035541e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a63d55fd46a1a9235608a19035541e">&#9670;&#160;</a></span>bendUndercut</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::bendUndercut = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13c21c134e3d0eecef5f2e3e39f2292b" name="a13c21c134e3d0eecef5f2e3e39f2292b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c21c134e3d0eecef5f2e3e39f2292b">&#9670;&#160;</a></span>distance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::distance = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d8e8c97ad8bbadb3c63f92681d67342" name="a7d8e8c97ad8bbadb3c63f92681d67342"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d8e8c97ad8bbadb3c63f92681d67342">&#9670;&#160;</a></span>flowSeparation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::flowSeparation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1c80eddc52901265bee95441741f6f4" name="ab1c80eddc52901265bee95441741f6f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c80eddc52901265bee95441741f6f4">&#9670;&#160;</a></span>hydraulicIntensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::hydraulicIntensity = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c6b6a8a2d23c72e2d66503a19beae99" name="a2c6b6a8a2d23c72e2d66503a19beae99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c6b6a8a2d23c72e2d66503a19beae99">&#9670;&#160;</a></span>hydraulicScaling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::hydraulicScaling = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0468b98d4c4260656e2eb9ac9a91f9e3" name="a0468b98d4c4260656e2eb9ac9a91f9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0468b98d4c4260656e2eb9ac9a91f9e3">&#9670;&#160;</a></span>maturity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::maturity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40d828e90cc0219c4ec0f1cee6c837d6" name="a40d828e90cc0219c4ec0f1cee6c837d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40d828e90cc0219c4ec0f1cee6c837d6">&#9670;&#160;</a></span>outerBankAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::outerBankAngle = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabc6684acf52ea6182d64aa222cc32d7" name="aabc6684acf52ea6182d64aa222cc32d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabc6684acf52ea6182d64aa222cc32d7">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::radius = 0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92f926584852b35def2fb95d95b0afcd" name="a92f926584852b35def2fb95d95b0afcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f926584852b35def2fb95d95b0afcd">&#9670;&#160;</a></span>scaleVariability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CaveScallopInput::scaleVariability = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e517380bfb0632a5bf09270121de084" name="a2e517380bfb0632a5bf09270121de084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e517380bfb0632a5bf09270121de084">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::CaveScallopInput::seed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a> 第 <a class="el" href="CaveScallops_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveScallopHistory_8cpp_source.html#l00018">eve::procgen::sampleCaveScallopHistory()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/algorithms/<a class="el" href="CaveScallops_8h_source.html">CaveScallops.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

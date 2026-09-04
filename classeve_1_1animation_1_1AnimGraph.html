@@ -1,0 +1,1051 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimGraph类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1AnimGraph-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimGraph类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks, one-shots and 1D/2D blend spaces. Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimGraph.html" title="Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks,...">AnimGraph</a></code>.  
+ <a href="classeve_1_1animation_1_1AnimGraph.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a003665599b70fae307faaba3c877ece4" id="r_a003665599b70fae307faaba3c877ece4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a003665599b70fae307faaba3c877ece4">AnimGraph</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="separator:a003665599b70fae307faaba3c877ece4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f4e51065bec5ea85bf86681ba8d08c" id="r_ae6f4e51065bec5ea85bf86681ba8d08c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ae6f4e51065bec5ea85bf86681ba8d08c">~AnimGraph</a> ()=default</td></tr>
+<tr class="separator:ae6f4e51065bec5ea85bf86681ba8d08c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5c4e43f5c5cf189600187c83d26a2dc" id="r_ac5c4e43f5c5cf189600187c83d26a2dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ac5c4e43f5c5cf189600187c83d26a2dc">AnimGraph</a> (const <a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp;)=delete</td></tr>
+<tr class="separator:ac5c4e43f5c5cf189600187c83d26a2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab46958f7777f7743bc6f0149b93c12b" id="r_aab46958f7777f7743bc6f0149b93c12b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aab46958f7777f7743bc6f0149b93c12b">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp;)=delete</td></tr>
+<tr class="separator:aab46958f7777f7743bc6f0149b93c12b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08b2098bd2da86b79a112e11d87ec813" id="r_a08b2098bd2da86b79a112e11d87ec813"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a08b2098bd2da86b79a112e11d87ec813">addClip</a> (<a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="separator:a08b2098bd2da86b79a112e11d87ec813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaafca937ae936edc4f31d2b07c385eed" id="r_aaafca937ae936edc4f31d2b07c385eed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aaafca937ae936edc4f31d2b07c385eed">addBlend</a> (int <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, int <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float weight=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:aaafca937ae936edc4f31d2b07c385eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2494de7ff2beeccc6dac2d9acf696c7e" id="r_a2494de7ff2beeccc6dac2d9acf696c7e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a2494de7ff2beeccc6dac2d9acf696c7e">addAdditive</a> (int base, int additive, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a2494de7ff2beeccc6dac2d9acf696c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac62d05aa894c94e958cc028a3e0f231c" id="r_ac62d05aa894c94e958cc028a3e0f231c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ac62d05aa894c94e958cc028a3e0f231c">addLayer</a> (int base, int overlay, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ac62d05aa894c94e958cc028a3e0f231c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad906b4e9d3e07f27e9060be277b315ca" id="r_ad906b4e9d3e07f27e9060be277b315ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ad906b4e9d3e07f27e9060be277b315ca">addOneShot</a> (int base, int shot, float fadeIn=0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float fadeOut=0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ad906b4e9d3e07f27e9060be277b315ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9519a33390537f310670fde91dbcc7cb" id="r_a9519a33390537f310670fde91dbcc7cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a9519a33390537f310670fde91dbcc7cb">addBlendSpace1D</a> ()</td></tr>
+<tr class="separator:a9519a33390537f310670fde91dbcc7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4619956e4647e51e07f127e5b167d9d1" id="r_a4619956e4647e51e07f127e5b167d9d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a4619956e4647e51e07f127e5b167d9d1">addBlendSpace2D</a> ()</td></tr>
+<tr class="separator:a4619956e4647e51e07f127e5b167d9d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae54ca9ac53be792009449cd936f16941" id="r_ae54ca9ac53be792009449cd936f16941"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ae54ca9ac53be792009449cd936f16941">addBlendSpace1DPoint</a> (int node, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int child)</td></tr>
+<tr class="separator:ae54ca9ac53be792009449cd936f16941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b88e04ccc5378ed9fd946116a4f1832" id="r_a2b88e04ccc5378ed9fd946116a4f1832"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a2b88e04ccc5378ed9fd946116a4f1832">addBlendSpace2DPoint</a> (int node, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int child)</td></tr>
+<tr class="separator:a2b88e04ccc5378ed9fd946116a4f1832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a43a3d55f5477c51627578a39715c0" id="r_ab6a43a3d55f5477c51627578a39715c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ab6a43a3d55f5477c51627578a39715c0">setBoneMask</a> (int node, int boneIndex, float weight, bool includeChildren=false)</td></tr>
+<tr class="separator:ab6a43a3d55f5477c51627578a39715c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba614f288775f46c3bb66804bf7785ec" id="r_aba614f288775f46c3bb66804bf7785ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aba614f288775f46c3bb66804bf7785ec">clearBoneMask</a> (int node)</td></tr>
+<tr class="separator:aba614f288775f46c3bb66804bf7785ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addf38229815aae86dc0d720d670a4a0e" id="r_addf38229815aae86dc0d720d670a4a0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#addf38229815aae86dc0d720d670a4a0e">setRoot</a> (int node)</td></tr>
+<tr class="separator:addf38229815aae86dc0d720d670a4a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f1a1779655442155953e1b48bb6bd2f" id="r_a0f1a1779655442155953e1b48bb6bd2f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a0f1a1779655442155953e1b48bb6bd2f">getRoot</a> () const</td></tr>
+<tr class="separator:a0f1a1779655442155953e1b48bb6bd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe8003c51982b0bbeb903fc0c7eea047" id="r_afe8003c51982b0bbeb903fc0c7eea047"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#afe8003c51982b0bbeb903fc0c7eea047">getNodeCount</a> () const</td></tr>
+<tr class="separator:afe8003c51982b0bbeb903fc0c7eea047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f817724c82572b4d606632b74bb60c" id="r_a59f817724c82572b4d606632b74bb60c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a59f817724c82572b4d606632b74bb60c">setWeight</a> (int node, float weight)</td></tr>
+<tr class="separator:a59f817724c82572b4d606632b74bb60c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad65a2de42566b4f8be061d5efb8726b3" id="r_ad65a2de42566b4f8be061d5efb8726b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#ad65a2de42566b4f8be061d5efb8726b3">setPosition1D</a> (int node, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:ad65a2de42566b4f8be061d5efb8726b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef823fbc3ec3dde75dfbb0a8907cfea" id="r_a0ef823fbc3ec3dde75dfbb0a8907cfea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a0ef823fbc3ec3dde75dfbb0a8907cfea">setPosition2D</a> (int node, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a0ef823fbc3ec3dde75dfbb0a8907cfea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ee2f592e09eb64f710f2b53c65e8c3d" id="r_a2ee2f592e09eb64f710f2b53c65e8c3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a2ee2f592e09eb64f710f2b53c65e8c3d">setSpeed</a> (int node, float speed)</td></tr>
+<tr class="separator:a2ee2f592e09eb64f710f2b53c65e8c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c9ba70ecff4f20da54264792b94555f" id="r_a8c9ba70ecff4f20da54264792b94555f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a8c9ba70ecff4f20da54264792b94555f">trigger</a> (int node)</td></tr>
+<tr class="separator:a8c9ba70ecff4f20da54264792b94555f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa206483f3f2270e56a1f0d4214a8965" id="r_aaa206483f3f2270e56a1f0d4214a8965"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aaa206483f3f2270e56a1f0d4214a8965">isOneShotActive</a> (int node) const</td></tr>
+<tr class="separator:aaa206483f3f2270e56a1f0d4214a8965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5bbccb23f37b5d7c360913c11d690e7" id="r_aa5bbccb23f37b5d7c360913c11d690e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aa5bbccb23f37b5d7c360913c11d690e7">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:aa5bbccb23f37b5d7c360913c11d690e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the graph using one scheduler-owned deterministic step.  <br /></td></tr>
+<tr class="separator:aa5bbccb23f37b5d7c360913c11d690e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeab1e358e3aa347efe3c79a5fb7470c1" id="r_aeab1e358e3aa347efe3c79a5fb7470c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aeab1e358e3aa347efe3c79a5fb7470c1">update</a> (float dt)</td></tr>
+<tr class="memdesc:aeab1e358e3aa347efe3c79a5fb7470c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aa5bbccb23f37b5d7c360913c11d690e7" title="Evaluate the graph using one scheduler-owned deterministic step.">advance()</a>.  <br /></td></tr>
+<tr class="separator:aeab1e358e3aa347efe3c79a5fb7470c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef9da553067664d0043773eb2b70f1a8" id="r_aef9da553067664d0043773eb2b70f1a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aef9da553067664d0043773eb2b70f1a8">getPose</a> ()</td></tr>
+<tr class="separator:aef9da553067664d0043773eb2b70f1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks, one-shots and 1D/2D blend spaces. Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimGraph.html" title="Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks,...">AnimGraph</a></code>. </p>
+<p>Nodes are stable integer handles. A graph owns runtime state but not skeletons or clips; those must outlive the graph. Call advance(step) once per frame and read <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aef9da553067664d0043773eb2b70f1a8">getPose()</a>. Graph evaluation is memoized so shared subgraphs sample only once. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a> 第 <a class="el" href="AnimGraph_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a003665599b70fae307faaba3c877ece4" name="a003665599b70fae307faaba3c877ece4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003665599b70fae307faaba3c877ece4">&#9670;&#160;</a></span>AnimGraph() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimGraph::AnimGraph </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00105">eve::animation::AnimPose::resize()</a>.</p>
+
+</div>
+</div>
+<a id="ae6f4e51065bec5ea85bf86681ba8d08c" name="ae6f4e51065bec5ea85bf86681ba8d08c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f4e51065bec5ea85bf86681ba8d08c">&#9670;&#160;</a></span>~AnimGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimGraph::~AnimGraph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac5c4e43f5c5cf189600187c83d26a2dc" name="ac5c4e43f5c5cf189600187c83d26a2dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5c4e43f5c5cf189600187c83d26a2dc">&#9670;&#160;</a></span>AnimGraph() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimGraph::AnimGraph </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2494de7ff2beeccc6dac2d9acf696c7e" name="a2494de7ff2beeccc6dac2d9acf696c7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2494de7ff2beeccc6dac2d9acf696c7e">&#9670;&#160;</a></span>addAdditive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addAdditive </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>additive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="aaafca937ae936edc4f31d2b07c385eed" name="aaafca937ae936edc4f31d2b07c385eed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaafca937ae936edc4f31d2b07c385eed">&#9670;&#160;</a></span>addBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addBlend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a9519a33390537f310670fde91dbcc7cb" name="a9519a33390537f310670fde91dbcc7cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9519a33390537f310670fde91dbcc7cb">&#9670;&#160;</a></span>addBlendSpace1D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addBlendSpace1D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae54ca9ac53be792009449cd936f16941" name="ae54ca9ac53be792009449cd936f16941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae54ca9ac53be792009449cd936f16941">&#9670;&#160;</a></span>addBlendSpace1DPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::addBlendSpace1DPoint </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>child</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a4619956e4647e51e07f127e5b167d9d1" name="a4619956e4647e51e07f127e5b167d9d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4619956e4647e51e07f127e5b167d9d1">&#9670;&#160;</a></span>addBlendSpace2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addBlendSpace2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b88e04ccc5378ed9fd946116a4f1832" name="a2b88e04ccc5378ed9fd946116a4f1832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b88e04ccc5378ed9fd946116a4f1832">&#9670;&#160;</a></span>addBlendSpace2DPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::addBlendSpace2DPoint </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>child</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a08b2098bd2da86b79a112e11d87ec813" name="a08b2098bd2da86b79a112e11d87ec813"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08b2098bd2da86b79a112e11d87ec813">&#9670;&#160;</a></span>addClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addClip </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="ac62d05aa894c94e958cc028a3e0f231c" name="ac62d05aa894c94e958cc028a3e0f231c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac62d05aa894c94e958cc028a3e0f231c">&#9670;&#160;</a></span>addLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>overlay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="ad906b4e9d3e07f27e9060be277b315ca" name="ad906b4e9d3e07f27e9060be277b315ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad906b4e9d3e07f27e9060be277b315ca">&#9670;&#160;</a></span>addOneShot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::addOneShot </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>shot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeIn</em> = <code>0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeOut</em> = <code>0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="aa5bbccb23f37b5d7c360913c11d690e7" name="aa5bbccb23f37b5d7c360913c11d690e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5bbccb23f37b5d7c360913c11d690e7">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::AnimGraph::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate the graph using one scheduler-owned deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimGraph_8cpp_source.html#l00284">update()</a>.</p>
+
+</div>
+</div>
+<a id="aba614f288775f46c3bb66804bf7785ec" name="aba614f288775f46c3bb66804bf7785ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba614f288775f46c3bb66804bf7785ec">&#9670;&#160;</a></span>clearBoneMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::clearBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+</div>
+</div>
+<a id="afe8003c51982b0bbeb903fc0c7eea047" name="afe8003c51982b0bbeb903fc0c7eea047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe8003c51982b0bbeb903fc0c7eea047">&#9670;&#160;</a></span>getNodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::getNodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a> 第 <a class="el" href="AnimGraph_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef9da553067664d0043773eb2b70f1a8" name="aef9da553067664d0043773eb2b70f1a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef9da553067664d0043773eb2b70f1a8">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::AnimGraph::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a> 第 <a class="el" href="AnimGraph_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f1a1779655442155953e1b48bb6bd2f" name="a0f1a1779655442155953e1b48bb6bd2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f1a1779655442155953e1b48bb6bd2f">&#9670;&#160;</a></span>getRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimGraph::getRoot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a> 第 <a class="el" href="AnimGraph_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa206483f3f2270e56a1f0d4214a8965" name="aaa206483f3f2270e56a1f0d4214a8965"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa206483f3f2270e56a1f0d4214a8965">&#9670;&#160;</a></span>isOneShotActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimGraph::isOneShotActive </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab46958f7777f7743bc6f0149b93c12b" name="aab46958f7777f7743bc6f0149b93c12b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab46958f7777f7743bc6f0149b93c12b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp; eve::animation::AnimGraph::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab6a43a3d55f5477c51627578a39715c0" name="ab6a43a3d55f5477c51627578a39715c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6a43a3d55f5477c51627578a39715c0">&#9670;&#160;</a></span>setBoneMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>includeChildren</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00044">eve::animation::AnimSkeleton::getParent()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ad65a2de42566b4f8be061d5efb8726b3" name="ad65a2de42566b4f8be061d5efb8726b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad65a2de42566b4f8be061d5efb8726b3">&#9670;&#160;</a></span>setPosition1D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setPosition1D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a0ef823fbc3ec3dde75dfbb0a8907cfea" name="a0ef823fbc3ec3dde75dfbb0a8907cfea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef823fbc3ec3dde75dfbb0a8907cfea">&#9670;&#160;</a></span>setPosition2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setPosition2D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="addf38229815aae86dc0d720d670a4a0e" name="addf38229815aae86dc0d720d670a4a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addf38229815aae86dc0d720d670a4a0e">&#9670;&#160;</a></span>setRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setRoot </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ee2f592e09eb64f710f2b53c65e8c3d" name="a2ee2f592e09eb64f710f2b53c65e8c3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ee2f592e09eb64f710f2b53c65e8c3d">&#9670;&#160;</a></span>setSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setSpeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a59f817724c82572b4d606632b74bb60c" name="a59f817724c82572b4d606632b74bb60c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f817724c82572b4d606632b74bb60c">&#9670;&#160;</a></span>setWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::setWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>.</p>
+
+</div>
+</div>
+<a id="a8c9ba70ecff4f20da54264792b94555f" name="a8c9ba70ecff4f20da54264792b94555f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c9ba70ecff4f20da54264792b94555f">&#9670;&#160;</a></span>trigger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::trigger </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="aeab1e358e3aa347efe3c79a5fb7470c1" name="aeab1e358e3aa347efe3c79a5fb7470c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab1e358e3aa347efe3c79a5fb7470c1">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimGraph::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aa5bbccb23f37b5d7c360913c11d690e7" title="Evaluate the graph using one scheduler-owned deterministic step.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a> 第 <a class="el" href="AnimGraph_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimGraph_8cpp_source.html#l00275">advance()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimGraph_8h_source.html">AnimGraph.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimGraph_8cpp_source.html">AnimGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

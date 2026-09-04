@@ -1,0 +1,1242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tactics::BattleSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li><li class="navelem"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html">BattleSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1tactics_1_1BattleSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tactics::BattleSystem类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stateless systems over the tactics short-root ECS family.  
+ <a href="classeve_1_1tactics_1_1BattleSystem.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TacticsBattle_8h_source.html">TacticsBattle.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a72575e8c56f4aeb4a17dc528043ef428" id="r_a72575e8c56f4aeb4a17dc528043ef428"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a72575e8c56f4aeb4a17dc528043ef428">addSide</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>)</td></tr>
+<tr class="memdesc:a72575e8c56f4aeb4a17dc528043ef428"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a side during setup using a generation-checked handle.  <br /></td></tr>
+<tr class="separator:a72575e8c56f4aeb4a17dc528043ef428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad782eb9c3fff72b8ca9f2fc0b9e52ce8" id="r_ad782eb9c3fff72b8ca9f2fc0b9e52ce8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#ad782eb9c3fff72b8ca9f2fc0b9e52ce8">addUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)</td></tr>
+<tr class="memdesc:ad782eb9c3fff72b8ca9f2fc0b9e52ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register and place a unit during setup atomically.  <br /></td></tr>
+<tr class="separator:ad782eb9c3fff72b8ca9f2fc0b9e52ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89062c74a8720845e7b7f31a2c72c147" id="r_a89062c74a8720845e7b7f31a2c72c147"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a89062c74a8720845e7b7f31a2c72c147">start</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">TurnPolicyKind</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a89062c74a8720845e7b7f31a2c72c147"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a configured battle and emit battle.started.  <br /></td></tr>
+<tr class="separator:a89062c74a8720845e7b7f31a2c72c147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb9e1011cac71a2b7d3613f4e74814ba" id="r_acb9e1011cac71a2b7d3613f4e74814ba"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#acb9e1011cac71a2b7d3613f4e74814ba">advance</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:acb9e1011cac71a2b7d3613f4e74814ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance exactly one observable automatic phase transition.  <br /></td></tr>
+<tr class="separator:acb9e1011cac71a2b7d3613f4e74814ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17160829bed5d0d51f8cf9a3359e230c" id="r_a17160829bed5d0d51f8cf9a3359e230c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a17160829bed5d0d51f8cf9a3359e230c">endTurn</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor)</td></tr>
+<tr class="memdesc:a17160829bed5d0d51f8cf9a3359e230c"><td class="mdescLeft">&#160;</td><td class="mdescRight">End the currently acting unit's turn and enter TurnEnd.  <br /></td></tr>
+<tr class="separator:a17160829bed5d0d51f8cf9a3359e230c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad58f3643dfa46e40ec68ffd04edd0547" id="r_ad58f3643dfa46e40ec68ffd04edd0547"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">moveUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination)</td></tr>
+<tr class="memdesc:ad58f3643dfa46e40ec68ffd04edd0547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically commit movement for the active unit.  <br /></td></tr>
+<tr class="separator:ad58f3643dfa46e40ec68ffd04edd0547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b88a79c34e1f71caa0e74166af75b66" id="r_a7b88a79c34e1f71caa0e74166af75b66"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a7b88a79c34e1f71caa0e74166af75b66">moveUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> commandTick)</td></tr>
+<tr class="memdesc:a7b88a79c34e1f71caa0e74166af75b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit movement at an explicit non-decreasing command tick (ActionRuntime adapter path).  <br /></td></tr>
+<tr class="separator:a7b88a79c34e1f71caa0e74166af75b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a922e0f71b51199f87265ef0e9ef11d94" id="r_a922e0f71b51199f87265ef0e9ef11d94"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">faceUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, int <a class="el" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>)</td></tr>
+<tr class="memdesc:a922e0f71b51199f87265ef0e9ef11d94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the active unit's logical facing without consuming movement points.  <br /></td></tr>
+<tr class="separator:a922e0f71b51199f87265ef0e9ef11d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6829ab6b02ba65f6ab654e1dfcb0b84e" id="r_a6829ab6b02ba65f6ab654e1dfcb0b84e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a6829ab6b02ba65f6ab654e1dfcb0b84e">faceUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, int <a class="el" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> commandTick)</td></tr>
+<tr class="memdesc:a6829ab6b02ba65f6ab654e1dfcb0b84e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit facing at an explicit non-decreasing command tick.  <br /></td></tr>
+<tr class="separator:a6829ab6b02ba65f6ab654e1dfcb0b84e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9dad8f8a73c10c01c58647e2ed691d8" id="r_ab9dad8f8a73c10c01c58647e2ed691d8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#ab9dad8f8a73c10c01c58647e2ed691d8">previewFace</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, int <a class="el" href="Climbing_8cpp.html#ad0bb7e03d49f3219f6127ad65596eb89">facing</a>)</td></tr>
+<tr class="memdesc:ab9dad8f8a73c10c01c58647e2ed691d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preview a facing action with the exact validator used by commit.  <br /></td></tr>
+<tr class="separator:ab9dad8f8a73c10c01c58647e2ed691d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1debba5c88a178763426a8f5cd03f01" id="r_ad1debba5c88a178763426a8f5cd03f01"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">waitUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor)</td></tr>
+<tr class="memdesc:ad1debba5c88a178763426a8f5cd03f01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit a wait action and enter TurnEnd for the active unit.  <br /></td></tr>
+<tr class="separator:ad1debba5c88a178763426a8f5cd03f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04e30c7521b578eb612f3ccf8751ba03" id="r_a04e30c7521b578eb612f3ccf8751ba03"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a04e30c7521b578eb612f3ccf8751ba03">waitUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> commandTick)</td></tr>
+<tr class="memdesc:a04e30c7521b578eb612f3ccf8751ba03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit wait at an explicit non-decreasing command tick.  <br /></td></tr>
+<tr class="separator:a04e30c7521b578eb612f3ccf8751ba03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaad624b947099c0608ea76de6482809" id="r_adaad624b947099c0608ea76de6482809"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#adaad624b947099c0608ea76de6482809">previewWait</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor)</td></tr>
+<tr class="memdesc:adaad624b947099c0608ea76de6482809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preview a wait action with the exact validator used by commit.  <br /></td></tr>
+<tr class="separator:adaad624b947099c0608ea76de6482809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a562f9232cfa03e06c5e2f73cdeba57ad" id="r_a562f9232cfa03e06c5e2f73cdeba57ad"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a562f9232cfa03e06c5e2f73cdeba57ad">previewMove</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination)</td></tr>
+<tr class="memdesc:a562f9232cfa03e06c5e2f73cdeba57ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preview movement with the exact validator used by commit, without mutation.  <br /></td></tr>
+<tr class="separator:a562f9232cfa03e06c5e2f73cdeba57ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c57bf0a7bb3e8a6797a86785b61b843" id="r_a3c57bf0a7bb3e8a6797a86785b61b843"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a3c57bf0a7bb3e8a6797a86785b61b843">finish</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle)</td></tr>
+<tr class="memdesc:a3c57bf0a7bb3e8a6797a86785b61b843"><td class="mdescLeft">&#160;</td><td class="mdescRight">End a running battle and enter BattleEnd.  <br /></td></tr>
+<tr class="separator:a3c57bf0a7bb3e8a6797a86785b61b843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f121d1c82525e475e814e1a44e9e313" id="r_a1f121d1c82525e475e814e1a44e9e313"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a1f121d1c82525e475e814e1a44e9e313">openReaction</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, std::uint64_t triggerSequence, std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1ReactionCandidate.html">ReactionCandidate</a> &gt; candidates)</td></tr>
+<tr class="memdesc:a1f121d1c82525e475e814e1a44e9e313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open a sorted reaction window for an existing battle event sequence.  <br /></td></tr>
+<tr class="separator:a1f121d1c82525e475e814e1a44e9e313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0ec3478423d2bfc00dd06a89029b13c" id="r_aa0ec3478423d2bfc00dd06a89029b13c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1ReactionReceipt.html">ReactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#aa0ec3478423d2bfc00dd06a89029b13c">acceptReaction</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> reactor, const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;action)</td></tr>
+<tr class="memdesc:aa0ec3478423d2bfc00dd06a89029b13c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept one eligible reaction, consume one reaction point and close the top window.  <br /></td></tr>
+<tr class="separator:aa0ec3478423d2bfc00dd06a89029b13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a368ce32fd9a58580dd11b59a4f1457d8" id="r_a368ce32fd9a58580dd11b59a4f1457d8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a368ce32fd9a58580dd11b59a4f1457d8">declineReaction</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle)</td></tr>
+<tr class="memdesc:a368ce32fd9a58580dd11b59a4f1457d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decline and close the top reaction window without consuming resources.  <br /></td></tr>
+<tr class="separator:a368ce32fd9a58580dd11b59a4f1457d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7d6e254584735ecbd1db1f92f51323" id="r_a2d7d6e254584735ecbd1db1f92f51323"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a2d7d6e254584735ecbd1db1f92f51323">addObjective</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="structeve_1_1tactics_1_1ObjectiveSpec.html">ObjectiveSpec</a> objective)</td></tr>
+<tr class="memdesc:a2d7d6e254584735ecbd1db1f92f51323"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a validated built-in objective during setup.  <br /></td></tr>
+<tr class="separator:a2d7d6e254584735ecbd1db1f92f51323"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce089705a27483c4eff4fc59506fe20" id="r_a1ce089705a27483c4eff4fc59506fe20"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a1ce089705a27483c4eff4fc59506fe20">defeatUnit</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>)</td></tr>
+<tr class="memdesc:a1ce089705a27483c4eff4fc59506fe20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a tactical defeat outcome and evaluate affected objectives atomically.  <br /></td></tr>
+<tr class="separator:a1ce089705a27483c4eff4fc59506fe20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ec10450e74b449cc7a1a03a6ec037c0" id="r_a2ec10450e74b449cc7a1a03a6ec037c0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html#a2ec10450e74b449cc7a1a03a6ec037c0">roll</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;stream)</td></tr>
+<tr class="memdesc:a2ec10450e74b449cc7a1a03a6ec037c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume one value from a battle-owned named deterministic stream.  <br /></td></tr>
+<tr class="separator:a2ec10450e74b449cc7a1a03a6ec037c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stateless systems over the tactics short-root ECS family. </p>
+<p>Entity scope: <a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a>, <a class="el" href="classeve_1_1tactics_1_1TacticalSide.html" title="Tactical side short-root entity.">TacticalSide</a> and <a class="el" href="classeve_1_1tactics_1_1TacticalUnit.html" title="Tactical unit short-root entity.">TacticalUnit</a> roots linked to the supplied <a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a>. Read set: identities, membership, turn resources and board facts. Write set: <a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a> turn/events/board and <a class="el" href="classeve_1_1tactics_1_1TacticalUnit.html" title="Tactical unit short-root entity.">TacticalUnit</a> membership, position and acted flag. Structural mutation: none. Events are appended to <a class="el" href="structeve_1_1tactics_1_1Battle_1_1Events.html" title="Transient deterministic event projection; not a second state authority.">Battle::Events</a>. Services: none. Phase: owner simulation thread only. Determinism: bit-exact for equal setup, handles, SubjectRefs and steps. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8h_source.html">TacticsBattle.h</a> 第 <a class="el" href="TacticsBattle_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa0ec3478423d2bfc00dd06a89029b13c" name="aa0ec3478423d2bfc00dd06a89029b13c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0ec3478423d2bfc00dd06a89029b13c">&#9670;&#160;</a></span>acceptReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1ReactionReceipt.html">ReactionReceipt</a> &gt; eve::tactics::BattleSystem::acceptReaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>reactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>action</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accept one eligible reaction, consume one reaction point and close the top window. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00605">605</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a">eve::tactics::AcceptReaction</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="TacticsTypes_8h_source.html#l00280">eve::tactics::BattleCommand::action</a>, <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SubjectRef_8h_source.html#l00044">eve::SubjectRef::format()</a>, <a class="el" href="Identity_8h_source.html#l00438">eve::LogicalId::format()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">eve::tactics::Reaction</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00279">eve::tactics::BattleCommand::triggerSequence</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00596">eve::tactics::Tactics::acceptReaction()</a>.</p>
+
+</div>
+</div>
+<a id="a2d7d6e254584735ecbd1db1f92f51323" name="a2d7d6e254584735ecbd1db1f92f51323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d7d6e254584735ecbd1db1f92f51323">&#9670;&#160;</a></span>addObjective()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::addObjective </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1ObjectiveSpec.html">ObjectiveSpec</a>&#160;</td>
+          <td class="paramname"><em>objective</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a validated built-in objective during setup. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00681">681</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsTypes_8h_source.html#l00294">eve::tactics::ObjectiveSpec::beneficiarySide</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7abe7c35d305151e63f67bb1c800fa4bb1">eve::tactics::EliminateSide</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsTypes_8h_source.html#l00292">eve::tactics::ObjectiveSpec::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00435">eve::LogicalId::isValid()</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00293">eve::tactics::ObjectiveSpec::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7aaa14823cfa57fcc9ede8b95213cdf1e9">eve::tactics::OccupyCells</a>, <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::tactics::Pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="TacticsTypes_8h_source.html#l00297">eve::tactics::ObjectiveSpec::requiredCells</a>, <a class="el" href="TacticsTypes_8h_source.html#l00296">eve::tactics::ObjectiveSpec::requiredRound</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7ab7f3298e431ec4ed12e16e8ab7cd8da0">eve::tactics::SurviveRounds</a>, <a class="el" href="TacticsTypes_8h_source.html#l00295">eve::tactics::ObjectiveSpec::targetSide</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00612">eve::tactics::Tactics::addObjective()</a>.</p>
+
+</div>
+</div>
+<a id="a72575e8c56f4aeb4a17dc528043ef428" name="a72575e8c56f4aeb4a17dc528043ef428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72575e8c56f4aeb4a17dc528043ef428">&#9670;&#160;</a></span>addSide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::addSide </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>side</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a side during setup using a generation-checked handle. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00204">sides</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00441">eve::tactics::Tactics::newSide()</a>.</p>
+
+</div>
+</div>
+<a id="ad782eb9c3fff72b8ca9f2fc0b9e52ce8" name="ad782eb9c3fff72b8ca9f2fc0b9e52ce8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad782eb9c3fff72b8ca9f2fc0b9e52ce8">&#9670;&#160;</a></span>addUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::addUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>side</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>cell</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register and place a unit during setup atomically. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or failure with board/unit/battle state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00118">placed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00462">eve::tactics::Tactics::newUnit()</a>.</p>
+
+</div>
+</div>
+<a id="acb9e1011cac71a2b7d3613f4e74814ba" name="acb9e1011cac71a2b7d3613f4e74814ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb9e1011cac71a2b7d3613f4e74814ba">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> &gt; eve::tactics::BattleSystem::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advance exactly one observable automatic phase transition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">battle</td><td>Owner-thread-affine authoritative battle. </td></tr>
+    <tr><td class="paramname">step</td><td>Strictly increasing injected simulation tick and non-negative duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee">eve::tactics::Advance</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">eve::tactics::BattleEnd</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98">eve::tactics::BattleStart</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">eve::tactics::Ended</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">eve::tactics::Reaction</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea85f2151e51ce5218e9eccdf9e421a824">eve::tactics::RoundEnd</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeae279ccaa0940305fd66b36348b823963">eve::tactics::RoundStart</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="TacticsTypes_8h_source.html#l00274">eve::tactics::BattleCommand::step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f">eve::tactics::TurnEnd</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeab0a8a1979409102f824db0a1a8484802">eve::tactics::TurnStart</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00543">eve::tactics::Tactics::advance()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00383">eve::tactics::Tactics::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a368ce32fd9a58580dd11b59a4f1457d8" name="a368ce32fd9a58580dd11b59a4f1457d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a368ce32fd9a58580dd11b59a4f1457d8">&#9670;&#160;</a></span>declineReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::declineReaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decline and close the top reaction window without consuming resources. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00659">659</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e">eve::tactics::DeclineReaction</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">eve::tactics::Reaction</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00279">eve::tactics::BattleCommand::triggerSequence</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00605">eve::tactics::Tactics::declineReaction()</a>.</p>
+
+</div>
+</div>
+<a id="a1ce089705a27483c4eff4fc59506fe20" name="a1ce089705a27483c4eff4fc59506fe20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce089705a27483c4eff4fc59506fe20">&#9670;&#160;</a></span>defeatUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::defeatUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>unit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply a tactical defeat outcome and evaluate affected objectives atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00727">727</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">eve::tactics::BattleEnd</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7">eve::tactics::DefeatUnit</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">eve::tactics::Ended</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00619">eve::tactics::Tactics::defeatUnit()</a>.</p>
+
+</div>
+</div>
+<a id="a17160829bed5d0d51f8cf9a3359e230c" name="a17160829bed5d0d51f8cf9a3359e230c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17160829bed5d0d51f8cf9a3359e230c">&#9670;&#160;</a></span>endTurn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::endTurn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>End the currently acting unit's turn and enter TurnEnd. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb">eve::tactics::EndTurn</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f">eve::tactics::TurnEnd</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00551">eve::tactics::Tactics::endTurn()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00324">eve::tactics::Tactics::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a922e0f71b51199f87265ef0e9ef11d94" name="a922e0f71b51199f87265ef0e9ef11d94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a922e0f71b51199f87265ef0e9ef11d94">&#9670;&#160;</a></span>faceUnit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::faceUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Change the active unit's logical facing without consuming movement points. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsBattle_8cpp_source.html#l00412">faceUnit()</a> , 以及 <a class="el" href="Climbing_8cpp_source.html#l00079">facing</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00412">faceUnit()</a>, <a class="el" href="Tactics_8cpp_source.html#l00566">eve::tactics::Tactics::faceUnit()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00324">eve::tactics::Tactics::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a6829ab6b02ba65f6ab654e1dfcb0b84e" name="a6829ab6b02ba65f6ab654e1dfcb0b84e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6829ab6b02ba65f6ab654e1dfcb0b84e">&#9670;&#160;</a></span>faceUnit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::faceUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>commandTick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Commit facing at an explicit non-decreasing command tick. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f">eve::tactics::Face</a>, <a class="el" href="Climbing_8cpp_source.html#l00079">facing</a>, <a class="el" href="TacticsTypes_8h_source.html#l00277">eve::tactics::BattleCommand::facing</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00442">previewFace()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="TacticsTypes_8h_source.html#l00274">eve::tactics::BattleCommand::step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Time_8h_source.html#l00155">eve::SimulationStep::tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+</div>
+</div>
+<a id="a3c57bf0a7bb3e8a6797a86785b61b843" name="a3c57bf0a7bb3e8a6797a86785b61b843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c57bf0a7bb3e8a6797a86785b61b843">&#9670;&#160;</a></span>finish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::finish </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>End a running battle and enter BattleEnd. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00531">531</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">eve::tactics::BattleEnd</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">eve::tactics::Ended</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061">eve::tactics::Finish</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00580">eve::tactics::Tactics::finish()</a>.</p>
+
+</div>
+</div>
+<a id="ad58f3643dfa46e40ec68ffd04edd0547" name="ad58f3643dfa46e40ec68ffd04edd0547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad58f3643dfa46e40ec68ffd04edd0547">&#9670;&#160;</a></span>moveUnit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt; eve::tactics::BattleSystem::moveUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>destination</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate and atomically commit movement for the active unit. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning receipt; failure leaves board, position and resources unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsBattle_8cpp_source.html#l00370">moveUnit()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00370">moveUnit()</a>, <a class="el" href="Tactics_8cpp_source.html#l00558">eve::tactics::Tactics::moveUnit()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00324">eve::tactics::Tactics::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a7b88a79c34e1f71caa0e74166af75b66" name="a7b88a79c34e1f71caa0e74166af75b66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b88a79c34e1f71caa0e74166af75b66">&#9670;&#160;</a></span>moveUnit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt; eve::tactics::BattleSystem::moveUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>commandTick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Commit movement at an explicit non-decreasing command tick (ActionRuntime adapter path). </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">eve::tactics::BattleEnd</a>, <a class="el" href="TacticsTypes_8h_source.html#l00276">eve::tactics::BattleCommand::cell</a>, <a class="el" href="TacticsBattle_8h_source.html#l00017">eve::tactics::MoveReceipt::cost</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">eve::tactics::Ended</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">eve::tactics::Move</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00504">previewMove()</a>, <a class="el" href="TacticsBattle_8h_source.html#l00018">eve::tactics::MoveReceipt::remainingMovePoints</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="TacticsTypes_8h_source.html#l00274">eve::tactics::BattleCommand::step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Time_8h_source.html#l00155">eve::SimulationStep::tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+</div>
+</div>
+<a id="a1f121d1c82525e475e814e1a44e9e313" name="a1f121d1c82525e475e814e1a44e9e313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f121d1c82525e475e814e1a44e9e313">&#9670;&#160;</a></span>openReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt; eve::tactics::BattleSystem::openReaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>triggerSequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1ReactionCandidate.html">ReactionCandidate</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidates</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Open a sorted reaction window for an existing battle event sequence. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00551">551</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsTypes_8h_source.html#l00281">eve::tactics::BattleCommand::candidates</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f">eve::tactics::OpenReaction</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">eve::tactics::Reaction</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00279">eve::tactics::BattleCommand::triggerSequence</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00587">eve::tactics::Tactics::openReaction()</a>.</p>
+
+</div>
+</div>
+<a id="ab9dad8f8a73c10c01c58647e2ed691d8" name="ab9dad8f8a73c10c01c58647e2ed691d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9dad8f8a73c10c01c58647e2ed691d8">&#9670;&#160;</a></span>previewFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::previewFace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Preview a facing action with the exact validator used by commit. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="Climbing_8cpp_source.html#l00079">facing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597faa60852f204ed8028c1c58808b746d115">eve::Ok</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a476e503adaf90e2fd77cd47ca9be49cd">eve::tactics::Square4</a>, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a92fdb36c7b7fc64f1a3871f1948b4f43">eve::tactics::Square8</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00416">faceUnit()</a> , 以及 <a class="el" href="TacticsAction_8cpp_source.html#l00128">eve::tactics::TacticsActionExecutor::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a562f9232cfa03e06c5e2f73cdeba57ad" name="a562f9232cfa03e06c5e2f73cdeba57ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a562f9232cfa03e06c5e2f73cdeba57ad">&#9670;&#160;</a></span>previewMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a> &gt; eve::tactics::BattleSystem::previewMove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>destination</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Preview movement with the exact validator used by commit, without mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00504">504</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00179">consumed</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00108">eve::tactics::PathQuery::path()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00060">eve::tactics::PathQuery::reachable()</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00374">moveUnit()</a> , 以及 <a class="el" href="TacticsAction_8cpp_source.html#l00128">eve::tactics::TacticsActionExecutor::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="adaad624b947099c0608ea76de6482809" name="adaad624b947099c0608ea76de6482809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaad624b947099c0608ea76de6482809">&#9670;&#160;</a></span>previewWait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::previewWait </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Preview a wait action with the exact validator used by commit. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsAction_8cpp_source.html#l00128">eve::tactics::TacticsActionExecutor::prepare()</a> , 以及 <a class="el" href="TacticsBattle_8cpp_source.html#l00466">waitUnit()</a>.</p>
+
+</div>
+</div>
+<a id="a2ec10450e74b449cc7a1a03a6ec037c0" name="a2ec10450e74b449cc7a1a03a6ec037c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ec10450e74b449cc7a1a03a6ec037c0">&#9670;&#160;</a></span>roll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint64_t &gt; eve::tactics::BattleSystem::roll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Consume one value from a battle-owned named deterministic stream. </p>
+<dl class="section remark"><dt>备注</dt><dd>Only commit/resolver paths may call this; previews and queries must not advance streams. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00767">767</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsTypes_8h_source.html#l00280">eve::tactics::BattleCommand::action</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8h_source.html#l00438">eve::LogicalId::format()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00435">eve::LogicalId::isValid()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea">eve::tactics::RollRandom</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00626">eve::tactics::Tactics::roll()</a>.</p>
+
+</div>
+</div>
+<a id="a89062c74a8720845e7b7f31a2c72c147" name="a89062c74a8720845e7b7f31a2c72c147"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89062c74a8720845e7b7f31a2c72c147">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::start </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">TurnPolicyKind</a>&#160;</td>
+          <td class="paramname"><em>policy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start a configured battle and emit battle.started. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98">eve::tactics::BattleStart</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="TacticsTypes_8h_source.html#l00278">eve::tactics::BattleCommand::policy</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37">eve::tactics::Start</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00133">units</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00536">eve::tactics::Tactics::start()</a>.</p>
+
+</div>
+</div>
+<a id="ad1debba5c88a178763426a8f5cd03f01" name="ad1debba5c88a178763426a8f5cd03f01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1debba5c88a178763426a8f5cd03f01">&#9670;&#160;</a></span>waitUnit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::waitUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Commit a wait action and enter TurnEnd for the active unit. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsBattle_8cpp_source.html#l00462">waitUnit()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00324">eve::tactics::Tactics::submitGameplay()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00462">waitUnit()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00573">eve::tactics::Tactics::waitUnit()</a>.</p>
+
+</div>
+</div>
+<a id="a04e30c7521b578eb612f3ccf8751ba03" name="a04e30c7521b578eb612f3ccf8751ba03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04e30c7521b578eb612f3ccf8751ba03">&#9670;&#160;</a></span>waitUnit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::BattleSystem::waitUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>commandTick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Commit wait at an explicit non-decreasing command tick. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>, <a class="el" href="TacticsTypes_8h_source.html#l00275">eve::tactics::BattleCommand::actor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsTypes_8h_source.html#l00272">eve::tactics::BattleCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TacticsTypes_8h_source.html#l00271">eve::tactics::BattleCommand::kind</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00491">previewWait()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="TacticsTypes_8h_source.html#l00274">eve::tactics::BattleCommand::step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Time_8h_source.html#l00155">eve::SimulationStep::tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f">eve::tactics::TurnEnd</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652">eve::tactics::Wait</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tactics/<a class="el" href="TacticsBattle_8h_source.html">TacticsBattle.h</a></li>
+<li>src/modules/tactics/<a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

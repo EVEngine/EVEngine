@@ -1,0 +1,1813 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Renderable3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Renderable3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Renderable3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Renderable3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Renderable3D.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">MeshRenderer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1Transform3D.html">Transform3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abe19cc5b7b89051aea2e9e8cd57f8e34" id="r_abe19cc5b7b89051aea2e9e8cd57f8e34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#abe19cc5b7b89051aea2e9e8cd57f8e34">release</a> () override</td></tr>
+<tr class="separator:abe19cc5b7b89051aea2e9e8cd57f8e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadbf8d0baf588bcbbe039409b04e71c0" id="r_aadbf8d0baf588bcbbe039409b04e71c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">setPosition</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:aadbf8d0baf588bcbbe039409b04e71c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4aff6a54f10a456002f941c7447828a" id="r_ad4aff6a54f10a456002f941c7447828a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad4aff6a54f10a456002f941c7447828a">getEntityId</a> () const</td></tr>
+<tr class="memdesc:ad4aff6a54f10a456002f941c7447828a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the table-local entity id used with <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae833826324b6879dd24d90bf84d6786c" title="Return the generation required to reject stale entity ids.">getEntityGeneration()</a>.  <br /></td></tr>
+<tr class="separator:ad4aff6a54f10a456002f941c7447828a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae833826324b6879dd24d90bf84d6786c" id="r_ae833826324b6879dd24d90bf84d6786c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae833826324b6879dd24d90bf84d6786c">getEntityGeneration</a> () const</td></tr>
+<tr class="memdesc:ae833826324b6879dd24d90bf84d6786c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the generation required to reject stale entity ids.  <br /></td></tr>
+<tr class="separator:ae833826324b6879dd24d90bf84d6786c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2adef4427f9f2570307f69b707e599af" id="r_a2adef4427f9f2570307f69b707e599af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">setRotation</a> (float yaw, float pitch, float roll)</td></tr>
+<tr class="separator:a2adef4427f9f2570307f69b707e599af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf37013771e53ae3111b152aa00792ba" id="r_acf37013771e53ae3111b152aa00792ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#acf37013771e53ae3111b152aa00792ba">setYaw</a> (float yaw)</td></tr>
+<tr class="separator:acf37013771e53ae3111b152aa00792ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a801def818e456cae16358ac1ea9e2507" id="r_a801def818e456cae16358ac1ea9e2507"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a801def818e456cae16358ac1ea9e2507">getYaw</a> ()</td></tr>
+<tr class="separator:a801def818e456cae16358ac1ea9e2507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed2524d98e20423f87442da12abf8fef" id="r_aed2524d98e20423f87442da12abf8fef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">setScale</a> (float sx, float sy, float sz)</td></tr>
+<tr class="separator:aed2524d98e20423f87442da12abf8fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc86f6b6f8376704aa3f9c8841db7102" id="r_abc86f6b6f8376704aa3f9c8841db7102"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">setMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</td></tr>
+<tr class="separator:abc86f6b6f8376704aa3f9c8841db7102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53bbe43c59b0fb949ccd0777a7b74a93" id="r_a53bbe43c59b0fb949ccd0777a7b74a93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a53bbe43c59b0fb949ccd0777a7b74a93">getMesh</a> ()</td></tr>
+<tr class="memdesc:a53bbe43c59b0fb949ccd0777a7b74a93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main (non-part) mesh attached via setMesh; nullptr when unset.  <br /></td></tr>
+<tr class="separator:a53bbe43c59b0fb949ccd0777a7b74a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a440beae3071df7416b975048137657" id="r_a6a440beae3071df7416b975048137657"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">setTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="separator:a6a440beae3071df7416b975048137657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0227aea87bdf97470286e184966fa23e" id="r_a0227aea87bdf97470286e184966fa23e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0227aea87bdf97470286e184966fa23e">setNormalTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="separator:a0227aea87bdf97470286e184966fa23e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42af9cab4d082e5582bdfa87bf1985b7" id="r_a42af9cab4d082e5582bdfa87bf1985b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a42af9cab4d082e5582bdfa87bf1985b7">setHeightTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="memdesc:a42af9cab4d082e5582bdfa87bf1985b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height map for parallax (R channel; white = raised). nullptr disables sampling.  <br /></td></tr>
+<tr class="separator:a42af9cab4d082e5582bdfa87bf1985b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fde820a0615a68324312e1b07be398f" id="r_a7fde820a0615a68324312e1b07be398f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a7fde820a0615a68324312e1b07be398f">setShader</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)</td></tr>
+<tr class="separator:a7fde820a0615a68324312e1b07be398f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90de07aa2615339ee659e419328d20a3" id="r_a90de07aa2615339ee659e419328d20a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a90de07aa2615339ee659e419328d20a3">setMaterial</a> (<a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *<a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>)</td></tr>
+<tr class="memdesc:a90de07aa2615339ee659e419328d20a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> that packages shading method + surface params.  <br /></td></tr>
+<tr class="separator:a90de07aa2615339ee659e419328d20a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3582a1ba998fd8a26f64a648cf34a82" id="r_ae3582a1ba998fd8a26f64a648cf34a82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae3582a1ba998fd8a26f64a648cf34a82">getMaterial</a> ()</td></tr>
+<tr class="separator:ae3582a1ba998fd8a26f64a648cf34a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab048d1e2ab1cc7238d11e70a297e8d1c" id="r_ab048d1e2ab1cc7238d11e70a297e8d1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab048d1e2ab1cc7238d11e70a297e8d1c">setXRayShader</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)</td></tr>
+<tr class="memdesc:ab048d1e2ab1cc7238d11e70a297e8d1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach an X-ray mesh shader (see <a class="el" href="classeve_1_1graphics_1_1Shader.html#a383386d57186b367b9372c18a9d650b1" title="X-ray mesh shader. When true, drawMeshShader renders this mesh a second pass over the already-lit sce...">Shader::setXray</a>) for occluded silhouettes.  <br /></td></tr>
+<tr class="separator:ab048d1e2ab1cc7238d11e70a297e8d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e0f8d89088e59e07476a016b954c526" id="r_a6e0f8d89088e59e07476a016b954c526"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6e0f8d89088e59e07476a016b954c526">getXRayShader</a> ()</td></tr>
+<tr class="separator:a6e0f8d89088e59e07476a016b954c526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba195b3f7a75d8b42783eb14568f882b" id="r_aba195b3f7a75d8b42783eb14568f882b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aba195b3f7a75d8b42783eb14568f882b">setXRayHighlight</a> (bool on)</td></tr>
+<tr class="memdesc:aba195b3f7a75d8b42783eb14568f882b"><td class="mdescLeft">&#160;</td><td class="mdescRight">When true, this entity is an X-ray target: its G-buffer pixels are replaced by occluders and it is redrawn with xrayShader so the part hidden behind buildings shows as a highlight silhouette (visible parts stay normal).  <br /></td></tr>
+<tr class="separator:aba195b3f7a75d8b42783eb14568f882b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac348ff956f591015091a3e911012b249" id="r_ac348ff956f591015091a3e911012b249"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac348ff956f591015091a3e911012b249">getXRayHighlight</a> ()</td></tr>
+<tr class="separator:ac348ff956f591015091a3e911012b249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bfcfca36a487d56f8d60bb061a26ca7" id="r_a4bfcfca36a487d56f8d60bb061a26ca7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a4bfcfca36a487d56f8d60bb061a26ca7">setPart</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *<a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>)</td></tr>
+<tr class="memdesc:a4bfcfca36a487d56f8d60bb061a26ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a named mesh+material part (e.g. Assimp submesh / body region). index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.  <br /></td></tr>
+<tr class="separator:a4bfcfca36a487d56f8d60bb061a26ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12f733575ba21505f265ad63b0c10a06" id="r_a12f733575ba21505f265ad63b0c10a06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a12f733575ba21505f265ad63b0c10a06">setPartSortPriority</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="memdesc:a12f733575ba21505f265ad63b0c10a06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override transparent sorting for one part without mutating its shared <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a>.  <br /></td></tr>
+<tr class="separator:a12f733575ba21505f265ad63b0c10a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadd2987faab139b4a01eac8040c612e5" id="r_aadd2987faab139b4a01eac8040c612e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aadd2987faab139b4a01eac8040c612e5">clearPartSortPriority</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:aadd2987faab139b4a01eac8040c612e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear a part's per-instance sort override and use its <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> priority.  <br /></td></tr>
+<tr class="separator:aadd2987faab139b4a01eac8040c612e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac11a4b76c5406626202ddb17fe90d662" id="r_ac11a4b76c5406626202ddb17fe90d662"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac11a4b76c5406626202ddb17fe90d662">getPartSortPriority</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:ac11a4b76c5406626202ddb17fe90d662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective per-part or <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> transparent sort priority.  <br /></td></tr>
+<tr class="separator:ac11a4b76c5406626202ddb17fe90d662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14393ff9352bd8b16ea6e42d33025f9" id="r_ad14393ff9352bd8b16ea6e42d33025f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad14393ff9352bd8b16ea6e42d33025f9">clearParts</a> ()</td></tr>
+<tr class="separator:ad14393ff9352bd8b16ea6e42d33025f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade7b8eef969502e3bafbfb4f57966043" id="r_ade7b8eef969502e3bafbfb4f57966043"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ade7b8eef969502e3bafbfb4f57966043">getPartCount</a> ()</td></tr>
+<tr class="separator:ade7b8eef969502e3bafbfb4f57966043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a831a070b22b4af99286bacbace0651" id="r_a1a831a070b22b4af99286bacbace0651"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a1a831a070b22b4af99286bacbace0651">getPartName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a1a831a070b22b4af99286bacbace0651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac243367eebd4b381255ccd270a6ebc18" id="r_ac243367eebd4b381255ccd270a6ebc18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac243367eebd4b381255ccd270a6ebc18">getPartMesh</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:ac243367eebd4b381255ccd270a6ebc18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a290150db2c8781b65fb28e09b65c3cc1" id="r_a290150db2c8781b65fb28e09b65c3cc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a290150db2c8781b65fb28e09b65c3cc1">getPartMaterial</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a290150db2c8781b65fb28e09b65c3cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a7876adfe883c7090f05cdeb1747f44" id="r_a6a7876adfe883c7090f05cdeb1747f44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6a7876adfe883c7090f05cdeb1747f44">setHair</a> (bool hair)</td></tr>
+<tr class="separator:a6a7876adfe883c7090f05cdeb1747f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39dc1d1d1bfcc77abeb670def52e590c" id="r_a39dc1d1d1bfcc77abeb670def52e590c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a39dc1d1d1bfcc77abeb670def52e590c">getHair</a> ()</td></tr>
+<tr class="separator:a39dc1d1d1bfcc77abeb670def52e590c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598a470b765a59f8aab7849833f6257c" id="r_a598a470b765a59f8aab7849833f6257c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a598a470b765a59f8aab7849833f6257c">setTint</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a598a470b765a59f8aab7849833f6257c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a656a08d5893814f365e6d4b2473aeff5" id="r_a656a08d5893814f365e6d4b2473aeff5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a656a08d5893814f365e6d4b2473aeff5">getTintR</a> ()</td></tr>
+<tr class="memdesc:a656a08d5893814f365e6d4b2473aeff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field-backed material tint red channel.  <br /></td></tr>
+<tr class="separator:a656a08d5893814f365e6d4b2473aeff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c85b92d064049c899fb130a8a5a6570" id="r_a5c85b92d064049c899fb130a8a5a6570"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a5c85b92d064049c899fb130a8a5a6570">getTintG</a> ()</td></tr>
+<tr class="memdesc:a5c85b92d064049c899fb130a8a5a6570"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field-backed material tint green channel.  <br /></td></tr>
+<tr class="separator:a5c85b92d064049c899fb130a8a5a6570"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafbf03aa41674817c127b7a9368f732c" id="r_aafbf03aa41674817c127b7a9368f732c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aafbf03aa41674817c127b7a9368f732c">getTintB</a> ()</td></tr>
+<tr class="memdesc:aafbf03aa41674817c127b7a9368f732c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field-backed material tint blue channel.  <br /></td></tr>
+<tr class="separator:aafbf03aa41674817c127b7a9368f732c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14b6dc38b3e22b81fff8c0f3224c3139" id="r_a14b6dc38b3e22b81fff8c0f3224c3139"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a14b6dc38b3e22b81fff8c0f3224c3139">getRoughness</a> ()</td></tr>
+<tr class="memdesc:a14b6dc38b3e22b81fff8c0f3224c3139"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field-backed material roughness.  <br /></td></tr>
+<tr class="separator:a14b6dc38b3e22b81fff8c0f3224c3139"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a635d0d71859a921f3437761fd3ebeed8" id="r_a635d0d71859a921f3437761fd3ebeed8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a635d0d71859a921f3437761fd3ebeed8">setMetallic</a> (float <a class="el" href="ModelRenderer_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">metallic</a>)</td></tr>
+<tr class="separator:a635d0d71859a921f3437761fd3ebeed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe5c72c86d2ab36ddbd96a4a6ec15e1" id="r_aebe5c72c86d2ab36ddbd96a4a6ec15e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aebe5c72c86d2ab36ddbd96a4a6ec15e1">setRoughness</a> (float <a class="el" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>)</td></tr>
+<tr class="separator:aebe5c72c86d2ab36ddbd96a4a6ec15e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f9a4f38d806b3131f06c7c59b1ff013" id="r_a4f9a4f38d806b3131f06c7c59b1ff013"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a4f9a4f38d806b3131f06c7c59b1ff013">setTexCellBomb</a> (float cellScale, float strength, float rotAmount=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a4f9a4f38d806b3131f06c7c59b1ff013"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> cell bombing — random per-cell UV offset/rotation blended across a 2×2 neighborhood to hide tiling. strength 0 disables (default).  <br /></td></tr>
+<tr class="separator:a4f9a4f38d806b3131f06c7c59b1ff013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51c860d2fa89c30510e1e376a43dc122" id="r_a51c860d2fa89c30510e1e376a43dc122"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a51c860d2fa89c30510e1e376a43dc122">getTexCellBombScale</a> ()</td></tr>
+<tr class="separator:a51c860d2fa89c30510e1e376a43dc122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8027c599d6b8da0820ccfd2654c23cd" id="r_ab8027c599d6b8da0820ccfd2654c23cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab8027c599d6b8da0820ccfd2654c23cd">getTexCellBombStrength</a> ()</td></tr>
+<tr class="separator:ab8027c599d6b8da0820ccfd2654c23cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37ca421bd8892478ee095a44ba454e16" id="r_a37ca421bd8892478ee095a44ba454e16"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a37ca421bd8892478ee095a44ba454e16">getTexCellBombRotation</a> ()</td></tr>
+<tr class="separator:a37ca421bd8892478ee095a44ba454e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa559ed4d499c72a3f2cedaead4c9f90f" id="r_aa559ed4d499c72a3f2cedaead4c9f90f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aa559ed4d499c72a3f2cedaead4c9f90f">setParallax</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, float minLayers=8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float maxLayers=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa559ed4d499c72a3f2cedaead4c9f90f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08. Requires a height texture via setHeightTexture.  <br /></td></tr>
+<tr class="separator:aa559ed4d499c72a3f2cedaead4c9f90f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0e33a3529fdbe1fddef192897f107cb" id="r_ad0e33a3529fdbe1fddef192897f107cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad0e33a3529fdbe1fddef192897f107cb">getParallaxScale</a> ()</td></tr>
+<tr class="separator:ad0e33a3529fdbe1fddef192897f107cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21f196e6666da00ed3aa15f96e32746e" id="r_a21f196e6666da00ed3aa15f96e32746e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a21f196e6666da00ed3aa15f96e32746e">getParallaxMinLayers</a> ()</td></tr>
+<tr class="separator:a21f196e6666da00ed3aa15f96e32746e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a9f27011be6932baf8dc3a8d3c722f4" id="r_a0a9f27011be6932baf8dc3a8d3c722f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0a9f27011be6932baf8dc3a8d3c722f4">getParallaxMaxLayers</a> ()</td></tr>
+<tr class="separator:a0a9f27011be6932baf8dc3a8d3c722f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03a073a6efe8f600cc5f5990cda7426" id="r_af03a073a6efe8f600cc5f5990cda7426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="separator:af03a073a6efe8f600cc5f5990cda7426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0401f2fbec7c8a630afd7afcf229a911" id="r_a0401f2fbec7c8a630afd7afcf229a911"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0401f2fbec7c8a630afd7afcf229a911">setReflectionCaptureMask</a> (int <a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:a0401f2fbec7c8a630afd7afcf229a911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the bit mask used to include this object in reflection-probe captures.  <br /></td></tr>
+<tr class="separator:a0401f2fbec7c8a630afd7afcf229a911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a800b7a0bf59c0ddc86845fa0877b6c9f" id="r_a800b7a0bf59c0ddc86845fa0877b6c9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a800b7a0bf59c0ddc86845fa0877b6c9f">getReflectionCaptureMask</a> ()</td></tr>
+<tr class="memdesc:a800b7a0bf59c0ddc86845fa0877b6c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reflection-probe capture bit mask.  <br /></td></tr>
+<tr class="separator:a800b7a0bf59c0ddc86845fa0877b6c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e64ebd083e06c41eeef5222dd461ff" id="r_a76e64ebd083e06c41eeef5222dd461ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a76e64ebd083e06c41eeef5222dd461ff">setReceiveLight</a> (bool receive)</td></tr>
+<tr class="separator:a76e64ebd083e06c41eeef5222dd461ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac29af85aedb803a1d4846137518e459c" id="r_ac29af85aedb803a1d4846137518e459c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac29af85aedb803a1d4846137518e459c">setCastShadow</a> (bool cast)</td></tr>
+<tr class="separator:ac29af85aedb803a1d4846137518e459c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee58ee73e388500049ce9f021c9fc15f" id="r_aee58ee73e388500049ce9f021c9fc15f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aee58ee73e388500049ce9f021c9fc15f">setReceiveShadow</a> (bool receive)</td></tr>
+<tr class="separator:aee58ee73e388500049ce9f021c9fc15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a171ff16fb71bee5eebbefe840d50579d" id="r_a171ff16fb71bee5eebbefe840d50579d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a171ff16fb71bee5eebbefe840d50579d">setCastOcclusion</a> (bool cast)</td></tr>
+<tr class="separator:a171ff16fb71bee5eebbefe840d50579d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ede902ce6c1e1094ad6e93c6b4a694" id="r_a07ede902ce6c1e1094ad6e93c6b4a694"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a07ede902ce6c1e1094ad6e93c6b4a694">getCastOcclusion</a> ()</td></tr>
+<tr class="separator:a07ede902ce6c1e1094ad6e93c6b4a694"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a21b3e05562e4c09b8f803b617255c" id="r_a02a21b3e05562e4c09b8f803b617255c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a02a21b3e05562e4c09b8f803b617255c">setCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera)</td></tr>
+<tr class="separator:a02a21b3e05562e4c09b8f803b617255c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae43577ebc106333d01f267fc9ec78f3b" id="r_ae43577ebc106333d01f267fc9ec78f3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae43577ebc106333d01f267fc9ec78f3b">setMeshLod</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, float switchDistance=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ae43577ebc106333d01f267fc9ec78f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure geometric LOD. index 0 = highest detail. For index &gt; 0, switchDistance is the camera distance that selects this level (stored in lodDistances[index-1]). Passing nullptr mesh clears that slot.  <br /></td></tr>
+<tr class="separator:ae43577ebc106333d01f267fc9ec78f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24abe2cdf3f8d3c13db904f55b2ea9d" id="r_ab24abe2cdf3f8d3c13db904f55b2ea9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab24abe2cdf3f8d3c13db904f55b2ea9d">clearMeshLod</a> ()</td></tr>
+<tr class="separator:ab24abe2cdf3f8d3c13db904f55b2ea9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a649321c3cc757e94c40bdf5cd36f860c" id="r_a649321c3cc757e94c40bdf5cd36f860c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a649321c3cc757e94c40bdf5cd36f860c">getMeshLodCount</a> ()</td></tr>
+<tr class="separator:a649321c3cc757e94c40bdf5cd36f860c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cb42c8f523b42321944a25967e5d44d" id="r_a0cb42c8f523b42321944a25967e5d44d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0cb42c8f523b42321944a25967e5d44d">getMeshLodLevelAtDistance</a> (float distance)</td></tr>
+<tr class="separator:a0cb42c8f523b42321944a25967e5d44d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00145">145</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ab24abe2cdf3f8d3c13db904f55b2ea9d" name="ab24abe2cdf3f8d3c13db904f55b2ea9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24abe2cdf3f8d3c13db904f55b2ea9d">&#9670;&#160;</a></span>clearMeshLod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::clearMeshLod </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00559">559</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8h_source.html#l00158">eve::graphics::Renderable3D::MeshRenderer::kMaxLodLevels</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="ad14393ff9352bd8b16ea6e42d33025f9" name="ad14393ff9352bd8b16ea6e42d33025f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad14393ff9352bd8b16ea6e42d33025f9">&#9670;&#160;</a></span>clearParts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::clearParts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00450">450</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8h_source.html#l00159">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="aadd2987faab139b4a01eac8040c612e5" name="aadd2987faab139b4a01eac8040c612e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadd2987faab139b4a01eac8040c612e5">&#9670;&#160;</a></span>clearPartSortPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::clearPartSortPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear a part's per-instance sort override and use its <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> priority. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00159">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00226">eve::avatar::AvatarInstance::defineEquipmentSkinnedVisual3D()</a>.</p>
+
+</div>
+</div>
+<a id="a07ede902ce6c1e1094ad6e93c6b4a694" name="a07ede902ce6c1e1094ad6e93c6b4a694"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07ede902ce6c1e1094ad6e93c6b4a694">&#9670;&#160;</a></span>getCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable3D::getCastOcclusion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae833826324b6879dd24d90bf84d6786c" name="ae833826324b6879dd24d90bf84d6786c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae833826324b6879dd24d90bf84d6786c">&#9670;&#160;</a></span>getEntityGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::Renderable3D::getEntityGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the generation required to reject stale entity ids. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00248">248</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4aff6a54f10a456002f941c7447828a" name="ad4aff6a54f10a456002f941c7447828a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4aff6a54f10a456002f941c7447828a">&#9670;&#160;</a></span>getEntityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::Renderable3D::getEntityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the table-local entity id used with <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae833826324b6879dd24d90bf84d6786c" title="Return the generation required to reject stale entity ids.">getEntityGeneration()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="a39dc1d1d1bfcc77abeb670def52e590c" name="a39dc1d1d1bfcc77abeb670def52e590c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39dc1d1d1bfcc77abeb670def52e590c">&#9670;&#160;</a></span>getHair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable3D::getHair </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3582a1ba998fd8a26f64a648cf34a82" name="ae3582a1ba998fd8a26f64a648cf34a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3582a1ba998fd8a26f64a648cf34a82">&#9670;&#160;</a></span>getMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> * eve::graphics::Renderable3D::getMaterial </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53bbe43c59b0fb949ccd0777a7b74a93" name="a53bbe43c59b0fb949ccd0777a7b74a93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53bbe43c59b0fb949ccd0777a7b74a93">&#9670;&#160;</a></span>getMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::Renderable3D::getMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Main (non-part) mesh attached via setMesh; nullptr when unset. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a649321c3cc757e94c40bdf5cd36f860c" name="a649321c3cc757e94c40bdf5cd36f860c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a649321c3cc757e94c40bdf5cd36f860c">&#9670;&#160;</a></span>getMeshLodCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable3D::getMeshLodCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00565">565</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cb42c8f523b42321944a25967e5d44d" name="a0cb42c8f523b42321944a25967e5d44d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cb42c8f523b42321944a25967e5d44d">&#9670;&#160;</a></span>getMeshLodLevelAtDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable3D::getMeshLodLevelAtDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00567">567</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a9f27011be6932baf8dc3a8d3c722f4" name="a0a9f27011be6932baf8dc3a8d3c722f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a9f27011be6932baf8dc3a8d3c722f4">&#9670;&#160;</a></span>getParallaxMaxLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getParallaxMaxLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21f196e6666da00ed3aa15f96e32746e" name="a21f196e6666da00ed3aa15f96e32746e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21f196e6666da00ed3aa15f96e32746e">&#9670;&#160;</a></span>getParallaxMinLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getParallaxMinLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0e33a3529fdbe1fddef192897f107cb" name="ad0e33a3529fdbe1fddef192897f107cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0e33a3529fdbe1fddef192897f107cb">&#9670;&#160;</a></span>getParallaxScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getParallaxScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade7b8eef969502e3bafbfb4f57966043" name="ade7b8eef969502e3bafbfb4f57966043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade7b8eef969502e3bafbfb4f57966043">&#9670;&#160;</a></span>getPartCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable3D::getPartCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00458">458</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a290150db2c8781b65fb28e09b65c3cc1" name="a290150db2c8781b65fb28e09b65c3cc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a290150db2c8781b65fb28e09b65c3cc1">&#9670;&#160;</a></span>getPartMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> * eve::graphics::Renderable3D::getPartMaterial </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00472">472</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="ac243367eebd4b381255ccd270a6ebc18" name="ac243367eebd4b381255ccd270a6ebc18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac243367eebd4b381255ccd270a6ebc18">&#9670;&#160;</a></span>getPartMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::Renderable3D::getPartMesh </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="a1a831a070b22b4af99286bacbace0651" name="a1a831a070b22b4af99286bacbace0651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a831a070b22b4af99286bacbace0651">&#9670;&#160;</a></span>getPartName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Renderable3D::getPartName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00460">460</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="ac11a4b76c5406626202ddb17fe90d662" name="ac11a4b76c5406626202ddb17fe90d662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac11a4b76c5406626202ddb17fe90d662">&#9670;&#160;</a></span>getPartSortPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable3D::getPartSortPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the effective per-part or <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> transparent sort priority. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="a800b7a0bf59c0ddc86845fa0877b6c9f" name="a800b7a0bf59c0ddc86845fa0877b6c9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a800b7a0bf59c0ddc86845fa0877b6c9f">&#9670;&#160;</a></span>getReflectionCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable3D::getReflectionCaptureMask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the reflection-probe capture bit mask. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00529">529</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14b6dc38b3e22b81fff8c0f3224c3139" name="a14b6dc38b3e22b81fff8c0f3224c3139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b6dc38b3e22b81fff8c0f3224c3139">&#9670;&#160;</a></span>getRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getRoughness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field-backed material roughness. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00300">300</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37ca421bd8892478ee095a44ba454e16" name="a37ca421bd8892478ee095a44ba454e16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37ca421bd8892478ee095a44ba454e16">&#9670;&#160;</a></span>getTexCellBombRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTexCellBombRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51c860d2fa89c30510e1e376a43dc122" name="a51c860d2fa89c30510e1e376a43dc122"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51c860d2fa89c30510e1e376a43dc122">&#9670;&#160;</a></span>getTexCellBombScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTexCellBombScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00501">501</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8027c599d6b8da0820ccfd2654c23cd" name="ab8027c599d6b8da0820ccfd2654c23cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8027c599d6b8da0820ccfd2654c23cd">&#9670;&#160;</a></span>getTexCellBombStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTexCellBombStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00503">503</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafbf03aa41674817c127b7a9368f732c" name="aafbf03aa41674817c127b7a9368f732c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafbf03aa41674817c127b7a9368f732c">&#9670;&#160;</a></span>getTintB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTintB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field-backed material tint blue channel. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00298">298</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c85b92d064049c899fb130a8a5a6570" name="a5c85b92d064049c899fb130a8a5a6570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c85b92d064049c899fb130a8a5a6570">&#9670;&#160;</a></span>getTintG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTintG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field-backed material tint green channel. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00296">296</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a656a08d5893814f365e6d4b2473aeff5" name="a656a08d5893814f365e6d4b2473aeff5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a656a08d5893814f365e6d4b2473aeff5">&#9670;&#160;</a></span>getTintR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getTintR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field-backed material tint red channel. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00294">294</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac348ff956f591015091a3e911012b249" name="ac348ff956f591015091a3e911012b249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac348ff956f591015091a3e911012b249">&#9670;&#160;</a></span>getXRayHighlight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable3D::getXRayHighlight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e0f8d89088e59e07476a016b954c526" name="a6e0f8d89088e59e07476a016b954c526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e0f8d89088e59e07476a016b954c526">&#9670;&#160;</a></span>getXRayShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Renderable3D::getXRayShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00409">409</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a801def818e456cae16358ac1ea9e2507" name="a801def818e456cae16358ac1ea9e2507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a801def818e456cae16358ac1ea9e2507">&#9670;&#160;</a></span>getYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable3D::getYaw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe19cc5b7b89051aea2e9e8cd57f8e34" name="abe19cc5b7b89051aea2e9e8cd57f8e34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe19cc5b7b89051aea2e9e8cd57f8e34">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02a21b3e05562e4c09b8f803b617255c" name="a02a21b3e05562e4c09b8f803b617255c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a21b3e05562e4c09b8f803b617255c">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00543">543</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a171ff16fb71bee5eebbefe840d50579d" name="a171ff16fb71bee5eebbefe840d50579d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a171ff16fb71bee5eebbefe840d50579d">&#9670;&#160;</a></span>setCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setCastOcclusion </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00539">539</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac29af85aedb803a1d4846137518e459c" name="ac29af85aedb803a1d4846137518e459c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac29af85aedb803a1d4846137518e459c">&#9670;&#160;</a></span>setCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setCastShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a7876adfe883c7090f05cdeb1747f44" name="a6a7876adfe883c7090f05cdeb1747f44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a7876adfe883c7090f05cdeb1747f44">&#9670;&#160;</a></span>setHair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setHair </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hair</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00746">hair</a>.</p>
+
+</div>
+</div>
+<a id="a42af9cab4d082e5582bdfa87bf1985b7" name="a42af9cab4d082e5582bdfa87bf1985b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42af9cab4d082e5582bdfa87bf1985b7">&#9670;&#160;</a></span>setHeightTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setHeightTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Height map for parallax (R channel; white = raised). nullptr disables sampling. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90de07aa2615339ee659e419328d20a3" name="a90de07aa2615339ee659e419328d20a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90de07aa2615339ee659e419328d20a3">&#9670;&#160;</a></span>setMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *&#160;</td>
+          <td class="paramname"><em>material</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> that packages shading method + surface params. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="abc86f6b6f8376704aa3f9c8841db7102" name="abc86f6b6f8376704aa3f9c8841db7102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc86f6b6f8376704aa3f9c8841db7102">&#9670;&#160;</a></span>setMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00391">391</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l01429">eve::avatar::AvatarInstance::setMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ae43577ebc106333d01f267fc9ec78f3b" name="ae43577ebc106333d01f267fc9ec78f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae43577ebc106333d01f267fc9ec78f3b">&#9670;&#160;</a></span>setMeshLod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setMeshLod </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>switchDistance</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure geometric LOD. index 0 = highest detail. For index &gt; 0, switchDistance is the camera distance that selects this level (stored in lodDistances[index-1]). Passing nullptr mesh clears that slot. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00545">545</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00158">eve::graphics::Renderable3D::MeshRenderer::kMaxLodLevels</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="a635d0d71859a921f3437761fd3ebeed8" name="a635d0d71859a921f3437761fd3ebeed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a635d0d71859a921f3437761fd3ebeed8">&#9670;&#160;</a></span>setMetallic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setMetallic </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metallic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00490">490</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00097">metallic</a>.</p>
+
+</div>
+</div>
+<a id="a0227aea87bdf97470286e184966fa23e" name="a0227aea87bdf97470286e184966fa23e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0227aea87bdf97470286e184966fa23e">&#9670;&#160;</a></span>setNormalTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setNormalTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa559ed4d499c72a3f2cedaead4c9f90f" name="aa559ed4d499c72a3f2cedaead4c9f90f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa559ed4d499c72a3f2cedaead4c9f90f">&#9670;&#160;</a></span>setParallax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setParallax </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minLayers</em> = <code>8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxLayers</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08. Requires a height texture via setHeightTexture. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a4bfcfca36a487d56f8d60bb061a26ca7" name="a4bfcfca36a487d56f8d60bb061a26ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bfcfca36a487d56f8d60bb061a26ca7">&#9670;&#160;</a></span>setPart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setPart </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *&#160;</td>
+          <td class="paramname"><em>material</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a named mesh+material part (e.g. Assimp submesh / body region). index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00159">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00608">eve::avatar::AvatarInstance::bindSkinnedPart()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00226">eve::avatar::AvatarInstance::defineEquipmentSkinnedVisual3D()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00345">eve::avatar::AvatarInstance::syncEquipmentAppearance()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l00644">eve::avatar::AvatarInstance::unbindSkinnedPart()</a>.</p>
+
+</div>
+</div>
+<a id="a12f733575ba21505f265ad63b0c10a06" name="a12f733575ba21505f265ad63b0c10a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12f733575ba21505f265ad63b0c10a06">&#9670;&#160;</a></span>setPartSortPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setPartSortPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override transparent sorting for one part without mutating its shared <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00159">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00345">eve::avatar::AvatarInstance::syncEquipmentAppearance()</a>.</p>
+
+</div>
+</div>
+<a id="aadbf8d0baf588bcbbe039409b04e71c0" name="aadbf8d0baf588bcbbe039409b04e71c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadbf8d0baf588bcbbe039409b04e71c0">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sprite3D_8cpp_source.html#l00175">eve::hd2d::Sprite3D::setPosition()</a>.</p>
+
+</div>
+</div>
+<a id="a76e64ebd083e06c41eeef5222dd461ff" name="a76e64ebd083e06c41eeef5222dd461ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76e64ebd083e06c41eeef5222dd461ff">&#9670;&#160;</a></span>setReceiveLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setReceiveLight </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>receive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee58ee73e388500049ce9f021c9fc15f" name="aee58ee73e388500049ce9f021c9fc15f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee58ee73e388500049ce9f021c9fc15f">&#9670;&#160;</a></span>setReceiveShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setReceiveShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>receive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00537">537</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0401f2fbec7c8a630afd7afcf229a911" name="a0401f2fbec7c8a630afd7afcf229a911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0401f2fbec7c8a630afd7afcf229a911">&#9670;&#160;</a></span>setReflectionCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setReflectionCaptureMask </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the bit mask used to include this object in reflection-probe captures. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00525">525</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+</div>
+</div>
+<a id="a2adef4427f9f2570307f69b707e599af" name="a2adef4427f9f2570307f69b707e599af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2adef4427f9f2570307f69b707e599af">&#9670;&#160;</a></span>setRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setRotation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roll</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="aebe5c72c86d2ab36ddbd96a4a6ec15e1" name="aebe5c72c86d2ab36ddbd96a4a6ec15e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebe5c72c86d2ab36ddbd96a4a6ec15e1">&#9670;&#160;</a></span>setRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setRoughness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roughness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00098">roughness</a>.</p>
+
+</div>
+</div>
+<a id="aed2524d98e20423f87442da12abf8fef" name="aed2524d98e20423f87442da12abf8fef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed2524d98e20423f87442da12abf8fef">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sprite3D_8cpp_source.html#l00188">eve::hd2d::Sprite3D::setSize()</a>.</p>
+
+</div>
+</div>
+<a id="a7fde820a0615a68324312e1b07be398f" name="a7fde820a0615a68324312e1b07be398f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fde820a0615a68324312e1b07be398f">&#9670;&#160;</a></span>setShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+</div>
+</div>
+<a id="a4f9a4f38d806b3131f06c7c59b1ff013" name="a4f9a4f38d806b3131f06c7c59b1ff013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f9a4f38d806b3131f06c7c59b1ff013">&#9670;&#160;</a></span>setTexCellBomb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setTexCellBomb </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotAmount</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> cell bombing — random per-cell UV offset/rotation blended across a 2×2 neighborhood to hide tiling. strength 0 disables (default). </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a>.</p>
+
+</div>
+</div>
+<a id="a6a440beae3071df7416b975048137657" name="a6a440beae3071df7416b975048137657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a440beae3071df7416b975048137657">&#9670;&#160;</a></span>setTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l01442">eve::avatar::AvatarInstance::setTexture()</a> , 以及 <a class="el" href="Sprite3D_8cpp_source.html#l00075">eve::hd2d::Sprite3D::setTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a598a470b765a59f8aab7849833f6257c" name="a598a470b765a59f8aab7849833f6257c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598a470b765a59f8aab7849833f6257c">&#9670;&#160;</a></span>setTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00730">mr</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sprite3D_8cpp_source.html#l00198">eve::hd2d::Sprite3D::setTint()</a>.</p>
+
+</div>
+</div>
+<a id="af03a073a6efe8f600cc5f5990cda7426" name="af03a073a6efe8f600cc5f5990cda7426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af03a073a6efe8f600cc5f5990cda7426">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00523">523</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00192">eve::avatar::AvatarInstance::defineEquipmentVisual3D()</a>, <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>, <a class="el" href="Sprite3D_8cpp_source.html#l00205">eve::hd2d::Sprite3D::setVisible()</a>, <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a> , 以及 <a class="el" href="Sprite3D_8cpp_source.html#l00035">eve::hd2d::Sprite3D::~Sprite3D()</a>.</p>
+
+</div>
+</div>
+<a id="aba195b3f7a75d8b42783eb14568f882b" name="aba195b3f7a75d8b42783eb14568f882b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba195b3f7a75d8b42783eb14568f882b">&#9670;&#160;</a></span>setXRayHighlight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setXRayHighlight </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>When true, this entity is an X-ray target: its G-buffer pixels are replaced by occluders and it is redrawn with xrayShader so the part hidden behind buildings shows as a highlight silhouette (visible parts stay normal). </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab048d1e2ab1cc7238d11e70a297e8d1c" name="ab048d1e2ab1cc7238d11e70a297e8d1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab048d1e2ab1cc7238d11e70a297e8d1c">&#9670;&#160;</a></span>setXRayShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setXRayShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach an X-ray mesh shader (see <a class="el" href="classeve_1_1graphics_1_1Shader.html#a383386d57186b367b9372c18a9d650b1" title="X-ray mesh shader. When true, drawMeshShader renders this mesh a second pass over the already-lit sce...">Shader::setXray</a>) for occluded silhouettes. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+</div>
+</div>
+<a id="acf37013771e53ae3111b152aa00792ba" name="acf37013771e53ae3111b152aa00792ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf37013771e53ae3111b152aa00792ba">&#9670;&#160;</a></span>setYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Renderable3D::setYaw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a></li>
+<li>src/modules/graphics/<a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

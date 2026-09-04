@@ -1,0 +1,1121 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::particles::ParticleEffect类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li><li class="navelem"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1particles_1_1ParticleEffect-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::particles::ParticleEffect类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> instance of a versioned, multi-emitter particle effect asset.  
+ <a href="classeve_1_1particles_1_1ParticleEffect.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abef71109b7ce52e3595f910fdcfb1b78" id="r_abef71109b7ce52e3595f910fdcfb1b78"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#abef71109b7ce52e3595f910fdcfb1b78">~ParticleEffect</a> ()</td></tr>
+<tr class="memdesc:abef71109b7ce52e3595f910fdcfb1b78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the group and every emitter it owns.  <br /></td></tr>
+<tr class="separator:abef71109b7ce52e3595f910fdcfb1b78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44d811d56c9e0366f0ca330056306c4c" id="r_a44d811d56c9e0366f0ca330056306c4c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a44d811d56c9e0366f0ca330056306c4c">ParticleEffect</a> (const <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp;)=delete</td></tr>
+<tr class="separator:a44d811d56c9e0366f0ca330056306c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2359889351dc84c1ee76d22ba9c18673" id="r_a2359889351dc84c1ee76d22ba9c18673"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a2359889351dc84c1ee76d22ba9c18673">operator=</a> (const <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp;)=delete</td></tr>
+<tr class="separator:a2359889351dc84c1ee76d22ba9c18673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bedf5949d01e47d048bb64d60180f8b" id="r_a2bedf5949d01e47d048bb64d60180f8b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a2bedf5949d01e47d048bb64d60180f8b">getVersion</a> () const</td></tr>
+<tr class="memdesc:a2bedf5949d01e47d048bb64d60180f8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the supported asset schema version.  <br /></td></tr>
+<tr class="separator:a2bedf5949d01e47d048bb64d60180f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11dfaa46e2270ad1adc10709c10c06ee" id="r_a11dfaa46e2270ad1adc10709c10c06ee"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a11dfaa46e2270ad1adc10709c10c06ee">getSourcePath</a> () const</td></tr>
+<tr class="memdesc:a11dfaa46e2270ad1adc10709c10c06ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the source file path, or empty text for an in-memory asset.  <br /></td></tr>
+<tr class="separator:a11dfaa46e2270ad1adc10709c10c06ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b203eaa2a8893c8f1ff056ecd89303" id="r_ab5b203eaa2a8893c8f1ff056ecd89303"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ab5b203eaa2a8893c8f1ff056ecd89303">getEmitterCount</a> () const</td></tr>
+<tr class="memdesc:ab5b203eaa2a8893c8f1ff056ecd89303"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of named emitter layers.  <br /></td></tr>
+<tr class="separator:ab5b203eaa2a8893c8f1ff056ecd89303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac41090aec4c06741492fceb36937f785" id="r_ac41090aec4c06741492fceb36937f785"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ac41090aec4c06741492fceb36937f785">getEmitterName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac41090aec4c06741492fceb36937f785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a stable layer name by index, or empty text.  <br /></td></tr>
+<tr class="separator:ac41090aec4c06741492fceb36937f785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19a1ef3587c421f3c6b23c6a522aa716" id="r_a19a1ef3587c421f3c6b23c6a522aa716"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a19a1ef3587c421f3c6b23c6a522aa716">getEmitter</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a19a1ef3587c421f3c6b23c6a522aa716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an emitter layer by index, or null.  <br /></td></tr>
+<tr class="separator:a19a1ef3587c421f3c6b23c6a522aa716"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b178ef3477c8bc9e96b2f45ef6c12d" id="r_a60b178ef3477c8bc9e96b2f45ef6c12d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a60b178ef3477c8bc9e96b2f45ef6c12d">getEmitterByName</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a60b178ef3477c8bc9e96b2f45ef6c12d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an emitter layer by name, or null.  <br /></td></tr>
+<tr class="separator:a60b178ef3477c8bc9e96b2f45ef6c12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a345cf5b1f440911eb0b637cef1b7fd01" id="r_a345cf5b1f440911eb0b637cef1b7fd01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a345cf5b1f440911eb0b637cef1b7fd01">setPosition</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="memdesc:a345cf5b1f440911eb0b637cef1b7fd01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the group transform origin in world space.  <br /></td></tr>
+<tr class="separator:a345cf5b1f440911eb0b637cef1b7fd01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addb3be31f0cb74e3165bbf0db11544c1" id="r_addb3be31f0cb74e3165bbf0db11544c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#addb3be31f0cb74e3165bbf0db11544c1">getX</a> () const</td></tr>
+<tr class="memdesc:addb3be31f0cb74e3165bbf0db11544c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the group origin X coordinate.  <br /></td></tr>
+<tr class="separator:addb3be31f0cb74e3165bbf0db11544c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a36cce987b14aaeffbe90f7611ed4c1" id="r_a1a36cce987b14aaeffbe90f7611ed4c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a1a36cce987b14aaeffbe90f7611ed4c1">getY</a> () const</td></tr>
+<tr class="memdesc:a1a36cce987b14aaeffbe90f7611ed4c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the group origin Y coordinate.  <br /></td></tr>
+<tr class="separator:a1a36cce987b14aaeffbe90f7611ed4c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f0a23ec98c8d9dcfa6311b405f93df" id="r_ad6f0a23ec98c8d9dcfa6311b405f93df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ad6f0a23ec98c8d9dcfa6311b405f93df">setRotation</a> (float radians)</td></tr>
+<tr class="memdesc:ad6f0a23ec98c8d9dcfa6311b405f93df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate local offsets and emitter directions in radians.  <br /></td></tr>
+<tr class="separator:ad6f0a23ec98c8d9dcfa6311b405f93df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a68f6c7c05620bdc0d75d4057d1e093" id="r_a8a68f6c7c05620bdc0d75d4057d1e093"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a8a68f6c7c05620bdc0d75d4057d1e093">getRotation</a> () const</td></tr>
+<tr class="memdesc:a8a68f6c7c05620bdc0d75d4057d1e093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the group rotation in radians.  <br /></td></tr>
+<tr class="separator:a8a68f6c7c05620bdc0d75d4057d1e093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a396f14187ea970fd9033dbfac2729a06" id="r_a396f14187ea970fd9033dbfac2729a06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a396f14187ea970fd9033dbfac2729a06">setScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a396f14187ea970fd9033dbfac2729a06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale local emitter offsets.  <br /></td></tr>
+<tr class="separator:a396f14187ea970fd9033dbfac2729a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed93b1c2173f5884511c2d86082dbde4" id="r_aed93b1c2173f5884511c2d86082dbde4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#aed93b1c2173f5884511c2d86082dbde4">getScale</a> () const</td></tr>
+<tr class="memdesc:aed93b1c2173f5884511c2d86082dbde4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-offset scale.  <br /></td></tr>
+<tr class="separator:aed93b1c2173f5884511c2d86082dbde4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7880312329e310b078797c411ed379f0" id="r_a7880312329e310b078797c411ed379f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a7880312329e310b078797c411ed379f0">setLayer</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:a7880312329e310b078797c411ed379f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset all emitter render layers while preserving asset-local ordering.  <br /></td></tr>
+<tr class="separator:a7880312329e310b078797c411ed379f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1054b8b4696419746c246da5dbf554" id="r_a1d1054b8b4696419746c246da5dbf554"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a1d1054b8b4696419746c246da5dbf554">getLayer</a> () const</td></tr>
+<tr class="memdesc:a1d1054b8b4696419746c246da5dbf554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the group render-layer offset.  <br /></td></tr>
+<tr class="separator:a1d1054b8b4696419746c246da5dbf554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b64a6241888c85a865fd6cd15b128d3" id="r_a4b64a6241888c85a865fd6cd15b128d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a4b64a6241888c85a865fd6cd15b128d3">setVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="memdesc:a4b64a6241888c85a865fd6cd15b128d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set visibility for every emitter layer.  <br /></td></tr>
+<tr class="separator:a4b64a6241888c85a865fd6cd15b128d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ce8b1409aaa0070ffe617494fe3c11b" id="r_a8ce8b1409aaa0070ffe617494fe3c11b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a8ce8b1409aaa0070ffe617494fe3c11b">isVisible</a> () const</td></tr>
+<tr class="memdesc:a8ce8b1409aaa0070ffe617494fe3c11b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the group visibility state.  <br /></td></tr>
+<tr class="separator:a8ce8b1409aaa0070ffe617494fe3c11b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a966e5dd89d607a7f24bb6ee030c12cad" id="r_a966e5dd89d607a7f24bb6ee030c12cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a966e5dd89d607a7f24bb6ee030c12cad">start</a> ()</td></tr>
+<tr class="memdesc:a966e5dd89d607a7f24bb6ee030c12cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start every emitter timeline.  <br /></td></tr>
+<tr class="separator:a966e5dd89d607a7f24bb6ee030c12cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3774d47592f0b1083f70bae32984c32" id="r_ab3774d47592f0b1083f70bae32984c32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ab3774d47592f0b1083f70bae32984c32">stop</a> ()</td></tr>
+<tr class="memdesc:ab3774d47592f0b1083f70bae32984c32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop every emitter timeline.  <br /></td></tr>
+<tr class="separator:ab3774d47592f0b1083f70bae32984c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d882f64ab862e6662d839e7dcf3b8bd" id="r_a2d882f64ab862e6662d839e7dcf3b8bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a2d882f64ab862e6662d839e7dcf3b8bd">pause</a> ()</td></tr>
+<tr class="memdesc:a2d882f64ab862e6662d839e7dcf3b8bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause every emitter timeline.  <br /></td></tr>
+<tr class="separator:a2d882f64ab862e6662d839e7dcf3b8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc3d4ccf77af8d9f96d420f02227088" id="r_a3cc3d4ccf77af8d9f96d420f02227088"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a3cc3d4ccf77af8d9f96d420f02227088">reset</a> ()</td></tr>
+<tr class="memdesc:a3cc3d4ccf77af8d9f96d420f02227088"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset every emitter timeline and clear live particles.  <br /></td></tr>
+<tr class="separator:a3cc3d4ccf77af8d9f96d420f02227088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae145710e70384a329a2345a194c139e1" id="r_ae145710e70384a329a2345a194c139e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ae145710e70384a329a2345a194c139e1">emit</a> (const std::string &amp;emitterName, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ae145710e70384a329a2345a194c139e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a manual burst from one named layer.  <br /></td></tr>
+<tr class="separator:ae145710e70384a329a2345a194c139e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab419a848ec365863da2099147c0c6ffe" id="r_ab419a848ec365863da2099147c0c6ffe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ab419a848ec365863da2099147c0c6ffe">setFloatParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ab419a848ec365863da2099147c0c6ffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one gameplay parameter on every layer that declares or binds it.  <br /></td></tr>
+<tr class="separator:ab419a848ec365863da2099147c0c6ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74130a02364f582625dcb101b837e65" id="r_ab74130a02364f582625dcb101b837e65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#ab74130a02364f582625dcb101b837e65">getFloatParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:ab74130a02364f582625dcb101b837e65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an effect parameter value, or zero when unknown.  <br /></td></tr>
+<tr class="separator:ab74130a02364f582625dcb101b837e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08357119b45bf9eb5731ccb2803f375d" id="r_a08357119b45bf9eb5731ccb2803f375d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a08357119b45bf9eb5731ccb2803f375d">hasFloatParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a08357119b45bf9eb5731ccb2803f375d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the asset declares the parameter.  <br /></td></tr>
+<tr class="separator:a08357119b45bf9eb5731ccb2803f375d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a93761a07b40c0e4193f64fbfc1d5d515" id="r_a93761a07b40c0e4193f64fbfc1d5d515"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a93761a07b40c0e4193f64fbfc1d5d515">fromText</a> (const std::string &amp;json, const std::string &amp;<a class="el" href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a93761a07b40c0e4193f64fbfc1d5d515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and instantiate an effect asset from JSON text.  <br /></td></tr>
+<tr class="separator:a93761a07b40c0e4193f64fbfc1d5d515"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40f8a2b3d6e81ad8cbfbb6813d52218d" id="r_a40f8a2b3d6e81ad8cbfbb6813d52218d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html#a40f8a2b3d6e81ad8cbfbb6813d52218d">fromFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a40f8a2b3d6e81ad8cbfbb6813d52218d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read, parse, and instantiate an effect asset.  <br /></td></tr>
+<tr class="separator:a40f8a2b3d6e81ad8cbfbb6813d52218d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> instance of a versioned, multi-emitter particle effect asset. </p>
+<p>The instance owns every emitter created by the asset. Its transform, playback, visibility, layer, and exposed parameters are applied to the group as a unit. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abef71109b7ce52e3595f910fdcfb1b78" name="abef71109b7ce52e3595f910fdcfb1b78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abef71109b7ce52e3595f910fdcfb1b78">&#9670;&#160;</a></span>~ParticleEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::ParticleEffect::~ParticleEffect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroy the group and every emitter it owns. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a44d811d56c9e0366f0ca330056306c4c" name="a44d811d56c9e0366f0ca330056306c4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d811d56c9e0366f0ca330056306c4c">&#9670;&#160;</a></span>ParticleEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::ParticleEffect::ParticleEffect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae145710e70384a329a2345a194c139e1" name="ae145710e70384a329a2345a194c139e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae145710e70384a329a2345a194c139e1">&#9670;&#160;</a></span>emit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEffect::emit </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>emitterName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Emit a manual burst from one named layer. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="ParticleEffect_8cpp_source.html#l00259">getEmitterByName()</a>.</p>
+
+</div>
+</div>
+<a id="a40f8a2b3d6e81ad8cbfbb6813d52218d" name="a40f8a2b3d6e81ad8cbfbb6813d52218d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40f8a2b3d6e81ad8cbfbb6813d52218d">&#9670;&#160;</a></span>fromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> * eve::particles::ParticleEffect::fromFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read, parse, and instantiate an effect asset. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ParticleEffect_8cpp_source.html#l00110">fromText()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Particles_8cpp_source.html#l00078">eve::particles::Particles::newEffectFromFile()</a>.</p>
+
+</div>
+</div>
+<a id="a93761a07b40c0e4193f64fbfc1d5d515" name="a93761a07b40c0e4193f64fbfc1d5d515"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93761a07b40c0e4193f64fbfc1d5d515">&#9670;&#160;</a></span>fromText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> * eve::particles::ParticleEffect::fromText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sourcePath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse and instantiate an effect asset from JSON text. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleConfig_8cpp_source.html#l00631">eve::particles::applyConfigText()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00693">eve::particles::ParticleEmitter::createEmitter()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00646">eve::particles::loadConfigFile()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00130">sourcePath</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEffect_8cpp_source.html#l00226">fromFile()</a> , 以及 <a class="el" href="Particles_8cpp_source.html#l00073">eve::particles::Particles::newEffectFromText()</a>.</p>
+
+</div>
+</div>
+<a id="a19a1ef3587c421f3c6b23c6a522aa716" name="a19a1ef3587c421f3c6b23c6a522aa716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19a1ef3587c421f3c6b23c6a522aa716">&#9670;&#160;</a></span>getEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> * eve::particles::ParticleEffect::getEmitter </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an emitter layer by index, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEffect_8cpp_source.html#l00247">getEmitterCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a60b178ef3477c8bc9e96b2f45ef6c12d" name="a60b178ef3477c8bc9e96b2f45ef6c12d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60b178ef3477c8bc9e96b2f45ef6c12d">&#9670;&#160;</a></span>getEmitterByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> * eve::particles::ParticleEffect::getEmitterByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an emitter layer by name, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEffect_8cpp_source.html#l00323">emit()</a>.</p>
+
+</div>
+</div>
+<a id="ab5b203eaa2a8893c8f1ff056ecd89303" name="ab5b203eaa2a8893c8f1ff056ecd89303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5b203eaa2a8893c8f1ff056ecd89303">&#9670;&#160;</a></span>getEmitterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEffect::getEmitterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of named emitter layers. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEffect_8cpp_source.html#l00254">getEmitter()</a> , 以及 <a class="el" href="ParticleEffect_8cpp_source.html#l00249">getEmitterName()</a>.</p>
+
+</div>
+</div>
+<a id="ac41090aec4c06741492fceb36937f785" name="ac41090aec4c06741492fceb36937f785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac41090aec4c06741492fceb36937f785">&#9670;&#160;</a></span>getEmitterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEffect::getEmitterName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a stable layer name by index, or empty text. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEffect_8cpp_source.html#l00247">getEmitterCount()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ab74130a02364f582625dcb101b837e65" name="ab74130a02364f582625dcb101b837e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74130a02364f582625dcb101b837e65">&#9670;&#160;</a></span>getFloatParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEffect::getFloatParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an effect parameter value, or zero when unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a1d1054b8b4696419746c246da5dbf554" name="a1d1054b8b4696419746c246da5dbf554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d1054b8b4696419746c246da5dbf554">&#9670;&#160;</a></span>getLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEffect::getLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the group render-layer offset. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a68f6c7c05620bdc0d75d4057d1e093" name="a8a68f6c7c05620bdc0d75d4057d1e093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a68f6c7c05620bdc0d75d4057d1e093">&#9670;&#160;</a></span>getRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEffect::getRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the group rotation in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed93b1c2173f5884511c2d86082dbde4" name="aed93b1c2173f5884511c2d86082dbde4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed93b1c2173f5884511c2d86082dbde4">&#9670;&#160;</a></span>getScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEffect::getScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the local-offset scale. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11dfaa46e2270ad1adc10709c10c06ee" name="a11dfaa46e2270ad1adc10709c10c06ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11dfaa46e2270ad1adc10709c10c06ee">&#9670;&#160;</a></span>getSourcePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEffect::getSourcePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the source file path, or empty text for an in-memory asset. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bedf5949d01e47d048bb64d60180f8b" name="a2bedf5949d01e47d048bb64d60180f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bedf5949d01e47d048bb64d60180f8b">&#9670;&#160;</a></span>getVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEffect::getVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the supported asset schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="addb3be31f0cb74e3165bbf0db11544c1" name="addb3be31f0cb74e3165bbf0db11544c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb3be31f0cb74e3165bbf0db11544c1">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEffect::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the group origin X coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a36cce987b14aaeffbe90f7611ed4c1" name="a1a36cce987b14aaeffbe90f7611ed4c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a36cce987b14aaeffbe90f7611ed4c1">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEffect::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the group origin Y coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a08357119b45bf9eb5731ccb2803f375d" name="a08357119b45bf9eb5731ccb2803f375d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08357119b45bf9eb5731ccb2803f375d">&#9670;&#160;</a></span>hasFloatParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEffect::hasFloatParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return true when the asset declares the parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a8ce8b1409aaa0070ffe617494fe3c11b" name="a8ce8b1409aaa0070ffe617494fe3c11b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ce8b1409aaa0070ffe617494fe3c11b">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEffect::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the group visibility state. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a> 第 <a class="el" href="ParticleEffect_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2359889351dc84c1ee76d22ba9c18673" name="a2359889351dc84c1ee76d22ba9c18673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2359889351dc84c1ee76d22ba9c18673">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp; eve::particles::ParticleEffect::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d882f64ab862e6662d839e7dcf3b8bd" name="a2d882f64ab862e6662d839e7dcf3b8bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d882f64ab862e6662d839e7dcf3b8bd">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pause every emitter timeline. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a3cc3d4ccf77af8d9f96d420f02227088" name="a3cc3d4ccf77af8d9f96d420f02227088"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cc3d4ccf77af8d9f96d420f02227088">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset every emitter timeline and clear live particles. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="ab419a848ec365863da2099147c0c6ffe" name="ab419a848ec365863da2099147c0c6ffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab419a848ec365863da2099147c0c6ffe">&#9670;&#160;</a></span>setFloatParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setFloatParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one gameplay parameter on every layer that declares or binds it. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a7880312329e310b078797c411ed379f0" name="a7880312329e310b078797c411ed379f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7880312329e310b078797c411ed379f0">&#9670;&#160;</a></span>setLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Offset all emitter render layers while preserving asset-local ordering. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a345cf5b1f440911eb0b637cef1b7fd01" name="a345cf5b1f440911eb0b637cef1b7fd01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a345cf5b1f440911eb0b637cef1b7fd01">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the group transform origin in world space. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ad6f0a23ec98c8d9dcfa6311b405f93df" name="ad6f0a23ec98c8d9dcfa6311b405f93df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6f0a23ec98c8d9dcfa6311b405f93df">&#9670;&#160;</a></span>setRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setRotation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate local offsets and emitter directions in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a396f14187ea970fd9033dbfac2729a06" name="a396f14187ea970fd9033dbfac2729a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a396f14187ea970fd9033dbfac2729a06">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scale local emitter offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a4b64a6241888c85a865fd6cd15b128d3" name="a4b64a6241888c85a865fd6cd15b128d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b64a6241888c85a865fd6cd15b128d3">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set visibility for every emitter layer. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+</div>
+</div>
+<a id="a966e5dd89d607a7f24bb6ee030c12cad" name="a966e5dd89d607a7f24bb6ee030c12cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a966e5dd89d607a7f24bb6ee030c12cad">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::start </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start every emitter timeline. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="ab3774d47592f0b1083f70bae32984c32" name="ab3774d47592f0b1083f70bae32984c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3774d47592f0b1083f70bae32984c32">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::ParticleEffect::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop every emitter timeline. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a> 第 <a class="el" href="ParticleEffect_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/particles/<a class="el" href="ParticleEffect_8h_source.html">ParticleEffect.h</a></li>
+<li>src/modules/particles/<a class="el" href="ParticleEffect_8cpp_source.html">ParticleEffect.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::LSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1LSystem.html">LSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1LSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::LSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>General stochastic bracketed L-system engine.  
+ <a href="classeve_1_1procgen_1_1LSystem.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="LSystem_8h_source.html">LSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6f1723787c4bae833162c51fd3f14c83" id="r_a6f1723787c4bae833162c51fd3f14c83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a6f1723787c4bae833162c51fd3f14c83">LSystem</a> ()</td></tr>
+<tr class="separator:a6f1723787c4bae833162c51fd3f14c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04320754f07ea048bdd17e19a1bd4526" id="r_a04320754f07ea048bdd17e19a1bd4526"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a04320754f07ea048bdd17e19a1bd4526">setAxiom</a> (const std::string &amp;axiom)</td></tr>
+<tr class="memdesc:a04320754f07ea048bdd17e19a1bd4526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the starting string.  <br /></td></tr>
+<tr class="separator:a04320754f07ea048bdd17e19a1bd4526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5a38aa15e28fd5caaf3661170027667" id="r_ac5a38aa15e28fd5caaf3661170027667"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#ac5a38aa15e28fd5caaf3661170027667">addRule</a> (char symbol, const std::string &amp;production)</td></tr>
+<tr class="memdesc:ac5a38aa15e28fd5caaf3661170027667"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a deterministic production for one symbol.  <br /></td></tr>
+<tr class="separator:ac5a38aa15e28fd5caaf3661170027667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f7f85044ffe8f45ebb6888921d0d206" id="r_a8f7f85044ffe8f45ebb6888921d0d206"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a8f7f85044ffe8f45ebb6888921d0d206">addRules</a> (char symbol, const std::vector&lt; std::string &gt; &amp;productions, const std::vector&lt; float &gt; &amp;weights)</td></tr>
+<tr class="memdesc:a8f7f85044ffe8f45ebb6888921d0d206"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add weighted (stochastic) productions for one symbol.  <br /></td></tr>
+<tr class="separator:a8f7f85044ffe8f45ebb6888921d0d206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93ee6bfa124b8b55c7b2999533078228" id="r_a93ee6bfa124b8b55c7b2999533078228"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a93ee6bfa124b8b55c7b2999533078228">clearRules</a> ()</td></tr>
+<tr class="memdesc:a93ee6bfa124b8b55c7b2999533078228"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all production rules (the axiom and alphabet remain).  <br /></td></tr>
+<tr class="separator:a93ee6bfa124b8b55c7b2999533078228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ae5288f59493ec5e84e83befb49e553" id="r_a9ae5288f59493ec5e84e83befb49e553"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a9ae5288f59493ec5e84e83befb49e553">setAngle</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)</td></tr>
+<tr class="memdesc:a9ae5288f59493ec5e84e83befb49e553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the turtle turn angle.  <br /></td></tr>
+<tr class="separator:a9ae5288f59493ec5e84e83befb49e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a519b0b17689a55abd5001d5a649c2d86" id="r_a519b0b17689a55abd5001d5a649c2d86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a519b0b17689a55abd5001d5a649c2d86">setStep</a> (float <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a519b0b17689a55abd5001d5a649c2d86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the forward distance per F.  <br /></td></tr>
+<tr class="separator:a519b0b17689a55abd5001d5a649c2d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168fd47a4d9330b2da6f7dd196766338" id="r_a168fd47a4d9330b2da6f7dd196766338"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a168fd47a4d9330b2da6f7dd196766338">setIterations</a> (int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a168fd47a4d9330b2da6f7dd196766338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the grammar expansion count.  <br /></td></tr>
+<tr class="separator:a168fd47a4d9330b2da6f7dd196766338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3e21b784efddd0a72c34e7759807786" id="r_af3e21b784efddd0a72c34e7759807786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#af3e21b784efddd0a72c34e7759807786">setSeed</a> (uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:af3e21b784efddd0a72c34e7759807786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the deterministic seed.  <br /></td></tr>
+<tr class="separator:af3e21b784efddd0a72c34e7759807786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b07f2f40b509269c8ed22ea2d005ccb" id="r_a7b07f2f40b509269c8ed22ea2d005ccb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a7b07f2f40b509269c8ed22ea2d005ccb">setInitialHeading</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a7b07f2f40b509269c8ed22ea2d005ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the initial heading (normalized).  <br /></td></tr>
+<tr class="separator:a7b07f2f40b509269c8ed22ea2d005ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a993763b9fd3a193e96e0ff01c1435a97" id="r_a993763b9fd3a193e96e0ff01c1435a97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a993763b9fd3a193e96e0ff01c1435a97">setBranchRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a993763b9fd3a193e96e0ff01c1435a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the trunk radius at depth 0.  <br /></td></tr>
+<tr class="separator:a993763b9fd3a193e96e0ff01c1435a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a188c16161369b07811e88e4a4c28de2c" id="r_a188c16161369b07811e88e4a4c28de2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a188c16161369b07811e88e4a4c28de2c">setBranchRadiusFalloff</a> (float factor)</td></tr>
+<tr class="memdesc:a188c16161369b07811e88e4a4c28de2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the per-depth radius multiplier.  <br /></td></tr>
+<tr class="separator:a188c16161369b07811e88e4a4c28de2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a12c4970ffafe592ba5f16a5d30a30c" id="r_a8a12c4970ffafe592ba5f16a5d30a30c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a8a12c4970ffafe592ba5f16a5d30a30c">setLeafSize</a> (float size)</td></tr>
+<tr class="memdesc:a8a12c4970ffafe592ba5f16a5d30a30c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the foliage card size.  <br /></td></tr>
+<tr class="separator:a8a12c4970ffafe592ba5f16a5d30a30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce8f72c76c6d8e7856cfbc8a3e7f191" id="r_a5ce8f72c76c6d8e7856cfbc8a3e7f191"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a5ce8f72c76c6d8e7856cfbc8a3e7f191">setLeafSymbols</a> (const std::string &amp;symbols)</td></tr>
+<tr class="memdesc:a5ce8f72c76c6d8e7856cfbc8a3e7f191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the set of symbols that emit a leaf marker.  <br /></td></tr>
+<tr class="separator:a5ce8f72c76c6d8e7856cfbc8a3e7f191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a845186c6cb2146816da8c507f15b2d2c" id="r_a845186c6cb2146816da8c507f15b2d2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a845186c6cb2146816da8c507f15b2d2c">setTropism</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a845186c6cb2146816da8c507f15b2d2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bias growth toward a direction (phototropism).  <br /></td></tr>
+<tr class="separator:a845186c6cb2146816da8c507f15b2d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a830a43cd5e1b670ead66a71189347f99" id="r_a830a43cd5e1b670ead66a71189347f99"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a830a43cd5e1b670ead66a71189347f99">getSeed</a> () const</td></tr>
+<tr class="memdesc:a830a43cd5e1b670ead66a71189347f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current seed.  <br /></td></tr>
+<tr class="separator:a830a43cd5e1b670ead66a71189347f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80a7a11d04f6c12d156ac20d0887ed96" id="r_a80a7a11d04f6c12d156ac20d0887ed96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a80a7a11d04f6c12d156ac20d0887ed96">getIterations</a> () const</td></tr>
+<tr class="memdesc:a80a7a11d04f6c12d156ac20d0887ed96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current iteration count.  <br /></td></tr>
+<tr class="separator:a80a7a11d04f6c12d156ac20d0887ed96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57733b45b57014f539e977d07e260bf9" id="r_a57733b45b57014f539e977d07e260bf9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a57733b45b57014f539e977d07e260bf9">derive</a> () const</td></tr>
+<tr class="memdesc:a57733b45b57014f539e977d07e260bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand the grammar <code>iterations</code> times.  <br /></td></tr>
+<tr class="separator:a57733b45b57014f539e977d07e260bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49ac91e462a701b3d1d16a363613eb6b" id="r_a49ac91e462a701b3d1d16a363613eb6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a49ac91e462a701b3d1d16a363613eb6b">generate</a> (<a class="el" href="structeve_1_1procgen_1_1LSystemResult.html">LSystemResult</a> &amp;out) const</td></tr>
+<tr class="memdesc:a49ac91e462a701b3d1d16a363613eb6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand then interpret with the turtle.  <br /></td></tr>
+<tr class="separator:a49ac91e462a701b3d1d16a363613eb6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f3db7a6d7d24f975ff81896deb5a55" id="r_a08f3db7a6d7d24f975ff81896deb5a55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1LSystem.html#a08f3db7a6d7d24f975ff81896deb5a55">toPointSet</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;out) const</td></tr>
+<tr class="memdesc:a08f3db7a6d7d24f975ff81896deb5a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate and pack segment endpoints into a <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a>.  <br /></td></tr>
+<tr class="separator:a08f3db7a6d7d24f975ff81896deb5a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>General stochastic bracketed L-system engine. </p>
+<p>A starting axiom is rewritten <code>iterations</code> times using production rules; a symbol may carry several weighted productions (chosen deterministically from the seed). The derived word is then interpreted by a 3D turtle:</p>
+<p>F draw forward one step f move forward, no draw</p><ul>
+<li>/ - yaw (heading around up) &amp; / ^ pitch (down / up) \ / / roll around the heading [ ] push / pop turtle state &lt;leaf&gt; emit a leaf (see setLeafSymbols)</li>
+</ul>
+<p>Limb thickness falls off with bracket depth, so [ ] bracketing produces tapering branches. The engine is not tied to mesh output: call <a class="el" href="classeve_1_1procgen_1_1LSystem.html#a08f3db7a6d7d24f975ff81896deb5a55" title="Generate and pack segment endpoints into a PointSet.">toPointSet()</a> to recover segments as spline control points (roads, 2D layouts) or run the mesh.lsystem recipe for tree/plant meshes. A fixed seed reproduces the exact same result. </p>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8h_source.html">LSystem.h</a> 第 <a class="el" href="LSystem_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6f1723787c4bae833162c51fd3f14c83" name="a6f1723787c4bae833162c51fd3f14c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f1723787c4bae833162c51fd3f14c83">&#9670;&#160;</a></span>LSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::LSystem::LSystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac5a38aa15e28fd5caaf3661170027667" name="ac5a38aa15e28fd5caaf3661170027667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a38aa15e28fd5caaf3661170027667">&#9670;&#160;</a></span>addRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::addRule </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>production</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a deterministic production for one symbol. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">symbol</td><td>Source symbol.</td></tr>
+    <tr><td class="paramname">production</td><td>Replacement. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f7f85044ffe8f45ebb6888921d0d206" name="a8f7f85044ffe8f45ebb6888921d0d206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f7f85044ffe8f45ebb6888921d0d206">&#9670;&#160;</a></span>addRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::addRules </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>productions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add weighted (stochastic) productions for one symbol. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">symbol</td><td>Source symbol.</td></tr>
+    <tr><td class="paramname">productions</td><td>Replacements.</td></tr>
+    <tr><td class="paramname">weights</td><td>Selection weights. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a93ee6bfa124b8b55c7b2999533078228" name="a93ee6bfa124b8b55c7b2999533078228"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ee6bfa124b8b55c7b2999533078228">&#9670;&#160;</a></span>clearRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::clearRules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all production rules (the axiom and alphabet remain). </p>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57733b45b57014f539e977d07e260bf9" name="a57733b45b57014f539e977d07e260bf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57733b45b57014f539e977d07e260bf9">&#9670;&#160;</a></span>derive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::LSystem::derive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand the grammar <code>iterations</code> times. </p>
+<dl class="section return"><dt>返回</dt><dd>The derived word. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00236">word</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystem_8cpp_source.html#l00231">generate()</a>.</p>
+
+</div>
+</div>
+<a id="a49ac91e462a701b3d1d16a363613eb6b" name="a49ac91e462a701b3d1d16a363613eb6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ac91e462a701b3d1d16a363613eb6b">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::generate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1LSystemResult.html">LSystemResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand then interpret with the turtle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> to fill. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LSystem_8h_source.html#l00031">eve::procgen::LSystemResult::derivation</a>, <a class="el" href="LSystem_8cpp_source.html#l00096">derive()</a>, <a class="el" href="LSystem_8h_source.html#l00032">eve::procgen::LSystemResult::leafCount</a> , 以及 <a class="el" href="LSystem_8h_source.html#l00030">eve::procgen::LSystemResult::segments</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a> , 以及 <a class="el" href="LSystem_8cpp_source.html#l00238">toPointSet()</a>.</p>
+
+</div>
+</div>
+<a id="a80a7a11d04f6c12d156ac20d0887ed96" name="a80a7a11d04f6c12d156ac20d0887ed96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80a7a11d04f6c12d156ac20d0887ed96">&#9670;&#160;</a></span>getIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::LSystem::getIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current iteration count. </p>
+<dl class="section return"><dt>返回</dt><dd>Iterations. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a830a43cd5e1b670ead66a71189347f99" name="a830a43cd5e1b670ead66a71189347f99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a830a43cd5e1b670ead66a71189347f99">&#9670;&#160;</a></span>getSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::LSystem::getSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current seed. </p>
+<dl class="section return"><dt>返回</dt><dd>Seed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ae5288f59493ec5e84e83befb49e553" name="a9ae5288f59493ec5e84e83befb49e553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae5288f59493ec5e84e83befb49e553">&#9670;&#160;</a></span>setAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setAngle </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the turtle turn angle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">degrees</td><td>Angle in degrees. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00035">degrees</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a04320754f07ea048bdd17e19a1bd4526" name="a04320754f07ea048bdd17e19a1bd4526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04320754f07ea048bdd17e19a1bd4526">&#9670;&#160;</a></span>setAxiom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setAxiom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>axiom</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the starting string. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">axiom</td><td>Axiom. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a993763b9fd3a193e96e0ff01c1435a97" name="a993763b9fd3a193e96e0ff01c1435a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a993763b9fd3a193e96e0ff01c1435a97">&#9670;&#160;</a></span>setBranchRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setBranchRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the trunk radius at depth 0. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>Radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a188c16161369b07811e88e4a4c28de2c" name="a188c16161369b07811e88e4a4c28de2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a188c16161369b07811e88e4a4c28de2c">&#9670;&#160;</a></span>setBranchRadiusFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setBranchRadiusFalloff </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>factor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the per-depth radius multiplier. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">factor</td><td>Factor in (0, 1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a7b07f2f40b509269c8ed22ea2d005ccb" name="a7b07f2f40b509269c8ed22ea2d005ccb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b07f2f40b509269c8ed22ea2d005ccb">&#9670;&#160;</a></span>setInitialHeading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setInitialHeading </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the initial heading (normalized). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>X.</td></tr>
+    <tr><td class="paramname">y</td><td>Y.</td></tr>
+    <tr><td class="paramname">z</td><td>Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a168fd47a4d9330b2da6f7dd196766338" name="a168fd47a4d9330b2da6f7dd196766338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a168fd47a4d9330b2da6f7dd196766338">&#9670;&#160;</a></span>setIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the grammar expansion count. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">iterations</td><td>Rewrite count. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a8a12c4970ffafe592ba5f16a5d30a30c" name="a8a12c4970ffafe592ba5f16a5d30a30c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a12c4970ffafe592ba5f16a5d30a30c">&#9670;&#160;</a></span>setLeafSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setLeafSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the foliage card size. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>Size. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a5ce8f72c76c6d8e7856cfbc8a3e7f191" name="a5ce8f72c76c6d8e7856cfbc8a3e7f191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ce8f72c76c6d8e7856cfbc8a3e7f191">&#9670;&#160;</a></span>setLeafSymbols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setLeafSymbols </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbols</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the set of symbols that emit a leaf marker. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">symbols</td><td>Character list, e.g. "L@". </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="af3e21b784efddd0a72c34e7759807786" name="af3e21b784efddd0a72c34e7759807786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e21b784efddd0a72c34e7759807786">&#9670;&#160;</a></span>setSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setSeed </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the deterministic seed. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seed</td><td>Seed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a519b0b17689a55abd5001d5a649c2d86" name="a519b0b17689a55abd5001d5a649c2d86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a519b0b17689a55abd5001d5a649c2d86">&#9670;&#160;</a></span>setStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setStep </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the forward distance per F. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">step</td><td>Step length. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a845186c6cb2146816da8c507f15b2d2c" name="a845186c6cb2146816da8c507f15b2d2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a845186c6cb2146816da8c507f15b2d2c">&#9670;&#160;</a></span>setTropism()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::setTropism </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bias growth toward a direction (phototropism). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>X.</td></tr>
+    <tr><td class="paramname">y</td><td>Y.</td></tr>
+    <tr><td class="paramname">z</td><td>Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a08f3db7a6d7d24f975ff81896deb5a55" name="a08f3db7a6d7d24f975ff81896deb5a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f3db7a6d7d24f975ff81896deb5a55">&#9670;&#160;</a></span>toPointSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::LSystem::toPointSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate and pack segment endpoints into a <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>Set to fill. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a> 第 <a class="el" href="LSystem_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00093">eve::procgen::PointSet::add()</a>, <a class="el" href="LSystem_8cpp_source.html#l00231">generate()</a> , 以及 <a class="el" href="LSystem_8h_source.html#l00030">eve::procgen::LSystemResult::segments</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/algorithms/<a class="el" href="LSystem_8h_source.html">LSystem.h</a></li>
+<li>src/modules/procgen/algorithms/<a class="el" href="LSystem_8cpp_source.html">LSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1397 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dialogue::ConversationDocument类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html">ConversationDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1dialogue_1_1ConversationDocument-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dialogue::ConversationDocument类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Mutable, UI-neutral conversation document for custom editor composition.  
+ <a href="classeve_1_1dialogue_1_1ConversationDocument.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae7871489e6eb1c271240a506fe3c3fca" id="r_ae7871489e6eb1c271240a506fe3c3fca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">ConversationDocument</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>={})</td></tr>
+<tr class="memdesc:ae7871489e6eb1c271240a506fe3c3fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty document with one end node.  <br /></td></tr>
+<tr class="separator:ae7871489e6eb1c271240a506fe3c3fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af70175ff6b6c74a956b3f00b0f3d5f6b" id="r_af70175ff6b6c74a956b3f00b0f3d5f6b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#af70175ff6b6c74a956b3f00b0f3d5f6b">ConversationDocument</a> (<a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> <a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a70fcd8aa3d69b4c0000fde69cdff2fb1">asset</a>)</td></tr>
+<tr class="memdesc:af70175ff6b6c74a956b3f00b0f3d5f6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an editable copy of a runtime asset.  <br /></td></tr>
+<tr class="separator:af70175ff6b6c74a956b3f00b0f3d5f6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70fcd8aa3d69b4c0000fde69cdff2fb1" id="r_a70fcd8aa3d69b4c0000fde69cdff2fb1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a70fcd8aa3d69b4c0000fde69cdff2fb1">asset</a> () const</td></tr>
+<tr class="memdesc:a70fcd8aa3d69b4c0000fde69cdff2fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the editable runtime asset.  <br /></td></tr>
+<tr class="separator:a70fcd8aa3d69b4c0000fde69cdff2fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c094366e6503ec6015a34d4581a3dd7" id="r_a1c094366e6503ec6015a34d4581a3dd7"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1c094366e6503ec6015a34d4581a3dd7">getId</a> () const</td></tr>
+<tr class="memdesc:a1c094366e6503ec6015a34d4581a3dd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable conversation identifier.  <br /></td></tr>
+<tr class="separator:a1c094366e6503ec6015a34d4581a3dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf543b2dd5d463799c51979bf10a8f09" id="r_adf543b2dd5d463799c51979bf10a8f09"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#adf543b2dd5d463799c51979bf10a8f09">setId</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:adf543b2dd5d463799c51979bf10a8f09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename the document identifier.  <br /></td></tr>
+<tr class="separator:adf543b2dd5d463799c51979bf10a8f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c2accd77ddd4be54e86b653b68533c6" id="r_a8c2accd77ddd4be54e86b653b68533c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8c2accd77ddd4be54e86b653b68533c6">getVersion</a> () const</td></tr>
+<tr class="memdesc:a8c2accd77ddd4be54e86b653b68533c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the asset schema version.  <br /></td></tr>
+<tr class="separator:a8c2accd77ddd4be54e86b653b68533c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac2a04b25d956e22025bbcd6e1c3e49e" id="r_aac2a04b25d956e22025bbcd6e1c3e49e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aac2a04b25d956e22025bbcd6e1c3e49e">setVersion</a> (int version)</td></tr>
+<tr class="memdesc:aac2a04b25d956e22025bbcd6e1c3e49e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the asset schema version to a positive value.  <br /></td></tr>
+<tr class="separator:aac2a04b25d956e22025bbcd6e1c3e49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd24b3bc66484c33c372d90ff3d27036" id="r_acd24b3bc66484c33c372d90ff3d27036"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#acd24b3bc66484c33c372d90ff3d27036">getEntry</a> () const</td></tr>
+<tr class="memdesc:acd24b3bc66484c33c372d90ff3d27036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the entry node identifier.  <br /></td></tr>
+<tr class="separator:acd24b3bc66484c33c372d90ff3d27036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a0b3e55dfabc47cc310f827efc551f3" id="r_a1a0b3e55dfabc47cc310f827efc551f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1a0b3e55dfabc47cc310f827efc551f3">setEntry</a> (const std::string &amp;nodeId)</td></tr>
+<tr class="memdesc:a1a0b3e55dfabc47cc310f827efc551f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the entry node identifier.  <br /></td></tr>
+<tr class="separator:a1a0b3e55dfabc47cc310f827efc551f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9d18e3d685660a884c8c94c8a5d85d1" id="r_af9d18e3d685660a884c8c94c8a5d85d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">getParameterCount</a> () const</td></tr>
+<tr class="memdesc:af9d18e3d685660a884c8c94c8a5d85d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of declared parameters.  <br /></td></tr>
+<tr class="separator:af9d18e3d685660a884c8c94c8a5d85d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09eafe59ba98bce15ce5ae79b60beb89" id="r_a09eafe59ba98bce15ce5ae79b60beb89"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a09eafe59ba98bce15ce5ae79b60beb89">getParameter</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a09eafe59ba98bce15ce5ae79b60beb89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a declared parameter by insertion order.  <br /></td></tr>
+<tr class="separator:a09eafe59ba98bce15ce5ae79b60beb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30eb9635a4421c446f2e441e93c805dd" id="r_a30eb9635a4421c446f2e441e93c805dd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a30eb9635a4421c446f2e441e93c805dd">addParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a30eb9635a4421c446f2e441e93c805dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a unique parameter.  <br /></td></tr>
+<tr class="separator:a30eb9635a4421c446f2e441e93c805dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3106c11ab51d35c1e67c96ce83ef34f0" id="r_a3106c11ab51d35c1e67c96ce83ef34f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a3106c11ab51d35c1e67c96ce83ef34f0">removeParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a3106c11ab51d35c1e67c96ce83ef34f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a parameter.  <br /></td></tr>
+<tr class="separator:a3106c11ab51d35c1e67c96ce83ef34f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a406e3c61bb2add7c3347b346f92e427d" id="r_a406e3c61bb2add7c3347b346f92e427d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">getNodeCount</a> () const</td></tr>
+<tr class="memdesc:a406e3c61bb2add7c3347b346f92e427d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of graph nodes.  <br /></td></tr>
+<tr class="separator:a406e3c61bb2add7c3347b346f92e427d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab39dd7db666b5b42041faad29ab6aa3f" id="r_ab39dd7db666b5b42041faad29ab6aa3f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ab39dd7db666b5b42041faad29ab6aa3f">getNodeId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab39dd7db666b5b42041faad29ab6aa3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a stable node identifier by insertion order.  <br /></td></tr>
+<tr class="separator:ab39dd7db666b5b42041faad29ab6aa3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4efdeb509d1272786934dd604f08245" id="r_ad4efdeb509d1272786934dd604f08245"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad4efdeb509d1272786934dd604f08245">hasNode</a> (const std::string &amp;nodeId) const</td></tr>
+<tr class="memdesc:ad4efdeb509d1272786934dd604f08245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether a node exists.  <br /></td></tr>
+<tr class="separator:ad4efdeb509d1272786934dd604f08245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06a22f62f22d65da63210086f7e53691" id="r_a06a22f62f22d65da63210086f7e53691"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a06a22f62f22d65da63210086f7e53691">addNode</a> (const std::string &amp;nodeId, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:a06a22f62f22d65da63210086f7e53691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a node of kind line, branch, choice, call, command, wait, or end.  <br /></td></tr>
+<tr class="separator:a06a22f62f22d65da63210086f7e53691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa45ae0f9900e4c3ea0b71fc859ad021f" id="r_aa45ae0f9900e4c3ea0b71fc859ad021f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa45ae0f9900e4c3ea0b71fc859ad021f">removeNode</a> (const std::string &amp;nodeId)</td></tr>
+<tr class="memdesc:aa45ae0f9900e4c3ea0b71fc859ad021f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a node and references to it.  <br /></td></tr>
+<tr class="separator:aa45ae0f9900e4c3ea0b71fc859ad021f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca55ee859633cf2dad5654ea990f25e1" id="r_aca55ee859633cf2dad5654ea990f25e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aca55ee859633cf2dad5654ea990f25e1">renameNode</a> (const std::string &amp;oldId, const std::string &amp;newId)</td></tr>
+<tr class="memdesc:aca55ee859633cf2dad5654ea990f25e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename a node and rewrite graph references.  <br /></td></tr>
+<tr class="separator:aca55ee859633cf2dad5654ea990f25e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e42daa29453a4aec4c4e4e1e5fa682d" id="r_a0e42daa29453a4aec4c4e4e1e5fa682d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0e42daa29453a4aec4c4e4e1e5fa682d">getNodeKind</a> (const std::string &amp;nodeId) const</td></tr>
+<tr class="memdesc:a0e42daa29453a4aec4c4e4e1e5fa682d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a node kind name.  <br /></td></tr>
+<tr class="separator:a0e42daa29453a4aec4c4e4e1e5fa682d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa249ba1f2256804ad04e71baccf21b3c" id="r_aa249ba1f2256804ad04e71baccf21b3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa249ba1f2256804ad04e71baccf21b3c">setNodeKind</a> (const std::string &amp;nodeId, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:aa249ba1f2256804ad04e71baccf21b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change a node kind while preserving compatible fields.  <br /></td></tr>
+<tr class="separator:aa249ba1f2256804ad04e71baccf21b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5706fac70d82006c4da9fd365e89b13a" id="r_a5706fac70d82006c4da9fd365e89b13a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a5706fac70d82006c4da9fd365e89b13a">getFieldCount</a> (const std::string &amp;nodeId) const</td></tr>
+<tr class="memdesc:a5706fac70d82006c4da9fd365e89b13a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reflected inspector field count for a node kind.  <br /></td></tr>
+<tr class="separator:a5706fac70d82006c4da9fd365e89b13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6468c8b5a4cb36d4c2099bc2488bb4a8" id="r_a6468c8b5a4cb36d4c2099bc2488bb4a8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a6468c8b5a4cb36d4c2099bc2488bb4a8">getFieldName</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a6468c8b5a4cb36d4c2099bc2488bb4a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reflected field key.  <br /></td></tr>
+<tr class="separator:a6468c8b5a4cb36d4c2099bc2488bb4a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93e35fb604eead21d917166e479854a0" id="r_a93e35fb604eead21d917166e479854a0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a93e35fb604eead21d917166e479854a0">getFieldKind</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a93e35fb604eead21d917166e479854a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a field UI hint such as string, multiline, expression, asset, or json.  <br /></td></tr>
+<tr class="separator:a93e35fb604eead21d917166e479854a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c1e2aa32913023d94781e748c729043" id="r_a2c1e2aa32913023d94781e748c729043"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a2c1e2aa32913023d94781e748c729043">getField</a> (const std::string &amp;nodeId, const std::string &amp;field) const</td></tr>
+<tr class="memdesc:a2c1e2aa32913023d94781e748c729043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a scalar field value by key.  <br /></td></tr>
+<tr class="separator:a2c1e2aa32913023d94781e748c729043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7b6846c0133be5579256a1e5e68e85b" id="r_ad7b6846c0133be5579256a1e5e68e85b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad7b6846c0133be5579256a1e5e68e85b">setField</a> (const std::string &amp;nodeId, const std::string &amp;field, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ad7b6846c0133be5579256a1e5e68e85b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a scalar field value by key.  <br /></td></tr>
+<tr class="separator:ad7b6846c0133be5579256a1e5e68e85b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab1761ade14f25ff9d49bf8c21635c3" id="r_a4ab1761ade14f25ff9d49bf8c21635c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4ab1761ade14f25ff9d49bf8c21635c3">getRouteCount</a> (const std::string &amp;nodeId) const</td></tr>
+<tr class="memdesc:a4ab1761ade14f25ff9d49bf8c21635c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of outgoing conditional or choice routes.  <br /></td></tr>
+<tr class="separator:a4ab1761ade14f25ff9d49bf8c21635c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a498f60d5594a86d7f6b0cca9cd263ec9" id="r_a498f60d5594a86d7f6b0cca9cd263ec9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a498f60d5594a86d7f6b0cca9cd263ec9">getRouteLabel</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a498f60d5594a86d7f6b0cca9cd263ec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a route label or expression.  <br /></td></tr>
+<tr class="separator:a498f60d5594a86d7f6b0cca9cd263ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e36f7bc394226ecf45042054b074c41" id="r_a4e36f7bc394226ecf45042054b074c41"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4e36f7bc394226ecf45042054b074c41">getRouteTarget</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a4e36f7bc394226ecf45042054b074c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a route destination.  <br /></td></tr>
+<tr class="separator:a4e36f7bc394226ecf45042054b074c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7597ab24deb1758f794a5c84d26250e0" id="r_a7597ab24deb1758f794a5c84d26250e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7597ab24deb1758f794a5c84d26250e0">addRoute</a> (const std::string &amp;nodeId, const std::string &amp;label, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a7597ab24deb1758f794a5c84d26250e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an outgoing route.  <br /></td></tr>
+<tr class="separator:a7597ab24deb1758f794a5c84d26250e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7873e11944d1d4a079d1d69166e15437" id="r_a7873e11944d1d4a079d1d69166e15437"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7873e11944d1d4a079d1d69166e15437">setRoute</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;label, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a7873e11944d1d4a079d1d69166e15437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an outgoing route.  <br /></td></tr>
+<tr class="separator:a7873e11944d1d4a079d1d69166e15437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f9b9e0f5f4eafa2288210a8456beff9" id="r_a0f9b9e0f5f4eafa2288210a8456beff9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f9b9e0f5f4eafa2288210a8456beff9">removeRoute</a> (const std::string &amp;nodeId, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a0f9b9e0f5f4eafa2288210a8456beff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an outgoing route.  <br /></td></tr>
+<tr class="separator:a0f9b9e0f5f4eafa2288210a8456beff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03c102ced6dcf5322126957071d32d33" id="r_a03c102ced6dcf5322126957071d32d33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a03c102ced6dcf5322126957071d32d33">validate</a> ()</td></tr>
+<tr class="memdesc:a03c102ced6dcf5322126957071d32d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the graph and refresh structured diagnostics.  <br /></td></tr>
+<tr class="separator:a03c102ced6dcf5322126957071d32d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acefd13db6f85a466138d9c209b7e2f57" id="r_acefd13db6f85a466138d9c209b7e2f57"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">getDiagnosticCount</a> () const</td></tr>
+<tr class="memdesc:acefd13db6f85a466138d9c209b7e2f57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current diagnostic count.  <br /></td></tr>
+<tr class="separator:acefd13db6f85a466138d9c209b7e2f57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0283286eeafe40d7161ba8f063b0288" id="r_ac0283286eeafe40d7161ba8f063b0288"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac0283286eeafe40d7161ba8f063b0288">getDiagnosticSeverity</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac0283286eeafe40d7161ba8f063b0288"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return error or warning.  <br /></td></tr>
+<tr class="separator:ac0283286eeafe40d7161ba8f063b0288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac701f97638ac6d3a75eb013b3715dd38" id="r_ac701f97638ac6d3a75eb013b3715dd38"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac701f97638ac6d3a75eb013b3715dd38">getDiagnosticPath</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac701f97638ac6d3a75eb013b3715dd38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a diagnostic source path.  <br /></td></tr>
+<tr class="separator:ac701f97638ac6d3a75eb013b3715dd38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f5011d6d5c80ee43c831d385206c193" id="r_a0f5011d6d5c80ee43c831d385206c193"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f5011d6d5c80ee43c831d385206c193">getDiagnosticLine</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a0f5011d6d5c80ee43c831d385206c193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a diagnostic line, or zero for graph diagnostics.  <br /></td></tr>
+<tr class="separator:a0f5011d6d5c80ee43c831d385206c193"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8045c431377a6c4713631896a8394ecb" id="r_a8045c431377a6c4713631896a8394ecb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8045c431377a6c4713631896a8394ecb">getDiagnosticMessage</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a8045c431377a6c4713631896a8394ecb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a diagnostic message.  <br /></td></tr>
+<tr class="separator:a8045c431377a6c4713631896a8394ecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Mutable, UI-neutral conversation document for custom editor composition. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a> 第 <a class="el" href="ConversationAuthoring_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae7871489e6eb1c271240a506fe3c3fca" name="ae7871489e6eb1c271240a506fe3c3fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7871489e6eb1c271240a506fe3c3fca">&#9670;&#160;</a></span>ConversationDocument() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::ConversationDocument::ConversationDocument </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an empty document with one end node. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00067">eve::dialogue::ConversationAsset::entry</a>, <a class="el" href="Conversation_8h_source.html#l00065">eve::dialogue::ConversationAsset::id</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00069">eve::dialogue::ConversationAsset::nodes</a>.</p>
+
+</div>
+</div>
+<a id="af70175ff6b6c74a956b3f00b0f3d5f6b" name="af70175ff6b6c74a956b3f00b0f3d5f6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af70175ff6b6c74a956b3f00b0f3d5f6b">&#9670;&#160;</a></span>ConversationDocument() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::ConversationDocument::ConversationDocument </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a>&#160;</td>
+          <td class="paramname"><em>asset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an editable copy of a runtime asset. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a06a22f62f22d65da63210086f7e53691" name="a06a22f62f22d65da63210086f7e53691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06a22f62f22d65da63210086f7e53691">&#9670;&#160;</a></span>addNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::addNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a node of kind line, branch, choice, call, command, wait, or end. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00069">eve::dialogue::ConversationAsset::nodes</a>.</p>
+
+</div>
+</div>
+<a id="a30eb9635a4421c446f2e441e93c805dd" name="a30eb9635a4421c446f2e441e93c805dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30eb9635a4421c446f2e441e93c805dd">&#9670;&#160;</a></span>addParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::addParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a unique parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00068">eve::dialogue::ConversationAsset::parameters</a>.</p>
+
+</div>
+</div>
+<a id="a7597ab24deb1758f794a5c84d26250e0" name="a7597ab24deb1758f794a5c84d26250e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7597ab24deb1758f794a5c84d26250e0">&#9670;&#160;</a></span>addRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::addRoute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an outgoing route. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a70fcd8aa3d69b4c0000fde69cdff2fb1" name="a70fcd8aa3d69b4c0000fde69cdff2fb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70fcd8aa3d69b4c0000fde69cdff2fb1">&#9670;&#160;</a></span>asset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> &amp; eve::dialogue::ConversationDocument::asset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the editable runtime asset. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a> 第 <a class="el" href="ConversationAuthoring_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00505">eve::dialogue::DialogueFlow::applyDocument()</a>.</p>
+
+</div>
+</div>
+<a id="acefd13db6f85a466138d9c209b7e2f57" name="acefd13db6f85a466138d9c209b7e2f57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acefd13db6f85a466138d9c209b7e2f57">&#9670;&#160;</a></span>getDiagnosticCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getDiagnosticCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current diagnostic count. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00315">getDiagnosticSeverity()</a>.</p>
+
+</div>
+</div>
+<a id="a0f5011d6d5c80ee43c831d385206c193" name="a0f5011d6d5c80ee43c831d385206c193"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f5011d6d5c80ee43c831d385206c193">&#9670;&#160;</a></span>getDiagnosticLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getDiagnosticLine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a diagnostic line, or zero for graph diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8045c431377a6c4713631896a8394ecb" name="a8045c431377a6c4713631896a8394ecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8045c431377a6c4713631896a8394ecb">&#9670;&#160;</a></span>getDiagnosticMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getDiagnosticMessage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a diagnostic message. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac701f97638ac6d3a75eb013b3715dd38" name="ac701f97638ac6d3a75eb013b3715dd38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac701f97638ac6d3a75eb013b3715dd38">&#9670;&#160;</a></span>getDiagnosticPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getDiagnosticPath </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a diagnostic source path. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac0283286eeafe40d7161ba8f063b0288" name="ac0283286eeafe40d7161ba8f063b0288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0283286eeafe40d7161ba8f063b0288">&#9670;&#160;</a></span>getDiagnosticSeverity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getDiagnosticSeverity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return error or warning. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">eve::dialogue::ConversationDiagnostic::Error</a>, <a class="el" href="ConversationAuthoring_8cpp_source.html#l00313">getDiagnosticCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="acd24b3bc66484c33c372d90ff3d27036" name="acd24b3bc66484c33c372d90ff3d27036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd24b3bc66484c33c372d90ff3d27036">&#9670;&#160;</a></span>getEntry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dialogue::ConversationDocument::getEntry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the entry node identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a> 第 <a class="el" href="ConversationAuthoring_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00067">eve::dialogue::ConversationAsset::entry</a>.</p>
+
+</div>
+</div>
+<a id="a2c1e2aa32913023d94781e748c729043" name="a2c1e2aa32913023d94781e748c729043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c1e2aa32913023d94781e748c729043">&#9670;&#160;</a></span>getField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getField </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a scalar field value by key. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationPersistence_8cpp_source.html#l00076">eve::dialogue::conversationStateToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5706fac70d82006c4da9fd365e89b13a" name="a5706fac70d82006c4da9fd365e89b13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5706fac70d82006c4da9fd365e89b13a">&#9670;&#160;</a></span>getFieldCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getFieldCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the reflected inspector field count for a node kind. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93e35fb604eead21d917166e479854a0" name="a93e35fb604eead21d917166e479854a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93e35fb604eead21d917166e479854a0">&#9670;&#160;</a></span>getFieldKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getFieldKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a field UI hint such as string, multiline, expression, asset, or json. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a6468c8b5a4cb36d4c2099bc2488bb4a8" name="a6468c8b5a4cb36d4c2099bc2488bb4a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6468c8b5a4cb36d4c2099bc2488bb4a8">&#9670;&#160;</a></span>getFieldName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getFieldName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a reflected field key. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1c094366e6503ec6015a34d4581a3dd7" name="a1c094366e6503ec6015a34d4581a3dd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c094366e6503ec6015a34d4581a3dd7">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dialogue::ConversationDocument::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable conversation identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a> 第 <a class="el" href="ConversationAuthoring_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00065">eve::dialogue::ConversationAsset::id</a>.</p>
+
+</div>
+</div>
+<a id="a406e3c61bb2add7c3347b346f92e427d" name="a406e3c61bb2add7c3347b346f92e427d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a406e3c61bb2add7c3347b346f92e427d">&#9670;&#160;</a></span>getNodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getNodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of graph nodes. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00069">eve::dialogue::ConversationAsset::nodes</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00141">getNodeId()</a>.</p>
+
+</div>
+</div>
+<a id="ab39dd7db666b5b42041faad29ab6aa3f" name="ab39dd7db666b5b42041faad29ab6aa3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab39dd7db666b5b42041faad29ab6aa3f">&#9670;&#160;</a></span>getNodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getNodeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a stable node identifier by insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00139">getNodeCount()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00069">eve::dialogue::ConversationAsset::nodes</a>.</p>
+
+</div>
+</div>
+<a id="a0e42daa29453a4aec4c4e4e1e5fa682d" name="a0e42daa29453a4aec4c4e4e1e5fa682d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e42daa29453a4aec4c4e4e1e5fa682d">&#9670;&#160;</a></span>getNodeKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getNodeKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a node kind name. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09eafe59ba98bce15ce5ae79b60beb89" name="a09eafe59ba98bce15ce5ae79b60beb89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09eafe59ba98bce15ce5ae79b60beb89">&#9670;&#160;</a></span>getParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getParameter </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a declared parameter by insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00117">getParameterCount()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00068">eve::dialogue::ConversationAsset::parameters</a>.</p>
+
+</div>
+</div>
+<a id="af9d18e3d685660a884c8c94c8a5d85d1" name="af9d18e3d685660a884c8c94c8a5d85d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9d18e3d685660a884c8c94c8a5d85d1">&#9670;&#160;</a></span>getParameterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getParameterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of declared parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00068">eve::dialogue::ConversationAsset::parameters</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00119">getParameter()</a>.</p>
+
+</div>
+</div>
+<a id="a4ab1761ade14f25ff9d49bf8c21635c3" name="a4ab1761ade14f25ff9d49bf8c21635c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ab1761ade14f25ff9d49bf8c21635c3">&#9670;&#160;</a></span>getRouteCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getRouteCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of outgoing conditional or choice routes. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a498f60d5594a86d7f6b0cca9cd263ec9" name="a498f60d5594a86d7f6b0cca9cd263ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a498f60d5594a86d7f6b0cca9cd263ec9">&#9670;&#160;</a></span>getRouteLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getRouteLabel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a route label or expression. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4e36f7bc394226ecf45042054b074c41" name="a4e36f7bc394226ecf45042054b074c41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e36f7bc394226ecf45042054b074c41">&#9670;&#160;</a></span>getRouteTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::ConversationDocument::getRouteTarget </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a route destination. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8c2accd77ddd4be54e86b653b68533c6" name="a8c2accd77ddd4be54e86b653b68533c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c2accd77ddd4be54e86b653b68533c6">&#9670;&#160;</a></span>getVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dialogue::ConversationDocument::getVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the asset schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a> 第 <a class="el" href="ConversationAuthoring_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00066">eve::dialogue::ConversationAsset::version</a>.</p>
+
+</div>
+</div>
+<a id="ad4efdeb509d1272786934dd604f08245" name="ad4efdeb509d1272786934dd604f08245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4efdeb509d1272786934dd604f08245">&#9670;&#160;</a></span>hasNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::hasNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether a node exists. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa45ae0f9900e4c3ea0b71fc859ad021f" name="aa45ae0f9900e4c3ea0b71fc859ad021f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa45ae0f9900e4c3ea0b71fc859ad021f">&#9670;&#160;</a></span>removeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::removeNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a node and references to it. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00067">eve::dialogue::ConversationAsset::entry</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00069">eve::dialogue::ConversationAsset::nodes</a>.</p>
+
+</div>
+</div>
+<a id="a3106c11ab51d35c1e67c96ce83ef34f0" name="a3106c11ab51d35c1e67c96ce83ef34f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3106c11ab51d35c1e67c96ce83ef34f0">&#9670;&#160;</a></span>removeParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::removeParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00068">eve::dialogue::ConversationAsset::parameters</a>.</p>
+
+</div>
+</div>
+<a id="a0f9b9e0f5f4eafa2288210a8456beff9" name="a0f9b9e0f5f4eafa2288210a8456beff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f9b9e0f5f4eafa2288210a8456beff9">&#9670;&#160;</a></span>removeRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::removeRoute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an outgoing route. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aca55ee859633cf2dad5654ea990f25e1" name="aca55ee859633cf2dad5654ea990f25e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca55ee859633cf2dad5654ea990f25e1">&#9670;&#160;</a></span>renameNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::renameNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>oldId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>newId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rename a node and rewrite graph references. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00065">eve::dialogue::ConversationAsset::id</a> , 以及 <a class="el" href="ConversationToolchain_8cpp_source.html#l00058">eve::dialogue::renameConversationNode()</a>.</p>
+
+</div>
+</div>
+<a id="a1a0b3e55dfabc47cc310f827efc551f3" name="a1a0b3e55dfabc47cc310f827efc551f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a0b3e55dfabc47cc310f827efc551f3">&#9670;&#160;</a></span>setEntry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setEntry </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the entry node identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00067">eve::dialogue::ConversationAsset::entry</a>.</p>
+
+</div>
+</div>
+<a id="ad7b6846c0133be5579256a1e5e68e85b" name="ad7b6846c0133be5579256a1e5e68e85b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7b6846c0133be5579256a1e5e68e85b">&#9670;&#160;</a></span>setField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setField </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a scalar field value by key. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationPersistence_8cpp_source.html#l00089">eve::dialogue::conversationStateFromJson()</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="adf543b2dd5d463799c51979bf10a8f09" name="adf543b2dd5d463799c51979bf10a8f09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf543b2dd5d463799c51979bf10a8f09">&#9670;&#160;</a></span>setId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rename the document identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00065">eve::dialogue::ConversationAsset::id</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="aa249ba1f2256804ad04e71baccf21b3c" name="aa249ba1f2256804ad04e71baccf21b3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa249ba1f2256804ad04e71baccf21b3c">&#9670;&#160;</a></span>setNodeKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setNodeKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change a node kind while preserving compatible fields. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+</div>
+</div>
+<a id="a7873e11944d1d4a079d1d69166e15437" name="a7873e11944d1d4a079d1d69166e15437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7873e11944d1d4a079d1d69166e15437">&#9670;&#160;</a></span>setRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setRoute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace an outgoing route. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="aac2a04b25d956e22025bbcd6e1c3e49e" name="aac2a04b25d956e22025bbcd6e1c3e49e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2a04b25d956e22025bbcd6e1c3e49e">&#9670;&#160;</a></span>setVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::setVersion </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the asset schema version to a positive value. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00066">eve::dialogue::ConversationAsset::version</a>.</p>
+
+</div>
+</div>
+<a id="a03c102ced6dcf5322126957071d32d33" name="a03c102ced6dcf5322126957071d32d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c102ced6dcf5322126957071d32d33">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationDocument::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate the graph and refresh structured diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a> 第 <a class="el" href="ConversationAuthoring_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00065">eve::dialogue::ConversationAsset::id</a>, <a class="el" href="ConversationCompiler_8cpp_source.html#l00179">eve::dialogue::lintConversations()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/dialogue/<a class="el" href="ConversationAuthoring_8h_source.html">ConversationAuthoring.h</a></li>
+<li>src/modules/dialogue/<a class="el" href="ConversationAuthoring_8cpp_source.html">ConversationAuthoring.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

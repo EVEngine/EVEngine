@@ -1,0 +1,1275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::level_editing::Brush类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1level__editing.html">level_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1level__editing_1_1Brush.html">Brush</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1level__editing_1_1Brush-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::level_editing::Brush类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Unity GridBrushBase-inspired tile brush. Operates on <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html" title="Independent GID grid for map brushes (no hard dependency on map.TileLayer).">TileBuffer</a>; exposes preview + change list for UI / undo.  
+ <a href="classeve_1_1level__editing_1_1Brush.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Brush_8h_source.html">Brush.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2dde4d322b78e96fca407e35e52f140b" id="r_a2dde4d322b78e96fca407e35e52f140b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a2dde4d322b78e96fca407e35e52f140b">Brush</a> ()</td></tr>
+<tr class="separator:a2dde4d322b78e96fca407e35e52f140b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9b2600fab00acb5572fa49e4043432f" id="r_af9b2600fab00acb5572fa49e4043432f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#af9b2600fab00acb5572fa49e4043432f">setTool</a> (const std::string &amp;tool)</td></tr>
+<tr class="separator:af9b2600fab00acb5572fa49e4043432f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26d4c91a568b98a55bbd910044821723" id="r_a26d4c91a568b98a55bbd910044821723"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a26d4c91a568b98a55bbd910044821723">getTool</a> () const</td></tr>
+<tr class="separator:a26d4c91a568b98a55bbd910044821723"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38a39613e1e8d237d8999f76ff6ac9a0" id="r_a38a39613e1e8d237d8999f76ff6ac9a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a38a39613e1e8d237d8999f76ff6ac9a0">setSize</a> (int size)</td></tr>
+<tr class="separator:a38a39613e1e8d237d8999f76ff6ac9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4601ff6640bb3b597efd0a00723134e8" id="r_a4601ff6640bb3b597efd0a00723134e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a4601ff6640bb3b597efd0a00723134e8">getSize</a> () const</td></tr>
+<tr class="separator:a4601ff6640bb3b597efd0a00723134e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df17267828aa03f3531ed66ebc16a2a" id="r_a7df17267828aa03f3531ed66ebc16a2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a7df17267828aa03f3531ed66ebc16a2a">setShape</a> (const std::string &amp;shape)</td></tr>
+<tr class="separator:a7df17267828aa03f3531ed66ebc16a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addef8fee4b92bccf361b8fb3d1a83341" id="r_addef8fee4b92bccf361b8fb3d1a83341"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#addef8fee4b92bccf361b8fb3d1a83341">getShape</a> () const</td></tr>
+<tr class="separator:addef8fee4b92bccf361b8fb3d1a83341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb536c3cb18acf4b4ca768d2e5764b0f" id="r_abb536c3cb18acf4b4ca768d2e5764b0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#abb536c3cb18acf4b4ca768d2e5764b0f">setTile</a> (int gid)</td></tr>
+<tr class="separator:abb536c3cb18acf4b4ca768d2e5764b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff3ec989c56b9f53de193cbad931cec" id="r_a1ff3ec989c56b9f53de193cbad931cec"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a1ff3ec989c56b9f53de193cbad931cec">getTile</a> () const</td></tr>
+<tr class="separator:a1ff3ec989c56b9f53de193cbad931cec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a069c7c45cf13f24043be9c1a00cb51d6" id="r_a069c7c45cf13f24043be9c1a00cb51d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a069c7c45cf13f24043be9c1a00cb51d6">setEraseTile</a> (int gid)</td></tr>
+<tr class="separator:a069c7c45cf13f24043be9c1a00cb51d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68adcbf4c79a4b4f5d637b1e5e3222e" id="r_ac68adcbf4c79a4b4f5d637b1e5e3222e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ac68adcbf4c79a4b4f5d637b1e5e3222e">getEraseTile</a> () const</td></tr>
+<tr class="separator:ac68adcbf4c79a4b4f5d637b1e5e3222e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e7cff2a65f8cf798e6fa9595dcce2c" id="r_a38e7cff2a65f8cf798e6fa9595dcce2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a38e7cff2a65f8cf798e6fa9595dcce2c">setStampSize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="separator:a38e7cff2a65f8cf798e6fa9595dcce2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff9dcba8db4fc48f9d394510653b3078" id="r_aff9dcba8db4fc48f9d394510653b3078"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#aff9dcba8db4fc48f9d394510653b3078">getStampWidth</a> () const</td></tr>
+<tr class="separator:aff9dcba8db4fc48f9d394510653b3078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cc7921de0aa1919d26b7fd05a590aa1" id="r_a4cc7921de0aa1919d26b7fd05a590aa1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a4cc7921de0aa1919d26b7fd05a590aa1">getStampHeight</a> () const</td></tr>
+<tr class="separator:a4cc7921de0aa1919d26b7fd05a590aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76afdb423d09d880d89964f9020af8c2" id="r_a76afdb423d09d880d89964f9020af8c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a76afdb423d09d880d89964f9020af8c2">setStampTile</a> (int lx, int ly, int gid)</td></tr>
+<tr class="separator:a76afdb423d09d880d89964f9020af8c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0efef0f554917f0612ed1e94cfde0e28" id="r_a0efef0f554917f0612ed1e94cfde0e28"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a0efef0f554917f0612ed1e94cfde0e28">getStampTile</a> (int lx, int ly) const</td></tr>
+<tr class="separator:a0efef0f554917f0612ed1e94cfde0e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08cfd6f4e7461bd223050c8816081f63" id="r_a08cfd6f4e7461bd223050c8816081f63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a08cfd6f4e7461bd223050c8816081f63">clearStamp</a> ()</td></tr>
+<tr class="separator:a08cfd6f4e7461bd223050c8816081f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec4c31244226081a4284dfad3828f73" id="r_a9ec4c31244226081a4284dfad3828f73"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a9ec4c31244226081a4284dfad3828f73">paintAt</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int tx, int ty)</td></tr>
+<tr class="memdesc:a9ec4c31244226081a4284dfad3828f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply current tool at / between cells. Returns cells changed.  <br /></td></tr>
+<tr class="separator:a9ec4c31244226081a4284dfad3828f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab015a59a70e0842a83386a0cdbc09ab3" id="r_ab015a59a70e0842a83386a0cdbc09ab3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ab015a59a70e0842a83386a0cdbc09ab3">eraseAt</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int tx, int ty)</td></tr>
+<tr class="separator:ab015a59a70e0842a83386a0cdbc09ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55afe2ff8bb48636ce608fe835b25af0" id="r_a55afe2ff8bb48636ce608fe835b25af0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a55afe2ff8bb48636ce608fe835b25af0">floodFill</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int tx, int ty)</td></tr>
+<tr class="separator:a55afe2ff8bb48636ce608fe835b25af0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132b63373c6a38ba6b2b454f85eb0206" id="r_a132b63373c6a38ba6b2b454f85eb0206"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a132b63373c6a38ba6b2b454f85eb0206">paintLine</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int x0, int y0, int x1, int y1)</td></tr>
+<tr class="separator:a132b63373c6a38ba6b2b454f85eb0206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d18c9867fa4c5640184f32746a64b82" id="r_a0d18c9867fa4c5640184f32746a64b82"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a0d18c9867fa4c5640184f32746a64b82">paintRect</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int x0, int y0, int x1, int y1, bool filled)</td></tr>
+<tr class="separator:a0d18c9867fa4c5640184f32746a64b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34e8fd32050e88a2798742916441c0c8" id="r_a34e8fd32050e88a2798742916441c0c8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a34e8fd32050e88a2798742916441c0c8">previewAt</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int tx, int ty)</td></tr>
+<tr class="memdesc:a34e8fd32050e88a2798742916441c0c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill preview buffer without mutating target.  <br /></td></tr>
+<tr class="separator:a34e8fd32050e88a2798742916441c0c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8907f8248ca2d9eecccce87b342564d8" id="r_a8907f8248ca2d9eecccce87b342564d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a8907f8248ca2d9eecccce87b342564d8">previewLine</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int x0, int y0, int x1, int y1)</td></tr>
+<tr class="separator:a8907f8248ca2d9eecccce87b342564d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e5bf3f335f6bd5de3869f8f62b7d67" id="r_ae5e5bf3f335f6bd5de3869f8f62b7d67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ae5e5bf3f335f6bd5de3869f8f62b7d67">previewRect</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>, int x0, int y0, int x1, int y1, bool filled)</td></tr>
+<tr class="separator:ae5e5bf3f335f6bd5de3869f8f62b7d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb8754f09ea0d80e2ad1a5aba3b89512" id="r_acb8754f09ea0d80e2ad1a5aba3b89512"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#acb8754f09ea0d80e2ad1a5aba3b89512">getPreviewCount</a> () const</td></tr>
+<tr class="separator:acb8754f09ea0d80e2ad1a5aba3b89512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1fdcc85f8348cfc131ee60c126d62d" id="r_a9e1fdcc85f8348cfc131ee60c126d62d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a9e1fdcc85f8348cfc131ee60c126d62d">getPreviewX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9e1fdcc85f8348cfc131ee60c126d62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff295d195d2847e1c24da23c6e510b21" id="r_aff295d195d2847e1c24da23c6e510b21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#aff295d195d2847e1c24da23c6e510b21">getPreviewY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aff295d195d2847e1c24da23c6e510b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6d3e6902a6b59d104c85f42bdf4adab" id="r_ae6d3e6902a6b59d104c85f42bdf4adab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ae6d3e6902a6b59d104c85f42bdf4adab">getPreviewGid</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae6d3e6902a6b59d104c85f42bdf4adab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae908367f4caba9f0d09d67cc2b9950a7" id="r_ae908367f4caba9f0d09d67cc2b9950a7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ae908367f4caba9f0d09d67cc2b9950a7">getChangeCount</a> () const</td></tr>
+<tr class="separator:ae908367f4caba9f0d09d67cc2b9950a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85264e63da48f0e5651d20d2436eb359" id="r_a85264e63da48f0e5651d20d2436eb359"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a85264e63da48f0e5651d20d2436eb359">getChangeX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a85264e63da48f0e5651d20d2436eb359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1775f4d4063177d74ef5c831046638bb" id="r_a1775f4d4063177d74ef5c831046638bb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a1775f4d4063177d74ef5c831046638bb">getChangeY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1775f4d4063177d74ef5c831046638bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3ab0d403b127ca4ab4183dd5b653606" id="r_ad3ab0d403b127ca4ab4183dd5b653606"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#ad3ab0d403b127ca4ab4183dd5b653606">getChangeOldGid</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad3ab0d403b127ca4ab4183dd5b653606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bb5c813878642aac1fd68dd6e338768" id="r_a1bb5c813878642aac1fd68dd6e338768"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1Brush.html#a1bb5c813878642aac1fd68dd6e338768">getChangeNewGid</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1bb5c813878642aac1fd68dd6e338768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Unity GridBrushBase-inspired tile brush. Operates on <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html" title="Independent GID grid for map brushes (no hard dependency on map.TileLayer).">TileBuffer</a>; exposes preview + change list for UI / undo. </p>
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2dde4d322b78e96fca407e35e52f140b" name="a2dde4d322b78e96fca407e35e52f140b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dde4d322b78e96fca407e35e52f140b">&#9670;&#160;</a></span>Brush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::level_editing::Brush::Brush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a08cfd6f4e7461bd223050c8816081f63" name="a08cfd6f4e7461bd223050c8816081f63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08cfd6f4e7461bd223050c8816081f63">&#9670;&#160;</a></span>clearStamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::clearStamp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab015a59a70e0842a83386a0cdbc09ab3" name="ab015a59a70e0842a83386a0cdbc09ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab015a59a70e0842a83386a0cdbc09ab3">&#9670;&#160;</a></span>eraseAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::eraseAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Brush_8cpp_source.html#l00192">paintAt()</a>.</p>
+
+</div>
+</div>
+<a id="a55afe2ff8bb48636ce608fe835b25af0" name="a55afe2ff8bb48636ce608fe835b25af0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55afe2ff8bb48636ce608fe835b25af0">&#9670;&#160;</a></span>floodFill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::floodFill </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Brush_8cpp_source.html#l00192">paintAt()</a>.</p>
+
+</div>
+</div>
+<a id="ae908367f4caba9f0d09d67cc2b9950a7" name="ae908367f4caba9f0d09d67cc2b9950a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae908367f4caba9f0d09d67cc2b9950a7">&#9670;&#160;</a></span>getChangeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getChangeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1bb5c813878642aac1fd68dd6e338768" name="a1bb5c813878642aac1fd68dd6e338768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb5c813878642aac1fd68dd6e338768">&#9670;&#160;</a></span>getChangeNewGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getChangeNewGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ad3ab0d403b127ca4ab4183dd5b653606" name="ad3ab0d403b127ca4ab4183dd5b653606"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3ab0d403b127ca4ab4183dd5b653606">&#9670;&#160;</a></span>getChangeOldGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getChangeOldGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a85264e63da48f0e5651d20d2436eb359" name="a85264e63da48f0e5651d20d2436eb359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85264e63da48f0e5651d20d2436eb359">&#9670;&#160;</a></span>getChangeX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getChangeX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1775f4d4063177d74ef5c831046638bb" name="a1775f4d4063177d74ef5c831046638bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1775f4d4063177d74ef5c831046638bb">&#9670;&#160;</a></span>getChangeY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getChangeY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac68adcbf4c79a4b4f5d637b1e5e3222e" name="ac68adcbf4c79a4b4f5d637b1e5e3222e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68adcbf4c79a4b4f5d637b1e5e3222e">&#9670;&#160;</a></span>getEraseTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getEraseTile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb8754f09ea0d80e2ad1a5aba3b89512" name="acb8754f09ea0d80e2ad1a5aba3b89512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb8754f09ea0d80e2ad1a5aba3b89512">&#9670;&#160;</a></span>getPreviewCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getPreviewCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6d3e6902a6b59d104c85f42bdf4adab" name="ae6d3e6902a6b59d104c85f42bdf4adab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6d3e6902a6b59d104c85f42bdf4adab">&#9670;&#160;</a></span>getPreviewGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getPreviewGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9e1fdcc85f8348cfc131ee60c126d62d" name="a9e1fdcc85f8348cfc131ee60c126d62d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e1fdcc85f8348cfc131ee60c126d62d">&#9670;&#160;</a></span>getPreviewX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getPreviewX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aff295d195d2847e1c24da23c6e510b21" name="aff295d195d2847e1c24da23c6e510b21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff295d195d2847e1c24da23c6e510b21">&#9670;&#160;</a></span>getPreviewY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getPreviewY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="addef8fee4b92bccf361b8fb3d1a83341" name="addef8fee4b92bccf361b8fb3d1a83341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addef8fee4b92bccf361b8fb3d1a83341">&#9670;&#160;</a></span>getShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::Brush::getShape </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4601ff6640bb3b597efd0a00723134e8" name="a4601ff6640bb3b597efd0a00723134e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4601ff6640bb3b597efd0a00723134e8">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cc7921de0aa1919d26b7fd05a590aa1" name="a4cc7921de0aa1919d26b7fd05a590aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cc7921de0aa1919d26b7fd05a590aa1">&#9670;&#160;</a></span>getStampHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getStampHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0efef0f554917f0612ed1e94cfde0e28" name="a0efef0f554917f0612ed1e94cfde0e28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0efef0f554917f0612ed1e94cfde0e28">&#9670;&#160;</a></span>getStampTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getStampTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ly</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff9dcba8db4fc48f9d394510653b3078" name="aff9dcba8db4fc48f9d394510653b3078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9dcba8db4fc48f9d394510653b3078">&#9670;&#160;</a></span>getStampWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getStampWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ff3ec989c56b9f53de193cbad931cec" name="a1ff3ec989c56b9f53de193cbad931cec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ff3ec989c56b9f53de193cbad931cec">&#9670;&#160;</a></span>getTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::getTile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a26d4c91a568b98a55bbd910044821723" name="a26d4c91a568b98a55bbd910044821723"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26d4c91a568b98a55bbd910044821723">&#9670;&#160;</a></span>getTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::Brush::getTool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8h_source.html">Brush.h</a> 第 <a class="el" href="Brush_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ec4c31244226081a4284dfad3828f73" name="a9ec4c31244226081a4284dfad3828f73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec4c31244226081a4284dfad3828f73">&#9670;&#160;</a></span>paintAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::paintAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply current tool at / between cells. Returns cells changed. </p>
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="Brush_8cpp_source.html#l00201">eraseAt()</a> , 以及 <a class="el" href="Brush_8cpp_source.html#l00207">floodFill()</a>.</p>
+
+</div>
+</div>
+<a id="a132b63373c6a38ba6b2b454f85eb0206" name="a132b63373c6a38ba6b2b454f85eb0206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132b63373c6a38ba6b2b454f85eb0206">&#9670;&#160;</a></span>paintLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::paintLine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>.</p>
+
+</div>
+</div>
+<a id="a0d18c9867fa4c5640184f32746a64b82" name="a0d18c9867fa4c5640184f32746a64b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d18c9867fa4c5640184f32746a64b82">&#9670;&#160;</a></span>paintRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::paintRect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>filled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>.</p>
+
+</div>
+</div>
+<a id="a34e8fd32050e88a2798742916441c0c8" name="a34e8fd32050e88a2798742916441c0c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34e8fd32050e88a2798742916441c0c8">&#9670;&#160;</a></span>previewAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::previewAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill preview buffer without mutating target. </p>
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a8907f8248ca2d9eecccce87b342564d8" name="a8907f8248ca2d9eecccce87b342564d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8907f8248ca2d9eecccce87b342564d8">&#9670;&#160;</a></span>previewLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::previewLine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>.</p>
+
+</div>
+</div>
+<a id="ae5e5bf3f335f6bd5de3869f8f62b7d67" name="ae5e5bf3f335f6bd5de3869f8f62b7d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5e5bf3f335f6bd5de3869f8f62b7d67">&#9670;&#160;</a></span>previewRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::Brush::previewRect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>filled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>.</p>
+
+</div>
+</div>
+<a id="a069c7c45cf13f24043be9c1a00cb51d6" name="a069c7c45cf13f24043be9c1a00cb51d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a069c7c45cf13f24043be9c1a00cb51d6">&#9670;&#160;</a></span>setEraseTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setEraseTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7df17267828aa03f3531ed66ebc16a2a" name="a7df17267828aa03f3531ed66ebc16a2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7df17267828aa03f3531ed66ebc16a2a">&#9670;&#160;</a></span>setShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setShape </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>shape</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38a39613e1e8d237d8999f76ff6ac9a0" name="a38a39613e1e8d237d8999f76ff6ac9a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38a39613e1e8d237d8999f76ff6ac9a0">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38e7cff2a65f8cf798e6fa9595dcce2c" name="a38e7cff2a65f8cf798e6fa9595dcce2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e7cff2a65f8cf798e6fa9595dcce2c">&#9670;&#160;</a></span>setStampSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setStampSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a76afdb423d09d880d89964f9020af8c2" name="a76afdb423d09d880d89964f9020af8c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76afdb423d09d880d89964f9020af8c2">&#9670;&#160;</a></span>setStampTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setStampTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb536c3cb18acf4b4ca768d2e5764b0f" name="abb536c3cb18acf4b4ca768d2e5764b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb536c3cb18acf4b4ca768d2e5764b0f">&#9670;&#160;</a></span>setTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af9b2600fab00acb5572fa49e4043432f" name="af9b2600fab00acb5572fa49e4043432f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9b2600fab00acb5572fa49e4043432f">&#9670;&#160;</a></span>setTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::Brush::setTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tool</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Brush_8cpp_source.html">Brush.cpp</a> 第 <a class="el" href="Brush_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/level_editing/<a class="el" href="Brush_8h_source.html">Brush.h</a></li>
+<li>src/modules/level_editing/<a class="el" href="Brush_8cpp_source.html">Brush.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

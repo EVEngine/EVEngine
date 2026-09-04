@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/audio_editing/AudioImportDiagnostics.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e054def7dbc521ffca26c2cf90850a73.html">audio_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AudioImportDiagnostics.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AudioImportDiagnostics_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AudioImportDiagnostics_8h.html">audio_editing/AudioImportDiagnostics.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioImportDiagnosticsService.html#aa49a9543d32beb8618c99ae0902b061a">    9</a></span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html">AudioImportInspectionResult</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioImportDiagnosticsService.html#aa49a9543d32beb8618c99ae0902b061a">AudioImportDiagnosticsService::inspect</a>(</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html">AudioImportInspectionRequest</a>&amp; request, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">EditorAudioPcm</a>&amp; pcm)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html">AudioImportInspectionResult</a> result;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#aee0d896fec0cf84387103066fe40be12">asset</a> = request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a562034c9d847e391ee36a542a07dfc7e">asset</a>; result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a28925e9ed87e9c557473b296a6788ded">sourceRevision</a> = request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#aeea7ffb27568097d8eca00fff63c85b0">sourceRevision</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a562034c9d847e391ee36a542a07dfc7e">asset</a>.empty() || request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#aeea7ffb27568097d8eca00fff63c85b0">sourceRevision</a> == 0 || request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#af3bea637fb9cdc119bffcd42a197e799">codec</a>.empty() ||</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">sampleRate</a> &lt; 8000 || pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">sampleRate</a> &gt; 384000 || pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a> &lt; 1 || pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a> &gt; 8 ||</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.empty() || pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.size() % <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a>) != 0 ||</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.size() &gt; request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#ade181c98bd62d7e565653d7f0468f08a">maximumSamples</a> || request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#ade181c98bd62d7e565653d7f0468f08a">maximumSamples</a> == 0 ||</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        !std::isfinite(request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">clippingThreshold</a>) || request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">clippingThreshold</a> &lt;= 0.0 ||</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">clippingThreshold</a> &gt; 1.0 || !std::isfinite(request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a57b0ea4a7cc75795c974f70765910bda">silenceThreshold</a>) ||</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a57b0ea4a7cc75795c974f70765910bda">silenceThreshold</a> &lt; 0.0 || request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a57b0ea4a7cc75795c974f70765910bda">silenceThreshold</a> &gt;= request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">clippingThreshold</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a6d46c63695ce3f52586177cfc34100dc">status</a> = EditorStatus::Rejected;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, RuleId(<span class="stringliteral">&quot;editor.audio.invalid-import-inspection&quot;</span>),</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="stringliteral">&quot;Audio inspection requires valid identity, format, thresholds and bounded PCM&quot;</span>));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> std::size_t frames = pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.size() / <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#adf9a2a223ad32ca5d1a9a5d643d6a521">duration</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(frames) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">sampleRate</a>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.size() &gt; std::numeric_limits&lt;std::size_t&gt;::max() / <span class="keyword">sizeof</span>(float)) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a6d46c63695ce3f52586177cfc34100dc">status</a> = EditorStatus::Rejected;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, RuleId(<span class="stringliteral">&quot;editor.audio.decoded-size-overflow&quot;</span>),</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            DiagnosticSeverity::Error, <span class="stringliteral">&quot;Decoded audio size exceeds the host range&quot;</span>));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a1eaa12260628f75c2a6b0a48c5ea878c">decodedBytes</a> = pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>.size() * <span class="keyword">sizeof</span>(float);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a8ef81de0a632dd3f6a219997c0b75a36">compressionRatio</a> = request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#acd69c6b077d0aa5f04342d562aaaa630">encodedBytes</a> &gt; 0</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a1eaa12260628f75c2a6b0a48c5ea878c">decodedBytes</a>) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#acd69c6b077d0aa5f04342d562aaaa630">encodedBytes</a>) : 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a13cb535bbc8cd52bff72d2d364028643">recommendStreaming</a> = result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a1eaa12260628f75c2a6b0a48c5ea878c">decodedBytes</a> &gt; request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a8bda905aa92ac95003ee408057b03595">staticMemoryBudget</a> || result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#adf9a2a223ad32ca5d1a9a5d643d6a521">duration</a> &gt; 10.0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a>));</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::vector&lt;long double&gt; squares(result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>.size(), 0.0L);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::vector&lt;long double&gt; sums(result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>.size(), 0.0L);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (std::size_t frame = 0; frame &lt; frames; ++frame) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> channel = 0; channel &lt; pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a>; ++channel) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> sample = pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>[frame * <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(pcm.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a>) +</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                             <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(channel)];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (!std::isfinite(sample)) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a6d46c63695ce3f52586177cfc34100dc">status</a> = EditorStatus::Rejected;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, RuleId(<span class="stringliteral">&quot;editor.audio.nonfinite-sample&quot;</span>),</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                    DiagnosticSeverity::Error, <span class="stringliteral">&quot;Decoded PCM contains a non-finite sample&quot;</span>));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">auto</span>&amp; statistics = result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(channel)];</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> absolute = std::abs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            statistics.peak = std::max(statistics.peak, absolute);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">if</span> (absolute &gt;= request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">clippingThreshold</a>) ++statistics.clippedSamples;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            sums[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(channel)] += sample;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            squares[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(channel)] += <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample) * sample;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">bool</span> silent = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">for</span> (std::size_t channel = 0; channel &lt; result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>.size(); ++channel) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keyword">auto</span>&amp; statistics = result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">channels</a>[channel];</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        statistics.dcOffset = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sums[channel] / frames);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        statistics.rms = std::sqrt(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(squares[channel] / frames));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        silent = silent &amp;&amp; statistics.peak &lt;= request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a57b0ea4a7cc75795c974f70765910bda">silenceThreshold</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span> (statistics.clippedSamples &gt; 0)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, RuleId(<span class="stringliteral">&quot;editor.audio.clipping&quot;</span>),</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                DiagnosticSeverity::Warning,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="stringliteral">&quot;Audio channel &quot;</span> + std::to_string(channel) + <span class="stringliteral">&quot; contains clipped samples&quot;</span>));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (std::abs(statistics.dcOffset) &gt; 0.01)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, RuleId(<span class="stringliteral">&quot;editor.audio.dc-offset&quot;</span>),</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                DiagnosticSeverity::Warning,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="stringliteral">&quot;Audio channel &quot;</span> + std::to_string(channel) + <span class="stringliteral">&quot; has significant DC offset&quot;</span>));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (silent)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, RuleId(<span class="stringliteral">&quot;editor.audio.silence&quot;</span>),</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            DiagnosticSeverity::Warning, <span class="stringliteral">&quot;Decoded audio is effectively silent&quot;</span>));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> (result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a13cb535bbc8cd52bff72d2d364028643">recommendStreaming</a> &amp;&amp; !request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a638b45fd78496a62121b58e5b8c3e0c0">streaming</a>)</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            RuleId(<span class="stringliteral">&quot;editor.audio.streaming-recommended&quot;</span>), DiagnosticSeverity::Warning,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="stringliteral">&quot;Long or memory-heavy audio should use streaming playback&quot;</span>));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (!result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a13cb535bbc8cd52bff72d2d364028643">recommendStreaming</a> &amp;&amp; request.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a638b45fd78496a62121b58e5b8c3e0c0">streaming</a>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::DiagnosticCode::None</a>, RuleId(<span class="stringliteral">&quot;editor.audio.static-recommended&quot;</span>),</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            DiagnosticSeverity::Info, <span class="stringliteral">&quot;Short audio can avoid streaming overhead&quot;</span>));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    result.<a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a6d46c63695ce3f52586177cfc34100dc">status</a> = EditorStatus::Applied;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::audio_editing</span></div>
+<div class="ttc" id="aAudioImportDiagnostics_8h_html"><div class="ttname"><a href="AudioImportDiagnostics_8h.html">AudioImportDiagnostics.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioImportDiagnosticsService_html_aa49a9543d32beb8618c99ae0902b061a"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioImportDiagnosticsService.html#aa49a9543d32beb8618c99ae0902b061a">eve::audio_editing::AudioImportDiagnosticsService::inspect</a></div><div class="ttdeci">AudioImportInspectionResult inspect(const AudioImportInspectionRequest &amp;request, const EditorAudioPcm &amp;pcm) const</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8cpp_source.html#l00009">AudioImportDiagnostics.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AudioEditingCommands_8cpp_source.html#l00007">AudioEditingCommands.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::DiagnosticCode::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html">eve::audio_editing::AudioImportInspectionRequest</a></div><div class="ttdoc">Import metadata and policy supplied before audio publication.</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00012">AudioImportDiagnostics.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_a260508a80464abbc276b874c5e4af829"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a260508a80464abbc276b874c5e4af829">eve::audio_editing::AudioImportInspectionRequest::clippingThreshold</a></div><div class="ttdeci">double clippingThreshold</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00018">AudioImportDiagnostics.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_a562034c9d847e391ee36a542a07dfc7e"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a562034c9d847e391ee36a542a07dfc7e">eve::audio_editing::AudioImportInspectionRequest::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00013">AudioImportDiagnostics.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_a57b0ea4a7cc75795c974f70765910bda"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a57b0ea4a7cc75795c974f70765910bda">eve::audio_editing::AudioImportInspectionRequest::silenceThreshold</a></div><div class="ttdeci">double silenceThreshold</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00019">AudioImportDiagnostics.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_a638b45fd78496a62121b58e5b8c3e0c0"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a638b45fd78496a62121b58e5b8c3e0c0">eve::audio_editing::AudioImportInspectionRequest::streaming</a></div><div class="ttdeci">bool streaming</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00017">AudioImportDiagnostics.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_a8bda905aa92ac95003ee408057b03595"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#a8bda905aa92ac95003ee408057b03595">eve::audio_editing::AudioImportInspectionRequest::staticMemoryBudget</a></div><div class="ttdeci">std::size_t staticMemoryBudget</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00021">AudioImportDiagnostics.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_acd69c6b077d0aa5f04342d562aaaa630"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#acd69c6b077d0aa5f04342d562aaaa630">eve::audio_editing::AudioImportInspectionRequest::encodedBytes</a></div><div class="ttdeci">std::size_t encodedBytes</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00016">AudioImportDiagnostics.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_ade181c98bd62d7e565653d7f0468f08a"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#ade181c98bd62d7e565653d7f0468f08a">eve::audio_editing::AudioImportInspectionRequest::maximumSamples</a></div><div class="ttdeci">std::size_t maximumSamples</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00020">AudioImportDiagnostics.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_aeea7ffb27568097d8eca00fff63c85b0"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#aeea7ffb27568097d8eca00fff63c85b0">eve::audio_editing::AudioImportInspectionRequest::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00014">AudioImportDiagnostics.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionRequest_html_af3bea637fb9cdc119bffcd42a197e799"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionRequest.html#af3bea637fb9cdc119bffcd42a197e799">eve::audio_editing::AudioImportInspectionRequest::codec</a></div><div class="ttdeci">std::string codec</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00015">AudioImportDiagnostics.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html">eve::audio_editing::AudioImportInspectionResult</a></div><div class="ttdoc">Revision-tagged codec/import QA and memory recommendation.</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00033">AudioImportDiagnostics.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a11a9332b06ad0b5b98d4fa0f1bfb8cde"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a11a9332b06ad0b5b98d4fa0f1bfb8cde">eve::audio_editing::AudioImportInspectionResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00042">AudioImportDiagnostics.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a13cb535bbc8cd52bff72d2d364028643"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a13cb535bbc8cd52bff72d2d364028643">eve::audio_editing::AudioImportInspectionResult::recommendStreaming</a></div><div class="ttdeci">bool recommendStreaming</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00040">AudioImportDiagnostics.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a1eaa12260628f75c2a6b0a48c5ea878c"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a1eaa12260628f75c2a6b0a48c5ea878c">eve::audio_editing::AudioImportInspectionResult::decodedBytes</a></div><div class="ttdeci">std::size_t decodedBytes</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00038">AudioImportDiagnostics.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a28925e9ed87e9c557473b296a6788ded"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a28925e9ed87e9c557473b296a6788ded">eve::audio_editing::AudioImportInspectionResult::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00036">AudioImportDiagnostics.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a6d46c63695ce3f52586177cfc34100dc"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a6d46c63695ce3f52586177cfc34100dc">eve::audio_editing::AudioImportInspectionResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00034">AudioImportDiagnostics.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_a8ef81de0a632dd3f6a219997c0b75a36"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#a8ef81de0a632dd3f6a219997c0b75a36">eve::audio_editing::AudioImportInspectionResult::compressionRatio</a></div><div class="ttdeci">double compressionRatio</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00039">AudioImportDiagnostics.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_accc07659eaa2dc37be25dc0aa7442dee"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#accc07659eaa2dc37be25dc0aa7442dee">eve::audio_editing::AudioImportInspectionResult::channels</a></div><div class="ttdeci">std::vector&lt; AudioChannelInspection &gt; channels</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00041">AudioImportDiagnostics.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_adf9a2a223ad32ca5d1a9a5d643d6a521"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#adf9a2a223ad32ca5d1a9a5d643d6a521">eve::audio_editing::AudioImportInspectionResult::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00037">AudioImportDiagnostics.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioImportInspectionResult_html_aee0d896fec0cf84387103066fe40be12"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioImportInspectionResult.html#aee0d896fec0cf84387103066fe40be12">eve::audio_editing::AudioImportInspectionResult::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="AudioImportDiagnostics_8h_source.html#l00035">AudioImportDiagnostics.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">eve::audio_editing::EditorAudioPcm</a></div><div class="ttdoc">Decoded interleaved PCM supplied by an audio importer or codec plugin.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00011">AudioWaveform.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a2de207e8a0ee129c061cc5df26c269f8"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">eve::audio_editing::EditorAudioPcm::samples</a></div><div class="ttdeci">std::vector&lt; float &gt; samples</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00014">AudioWaveform.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a5e9081eef2a777598dd7e96a9bedc61d"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">eve::audio_editing::EditorAudioPcm::sampleRate</a></div><div class="ttdeci">int sampleRate</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00012">AudioWaveform.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a63c17070e759568ea063f4e82ab60099"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">eve::audio_editing::EditorAudioPcm::channels</a></div><div class="ttdeci">int channels</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00013">AudioWaveform.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

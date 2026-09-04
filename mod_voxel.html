@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 体素（Voxel）</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">体素（Voxel）</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>体素（Voxel）</h1>
+<p><b>脚本入口：</b> <code>eve.Voxel()</code></p>
+<p>高性能 3D 体素世界：32³ chunk、贪婪矩形合并（面合并成矩形减少实例数）、32-bit 打包实例、 六向子缓冲、视锥/视距/朝向裁剪后实例化绘制。支持跨 chunk 接缝消隐、并行重建、 顶点环境光遮蔽（AO）、DDA 射线拾取、存档/流式卸载与**自动流式地形生成**， 适合建造/破坏玩法与可移动大世界。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">voxel &lt;- eve.Voxel();</div>
+<div class="line"> </div>
+<div class="line">// 1. 方块类型注册表（可选；不传则类型 id 直接当纹理 id）</div>
+<div class="line">local types = voxel.newCubeTypes();</div>
+<div class="line">types.loadFromJson(</div>
+<div class="line">    &#39;[{&quot;name&quot;:&quot;grass&quot;,&quot;faceTex&quot;:[1,1,2,3,1,1]},&#39; +</div>
+<div class="line">    &#39;{&quot;name&quot;:&quot;furnace&quot;,&quot;faceTex&quot;:[4,4,4,4,5,4],&quot;directional&quot;:true}]&#39;);</div>
+<div class="line"> </div>
+<div class="line">// 2. 建世界（内部拷贝注册表）</div>
+<div class="line">local world = voxel.newWorldWithTypes(types);</div>
+<div class="line"> </div>
+<div class="line">// 3. 填方块：setVoxel(x,y,z,texId) 或按名字+朝向</div>
+<div class="line">world.setVoxelByName(0, 0, 0, &quot;grass&quot;);</div>
+<div class="line">world.setVoxelByName(2, 0, 0, &quot;furnace&quot;, 2);   // 绕 Y 旋转 180°</div>
+<div class="line">world.setVoxel(5, 0, 0, 7);                    // 直接纹理 id</div>
+<div class="line"> </div>
+<div class="line">// 4. 重建脏 chunk（可并行；0=自动，1=串行）</div>
+<div class="line">world.remeshDirty();</div>
+<div class="line"> </div>
+<div class="line">// 5. 每帧选择可见 chunk 并绘制</div>
+<div class="line">function eve_render() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    gfx.render3D();</div>
+<div class="line">    // viewProj 为列主序 16 浮点（proj*view），eye 为相机位置</div>
+<div class="line">    world.selectVisible(viewProj, eye.x, eye.y, eye.z, 128.0, true);</div>
+<div class="line">    world.drawVisible(gfx, atlasTex, 16);      // atlas 16x16 分格</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>流式大世界（每帧保持玩家周围 chunk）</h2>
+<div class="fragment"><div class="line">// 一次性配置地形生成器（seed + 草/土/石纹理 id + 基准高度 + 幅度 + 缩放）</div>
+<div class="line">world.setTerrain(20260819, 1, 2, 3, 8.0, 14.0, 1.0 / 32.0);</div>
+<div class="line"> </div>
+<div class="line">// 或使用细粒度参数：完整 procgen TerrainSampler（岛屿衰减、大陆形状、</div>
+<div class="line">// 山脊/扭曲、八度）都能从脚本配置，低海拔柱子可选沙滩带。</div>
+<div class="line">world.setTerrainParam(&quot;seed&quot;, 20260819);</div>
+<div class="line">world.setTerrainParam(&quot;top&quot;, 1);        // 草</div>
+<div class="line">world.setTerrainParam(&quot;sub&quot;, 2);        // 土</div>
+<div class="line">world.setTerrainParam(&quot;stone&quot;, 3);      // 石</div>
+<div class="line">world.setTerrainParam(&quot;sand&quot;, 5);       // 沙（沙滩带纹理）</div>
+<div class="line">world.setTerrainParam(&quot;sandLevel&quot;, 0.30);  // 采样高度 ≤0.30 的柱子顶层用沙</div>
+<div class="line">world.setTerrainParam(&quot;base&quot;, 8.0);</div>
+<div class="line">world.setTerrainParam(&quot;amplitude&quot;, 18.0);</div>
+<div class="line">world.setTerrainParam(&quot;scale&quot;, 1.0 / 64.0);  // 频率别名</div>
+<div class="line">world.setTerrainParam(&quot;island&quot;, 0.45);       // 岛屿衰减强度（配 worldSize）</div>
+<div class="line">world.setTerrainParam(&quot;worldWidth&quot;, 512);    // 岛屿衰减世界框</div>
+<div class="line">world.setTerrainParam(&quot;worldHeight&quot;, 512);</div>
+<div class="line">world.setTerrainParam(&quot;ridge&quot;, 0.35);        // 山脊混合</div>
+<div class="line">world.setTerrainParam(&quot;enable&quot;, 1);          // 打开地形（默认关闭）</div>
+<div class="line"> </div>
+<div class="line">// 每帧（或玩家跨 chunk 边界时）调用：自动补建/卸载并重建网格</div>
+<div class="line">local playerChunkX = floor(player.x / 32.0);</div>
+<div class="line">local playerChunkY = floor(player.y / 32.0);</div>
+<div class="line">local playerChunkZ = floor(player.z / 32.0);</div>
+<div class="line">world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);  // 半径 4 chunk</div>
+<div class="line">world.selectVisible(viewProj, player.x, player.y, player.z, 160.0, true);</div>
+<div class="line">world.drawVisible(gfx, atlasTex, 16);</div>
+</div><!-- fragment --><p><code>streamAround</code> 返回本次新建 chunk 数（卸载数可用 <code>getChunkCount</code> 差值计算）。 地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。</p>
+<h3>使用烘焙 EVTR 地形</h3>
+<p>需要侵蚀、河网和生态群落时，先由 Procgen 烘焙 <code>EVTR</code>，再交给体素世界。 <code>streamAround</code> 会自动预取覆盖体素半径的地形资产块，资产高度优先于噪声回退：</p>
+<div class="fragment"><div class="line">local p = procgen.newParams();</div>
+<div class="line">p.setSeed(42); p.setSize(512, 512);</div>
+<div class="line">local hm = procgen.generateHeightmap(p);</div>
+<div class="line">procgen.erodeTerrainHydraulic(hm, 60, 0.012, 0.08, 2.0, 0.18, 0.12);</div>
+<div class="line">local layers = procgen.analyzeTerrain(hm, 0.025, 0.25, 0.65);</div>
+<div class="line">local evtr = procgen.bakeTerrainAsset(hm, layers, 64);</div>
+<div class="line"> </div>
+<div class="line">// storedHeight * 24 + 6 映射到体素世界 Y。</div>
+<div class="line">world.loadTerrainAsset(evtr, 6.0, 24.0);</div>
+<div class="line">// vegetation, sand, snow, alpine rock, river bed 的 atlas/type id。</div>
+<div class="line">world.setTerrainAssetMaterials(1, 4, 5, 3, 6);</div>
+<div class="line">world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);</div>
+</div><!-- fragment --><p>也可用 <code>streamTerrainAssetAround(worldX, worldZ, radius, maxLoads)</code> 手动设置每帧解码 预算；返回本帧加载的资产块数。<code>getTerrainAssetResidentCount()</code> 返回当前解码缓存数。</p>
+<h2>射线拾取（放置/破坏/瞄准）</h2>
+<div class="fragment"><div class="line">// world.raycast(ox,oy,oz, dx,dy,dz, maxDist) -&gt; bool</div>
+<div class="line">if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {</div>
+<div class="line">    local hx = world.getRaycastHitX();</div>
+<div class="line">    local hy = world.getRaycastHitY();</div>
+<div class="line">    local hz = world.getRaycastHitZ();</div>
+<div class="line">    // 命中面法线：在 hit + face 处放置新方块</div>
+<div class="line">    world.setVoxelByName(hx + world.getRaycastFaceX(),</div>
+<div class="line">                         hy + world.getRaycastFaceY(),</div>
+<div class="line">                         hz + world.getRaycastFaceZ(), &quot;grass&quot;);</div>
+<div class="line">    // 或破坏：world.setVoxel(hx, hy, hz, 0);</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>API 快查</h2>
+<h3><code>Voxel</code>（模块）</h3>
+<ul>
+<li><code>newCubeTypes()</code>：新建空方块类型注册表。</li>
+<li><code>newWorld()</code> / <code>newWorldWithTypes(types)</code>：新建世界（可带注册表）。</li>
+<li><code>getChunkSize()</code>：32（常量）。</li>
+</ul>
+<h3><code>VoxelCubeTypes</code>（注册表）</h3>
+<ul>
+<li><code>loadFromJson(json)</code>：批量注册，元素 <code>{"name","faceTex":[6],"directional","composeGroup","connects"}</code>。</li>
+<li><code><a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count()</a></code> / <code>variantCount()</code> / <code>clear()</code>。</li>
+</ul>
+<h3><code>VoxelWorld</code>（世界）</h3>
+<ul>
+<li>编辑：<code>getVoxel(x,y,z)</code>、<code>setVoxel(x,y,z,texId)</code>（0=空气，不创建空 chunk）、 <code>setVoxelByName(x,y,z,name,orientation)</code>、<code>getCubeTypeName</code> / <code>getCubeTypeTex</code>、 <code>getRevision()</code>（内容真实变化时单调增长，供编辑器、存档和预览失效检测）。</li>
+<li>网格：<code>remeshDirty()</code>（自动并行）、<code>getChunkCount()</code>、<code>hasChunk</code>、<code>removeChunk</code>、<code>clear</code>。</li>
+<li>存档/流式：<code>saveWorld()</code>（返回 <code>data.newByteData</code> 可直接落盘）、<code>loadWorld(byteData)</code>、 <code>unloadChunksOutside(cx,cy,cz,radiusChunks)</code>（卸载半径外的 chunk，返回卸载数）、 <code>streamAround(cx,cy,cz,radiusChunks)</code>（自动补建+生成+卸载+重建，返回新建数）、 <code>setTerrain(seed, top, sub, stone, base, amp, scale)</code>（快速配置）、 <code>setTerrainParam(key, value)</code>（细粒度配置，见下方参数表）、 <code>loadTerrainAsset(bytes, offset, scale)</code>、 <code>streamTerrainAssetAround(worldX,worldZ,radius,maxLoads)</code>、 <code>setTerrainAssetMaterials(vegetation,sand,snow,alpine,riverbed)</code> / <code>disableTerrain()</code>。</li>
+<li>渲染：<code>selectVisible(viewProj16, eyeX,eyeY,eyeZ, viewRange, faceCull)</code>、 <code>drawVisible(gfx, atlasTex, tilesPerRow)</code>、<code>getVisibleBatchCount</code> / <code>getVisibleChunkCount</code> / <code>getVisibleRectCount</code>。</li>
+<li>拾取：<code>raycast(ox,oy,oz,dx,dy,dz,maxDist)</code> + <code>lastRaycastHit()</code>、 <code>getRaycastHitX/Y/Z</code>、<code>getRaycastPrevX/Y/Z</code>（命中前一个空气方块）、 <code>getRaycastFaceX/Y/Z</code>（进入面法线）。</li>
+</ul>
+<h2>生命周期</h2>
+<ul>
+<li>世界与注册表由脚本 VM 持有，不要直接构造 <code>VoxelWorld</code> / <code>VoxelCubeTypes</code>。</li>
+<li>边界编辑会同时把相邻 chunk 标记 dirty；<code>remeshDirty()</code> 后接缝两侧一起重建， 不会残留被遮挡的旧面。</li>
+<li>视距外的脏 chunk 不会在 <code>selectVisible</code> 时重建，进入视距后自动补网格。</li>
+<li>顶点 AO 在 remesh 时自动烘焙到矩形四角（0..3），无需额外配置；平坦表面全亮， 台阶/凹角自然变暗。</li>
+<li><code>setTerrainParam</code> 参数表：<code>seed</code>/<code>top</code>/<code>sub</code>/<code>stone</code>/<code>sand</code>（纹理 id）、 <code>base</code>/<code>amplitude</code>（世界高度映射）、<code>scale</code> 或 <code>frequency</code>（噪声频率， 默认 1/32）、<code>octaves</code>/<code>lacunarity</code>/<code>gain</code>（fBm）、<code>ridge</code>/<code>warp</code>/<code>exponent</code> （山脊/域扭曲/指数）、<code>continent</code>/<code>island</code>/<code>coast</code>（大陆-海岸形状）、 <code>worldWidth</code>/<code>worldHeight</code>（岛屿衰减框，&gt;0 才生效）、<code>sandLevel</code> （归一化采样高度阈值，&gt;0 且 <code>sand</code> 非 0 时启用沙滩带）、<code>enable</code>（1 打开地形）。 <code>setTerrainParam</code> 只覆盖传入的键，其余参数保持默认；地形默认关闭，需 <code>enable=1</code>。</li>
+<li>存档格式为可移植小端二进制（<code>EVVX</code> + 版本 + chunk 坐标与体素），加载后网格按需重建。 </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

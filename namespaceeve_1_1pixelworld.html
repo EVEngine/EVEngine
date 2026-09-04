@@ -1,0 +1,837 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::pixelworld 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld.html">pixelworld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::pixelworld 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning immutable material and reaction table used by one <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a>.  <a href="classeve_1_1pixelworld_1_1MaterialCatalog.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">MaterialDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable validated properties for one catalog material.  <a href="structeve_1_1pixelworld_1_1MaterialDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">MaterialPhaseRule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data-driven phase transition evaluated after heat diffusion.  <a href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">MaterialReactionRule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically ordered binary material reaction.  <a href="structeve_1_1pixelworld_1_1MaterialReactionRule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelCatalogReloadReceipt.html">PixelCatalogReloadReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for one transactional compatible material Catalog hot reload.  <a href="structeve_1_1pixelworld_1_1PixelCatalogReloadReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelCell.html">PixelCell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact authoritative state for one simulated world pixel.  <a href="structeve_1_1pixelworld_1_1PixelCell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkApplyReceipt.html">PixelChunkApplyReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for one all-or-nothing authoritative Chunk batch application.  <a href="structeve_1_1pixelworld_1_1PixelChunkApplyReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkBatch.html">PixelChunkBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning authoritative Chunk correction with source world metadata.  <a href="structeve_1_1pixelworld_1_1PixelChunkBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkDiagnostic.html">PixelChunkDiagnostic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only per-Chunk simulation diagnostics for tooling and overlays.  <a href="structeve_1_1pixelworld_1_1PixelChunkDiagnostic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">PixelChunkRegion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inclusive finite rectangle expressed in Chunk coordinates.  <a href="structeve_1_1pixelworld_1_1PixelChunkRegion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkSnapshot.html">PixelChunkSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, immutable projection of one authoritative simulation chunk.  <a href="structeve_1_1pixelworld_1_1PixelChunkSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelEditCommand.html">PixelEditCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning replayable edit command. Sequence must be exactly previous + 1.  <a href="structeve_1_1pixelworld_1_1PixelEditCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelEditReceipt.html">PixelEditReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic receipt for one atomically accepted edit command.  <a href="structeve_1_1pixelworld_1_1PixelEditReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelFragment.html">PixelFragment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning material bitmap detached atomically from a <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a>.  <a href="structeve_1_1pixelworld_1_1PixelFragment.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelFragmentRasterReceipt.html">PixelFragmentRasterReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for one all-or-nothing fragment rasterization.  <a href="structeve_1_1pixelworld_1_1PixelFragmentRasterReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">PixelGeneratedChunkSummary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic diagnostics for one generated Chunk.  <a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html">PixelMaterialStamp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning row-major material stamp applied after terrain and cave generation.  <a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelRegion.html">PixelRegion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite inclusive world-space rectangle used by structural queries.  <a href="structeve_1_1pixelworld_1_1PixelRegion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorkScheduler.html">PixelWorkScheduler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronous executor for owning <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a> candidate buffers.  <a href="classeve_1_1pixelworld_1_1PixelWorkScheduler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">PixelWorld</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sparse, chunked, deterministic 2D falling-material world.  <a href="classeve_1_1pixelworld_1_1PixelWorld.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldControlService.html">PixelWorldControlService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main-thread-affine control surface shared by editor, <a class="el" href="namespaceCLI.html">CLI</a> and MCP adapters.  <a href="classeve_1_1pixelworld_1_1PixelWorldControlService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">PixelWorldGenerationOutput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning generated correction plus reproducibility evidence.  <a href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versioned bounded request for deterministic biome and cave generation.  <a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldLink.html">PixelWorldLink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> identity of the world epoch from which a fragment was detached.  <a href="structeve_1_1pixelworld_1_1PixelWorldLink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldModule.html">PixelWorldModule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing owner/factory for deterministic pixel material worlds.  <a href="classeve_1_1pixelworld_1_1PixelWorldModule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldPerformanceSample.html">PixelWorldPerformanceSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One bounded process-local simulation performance sample.  <a href="structeve_1_1pixelworld_1_1PixelWorldPerformanceSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldStepReceipt.html">PixelWorldStepReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for an explicit bounded tooling step.  <a href="structeve_1_1pixelworld_1_1PixelWorldStepReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorldSummary.html">PixelWorldSummary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable summary of one live <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a> registered for local tooling.  <a href="structeve_1_1pixelworld_1_1PixelWorldSummary.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1StepStats.html">StepStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counters produced by one deterministic simulation step.  <a href="structeve_1_1pixelworld_1_1StepStats.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8b8abc02d6a85d724e8fb19fc6514270" id="r_a8b8abc02d6a85d724e8fb19fc6514270"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">MaterialId</a> : std::uint16_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669">Air</a> = 0
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2">Stone</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca">Sand</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18">Water</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344">Oil</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb">Fire</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b">Steam</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98">Wood</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7">Ice</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e">Lava</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404">Smoke</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f">Gunpowder</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e">Acid</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a8b8abc02d6a85d724e8fb19fc6514270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact stable material identifier stored in each authoritative cell.  <a href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">更多...</a><br /></td></tr>
+<tr class="separator:a8b8abc02d6a85d724e8fb19fc6514270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbfb28cd604af87f0b9b13232960deee" id="r_acbfb28cd604af87f0b9b13232960deee"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">MaterialState</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07">Empty</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa">Solid</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7">Powder</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774">Liquid</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c">Gas</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9">Energy</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:acbfb28cd604af87f0b9b13232960deee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broad movement class for one pixel material.  <a href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">更多...</a><br /></td></tr>
+<tr class="separator:acbfb28cd604af87f0b9b13232960deee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcc326673c23520ade75952619b97fd8" id="r_abcc326673c23520ade75952619b97fd8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">TemperatureDirection</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584">AtOrBelow</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e">AtOrAbove</a>
+ }</td></tr>
+<tr class="memdesc:abcc326673c23520ade75952619b97fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comparison direction for a deterministic temperature transition.  <a href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">更多...</a><br /></td></tr>
+<tr class="separator:abcc326673c23520ade75952619b97fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f38c5dc295030310bf7cba1004d453" id="r_ab8f38c5dc295030310bf7cba1004d453"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453">PixelEditKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453af2f609dbecd4aef69b024bc51997dc6c">PaintCircle</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453a682d7888eec785063e6ba53a13e889c9">HeatCircle</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453a8a36c0d6cc2e31990ea4fb2d597db968">Explosion</a>
+ }</td></tr>
+<tr class="memdesc:ab8f38c5dc295030310bf7cba1004d453"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical deterministic edit operation admitted at a Tick boundary.  <a href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453">更多...</a><br /></td></tr>
+<tr class="separator:ab8f38c5dc295030310bf7cba1004d453"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca14bc721e9641e95031e34c12368be3" id="r_aca14bc721e9641e95031e34c12368be3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">PixelBiome</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036">Forest</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff">Desert</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962">Fungal</a>
+, <a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268">Volcanic</a>
+ }</td></tr>
+<tr class="memdesc:aca14bc721e9641e95031e34c12368be3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable coarse biome selected from deterministic world coordinates.  <a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">更多...</a><br /></td></tr>
+<tr class="separator:aca14bc721e9641e95031e34c12368be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4d47ee88b2263b2c09f5163115c1bfc9" id="r_a4d47ee88b2263b2c09f5163115c1bfc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a4d47ee88b2263b2c09f5163115c1bfc9">encodeMaterialCatalogJson</a> (const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &amp;catalog)</td></tr>
+<tr class="memdesc:a4d47ee88b2263b2c09f5163115c1bfc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode schema <code>eve.pixelworld.material-catalog</code> version 1 canonically.  <br /></td></tr>
+<tr class="separator:a4d47ee88b2263b2c09f5163115c1bfc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c7ab95d8f7d2103f6dbfa06d880ca0" id="r_a74c7ab95d8f7d2103f6dbfa06d880ca0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a74c7ab95d8f7d2103f6dbfa06d880ca0">decodeMaterialCatalogJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a74c7ab95d8f7d2103f6dbfa06d880ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate schema <code>eve.pixelworld.material-catalog</code> version 1.  <br /></td></tr>
+<tr class="separator:a74c7ab95d8f7d2103f6dbfa06d880ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af21aa03dc7f198b7cda5e662f6962dfd" id="r_af21aa03dc7f198b7cda5e662f6962dfd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#af21aa03dc7f198b7cda5e662f6962dfd">registerPixelWorldAutomation</a> ()</td></tr>
+<tr class="separator:af21aa03dc7f198b7cda5e662f6962dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8184ba0bb78d45e390ae76a406039d75" id="r_a8184ba0bb78d45e390ae76a406039d75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a8184ba0bb78d45e390ae76a406039d75">unregisterPixelWorldAutomation</a> ()</td></tr>
+<tr class="separator:a8184ba0bb78d45e390ae76a406039d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6698c82928e3c06a07aacb82b147a71" id="r_ad6698c82928e3c06a07aacb82b147a71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldControlService.html">PixelWorldControlService</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#ad6698c82928e3c06a07aacb82b147a71">pixelWorldControlService</a> ()</td></tr>
+<tr class="memdesc:ad6698c82928e3c06a07aacb82b147a71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-lifetime <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a> tooling registry.  <br /></td></tr>
+<tr class="separator:ad6698c82928e3c06a07aacb82b147a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e2fb893927b821d490af7ec16f21188" id="r_a3e2fb893927b821d490af7ec16f21188"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">PixelWorldGenerationOutput</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a3e2fb893927b821d490af7ec16f21188">generatePixelWorld</a> (const <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &amp;request, const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &amp;catalog, std::uint64_t sourceRevision, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> sourceTick=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>(), std::uint64_t sourceLastEditSequence=0)</td></tr>
+<tr class="memdesc:a3e2fb893927b821d490af7ec16f21188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a seamless canonical Chunk batch without mutating a <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a>.  <br /></td></tr>
+<tr class="separator:a3e2fb893927b821d490af7ec16f21188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fa48f01cf9a51f5aaa960f69766bbd6" id="r_a4fa48f01cf9a51f5aaa960f69766bbd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a4fa48f01cf9a51f5aaa960f69766bbd6">encodePixelWorldGenerationRequestJson</a> (const <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a4fa48f01cf9a51f5aaa960f69766bbd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode schema <code>eve.pixelworld.generation-request</code> version 1 canonically.  <br /></td></tr>
+<tr class="separator:a4fa48f01cf9a51f5aaa960f69766bbd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e72bde19d8c9f74b6aeba1792543f97" id="r_a5e72bde19d8c9f74b6aeba1792543f97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a5e72bde19d8c9f74b6aeba1792543f97">decodePixelWorldGenerationRequestJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a5e72bde19d8c9f74b6aeba1792543f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode schema <code>eve.pixelworld.generation-request</code> version 1.  <br /></td></tr>
+<tr class="separator:a5e72bde19d8c9f74b6aeba1792543f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab345fb16013503ba5ba3ac6a99bb23cf" id="r_ab345fb16013503ba5ba3ac6a99bb23cf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#ab345fb16013503ba5ba3ac6a99bb23cf">Module_IMPL</a> (<a class="el" href="classeve_1_1pixelworld_1_1PixelWorldModule.html">PixelWorldModule</a>, new <a class="el" href="classeve_1_1pixelworld_1_1PixelWorldModule.html">PixelWorldModule</a>())</td></tr>
+<tr class="separator:ab345fb16013503ba5ba3ac6a99bb23cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:ad88f46af1c67cafe4b1440db2ee5903d" id="r_ad88f46af1c67cafe4b1440db2ee5903d"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#ad88f46af1c67cafe4b1440db2ee5903d">kPixelChunkSize</a> = 64</td></tr>
+<tr class="separator:ad88f46af1c67cafe4b1440db2ee5903d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcb4f40c58e93cd8151df09704e168c" id="r_a8bcb4f40c58e93cd8151df09704e168c"><td class="memItemLeft" align="right" valign="top">constexpr std::uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html#a8bcb4f40c58e93cd8151df09704e168c">kPixelSleepHysteresisTicks</a> = 3</td></tr>
+<tr class="separator:a8bcb4f40c58e93cd8151df09704e168c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a8b8abc02d6a85d724e8fb19fc6514270" name="a8b8abc02d6a85d724e8fb19fc6514270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b8abc02d6a85d724e8fb19fc6514270">&#9670;&#160;</a></span>MaterialId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270">eve::pixelworld::MaterialId</a> : std::uint16_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compact stable material identifier stored in each authoritative cell. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669" name="a8b8abc02d6a85d724e8fb19fc6514270a71c546fa61f3964d72bdf25223b78669"></a>Air&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2" name="a8b8abc02d6a85d724e8fb19fc6514270a2ff4ab1d379832d3edee28194fb4e7b2"></a>Stone&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca" name="a8b8abc02d6a85d724e8fb19fc6514270acec7ca178e2f7b1ae3a4600868c57aca"></a>Sand&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18" name="a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18"></a>Water&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344" name="a8b8abc02d6a85d724e8fb19fc6514270a2e69df5961f20aee0897cf1905156344"></a>Oil&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb" name="a8b8abc02d6a85d724e8fb19fc6514270abd2b7e5f85a6ea65065c4ebc6d7c95bb"></a>Fire&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b" name="a8b8abc02d6a85d724e8fb19fc6514270a4db4563826bad0eb2f60ee6e42d0ea4b"></a>Steam&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98" name="a8b8abc02d6a85d724e8fb19fc6514270a6e4dd7ce4ea3c1d4a90edb289e22da98"></a>Wood&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7" name="a8b8abc02d6a85d724e8fb19fc6514270a583d6a9fe10d672474e2cdca476113b7"></a>Ice&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e" name="a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e"></a>Lava&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404" name="a8b8abc02d6a85d724e8fb19fc6514270abc93fd0fa19ed26b6adf8293ada55404"></a>Smoke&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f" name="a8b8abc02d6a85d724e8fb19fc6514270a9f04933b3c9c319d8b5941e3175ac77f"></a>Gunpowder&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e" name="a8b8abc02d6a85d724e8fb19fc6514270aed84f0285a129390ef34774e525b9b9e"></a>Acid&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PixelMaterial_8h_source.html">PixelMaterial.h</a> 第 <a class="el" href="PixelMaterial_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acbfb28cd604af87f0b9b13232960deee" name="acbfb28cd604af87f0b9b13232960deee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbfb28cd604af87f0b9b13232960deee">&#9670;&#160;</a></span>MaterialState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1pixelworld.html#acbfb28cd604af87f0b9b13232960deee">eve::pixelworld::MaterialState</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Broad movement class for one pixel material. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07" name="acbfb28cd604af87f0b9b13232960deeeace2c8aed9c2fa0cfbed56cbda4d8bf07"></a>Empty&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa" name="acbfb28cd604af87f0b9b13232960deeeae41480b6bbfbf7407974a88d3d34f4fa"></a>Solid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7" name="acbfb28cd604af87f0b9b13232960deeeac1cef74b53183caaa9aa96fe05b7b4b7"></a>Powder&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774" name="acbfb28cd604af87f0b9b13232960deeea5635bf596d97c1c2e7afe481ed060774"></a>Liquid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c" name="acbfb28cd604af87f0b9b13232960deeea635459702f9817de29e608fa3395637c"></a>Gas&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9" name="acbfb28cd604af87f0b9b13232960deeea5cc28f31113ec7cd7e546b836ccae2b9"></a>Energy&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PixelMaterial_8h_source.html">PixelMaterial.h</a> 第 <a class="el" href="PixelMaterial_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca14bc721e9641e95031e34c12368be3" name="aca14bc721e9641e95031e34c12368be3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca14bc721e9641e95031e34c12368be3">&#9670;&#160;</a></span>PixelBiome</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">eve::pixelworld::PixelBiome</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable coarse biome selected from deterministic world coordinates. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036" name="aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036"></a>Forest&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff" name="aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff"></a>Desert&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962" name="aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962"></a>Fungal&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268" name="aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268"></a>Volcanic&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGeneration_8h_source.html">PixelWorldGeneration.h</a> 第 <a class="el" href="PixelWorldGeneration_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8f38c5dc295030310bf7cba1004d453" name="ab8f38c5dc295030310bf7cba1004d453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8f38c5dc295030310bf7cba1004d453">&#9670;&#160;</a></span>PixelEditKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1pixelworld.html#ab8f38c5dc295030310bf7cba1004d453">eve::pixelworld::PixelEditKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Canonical deterministic edit operation admitted at a Tick boundary. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab8f38c5dc295030310bf7cba1004d453af2f609dbecd4aef69b024bc51997dc6c" name="ab8f38c5dc295030310bf7cba1004d453af2f609dbecd4aef69b024bc51997dc6c"></a>PaintCircle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8f38c5dc295030310bf7cba1004d453a682d7888eec785063e6ba53a13e889c9" name="ab8f38c5dc295030310bf7cba1004d453a682d7888eec785063e6ba53a13e889c9"></a>HeatCircle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8f38c5dc295030310bf7cba1004d453a8a36c0d6cc2e31990ea4fb2d597db968" name="ab8f38c5dc295030310bf7cba1004d453a8a36c0d6cc2e31990ea4fb2d597db968"></a>Explosion&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8h_source.html">PixelWorld.h</a> 第 <a class="el" href="PixelWorld_8h_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abcc326673c23520ade75952619b97fd8" name="abcc326673c23520ade75952619b97fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcc326673c23520ade75952619b97fd8">&#9670;&#160;</a></span>TemperatureDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8">eve::pixelworld::TemperatureDirection</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Comparison direction for a deterministic temperature transition. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584" name="abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584"></a>AtOrBelow&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e" name="abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e"></a>AtOrAbove&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PixelMaterial_8h_source.html">PixelMaterial.h</a> 第 <a class="el" href="PixelMaterial_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a74c7ab95d8f7d2103f6dbfa06d880ca0" name="a74c7ab95d8f7d2103f6dbfa06d880ca0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c7ab95d8f7d2103f6dbfa06d880ca0">&#9670;&#160;</a></span>decodeMaterialCatalogJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &gt; eve::pixelworld::decodeMaterialCatalogJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode and validate schema <code>eve.pixelworld.material-catalog</code> version 1. </p>
+<dl class="section remark"><dt>备注</dt><dd>Unknown fields, versions, invalid references and malformed values are rejected before a <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html" title="Owning immutable material and reaction table used by one PixelWorld.">MaterialCatalog</a> is returned; no live world is mutated by this operation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html">PixelMaterialCatalogCodec.cpp</a> 第 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8af47f5645e07aa89a1a18d595618f847e">AtOrAbove</a>, <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584">AtOrBelow</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00038">eve::pixelworld::MaterialCatalog::create()</a>, <a class="el" href="PixelMaterial_8h_source.html#l00063">eve::pixelworld::MaterialPhaseRule::direction</a>, <a class="el" href="PixelMaterial_8h_source.html#l00072">eve::pixelworld::MaterialReactionRule::first</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="PixelMaterial_8h_source.html#l00074">eve::pixelworld::MaterialReactionRule::firstResult</a>, <a class="el" href="PixelMaterial_8h_source.html#l00077">eve::pixelworld::MaterialReactionRule::heatDelta</a>, <a class="el" href="PixelMaterial_8h_source.html#l00060">eve::pixelworld::MaterialPhaseRule::id</a>, <a class="el" href="PixelMaterial_8h_source.html#l00071">eve::pixelworld::MaterialReactionRule::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>, <a class="el" href="PixelMaterial_8h_source.html#l00076">eve::pixelworld::MaterialReactionRule::minimumTemperature</a>, <a class="el" href="PixelMaterial_8h_source.html#l00066">eve::pixelworld::MaterialPhaseRule::priority</a>, <a class="el" href="PixelMaterial_8h_source.html#l00078">eve::pixelworld::MaterialReactionRule::priority</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>, <a class="el" href="PixelMaterial_8h_source.html#l00062">eve::pixelworld::MaterialPhaseRule::result</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="PixelMaterial_8h_source.html#l00073">eve::pixelworld::MaterialReactionRule::second</a>, <a class="el" href="PixelMaterial_8h_source.html#l00075">eve::pixelworld::MaterialReactionRule::secondResult</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="PixelMaterial_8h_source.html#l00061">eve::pixelworld::MaterialPhaseRule::source</a>, <a class="el" href="PixelMaterial_8h_source.html#l00065">eve::pixelworld::MaterialPhaseRule::temperatureDelta</a>, <a class="el" href="PixelMaterial_8h_source.html#l00064">eve::pixelworld::MaterialPhaseRule::threshold</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00147">eve::pixelworld_editor::PixelWorldCatalogPanel::create()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00296">eve::pixelworld_editor::PixelWorldCatalogPanel::loadDocument()</a> , 以及 <a class="el" href="PixelWorldControl_8cpp_source.html#l00128">eve::pixelworld::PixelWorldControlService::reloadMaterialCatalog()</a>.</p>
+
+</div>
+</div>
+<a id="a5e72bde19d8c9f74b6aeba1792543f97" name="a5e72bde19d8c9f74b6aeba1792543f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e72bde19d8c9f74b6aeba1792543f97">&#9670;&#160;</a></span>decodePixelWorldGenerationRequestJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &gt; eve::pixelworld::decodePixelWorldGenerationRequestJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode schema <code>eve.pixelworld.generation-request</code> version 1. </p>
+<dl class="section remark"><dt>备注</dt><dd>Unknown fields and versions are rejected. The returned request owns every stamp cell, and decoding cannot mutate a live <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html">PixelWorldGenerationCodec.cpp</a> 第 <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldGeneration_8h_source.html#l00032">eve::pixelworld::PixelWorldGenerationRequest::caveThreshold</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00019">eve::pixelworld::PixelMaterialStamp::cells</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00018">eve::pixelworld::PixelMaterialStamp::height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00024">eve::pixelworld::PixelWorldGenerationRequest::kSchemaVersion</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>, <a class="el" href="PixelWorld_8h_source.html#l00100">eve::pixelworld::PixelChunkRegion::maxX</a>, <a class="el" href="PixelWorld_8h_source.html#l00101">eve::pixelworld::PixelChunkRegion::maxY</a>, <a class="el" href="PixelWorld_8h_source.html#l00098">eve::pixelworld::PixelChunkRegion::minX</a>, <a class="el" href="PixelWorld_8h_source.html#l00099">eve::pixelworld::PixelChunkRegion::minY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00015">eve::pixelworld::PixelMaterialStamp::originX</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00016">eve::pixelworld::PixelMaterialStamp::originY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00027">eve::pixelworld::PixelWorldGenerationRequest::region</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00025">eve::pixelworld::PixelWorldGenerationRequest::schemaVersion</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00026">eve::pixelworld::PixelWorldGenerationRequest::seed</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00033">eve::pixelworld::PixelWorldGenerationRequest::stamps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00028">eve::pixelworld::PixelWorldGenerationRequest::surfaceY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00029">eve::pixelworld::PixelWorldGenerationRequest::terrainAmplitude</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00030">eve::pixelworld::PixelWorldGenerationRequest::waterLevel</a> , 以及 <a class="el" href="PixelWorldGeneration_8h_source.html#l00017">eve::pixelworld::PixelMaterialStamp::width</a>.</p>
+
+</div>
+</div>
+<a id="a4d47ee88b2263b2c09f5163115c1bfc9" name="a4d47ee88b2263b2c09f5163115c1bfc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d47ee88b2263b2c09f5163115c1bfc9">&#9670;&#160;</a></span>encodeMaterialCatalogJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::pixelworld::encodeMaterialCatalogJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &amp;&#160;</td>
+          <td class="paramname"><em>catalog</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode schema <code>eve.pixelworld.material-catalog</code> version 1 canonically. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html">PixelMaterialCatalogCodec.cpp</a> 第 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">eve::Array</a>, <a class="el" href="namespaceeve_1_1pixelworld.html#abcc326673c23520ade75952619b97fd8a61418522ca8e75f7a2f4934fd0528584">AtOrBelow</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00241">eve::pixelworld::MaterialCatalog::phaseRules()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00240">eve::pixelworld::MaterialCatalog::reactions()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00292">eve::pixelworld_editor::PixelWorldCatalogPanel::document()</a>.</p>
+
+</div>
+</div>
+<a id="a4fa48f01cf9a51f5aaa960f69766bbd6" name="a4fa48f01cf9a51f5aaa960f69766bbd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fa48f01cf9a51f5aaa960f69766bbd6">&#9670;&#160;</a></span>encodePixelWorldGenerationRequestJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::pixelworld::encodePixelWorldGenerationRequestJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode schema <code>eve.pixelworld.generation-request</code> version 1 canonically. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html">PixelWorldGenerationCodec.cpp</a> 第 <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">eve::Array</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00032">eve::pixelworld::PixelWorldGenerationRequest::caveThreshold</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="PixelWorld_8h_source.html#l00100">eve::pixelworld::PixelChunkRegion::maxX</a>, <a class="el" href="PixelWorld_8h_source.html#l00101">eve::pixelworld::PixelChunkRegion::maxY</a>, <a class="el" href="PixelWorld_8h_source.html#l00098">eve::pixelworld::PixelChunkRegion::minX</a>, <a class="el" href="PixelWorld_8h_source.html#l00099">eve::pixelworld::PixelChunkRegion::minY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00027">eve::pixelworld::PixelWorldGenerationRequest::region</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00025">eve::pixelworld::PixelWorldGenerationRequest::schemaVersion</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00026">eve::pixelworld::PixelWorldGenerationRequest::seed</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00033">eve::pixelworld::PixelWorldGenerationRequest::stamps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00028">eve::pixelworld::PixelWorldGenerationRequest::surfaceY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00029">eve::pixelworld::PixelWorldGenerationRequest::terrainAmplitude</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PixelWorldGeneration_8h_source.html#l00030">eve::pixelworld::PixelWorldGenerationRequest::waterLevel</a>.</p>
+
+</div>
+</div>
+<a id="a3e2fb893927b821d490af7ec16f21188" name="a3e2fb893927b821d490af7ec16f21188"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e2fb893927b821d490af7ec16f21188">&#9670;&#160;</a></span>generatePixelWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">PixelWorldGenerationOutput</a> &gt; eve::pixelworld::generatePixelWorld </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a> &amp;&#160;</td>
+          <td class="paramname"><em>catalog</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>sourceRevision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>sourceTick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>sourceLastEditSequence</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate a seamless canonical Chunk batch without mutating a <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Versioned finite generation request and optional owning stamps. </td></tr>
+    <tr><td class="paramname">catalog</td><td>Catalog whose ids/default cells give generated materials meaning. </td></tr>
+    <tr><td class="paramname">sourceRevision</td><td>Positive authority revision assigned to every output Chunk. </td></tr>
+    <tr><td class="paramname">sourceTick</td><td>Authority Tick carried by the correction batch. </td></tr>
+    <tr><td class="paramname">sourceLastEditSequence</td><td>Authority edit sequence carried by the correction batch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning canonical batch and summaries, or a structured bounded-input error. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Integer coordinate hashing makes output bit-exact across worker count and backend. The caller may transactionally admit <code>output.batch</code> through <code><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html#a8df79739a3821ea7502a28af1605ea4e" title="Transactionally apply a canonical authoritative Chunk correction batch.">PixelWorld::applyChunkBatch</a></code>. Unknown schema versions are rejected and no world state is observed or changed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGeneration_8cpp_source.html">PixelWorldGeneration.cpp</a> 第 <a class="el" href="PixelWorldGeneration_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldGeneration_8h_source.html#l00051">eve::pixelworld::PixelWorldGenerationOutput::batch</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00040">eve::pixelworld::PixelGeneratedChunkSummary::biome</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00034">biome</a>, <a class="el" href="PixelWorld_8h_source.html#l00084">eve::pixelworld::PixelChunkBatch::catalogFingerprint</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00042">eve::pixelworld::PixelGeneratedChunkSummary::caveCells</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00032">eve::pixelworld::PixelWorldGenerationRequest::caveThreshold</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="PixelWorld_8h_source.html#l00077">eve::pixelworld::PixelChunkSnapshot::cells</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00250">eve::pixelworld::MaterialCatalog::fingerprint()</a>, <a class="el" href="Evpack_8cpp_source.html#l00177">hash</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelWorld_8h_source.html#l00018">kPixelChunkSize</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00024">eve::pixelworld::PixelWorldGenerationRequest::kSchemaVersion</a>, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a1d18fe2cdd43a72d46421ecfe81b599e">Lava</a>, <a class="el" href="PixelWorld_8h_source.html#l00100">eve::pixelworld::PixelChunkRegion::maxX</a>, <a class="el" href="PixelWorld_8h_source.html#l00101">eve::pixelworld::PixelChunkRegion::maxY</a>, <a class="el" href="PixelWorld_8h_source.html#l00098">eve::pixelworld::PixelChunkRegion::minX</a>, <a class="el" href="PixelWorld_8h_source.html#l00099">eve::pixelworld::PixelChunkRegion::minY</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00027">eve::pixelworld::PixelWorldGenerationRequest::region</a>, <a class="el" href="PixelWorld_8h_source.html#l00075">eve::pixelworld::PixelChunkSnapshot::revision</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00025">eve::pixelworld::PixelWorldGenerationRequest::schemaVersion</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00026">eve::pixelworld::PixelWorldGenerationRequest::seed</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00041">eve::pixelworld::PixelGeneratedChunkSummary::solidCells</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00043">eve::pixelworld::PixelGeneratedChunkSummary::stampedCells</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00033">eve::pixelworld::PixelWorldGenerationRequest::stamps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00028">eve::pixelworld::PixelWorldGenerationRequest::surfaceY</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00029">eve::pixelworld::PixelWorldGenerationRequest::terrainAmplitude</a>, <a class="el" href="namespaceeve_1_1pixelworld.html#a8b8abc02d6a85d724e8fb19fc6514270a27634ff8002b12e75d98e07ccd005d18">Water</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00030">eve::pixelworld::PixelWorldGenerationRequest::waterLevel</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="PixelWorld_8h_source.html#l00073">eve::pixelworld::PixelChunkSnapshot::x</a>, <a class="el" href="PixelWorldGeneration_8h_source.html#l00038">eve::pixelworld::PixelGeneratedChunkSummary::x</a>, <a class="el" href="PixelWorld_8h_source.html#l00074">eve::pixelworld::PixelChunkSnapshot::y</a> , 以及 <a class="el" href="PixelWorldGeneration_8h_source.html#l00039">eve::pixelworld::PixelGeneratedChunkSummary::y</a>.</p>
+
+</div>
+</div>
+<a id="ab345fb16013503ba5ba3ac6a99bb23cf" name="ab345fb16013503ba5ba3ac6a99bb23cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab345fb16013503ba5ba3ac6a99bb23cf">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldModule.html">PixelWorldModule</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>PixelWorldModule</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad6698c82928e3c06a07aacb82b147a71" name="ad6698c82928e3c06a07aacb82b147a71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6698c82928e3c06a07aacb82b147a71">&#9670;&#160;</a></span>pixelWorldControlService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldControlService.html">PixelWorldControlService</a> &amp; eve::pixelworld::pixelWorldControlService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Process-lifetime <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html" title="Sparse, chunked, deterministic 2D falling-material world.">PixelWorld</a> tooling registry. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldControl_8cpp_source.html">PixelWorldControl.cpp</a> 第 <a class="el" href="PixelWorldControl_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00019">service</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00143">eve::pixelworld_graphics::PixelWorldAtlasRenderer::drawDiagnostics()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00399">eve::pixelworld::PixelWorld::operator=()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00396">eve::pixelworld::PixelWorld::PixelWorld()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00388">eve::pixelworld::PixelWorld::PixelWorld()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00384">eve::pixelworld::PixelWorld::PixelWorld()</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00393">eve::pixelworld::PixelWorld::~PixelWorld()</a>.</p>
+
+</div>
+</div>
+<a id="af21aa03dc7f198b7cda5e662f6962dfd" name="af21aa03dc7f198b7cda5e662f6962dfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af21aa03dc7f198b7cda5e662f6962dfd">&#9670;&#160;</a></span>registerPixelWorldAutomation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::pixelworld::registerPixelWorldAutomation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldAutomation_8cpp_source.html">PixelWorldAutomation.cpp</a> 第 <a class="el" href="PixelWorldAutomation_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldModule_8cpp_source.html#l00017">eve::pixelworld::PixelWorldModule::PixelWorldModule()</a>.</p>
+
+</div>
+</div>
+<a id="a8184ba0bb78d45e390ae76a406039d75" name="a8184ba0bb78d45e390ae76a406039d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8184ba0bb78d45e390ae76a406039d75">&#9670;&#160;</a></span>unregisterPixelWorldAutomation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::pixelworld::unregisterPixelWorldAutomation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldAutomation_8cpp_source.html">PixelWorldAutomation.cpp</a> 第 <a class="el" href="PixelWorldAutomation_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldModule_8cpp_source.html#l00018">eve::pixelworld::PixelWorldModule::~PixelWorldModule()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="ad88f46af1c67cafe4b1440db2ee5903d" name="ad88f46af1c67cafe4b1440db2ee5903d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad88f46af1c67cafe4b1440db2ee5903d">&#9670;&#160;</a></span>kPixelChunkSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::pixelworld::kPixelChunkSize = 64</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8h_source.html">PixelWorld.h</a> 第 <a class="el" href="PixelWorld_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorld_8cpp_source.html#l01440">eve::pixelworld::PixelWorld::applyChunkBatch()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00145">eve::pixelworld_streaming::archiveChunkBatch()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00197">eve::pixelworld_streaming::decodeChunkBatchArchive()</a>, <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00143">eve::pixelworld_graphics::PixelWorldAtlasRenderer::drawDiagnostics()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00124">eve::pixelworld_physics::extractTerrainContours()</a>, <a class="el" href="PixelWorldGeneration_8cpp_source.html#l00082">generatePixelWorld()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00350">eve::pixelworld::PixelWorld::Impl::moveOrSwapWithinChunk()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00498">eve::pixelworld_physics::PixelTerrainCollisionCache::sync()</a> , 以及 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00059">eve::pixelworld_graphics::PixelWorldAtlasRenderer::sync()</a>.</p>
+
+</div>
+</div>
+<a id="a8bcb4f40c58e93cd8151df09704e168c" name="a8bcb4f40c58e93cd8151df09704e168c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcb4f40c58e93cd8151df09704e168c">&#9670;&#160;</a></span>kPixelSleepHysteresisTicks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint8_t eve::pixelworld::kPixelSleepHysteresisTicks = 3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8h_source.html">PixelWorld.h</a> 第 <a class="el" href="PixelWorld_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

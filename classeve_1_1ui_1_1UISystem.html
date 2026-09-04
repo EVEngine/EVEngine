@@ -1,0 +1,911 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::UISystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1UISystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::UISystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="UISystem_8h_source.html">UISystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3d3385f763cf488fe41fe304a29024ef" id="r_a3d3385f763cf488fe41fe304a29024ef"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a3d3385f763cf488fe41fe304a29024ef">setBackend</a> (<a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &amp;<a class="el" href="classeve_1_1ui_1_1UISystem.html#a6ee2fc0239bd71d57ec7831f512c3539">backend</a>)</td></tr>
+<tr class="memdesc:a3d3385f763cf488fe41fe304a29024ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the borrowed backend used for the current UI/render lifetime.  <br /></td></tr>
+<tr class="separator:a3d3385f763cf488fe41fe304a29024ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e67f9046492fecc2a833091c740cc0a" id="r_a3e67f9046492fecc2a833091c740cc0a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a3e67f9046492fecc2a833091c740cc0a">clearBackend</a> () noexcept</td></tr>
+<tr class="memdesc:a3e67f9046492fecc2a833091c740cc0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the backend association before the backend is shut down.  <br /></td></tr>
+<tr class="separator:a3e67f9046492fecc2a833091c740cc0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee2fc0239bd71d57ec7831f512c3539" id="r_a6ee2fc0239bd71d57ec7831f512c3539"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a6ee2fc0239bd71d57ec7831f512c3539">backend</a> ()</td></tr>
+<tr class="memdesc:a6ee2fc0239bd71d57ec7831f512c3539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the configured backend for the current synchronous operation.  <br /></td></tr>
+<tr class="separator:a6ee2fc0239bd71d57ec7831f512c3539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a261a3800309764919bcce95d65d2b605" id="r_a261a3800309764919bcce95d65d2b605"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structeve_1_1ui_1_1UIStats.html">UIStats</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a261a3800309764919bcce95d65d2b605">stats</a> ()</td></tr>
+<tr class="separator:a261a3800309764919bcce95d65d2b605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aae9387f3c84a54ac9ed68dcd93069c" id="r_a4aae9387f3c84a54ac9ed68dcd93069c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a4aae9387f3c84a54ac9ed68dcd93069c">viewportState</a> (const std::string &amp;hostName, const std::string &amp;nodeId)</td></tr>
+<tr class="memdesc:a4aae9387f3c84a54ac9ed68dcd93069c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns viewport state for a host/node key when it exists.  <br /></td></tr>
+<tr class="separator:a4aae9387f3c84a54ac9ed68dcd93069c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d01d6896e0485f1c7a5284b7ac3e90b" id="r_a8d01d6896e0485f1c7a5284b7ac3e90b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">eve::ResultRef</a>&lt; <a class="el" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a8d01d6896e0485f1c7a5284b7ac3e90b">ensureViewport</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a8d01d6896e0485f1c7a5284b7ac3e90b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates or refreshes offscreen state for a viewport key.  <br /></td></tr>
+<tr class="separator:a8d01d6896e0485f1c7a5284b7ac3e90b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab98285115d2481a48184050e9fc6562a" id="r_ab98285115d2481a48184050e9fc6562a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#ab98285115d2481a48184050e9fc6562a">render</a> ()</td></tr>
+<tr class="memdesc:ab98285115d2481a48184050e9fc6562a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Walk all <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a> (+ subclasses) via ECS View.  <br /></td></tr>
+<tr class="separator:ab98285115d2481a48184050e9fc6562a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af82c880de0e84c6d42c58f55cb555492" id="r_af82c880de0e84c6d42c58f55cb555492"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIEvent.html">UIEvent</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#af82c880de0e84c6d42c58f55cb555492">pendingEvents</a> ()</td></tr>
+<tr class="separator:af82c880de0e84c6d42c58f55cb555492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b72d22309f6e7dc3c6bd4997d113bd1" id="r_a8b72d22309f6e7dc3c6bd4997d113bd1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a8b72d22309f6e7dc3c6bd4997d113bd1">dispatchEvents</a> ()</td></tr>
+<tr class="separator:a8b72d22309f6e7dc3c6bd4997d113bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f95ddb771380476327f9776c18e8e1" id="r_a73f95ddb771380476327f9776c18e8e1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a73f95ddb771380476327f9776c18e8e1">findHost</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a73f95ddb771380476327f9776c18e8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lookup by Meta.name across the <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a> View.  <br /></td></tr>
+<tr class="separator:a73f95ddb771380476327f9776c18e8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe08afccb5516de2a10bc79dddf1dc4b" id="r_abe08afccb5516de2a10bc79dddf1dc4b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#abe08afccb5516de2a10bc79dddf1dc4b">findHostByOwner</a> (uint32_t ownerId)</td></tr>
+<tr class="memdesc:abe08afccb5516de2a10bc79dddf1dc4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the first host with Meta.ownerId equal to ownerId, or null.  <br /></td></tr>
+<tr class="separator:abe08afccb5516de2a10bc79dddf1dc4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f9464bfa0c18d0d247a9c9f6e3dc811" id="r_a5f9464bfa0c18d0d247a9c9f6e3dc811"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIClick.html">UIClick</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a5f9464bfa0c18d0d247a9c9f6e3dc811">clickQueue</a> ()</td></tr>
+<tr class="separator:a5f9464bfa0c18d0d247a9c9f6e3dc811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75ec77e190abda700ec3ac3fc1b18c81" id="r_a75ec77e190abda700ec3ac3fc1b18c81"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIChange.html">UIChange</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a75ec77e190abda700ec3ac3fc1b18c81">changeQueue</a> ()</td></tr>
+<tr class="separator:a75ec77e190abda700ec3ac3fc1b18c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9df98b134c3445651476e6ac3256a7b7" id="r_a9df98b134c3445651476e6ac3256a7b7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">DragDropSupport</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a9df98b134c3445651476e6ac3256a7b7">dragDropSupport</a> () noexcept</td></tr>
+<tr class="memdesc:a9df98b134c3445651476e6ac3256a7b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained drag-and-drop availability for this build target.  <br /></td></tr>
+<tr class="separator:a9df98b134c3445651476e6ac3256a7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5997ce399afb992f24e0e6c4c1f06f77" id="r_a5997ce399afb992f24e0e6c4c1f06f77"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a5997ce399afb992f24e0e6c4c1f06f77">enqueuePlatformFileDrop</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a5997ce399afb992f24e0e6c4c1f06f77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies an OS file-drop path into UI-owned pending state.  <br /></td></tr>
+<tr class="separator:a5997ce399afb992f24e0e6c4c1f06f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a071e6be10b22e8f4b0851a3ad9008558" id="r_a071e6be10b22e8f4b0851a3ad9008558"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIDrop.html">UIDrop</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a071e6be10b22e8f4b0851a3ad9008558">dropQueue</a> ()</td></tr>
+<tr class="memdesc:a071e6be10b22e8f4b0851a3ad9008558"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the owning completed-drop queue.  <br /></td></tr>
+<tr class="separator:a071e6be10b22e8f4b0851a3ad9008558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade250088d326c4ac35bb9a84fb672ee8" id="r_ade250088d326c4ac35bb9a84fb672ee8"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="structeve_1_1ui_1_1UIDrop.html">UIDrop</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#ade250088d326c4ac35bb9a84fb672ee8">consumeDrop</a> ()</td></tr>
+<tr class="memdesc:ade250088d326c4ac35bb9a84fb672ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the oldest completed drop, or returns empty when none exists.  <br /></td></tr>
+<tr class="separator:ade250088d326c4ac35bb9a84fb672ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3fff66d42cc880f060c0c26675db6dc" id="r_aa3fff66d42cc880f060c0c26675db6dc"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#aa3fff66d42cc880f060c0c26675db6dc">consumeClick</a> ()</td></tr>
+<tr class="memdesc:aa3fff66d42cc880f060c0c26675db6dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop next click as "name/node"; empty if none.  <br /></td></tr>
+<tr class="separator:aa3fff66d42cc880f060c0c26675db6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae87e76fde0b03e8a0767aff92d3c0ed5" id="r_ae87e76fde0b03e8a0767aff92d3c0ed5"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#ae87e76fde0b03e8a0767aff92d3c0ed5">consumeClickFor</a> (const std::string &amp;hostName)</td></tr>
+<tr class="memdesc:ae87e76fde0b03e8a0767aff92d3c0ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop next click for a specific host; returns node id only (or "").  <br /></td></tr>
+<tr class="separator:ae87e76fde0b03e8a0767aff92d3c0ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dd948239b6a886e244d74058ecf0c0f" id="r_a6dd948239b6a886e244d74058ecf0c0f"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html#a6dd948239b6a886e244d74058ecf0c0f">consumeChange</a> ()</td></tr>
+<tr class="memdesc:a6dd948239b6a886e244d74058ecf0c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop next change as "name/node"; empty if none.  <br /></td></tr>
+<tr class="separator:a6dd948239b6a886e244d74058ecf0c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="UISystem_8h_source.html">UISystem.h</a> 第 <a class="el" href="UISystem_8h_source.html#l00091">91</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6ee2fc0239bd71d57ec7831f512c3539" name="a6ee2fc0239bd71d57ec7831f512c3539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ee2fc0239bd71d57ec7831f512c3539">&#9670;&#160;</a></span>backend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &gt; &gt; eve::ui::UISystem::backend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the configured backend for the current synchronous operation. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed reference when configured, or empty when unavailable. @ownership <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> does not own the backend. @lifetime The reference is valid until backend replacement or teardown; do not retain it. @thread Call on the UI/render thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01296">1296</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UISystem_8cpp_source.html#l01294">setBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a75ec77e190abda700ec3ac3fc1b18c81" name="a75ec77e190abda700ec3ac3fc1b18c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75ec77e190abda700ec3ac3fc1b18c81">&#9670;&#160;</a></span>changeQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIChange.html">UIChange</a> &gt; &amp; eve::ui::UISystem::changeQueue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01270">1270</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e67f9046492fecc2a833091c740cc0a" name="a3e67f9046492fecc2a833091c740cc0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e67f9046492fecc2a833091c740cc0a">&#9670;&#160;</a></span>clearBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::UISystem::clearBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the backend association before the backend is shut down. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01295">1295</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00223">eve::ui::UI::shutdownBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a5f9464bfa0c18d0d247a9c9f6e3dc811" name="a5f9464bfa0c18d0d247a9c9f6e3dc811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f9464bfa0c18d0d247a9c9f6e3dc811">&#9670;&#160;</a></span>clickQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIClick.html">UIClick</a> &gt; &amp; eve::ui::UISystem::clickQueue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01269">1269</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6dd948239b6a886e244d74058ecf0c0f" name="a6dd948239b6a886e244d74058ecf0c0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dd948239b6a886e244d74058ecf0c0f">&#9670;&#160;</a></span>consumeChange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UISystem::consumeChange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pop next change as "name/node"; empty if none. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01555">1555</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01249">eve::ui::UI::consumeChange()</a>.</p>
+
+</div>
+</div>
+<a id="aa3fff66d42cc880f060c0c26675db6dc" name="aa3fff66d42cc880f060c0c26675db6dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3fff66d42cc880f060c0c26675db6dc">&#9670;&#160;</a></span>consumeClick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UISystem::consumeClick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pop next click as "name/node"; empty if none. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01537">1537</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01247">eve::ui::UI::consumeClick()</a>.</p>
+
+</div>
+</div>
+<a id="ae87e76fde0b03e8a0767aff92d3c0ed5" name="ae87e76fde0b03e8a0767aff92d3c0ed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae87e76fde0b03e8a0767aff92d3c0ed5">&#9670;&#160;</a></span>consumeClickFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UISystem::consumeClickFor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>hostName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pop next click for a specific host; returns node id only (or ""). </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01545">1545</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="ade250088d326c4ac35bb9a84fb672ee8" name="ade250088d326c4ac35bb9a84fb672ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade250088d326c4ac35bb9a84fb672ee8">&#9670;&#160;</a></span>consumeDrop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1ui_1_1UIDrop.html">UIDrop</a> &gt; eve::ui::UISystem::consumeDrop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pops the oldest completed drop, or returns empty when none exists. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01287">1287</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01257">eve::ui::UI::consumeDrop()</a>.</p>
+
+</div>
+</div>
+<a id="a8b72d22309f6e7dc3c6bd4997d113bd1" name="a8b72d22309f6e7dc3c6bd4997d113bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b72d22309f6e7dc3c6bd4997d113bd1">&#9670;&#160;</a></span>dispatchEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::UISystem::dispatchEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01463">1463</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00212">host</a>, <a class="el" href="UISystem_8h_source.html#l00035">eve::ui::UIClick::hostName</a>, <a class="el" href="UISystem_8h_source.html#l00041">eve::ui::UIChange::hostName</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="namespaceeve_1_1ui.html#a4818d933e95ca35a3ab90f405f2ae742afd038fc7f319e48f3115d92bf5bdbef9">eve::ui::Ignore</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="UISystem_8h_source.html#l00043">eve::ui::UIChange::kind</a>, <a class="el" href="UISystem_8h_source.html#l00042">eve::ui::UIChange::nodeId</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>, <a class="el" href="namespaceeve_1_1ui.html#a4818d933e95ca35a3ab90f405f2ae742a11a755d598c0c417f9a36758c3da7481">eve::ui::Stop</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00032">eve::scene::NodeDesc::visible</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00275">eve::ui::UI::dispatchEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a9df98b134c3445651476e6ac3256a7b7" name="a9df98b134c3445651476e6ac3256a7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9df98b134c3445651476e6ac3256a7b7">&#9670;&#160;</a></span>dragDropSupport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">DragDropSupport</a> eve::ui::UISystem::dragDropSupport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns retained drag-and-drop availability for this build target. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01273">1273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41aeaa4dc5078017a5c5bebf383ab6f5124">eve::ui::Supported</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41a32466f12a7ca314bff55d8bf6361f416">eve::ui::UnsupportedPlatform</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01251">eve::ui::UI::dragDropSupport()</a>, <a class="el" href="UISystem_8cpp_source.html#l01282">enqueuePlatformFileDrop()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l00229">eve::ui::UI::processEvent()</a>.</p>
+
+</div>
+</div>
+<a id="a071e6be10b22e8f4b0851a3ad9008558" name="a071e6be10b22e8f4b0851a3ad9008558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a071e6be10b22e8f4b0851a3ad9008558">&#9670;&#160;</a></span>dropQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIDrop.html">UIDrop</a> &gt; &amp; eve::ui::UISystem::dropQueue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the owning completed-drop queue. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01271">1271</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5997ce399afb992f24e0e6c4c1f06f77" name="a5997ce399afb992f24e0e6c4c1f06f77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5997ce399afb992f24e0e6c4c1f06f77">&#9670;&#160;</a></span>enqueuePlatformFileDrop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::UISystem::enqueuePlatformFileDrop </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copies an OS file-drop path into UI-owned pending state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>UTF-8 path copied synchronously; the caller retains no lifetime obligation. @thread Call on the platform/UI thread. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01282">1282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UISystem_8cpp_source.html#l01273">dragDropSupport()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41aeaa4dc5078017a5c5bebf383ab6f5124">eve::ui::Supported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00229">eve::ui::UI::processEvent()</a>.</p>
+
+</div>
+</div>
+<a id="a8d01d6896e0485f1c7a5284b7ac3e90b" name="a8d01d6896e0485f1c7a5284b7ac3e90b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d01d6896e0485f1c7a5284b7ac3e90b">&#9670;&#160;</a></span>ensureViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a> &gt; &gt; eve::ui::UISystem::ensureViewport </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates or refreshes offscreen state for a viewport key. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed state reference, or a structured failure for invalid dimensions/key. @ownership <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> owns the state and Graphics owns its Canvas. @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it. @thread Call on the UI/render thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01302">1302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UISystem_8h_source.html#l00078">eve::ui::ViewportState::canvas</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="UISystem_8h_source.html#l00081">eve::ui::ViewportState::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="UISystem_8h_source.html#l00077">eve::ui::ViewportState::key</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fad37b1f6c0512e2118cee17fea015b699">eve::Rejected</a>, <a class="el" href="UISystem_8h_source.html#l00079">eve::ui::ViewportState::textureId</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a> , 以及 <a class="el" href="UISystem_8h_source.html#l00080">eve::ui::ViewportState::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01349">eve::ui::UI::viewportCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a73f95ddb771380476327f9776c18e8e1" name="a73f95ddb771380476327f9776c18e8e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f95ddb771380476327f9776c18e8e1">&#9670;&#160;</a></span>findHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> eve::ui::UISystem::findHost </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lookup by Meta.name across the <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a> View. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable host owned by the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world. @ownership <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> does not own the host; callers must not delete it. @lifetime Valid until host destruction or ECS structural mutation. @thread Call on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> thread. @reentrancy The lookup invokes no callbacks and is invalid across ECS mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01342">1342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00321">eve::ui::UI::findHost()</a> , 以及 <a class="el" href="Component_8cpp_source.html#l00012">eve::ui::Component::mountAs()</a>.</p>
+
+</div>
+</div>
+<a id="abe08afccb5516de2a10bc79dddf1dc4b" name="abe08afccb5516de2a10bc79dddf1dc4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe08afccb5516de2a10bc79dddf1dc4b">&#9670;&#160;</a></span>findHostByOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> eve::ui::UISystem::findHostByOwner </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>ownerId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find the first host with Meta.ownerId equal to ownerId, or null. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable host owned by the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world. @ownership <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> does not own the host; callers must not delete it. @lifetime Valid until host destruction or ECS structural mutation. @thread Call on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> thread. @reentrancy The lookup invokes no callbacks and is invalid across ECS mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01354">1354</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00323">eve::ui::UI::findHostByOwner()</a>.</p>
+
+</div>
+</div>
+<a id="af82c880de0e84c6d42c58f55cb555492" name="af82c880de0e84c6d42c58f55cb555492"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82c880de0e84c6d42c58f55cb555492">&#9670;&#160;</a></span>pendingEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1UIEvent.html">UIEvent</a> &gt; &amp; eve::ui::UISystem::pendingEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01268">1268</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00275">eve::ui::UI::dispatchEvents()</a>.</p>
+
+</div>
+</div>
+<a id="ab98285115d2481a48184050e9fc6562a" name="ab98285115d2481a48184050e9fc6562a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab98285115d2481a48184050e9fc6562a">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::UISystem::render </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Walk all <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a> (+ subclasses) via ECS View. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01366">1366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00090">anchor</a>, <a class="el" href="Theme_8cpp_source.html#l00173">eve::ui::applyThemeToImGui()</a>, <a class="el" href="namespaceeve_1_1ui.html#ae2b10f0fe17c19167e9a0d6d51b5b3e8ac1cd92f759a4190b12182ac2c6b568bf">eve::ui::Avoid</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1ui.html#ac960271d9f74b1533d9f10d26de2128faa19bd004fe62efa690c3b99e690293ce">eve::ui::Crowded</a>, <a class="el" href="Profile_8h_source.html#l00137">EV_PROFILE_MODULE</a>, <a class="el" href="Theme_8cpp_source.html#l00137">eve::ui::globalTheme()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00212">host</a>, <a class="el" href="Layout_8cpp_source.html#l00447">eve::ui::measureTree()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00091">eve::ui::resolveWorldAnchorOverlaps()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00236">eve::ui::UI::beginFrameAndRender()</a>.</p>
+
+</div>
+</div>
+<a id="a3d3385f763cf488fe41fe304a29024ef" name="a3d3385f763cf488fe41fe304a29024ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d3385f763cf488fe41fe304a29024ef">&#9670;&#160;</a></span>setBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::UISystem::setBackend </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>backend</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the borrowed backend used for the current UI/render lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01294">1294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UISystem_8cpp_source.html#l01296">backend()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00208">eve::ui::UI::initBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a261a3800309764919bcce95d65d2b605" name="a261a3800309764919bcce95d65d2b605"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261a3800309764919bcce95d65d2b605">&#9670;&#160;</a></span>stats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ui_1_1UIStats.html">UIStats</a> &amp; eve::ui::UISystem::stats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01300">1300</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01307">eve::ui::UI::getStats()</a>.</p>
+
+</div>
+</div>
+<a id="a4aae9387f3c84a54ac9ed68dcd93069c" name="a4aae9387f3c84a54ac9ed68dcd93069c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aae9387f3c84a54ac9ed68dcd93069c">&#9670;&#160;</a></span>viewportState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::reference_wrapper&lt; <a class="el" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a> &gt; &gt; eve::ui::UISystem::viewportState </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>hostName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns viewport state for a host/node key when it exists. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed reference for this synchronous operation, or empty when absent. @ownership <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> owns the state. @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it. @thread Call on the UI/render thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a> 第 <a class="el" href="UISystem_8cpp_source.html#l01335">1335</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01366">eve::ui::UI::viewportActive()</a>, <a class="el" href="UI_8cpp_source.html#l01349">eve::ui::UI::viewportCanvas()</a>, <a class="el" href="UI_8cpp_source.html#l01387">eve::ui::UI::viewportDragDX()</a>, <a class="el" href="UI_8cpp_source.html#l01394">eve::ui::UI::viewportDragDY()</a>, <a class="el" href="UI_8cpp_source.html#l01359">eve::ui::UI::viewportHovered()</a>, <a class="el" href="UI_8cpp_source.html#l01373">eve::ui::UI::viewportMouseX()</a>, <a class="el" href="UI_8cpp_source.html#l01380">eve::ui::UI::viewportMouseY()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l01401">eve::ui::UI::viewportWheel()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="UISystem_8h_source.html">UISystem.h</a></li>
+<li>src/modules/ui/<a class="el" href="UISystem_8cpp_source.html">UISystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::CapsuleMove3D结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html">CapsuleMove3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1CapsuleMove3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::CapsuleMove3D结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning result of continuous capsule movement.  
+ <a href="structeve_1_1physics_1_1CapsuleMove3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aafa3f556c18ec13988bbc48afbdd2c7f" id="r_aafa3f556c18ec13988bbc48afbdd2c7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">PhysicsWorldHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#aafa3f556c18ec13988bbc48afbdd2c7f">world</a> = <a class="el" href="classeve_1_1RuntimeHandle.html#ad4f1ab6695f0eef5d1c5d84db3b2161a">PhysicsWorldHandle::invalid</a>()</td></tr>
+<tr class="separator:aafa3f556c18ec13988bbc48afbdd2c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a505481e0b6b664b0f3a51f256a2ebf86" id="r_a505481e0b6b664b0f3a51f256a2ebf86"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a505481e0b6b664b0f3a51f256a2ebf86">constrained</a> = false</td></tr>
+<tr class="separator:a505481e0b6b664b0f3a51f256a2ebf86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a10b4332fbf255f47c3c03a56b2c83e" id="r_a2a10b4332fbf255f47c3c03a56b2c83e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a2a10b4332fbf255f47c3c03a56b2c83e">grounded</a> = false</td></tr>
+<tr class="separator:a2a10b4332fbf255f47c3c03a56b2c83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab366df6ffdc060a6f2387570c0c7aa4f" id="r_ab366df6ffdc060a6f2387570c0c7aa4f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#ab366df6ffdc060a6f2387570c0c7aa4f">deltaX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab366df6ffdc060a6f2387570c0c7aa4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82ef2b6717c4985374850f2e453e95fb" id="r_a82ef2b6717c4985374850f2e453e95fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a82ef2b6717c4985374850f2e453e95fb">deltaY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a82ef2b6717c4985374850f2e453e95fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9f86de07c9235e30dad4e850cd35788" id="r_ac9f86de07c9235e30dad4e850cd35788"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#ac9f86de07c9235e30dad4e850cd35788">deltaZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac9f86de07c9235e30dad4e850cd35788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38f40df28ff26104dcff27a8cf88d83e" id="r_a38f40df28ff26104dcff27a8cf88d83e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a38f40df28ff26104dcff27a8cf88d83e">normalX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a38f40df28ff26104dcff27a8cf88d83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abae2c7425171412562a4c2f9f0b52979" id="r_abae2c7425171412562a4c2f9f0b52979"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#abae2c7425171412562a4c2f9f0b52979">normalY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abae2c7425171412562a4c2f9f0b52979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fa6d901b2180ca187bf637b3bc8afc0" id="r_a0fa6d901b2180ca187bf637b3bc8afc0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a0fa6d901b2180ca187bf637b3bc8afc0">normalZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0fa6d901b2180ca187bf637b3bc8afc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a024e9314a39c12d1e715e2fe6050831a" id="r_a024e9314a39c12d1e715e2fe6050831a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a024e9314a39c12d1e715e2fe6050831a">planeCount</a> = 0</td></tr>
+<tr class="separator:a024e9314a39c12d1e715e2fe6050831a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0882d60eda876c3da140c4a06b502301" id="r_a0882d60eda876c3da140c4a06b502301"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html#a0882d60eda876c3da140c4a06b502301">iterations</a> = 0</td></tr>
+<tr class="separator:a0882d60eda876c3da140c4a06b502301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning result of continuous capsule movement. </p>
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00076">76</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a505481e0b6b664b0f3a51f256a2ebf86" name="a505481e0b6b664b0f3a51f256a2ebf86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a505481e0b6b664b0f3a51f256a2ebf86">&#9670;&#160;</a></span>constrained</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::CapsuleMove3D::constrained = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="ab366df6ffdc060a6f2387570c0c7aa4f" name="ab366df6ffdc060a6f2387570c0c7aa4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab366df6ffdc060a6f2387570c0c7aa4f">&#9670;&#160;</a></span>deltaX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::deltaX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a82ef2b6717c4985374850f2e453e95fb" name="a82ef2b6717c4985374850f2e453e95fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82ef2b6717c4985374850f2e453e95fb">&#9670;&#160;</a></span>deltaY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::deltaY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="ac9f86de07c9235e30dad4e850cd35788" name="ac9f86de07c9235e30dad4e850cd35788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9f86de07c9235e30dad4e850cd35788">&#9670;&#160;</a></span>deltaZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::deltaZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a2a10b4332fbf255f47c3c03a56b2c83e" name="a2a10b4332fbf255f47c3c03a56b2c83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a10b4332fbf255f47c3c03a56b2c83e">&#9670;&#160;</a></span>grounded</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::CapsuleMove3D::grounded = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a0882d60eda876c3da140c4a06b502301" name="a0882d60eda876c3da140c4a06b502301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0882d60eda876c3da140c4a06b502301">&#9670;&#160;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::CapsuleMove3D::iterations = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a38f40df28ff26104dcff27a8cf88d83e" name="a38f40df28ff26104dcff27a8cf88d83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38f40df28ff26104dcff27a8cf88d83e">&#9670;&#160;</a></span>normalX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::normalX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="abae2c7425171412562a4c2f9f0b52979" name="abae2c7425171412562a4c2f9f0b52979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abae2c7425171412562a4c2f9f0b52979">&#9670;&#160;</a></span>normalY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::normalY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a0fa6d901b2180ca187bf637b3bc8afc0" name="a0fa6d901b2180ca187bf637b3bc8afc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fa6d901b2180ca187bf637b3bc8afc0">&#9670;&#160;</a></span>normalZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::CapsuleMove3D::normalZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a024e9314a39c12d1e715e2fe6050831a" name="a024e9314a39c12d1e715e2fe6050831a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a024e9314a39c12d1e715e2fe6050831a">&#9670;&#160;</a></span>planeCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::CapsuleMove3D::planeCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<a id="aafa3f556c18ec13988bbc48afbdd2c7f" name="aafa3f556c18ec13988bbc48afbdd2c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa3f556c18ec13988bbc48afbdd2c7f">&#9670;&#160;</a></span>world</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">PhysicsWorldHandle</a> eve::physics::CapsuleMove3D::world = <a class="el" href="classeve_1_1RuntimeHandle.html#ad4f1ab6695f0eef5d1c5d84db3b2161a">PhysicsWorldHandle::invalid</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a> 第 <a class="el" href="OwnedQuery3D_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l01942">eve::physics::World3D::moveCapsuleOwned()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="OwnedQuery3D_8h_source.html">OwnedQuery3D.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

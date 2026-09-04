@@ -1,0 +1,345 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ScreenSpaceReflection.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScreenSpaceReflection.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScreenSpaceReflection_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a1c4b1fe0b2edccb03a8b97148b4684ba">~ScreenSpaceReflection</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a5eb434e0e30432490e5309ed4036036c">   33</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a5eb434e0e30432490e5309ed4036036c">ScreenSpaceReflection</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae4f45b66cd17694a9d652038034b1b83">   34</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae4f45b66cd17694a9d652038034b1b83">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a139f52072a5c09ebaa8ed65d8462f9a5">setCamera</a>(<span class="keywordtype">float</span> eyeX, <span class="keywordtype">float</span> eyeY, <span class="keywordtype">float</span> eyeZ, <span class="keywordtype">float</span> targetX, <span class="keywordtype">float</span> targetY, <span class="keywordtype">float</span> targetZ,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                   <span class="keywordtype">float</span> upX, <span class="keywordtype">float</span> upY, <span class="keywordtype">float</span> upZ, <span class="keywordtype">float</span> fovYDeg, <span class="keywordtype">float</span> aspect, <span class="keywordtype">float</span> nearZ,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                   <span class="keywordtype">float</span> farZ);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab04c5117e5e038f7b5722625ec31df41">setInvViewProj</a>(<span class="keyword">const</span> glm::mat4 &amp;invViewProj);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af740ed1069b94ca4cf00539383872432">   42</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af740ed1069b94ca4cf00539383872432">setTemporalMotionTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motionDepth) { temporalMotionDepth_ = motionDepth; }</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae408d3f4f017ae95cfa55064e9fbb214">   44</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae408d3f4f017ae95cfa55064e9fbb214">setDepthPyramid</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *atlas, <span class="keywordtype">int</span> levels) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        depthPyramid_ = atlas;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        depthPyramidLevels_ = levels;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a05e254afd6d3494248734f48274f9e02">   49</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a05e254afd6d3494248734f48274f9e02">invalidateHistory</a>() { historyValid_ = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6b7f7212f650805eddbccbab08f137be">setEnabled</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a746cae7e5990906745d1d807103bfd78">   53</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a746cae7e5990906745d1d807103bfd78">getEnabled</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> enabled_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a205a2fcdb632cbce29e8e945e899c0c8">setQuality</a>(<span class="keyword">const</span> std::string &amp;quality);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a04e20b62d5b99d27af200d06850230d0">   58</a></span>    std::string <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a04e20b62d5b99d27af200d06850230d0">getQuality</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> quality_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6a93b5cb1acc8321660bcbdbee33f71f">setMaxDistance</a>(<span class="keywordtype">float</span> meters);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aa0567d796afbb7b9206bdc5f532abac8">setStepLength</a>(<span class="keywordtype">float</span> meters);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8a49ca611ab15759cc5f4f452b50e649">setMaxSteps</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a779cf18929733d8b30bd313daf065453">setThickness</a>(<span class="keywordtype">float</span> meters);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#abb4f2a2c8a6d6f5cca516b18f3e8c0a6">setStrength</a>(<span class="keywordtype">float</span> strength);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aeb7800d62edb43bc7820f7c126ea6967">setMaxRoughness</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a70ace72c59194d123c8696b621cf32ea">setResolutionScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a20f90b944e2fb9b42085b9144b9b5deb">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a20f90b944e2fb9b42085b9144b9b5deb">getStrength</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> strength_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a00d08086649dc551a6c505a7d9b768a3">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a00d08086649dc551a6c505a7d9b768a3">getMaxRoughness</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxRoughness_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a59ac41a252ae92caa9f43deadcb7f63e">   71</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a59ac41a252ae92caa9f43deadcb7f63e">getResolutionScale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> resolutionScale_; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af45b7c584715b9ed8eba09c477506821">hasParam</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adb3c6fbe44790c1e1d64d5ef4eca1183">setFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#acdba4b5cd8a8a7fec289eb6cc8296c13">getFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">   78</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">applyFromSceneTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                          <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">applyFromSceneTo</a>(gfx, sceneColor, hwDepth, worldNormal, <span class="keyword">nullptr</span>, dest);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">applyFromSceneTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                          <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae6652ec8de33a70918e65e90d26fc040">applyFromScene</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                        <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8dcf122565da41dda021348ab360ec78">getReflectionCanvas</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a46b0ee721076c31a0cf30513f9eec22e">getReflectionTexture</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a2c5d9df74950e83aa44239af9f652eb4">   94</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a2c5d9df74950e83aa44239af9f652eb4">hasValidHistory</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> historyValid_ &amp;&amp; historyRead_ != <span class="keyword">nullptr</span>; }</div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab973946628e6be51191d7dc5a5c16cd9">   96</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab973946628e6be51191d7dc5a5c16cd9">getSpatialPassCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> quality_ == <span class="stringliteral">&quot;ultra&quot;</span> ? 3 : quality_ == <span class="stringliteral">&quot;high&quot;</span> ? 2 : quality_ == <span class="stringliteral">&quot;medium&quot;</span> ? 1 : 0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adefb24e908689d14140f0877107cab02">  100</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adefb24e908689d14140f0877107cab02">getShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ssr_; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">void</span> uploadUniforms(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> ensureHistory(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> resolveTemporal(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *current, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motionDepth);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *ssr_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *temporal_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *reflection_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *historyA_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *historyB_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *historyRead_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *historyWrite_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *spatialA_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *spatialB_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *temporalMotionDepth_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *depthPyramid_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">int</span> depthPyramidLevels_ = 0;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    glm::mat4 invViewProj_{1.f};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    glm::mat4 previousViewProj_{1.f};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    glm::vec3 previousEye_{0.f};</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    glm::vec3 previousForward_{0.f, 0.f, -1.f};</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">float</span> previousFovY_ = 0.f;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">float</span> previousAspect_ = 1.f;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">bool</span> historyValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">bool</span> viewProjValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">bool</span> cameraValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">int</span> historyWidth_ = 0;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">int</span> historyHeight_ = 0;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">float</span> nearZ_ = 0.1f;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">float</span> farZ_ = 100.f;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">bool</span> enabled_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    std::string quality_ = <span class="stringliteral">&quot;medium&quot;</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">float</span> maxDist_ = 60.f;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">float</span> stepLen_ = 0.4f;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">float</span> maxSteps_ = 96.f;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">float</span> thickness_ = 0.5f;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">float</span> strength_ = 0.9f;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">float</span> bias_ = 0.0005f;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">float</span> maxRoughness_ = 0.8f;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">float</span> resolutionScale_ = 1.f;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">float</span> temporalCurrentWeight_ = 0.16f;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">float</span> spatialFilterStrength_ = 0.5f;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>};</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a2c76422d3e436164284a7dba0b8a9cc4"><div class="ttname"><a href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a></div><div class="ttdeci">float roughness</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00098">ModelRenderer.cpp:98</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_ab7584fa1f0ea319cb0ecfaf835116c72"><div class="ttname"><a href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a></div><div class="ttdeci">Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00093">ModelRenderer.cpp:93</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ab4ae7205573977222eadd0795db193e2"><div class="ttname"><a href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a></div><div class="ttdeci">int steps</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00112">PrototypeKit.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></div><div class="ttdoc">Screen-space reflections (SSR) as a fullscreen post pass. @lifetime All Graphics and texture argument...</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00028">ScreenSpaceReflection.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a00d08086649dc551a6c505a7d9b768a3"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a00d08086649dc551a6c505a7d9b768a3">eve::graphics::ScreenSpaceReflection::getMaxRoughness</a></div><div class="ttdeci">float getMaxRoughness() const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00070">ScreenSpaceReflection.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a04e20b62d5b99d27af200d06850230d0"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a04e20b62d5b99d27af200d06850230d0">eve::graphics::ScreenSpaceReflection::getQuality</a></div><div class="ttdeci">std::string getQuality() const</div><div class="ttdoc">Return the active SSR quality preset.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00058">ScreenSpaceReflection.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a05e254afd6d3494248734f48274f9e02"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a05e254afd6d3494248734f48274f9e02">eve::graphics::ScreenSpaceReflection::invalidateHistory</a></div><div class="ttdeci">void invalidateHistory()</div><div class="ttdoc">Discard temporal reflection history after a render-chain discontinuity.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00049">ScreenSpaceReflection.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a0d751bf2606c7153e3fb58ddae77a4fa"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">eve::graphics::ScreenSpaceReflection::applyFromSceneTo</a></div><div class="ttdeci">void applyFromSceneTo(Graphics *gfx, Texture *sceneColor, Texture *hwDepth, Texture *worldNormal, Canvas *dest)</div><div class="ttdoc">Write the SSR result into the currently bound canvas / dest.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00078">ScreenSpaceReflection.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a139f52072a5c09ebaa8ed65d8462f9a5"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a139f52072a5c09ebaa8ed65d8462f9a5">eve::graphics::ScreenSpaceReflection::setCamera</a></div><div class="ttdeci">void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</div><div class="ttdoc">Camera for depth reconstruction (RH + ZO). Builds inv(viewProj) + near/far.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00150">ScreenSpaceReflection.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a1c4b1fe0b2edccb03a8b97148b4684ba"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a1c4b1fe0b2edccb03a8b97148b4684ba">eve::graphics::ScreenSpaceReflection::~ScreenSpaceReflection</a></div><div class="ttdeci">~ScreenSpaceReflection()</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00069">ScreenSpaceReflection.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a205a2fcdb632cbce29e8e945e899c0c8"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a205a2fcdb632cbce29e8e945e899c0c8">eve::graphics::ScreenSpaceReflection::setQuality</a></div><div class="ttdeci">void setQuality(const std::string &amp;quality)</div><div class="ttdoc">Set &quot;low&quot;, &quot;medium&quot;, &quot;high&quot; or &quot;ultra&quot; SSR quality preset.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00188">ScreenSpaceReflection.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a20f90b944e2fb9b42085b9144b9b5deb"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a20f90b944e2fb9b42085b9144b9b5deb">eve::graphics::ScreenSpaceReflection::getStrength</a></div><div class="ttdeci">float getStrength() const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00069">ScreenSpaceReflection.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a2c5d9df74950e83aa44239af9f652eb4"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a2c5d9df74950e83aa44239af9f652eb4">eve::graphics::ScreenSpaceReflection::hasValidHistory</a></div><div class="ttdeci">bool hasValidHistory() const</div><div class="ttdoc">True once a temporally resolved reflection frame is safe to sample.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00094">ScreenSpaceReflection.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a46b0ee721076c31a0cf30513f9eec22e"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a46b0ee721076c31a0cf30513f9eec22e">eve::graphics::ScreenSpaceReflection::getReflectionTexture</a></div><div class="ttdeci">Texture * getReflectionTexture()</div><div class="ttdoc">The reflection texture from the owned canvas, or nullptr before first apply.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00321">ScreenSpaceReflection.cpp:321</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a59ac41a252ae92caa9f43deadcb7f63e"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a59ac41a252ae92caa9f43deadcb7f63e">eve::graphics::ScreenSpaceReflection::getResolutionScale</a></div><div class="ttdeci">float getResolutionScale() const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00071">ScreenSpaceReflection.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a5eb434e0e30432490e5309ed4036036c"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a5eb434e0e30432490e5309ed4036036c">eve::graphics::ScreenSpaceReflection::ScreenSpaceReflection</a></div><div class="ttdeci">ScreenSpaceReflection(const ScreenSpaceReflection &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a6a93b5cb1acc8321660bcbdbee33f71f"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6a93b5cb1acc8321660bcbdbee33f71f">eve::graphics::ScreenSpaceReflection::setMaxDistance</a></div><div class="ttdeci">void setMaxDistance(float meters)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00229">ScreenSpaceReflection.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a6b7f7212f650805eddbccbab08f137be"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6b7f7212f650805eddbccbab08f137be">eve::graphics::ScreenSpaceReflection::setEnabled</a></div><div class="ttdeci">void setEnabled(bool enabled)</div><div class="ttdoc">Enable/disable the pass. When disabled it emits transparent (0 hit).</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00182">ScreenSpaceReflection.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a70ace72c59194d123c8696b621cf32ea"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a70ace72c59194d123c8696b621cf32ea">eve::graphics::ScreenSpaceReflection::setResolutionScale</a></div><div class="ttdeci">void setResolutionScale(float scale)</div><div class="ttdoc">Set internal SSR resolution scale in the range 0.25 to 1.0.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00237">ScreenSpaceReflection.cpp:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a746cae7e5990906745d1d807103bfd78"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a746cae7e5990906745d1d807103bfd78">eve::graphics::ScreenSpaceReflection::getEnabled</a></div><div class="ttdeci">bool getEnabled() const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00053">ScreenSpaceReflection.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a779cf18929733d8b30bd313daf065453"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a779cf18929733d8b30bd313daf065453">eve::graphics::ScreenSpaceReflection::setThickness</a></div><div class="ttdeci">void setThickness(float meters)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00232">ScreenSpaceReflection.cpp:232</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a8a49ca611ab15759cc5f4f452b50e649"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8a49ca611ab15759cc5f4f452b50e649">eve::graphics::ScreenSpaceReflection::setMaxSteps</a></div><div class="ttdeci">void setMaxSteps(int steps)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00231">ScreenSpaceReflection.cpp:231</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_a8dcf122565da41dda021348ab360ec78"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8dcf122565da41dda021348ab360ec78">eve::graphics::ScreenSpaceReflection::getReflectionCanvas</a></div><div class="ttdeci">Canvas * getReflectionCanvas()</div><div class="ttdoc">Owned reflection canvas (created on first use at the current target size).</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00306">ScreenSpaceReflection.cpp:306</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_aa0567d796afbb7b9206bdc5f532abac8"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aa0567d796afbb7b9206bdc5f532abac8">eve::graphics::ScreenSpaceReflection::setStepLength</a></div><div class="ttdeci">void setStepLength(float meters)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00230">ScreenSpaceReflection.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_ab04c5117e5e038f7b5722625ec31df41"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab04c5117e5e038f7b5722625ec31df41">eve::graphics::ScreenSpaceReflection::setInvViewProj</a></div><div class="ttdeci">void setInvViewProj(const glm::mat4 &amp;invViewProj)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00076">ScreenSpaceReflection.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_ab973946628e6be51191d7dc5a5c16cd9"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab973946628e6be51191d7dc5a5c16cd9">eve::graphics::ScreenSpaceReflection::getSpatialPassCount</a></div><div class="ttdeci">int getSpatialPassCount() const</div><div class="ttdoc">Number of explicit A-trous prefilter passes for the active quality.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00096">ScreenSpaceReflection.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_abb4f2a2c8a6d6f5cca516b18f3e8c0a6"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#abb4f2a2c8a6d6f5cca516b18f3e8c0a6">eve::graphics::ScreenSpaceReflection::setStrength</a></div><div class="ttdeci">void setStrength(float strength)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00233">ScreenSpaceReflection.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_acdba4b5cd8a8a7fec289eb6cc8296c13"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#acdba4b5cd8a8a7fec289eb6cc8296c13">eve::graphics::ScreenSpaceReflection::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00265">ScreenSpaceReflection.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_adb3c6fbe44790c1e1d64d5ef4eca1183"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adb3c6fbe44790c1e1d64d5ef4eca1183">eve::graphics::ScreenSpaceReflection::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;name, float value)</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00249">ScreenSpaceReflection.cpp:249</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_adefb24e908689d14140f0877107cab02"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adefb24e908689d14140f0877107cab02">eve::graphics::ScreenSpaceReflection::getShader</a></div><div class="ttdeci">Shader * getShader() const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00100">ScreenSpaceReflection.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_ae408d3f4f017ae95cfa55064e9fbb214"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae408d3f4f017ae95cfa55064e9fbb214">eve::graphics::ScreenSpaceReflection::setDepthPyramid</a></div><div class="ttdeci">void setDepthPyramid(Texture *atlas, int levels)</div><div class="ttdoc">Set the shared horizontally packed RG min/max depth hierarchy.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00044">ScreenSpaceReflection.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_ae4f45b66cd17694a9d652038034b1b83"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae4f45b66cd17694a9d652038034b1b83">eve::graphics::ScreenSpaceReflection::operator=</a></div><div class="ttdeci">ScreenSpaceReflection &amp; operator=(const ScreenSpaceReflection &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_ae6652ec8de33a70918e65e90d26fc040"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae6652ec8de33a70918e65e90d26fc040">eve::graphics::ScreenSpaceReflection::applyFromScene</a></div><div class="ttdeci">void applyFromScene(Graphics *gfx, Texture *sceneColor, Texture *hwDepth, Texture *worldNormal, Texture *albedo=nullptr)</div><div class="ttdoc">Write SSR into the currently bound canvas / screen.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00327">ScreenSpaceReflection.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_aeb7800d62edb43bc7820f7c126ea6967"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aeb7800d62edb43bc7820f7c126ea6967">eve::graphics::ScreenSpaceReflection::setMaxRoughness</a></div><div class="ttdeci">void setMaxRoughness(float roughness)</div><div class="ttdoc">Skip SSR above this material roughness and rely on reflection backup.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00234">ScreenSpaceReflection.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_af45b7c584715b9ed8eba09c477506821"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af45b7c584715b9ed8eba09c477506821">eve::graphics::ScreenSpaceReflection::hasParam</a></div><div class="ttdeci">bool hasParam(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8cpp_source.html#l00245">ScreenSpaceReflection.cpp:245</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html_af740ed1069b94ca4cf00539383872432"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af740ed1069b94ca4cf00539383872432">eve::graphics::ScreenSpaceReflection::setTemporalMotionTexture</a></div><div class="ttdeci">void setTemporalMotionTexture(Texture *motionDepth)</div><div class="ttdoc">Set packed linear-depth and motion texture used by temporal SSR resolve.</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00042">ScreenSpaceReflection.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

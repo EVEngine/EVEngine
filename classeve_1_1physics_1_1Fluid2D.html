@@ -1,0 +1,1361 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Fluid2D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1Fluid2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Fluid2D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Interactive 2D particle fluid (double-density relaxation) in pixel space. Script-owned; independent of Box2D <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>.  
+ <a href="classeve_1_1physics_1_1Fluid2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0cd06a8fca8dedbeadaaf3dd85347e46" id="r_a0cd06a8fca8dedbeadaaf3dd85347e46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a0cd06a8fca8dedbeadaaf3dd85347e46">Fluid2D</a> (int <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>=512)</td></tr>
+<tr class="separator:a0cd06a8fca8dedbeadaaf3dd85347e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4fdb7aad7967d2e844b3b6b48dcc481" id="r_ab4fdb7aad7967d2e844b3b6b48dcc481"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ab4fdb7aad7967d2e844b3b6b48dcc481">~Fluid2D</a> ()</td></tr>
+<tr class="separator:ab4fdb7aad7967d2e844b3b6b48dcc481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bc13768cf5eb04717c3f80844d3d355" id="r_a0bc13768cf5eb04717c3f80844d3d355"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a0bc13768cf5eb04717c3f80844d3d355">Fluid2D</a> (const <a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp;)=delete</td></tr>
+<tr class="separator:a0bc13768cf5eb04717c3f80844d3d355"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a09552fb7f75cb7a75349de9e7fc80e" id="r_a8a09552fb7f75cb7a75349de9e7fc80e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a8a09552fb7f75cb7a75349de9e7fc80e">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp;)=delete</td></tr>
+<tr class="separator:a8a09552fb7f75cb7a75349de9e7fc80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2054493498f03c0507da32133467417a" id="r_a2054493498f03c0507da32133467417a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a2054493498f03c0507da32133467417a">update</a> (float dt)</td></tr>
+<tr class="separator:a2054493498f03c0507da32133467417a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6465e2d36501c37fe2a7565c590b40c6" id="r_a6465e2d36501c37fe2a7565c590b40c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6465e2d36501c37fe2a7565c590b40c6">setGravity</a> (float gx, float gy)</td></tr>
+<tr class="separator:a6465e2d36501c37fe2a7565c590b40c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b55345cb0aae202d949b8ac4e1d0137" id="r_a3b55345cb0aae202d949b8ac4e1d0137"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a3b55345cb0aae202d949b8ac4e1d0137">getGravityX</a> () const</td></tr>
+<tr class="separator:a3b55345cb0aae202d949b8ac4e1d0137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e9bf13703255047b7d3e86087206997" id="r_a1e9bf13703255047b7d3e86087206997"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a1e9bf13703255047b7d3e86087206997">getGravityY</a> () const</td></tr>
+<tr class="separator:a1e9bf13703255047b7d3e86087206997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac51b0990481f398c35047c178f454618" id="r_ac51b0990481f398c35047c178f454618"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac51b0990481f398c35047c178f454618">setSmoothingRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:ac51b0990481f398c35047c178f454618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interaction / neighbor radius in pixels (default 18).  <br /></td></tr>
+<tr class="separator:ac51b0990481f398c35047c178f454618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7794dd6051520b610f2f2ddf7353cd6d" id="r_a7794dd6051520b610f2f2ddf7353cd6d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a7794dd6051520b610f2f2ddf7353cd6d">getSmoothingRadius</a> () const</td></tr>
+<tr class="separator:a7794dd6051520b610f2f2ddf7353cd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598e44a06f4ec4bcefe08b1ba4374b98" id="r_a598e44a06f4ec4bcefe08b1ba4374b98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a598e44a06f4ec4bcefe08b1ba4374b98">setRestDensity</a> (float density)</td></tr>
+<tr class="memdesc:a598e44a06f4ec4bcefe08b1ba4374b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target rest density for the relaxation solver (default 4).  <br /></td></tr>
+<tr class="separator:a598e44a06f4ec4bcefe08b1ba4374b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377a71b1c272fd3df208f620026359eb" id="r_a377a71b1c272fd3df208f620026359eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a377a71b1c272fd3df208f620026359eb">getRestDensity</a> () const</td></tr>
+<tr class="separator:a377a71b1c272fd3df208f620026359eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad5d254f9f7ea4f1c65e9ee27adf3525" id="r_aad5d254f9f7ea4f1c65e9ee27adf3525"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aad5d254f9f7ea4f1c65e9ee27adf3525">setPressureStiffness</a> (float k)</td></tr>
+<tr class="memdesc:aad5d254f9f7ea4f1c65e9ee27adf3525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pressure stiffness (default 0.5).  <br /></td></tr>
+<tr class="separator:aad5d254f9f7ea4f1c65e9ee27adf3525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4b0c5a55471bcc060102cc55e776a6" id="r_afa4b0c5a55471bcc060102cc55e776a6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#afa4b0c5a55471bcc060102cc55e776a6">getPressureStiffness</a> () const</td></tr>
+<tr class="separator:afa4b0c5a55471bcc060102cc55e776a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeeb3f93c61d656c840aee12459a0efc" id="r_adeeb3f93c61d656c840aee12459a0efc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#adeeb3f93c61d656c840aee12459a0efc">setNearPressureStiffness</a> (float k)</td></tr>
+<tr class="memdesc:adeeb3f93c61d656c840aee12459a0efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Near-pressure (anti-clustering) stiffness (default 0.5).  <br /></td></tr>
+<tr class="separator:adeeb3f93c61d656c840aee12459a0efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114b04cd83952c0670c48e6d98d55af3" id="r_a114b04cd83952c0670c48e6d98d55af3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a114b04cd83952c0670c48e6d98d55af3">getNearPressureStiffness</a> () const</td></tr>
+<tr class="separator:a114b04cd83952c0670c48e6d98d55af3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ec00b0adcd3f35c11305d1e0418067" id="r_a05ec00b0adcd3f35c11305d1e0418067"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a05ec00b0adcd3f35c11305d1e0418067">setViscosity</a> (float viscosity)</td></tr>
+<tr class="separator:a05ec00b0adcd3f35c11305d1e0418067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5d86ba87f9c3e7a84ecda8bc4145039" id="r_ae5d86ba87f9c3e7a84ecda8bc4145039"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae5d86ba87f9c3e7a84ecda8bc4145039">getViscosity</a> () const</td></tr>
+<tr class="separator:ae5d86ba87f9c3e7a84ecda8bc4145039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f81ed150249a0dc5937b24c1abb2c9" id="r_a30f81ed150249a0dc5937b24c1abb2c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a30f81ed150249a0dc5937b24c1abb2c9">setIterations</a> (int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a30f81ed150249a0dc5937b24c1abb2c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solver iterations per frame (default 3).  <br /></td></tr>
+<tr class="separator:a30f81ed150249a0dc5937b24c1abb2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25e67f8ce5fdbbdd1a24ccd4b3c8974e" id="r_a25e67f8ce5fdbbdd1a24ccd4b3c8974e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a25e67f8ce5fdbbdd1a24ccd4b3c8974e">getIterations</a> () const</td></tr>
+<tr class="separator:a25e67f8ce5fdbbdd1a24ccd4b3c8974e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b334b830650a5cab863997ad997672" id="r_a49b334b830650a5cab863997ad997672"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a49b334b830650a5cab863997ad997672">setBounds</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a49b334b830650a5cab863997ad997672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned container; particles bounce inside.  <br /></td></tr>
+<tr class="separator:a49b334b830650a5cab863997ad997672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af63c4d62ef53a1fa5471430ee1874c62" id="r_af63c4d62ef53a1fa5471430ee1874c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#af63c4d62ef53a1fa5471430ee1874c62">clearBounds</a> ()</td></tr>
+<tr class="separator:af63c4d62ef53a1fa5471430ee1874c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b391669e06df9f55fe2ebb971829075" id="r_a6b391669e06df9f55fe2ebb971829075"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6b391669e06df9f55fe2ebb971829075">emit</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, float <a class="el" href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="WorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a6b391669e06df9f55fe2ebb971829075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn up to <code>count</code> particles at (x,y) with initial velocity. Returns number actually added.  <br /></td></tr>
+<tr class="separator:a6b391669e06df9f55fe2ebb971829075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6633f0d5204b0ab5a041bf1028dc6954" id="r_a6633f0d5204b0ab5a041bf1028dc6954"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6633f0d5204b0ab5a041bf1028dc6954">clear</a> ()</td></tr>
+<tr class="memdesc:a6633f0d5204b0ab5a041bf1028dc6954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all particles.  <br /></td></tr>
+<tr class="separator:a6633f0d5204b0ab5a041bf1028dc6954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9eff6ad0549846a76687cb3cf0e9e4d" id="r_ae9eff6ad0549846a76687cb3cf0e9e4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae9eff6ad0549846a76687cb3cf0e9e4d">interactAt</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float strength)</td></tr>
+<tr class="memdesc:ae9eff6ad0549846a76687cb3cf0e9e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mouse / pointer interaction: positive strength attracts, negative repels. Applied as acceleration within radius (pixels).  <br /></td></tr>
+<tr class="separator:ae9eff6ad0549846a76687cb3cf0e9e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f37911d6c8bfba40797e31c456303c" id="r_ae8f37911d6c8bfba40797e31c456303c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae8f37911d6c8bfba40797e31c456303c">setColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ae8f37911d6c8bfba40797e31c456303c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6064ff5a4e1ca4ca8abd3007ca272cce" id="r_a6064ff5a4e1ca4ca8abd3007ca272cce"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6064ff5a4e1ca4ca8abd3007ca272cce">getColorR</a> () const</td></tr>
+<tr class="separator:a6064ff5a4e1ca4ca8abd3007ca272cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a823d51d34de9224bd855a12b8cfbb4d8" id="r_a823d51d34de9224bd855a12b8cfbb4d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a823d51d34de9224bd855a12b8cfbb4d8">getColorG</a> () const</td></tr>
+<tr class="separator:a823d51d34de9224bd855a12b8cfbb4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa7c24ca53df3f1d0ce14fdba127c26" id="r_aafa7c24ca53df3f1d0ce14fdba127c26"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aafa7c24ca53df3f1d0ce14fdba127c26">getColorB</a> () const</td></tr>
+<tr class="separator:aafa7c24ca53df3f1d0ce14fdba127c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a230e405980dada010dd8a03442b8d30d" id="r_a230e405980dada010dd8a03442b8d30d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a230e405980dada010dd8a03442b8d30d">getColorA</a> () const</td></tr>
+<tr class="separator:a230e405980dada010dd8a03442b8d30d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac21e565b01a827bee82ae304f3009e10" id="r_ac21e565b01a827bee82ae304f3009e10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac21e565b01a827bee82ae304f3009e10">setParticleSize</a> (float size)</td></tr>
+<tr class="memdesc:ac21e565b01a827bee82ae304f3009e10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Particle draw size in pixels (default 5).  <br /></td></tr>
+<tr class="separator:ac21e565b01a827bee82ae304f3009e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb8f28e940a7fa111122fbac6b88f36e" id="r_adb8f28e940a7fa111122fbac6b88f36e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#adb8f28e940a7fa111122fbac6b88f36e">getParticleSize</a> () const</td></tr>
+<tr class="separator:adb8f28e940a7fa111122fbac6b88f36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7f5779e74c2889e42c4bcd9f3669ce6" id="r_ac7f5779e74c2889e42c4bcd9f3669ce6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac7f5779e74c2889e42c4bcd9f3669ce6">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="separator:ac7f5779e74c2889e42c4bcd9f3669ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2b4b2752228d974b7aa8aa30abd8c67" id="r_aa2b4b2752228d974b7aa8aa30abd8c67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aa2b4b2752228d974b7aa8aa30abd8c67">getCapacity</a> () const</td></tr>
+<tr class="separator:aa2b4b2752228d974b7aa8aa30abd8c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554896c3d45d98929484fcf3bc341b08" id="r_a554896c3d45d98929484fcf3bc341b08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a554896c3d45d98929484fcf3bc341b08">getParticleCount</a> () const</td></tr>
+<tr class="separator:a554896c3d45d98929484fcf3bc341b08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc027da438d36d899ae86789538aa2c8" id="r_afc027da438d36d899ae86789538aa2c8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#afc027da438d36d899ae86789538aa2c8">getParticleX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:afc027da438d36d899ae86789538aa2c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d5180f1d675f616841a70d6648debe" id="r_ab1d5180f1d675f616841a70d6648debe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ab1d5180f1d675f616841a70d6648debe">getParticleY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab1d5180f1d675f616841a70d6648debe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd888fc05b131d63eb6c25095447e5e" id="r_addd888fc05b131d63eb6c25095447e5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#addd888fc05b131d63eb6c25095447e5e">getParticleVx</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:addd888fc05b131d63eb6c25095447e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18e4b76a8ff5c5b977abf05730e4315c" id="r_a18e4b76a8ff5c5b977abf05730e4315c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a18e4b76a8ff5c5b977abf05730e4315c">getParticleVy</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a18e4b76a8ff5c5b977abf05730e4315c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7debc715c7a6963a0dc0dc30216e5172" id="r_a7debc715c7a6963a0dc0dc30216e5172"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a7debc715c7a6963a0dc0dc30216e5172">destroy</a> ()</td></tr>
+<tr class="separator:a7debc715c7a6963a0dc0dc30216e5172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Interactive 2D particle fluid (double-density relaxation) in pixel space. Script-owned; independent of Box2D <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0cd06a8fca8dedbeadaaf3dd85347e46" name="a0cd06a8fca8dedbeadaaf3dd85347e46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd06a8fca8dedbeadaaf3dd85347e46">&#9670;&#160;</a></span>Fluid2D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fluid2D::Fluid2D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em> = <code>512</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4fdb7aad7967d2e844b3b6b48dcc481" name="ab4fdb7aad7967d2e844b3b6b48dcc481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4fdb7aad7967d2e844b3b6b48dcc481">&#9670;&#160;</a></span>~Fluid2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fluid2D::~Fluid2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fluid2D_8cpp_source.html#l00022">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a0bc13768cf5eb04717c3f80844d3d355" name="a0bc13768cf5eb04717c3f80844d3d355"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bc13768cf5eb04717c3f80844d3d355">&#9670;&#160;</a></span>Fluid2D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fluid2D::Fluid2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6633f0d5204b0ab5a041bf1028dc6954" name="a6633f0d5204b0ab5a041bf1028dc6954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6633f0d5204b0ab5a041bf1028dc6954">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all particles. </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af63c4d62ef53a1fa5471430ee1874c62" name="af63c4d62ef53a1fa5471430ee1874c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af63c4d62ef53a1fa5471430ee1874c62">&#9670;&#160;</a></span>clearBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::clearBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fluid2D_8cpp_source.html#l00051">setBounds()</a>.</p>
+
+</div>
+</div>
+<a id="a7debc715c7a6963a0dc0dc30216e5172" name="a7debc715c7a6963a0dc0dc30216e5172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7debc715c7a6963a0dc0dc30216e5172">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fluid2D_8cpp_source.html#l00020">~Fluid2D()</a>.</p>
+
+</div>
+</div>
+<a id="ac7f5779e74c2889e42c4bcd9f3669ce6" name="ac7f5779e74c2889e42c4bcd9f3669ce6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7f5779e74c2889e42c4bcd9f3669ce6">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l01613">eve::graphics::Graphics::drawSolidRect()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a6b391669e06df9f55fe2ebb971829075" name="a6b391669e06df9f55fe2ebb971829075"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b391669e06df9f55fe2ebb971829075">&#9670;&#160;</a></span>emit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fluid2D::emit </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>vx</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>vy</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn up to <code>count</code> particles at (x,y) with initial velocity. Returns number actually added. </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Fluid2D_8h_source.html#l00086">getParticleCount()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00165">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00165">vy</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="aa2b4b2752228d974b7aa8aa30abd8c67" name="aa2b4b2752228d974b7aa8aa30abd8c67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2b4b2752228d974b7aa8aa30abd8c67">&#9670;&#160;</a></span>getCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fluid2D::getCapacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a230e405980dada010dd8a03442b8d30d" name="a230e405980dada010dd8a03442b8d30d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a230e405980dada010dd8a03442b8d30d">&#9670;&#160;</a></span>getColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getColorA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafa7c24ca53df3f1d0ce14fdba127c26" name="aafa7c24ca53df3f1d0ce14fdba127c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa7c24ca53df3f1d0ce14fdba127c26">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a823d51d34de9224bd855a12b8cfbb4d8" name="a823d51d34de9224bd855a12b8cfbb4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a823d51d34de9224bd855a12b8cfbb4d8">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6064ff5a4e1ca4ca8abd3007ca272cce" name="a6064ff5a4e1ca4ca8abd3007ca272cce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6064ff5a4e1ca4ca8abd3007ca272cce">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b55345cb0aae202d949b8ac4e1d0137" name="a3b55345cb0aae202d949b8ac4e1d0137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b55345cb0aae202d949b8ac4e1d0137">&#9670;&#160;</a></span>getGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e9bf13703255047b7d3e86087206997" name="a1e9bf13703255047b7d3e86087206997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e9bf13703255047b7d3e86087206997">&#9670;&#160;</a></span>getGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a25e67f8ce5fdbbdd1a24ccd4b3c8974e" name="a25e67f8ce5fdbbdd1a24ccd4b3c8974e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25e67f8ce5fdbbdd1a24ccd4b3c8974e">&#9670;&#160;</a></span>getIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fluid2D::getIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a114b04cd83952c0670c48e6d98d55af3" name="a114b04cd83952c0670c48e6d98d55af3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a114b04cd83952c0670c48e6d98d55af3">&#9670;&#160;</a></span>getNearPressureStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getNearPressureStiffness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a554896c3d45d98929484fcf3bc341b08" name="a554896c3d45d98929484fcf3bc341b08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a554896c3d45d98929484fcf3bc341b08">&#9670;&#160;</a></span>getParticleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fluid2D::getParticleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fluid2D_8cpp_source.html#l00065">emit()</a> , 以及 <a class="el" href="Fluid2D_8cpp_source.html#l00266">update()</a>.</p>
+
+</div>
+</div>
+<a id="adb8f28e940a7fa111122fbac6b88f36e" name="adb8f28e940a7fa111122fbac6b88f36e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb8f28e940a7fa111122fbac6b88f36e">&#9670;&#160;</a></span>getParticleSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getParticleSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="addd888fc05b131d63eb6c25095447e5e" name="addd888fc05b131d63eb6c25095447e5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd888fc05b131d63eb6c25095447e5e">&#9670;&#160;</a></span>getParticleVx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getParticleVx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00165">vx</a>.</p>
+
+</div>
+</div>
+<a id="a18e4b76a8ff5c5b977abf05730e4315c" name="a18e4b76a8ff5c5b977abf05730e4315c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18e4b76a8ff5c5b977abf05730e4315c">&#9670;&#160;</a></span>getParticleVy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getParticleVy </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00165">vy</a>.</p>
+
+</div>
+</div>
+<a id="afc027da438d36d899ae86789538aa2c8" name="afc027da438d36d899ae86789538aa2c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc027da438d36d899ae86789538aa2c8">&#9670;&#160;</a></span>getParticleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getParticleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ab1d5180f1d675f616841a70d6648debe" name="ab1d5180f1d675f616841a70d6648debe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d5180f1d675f616841a70d6648debe">&#9670;&#160;</a></span>getParticleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getParticleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="afa4b0c5a55471bcc060102cc55e776a6" name="afa4b0c5a55471bcc060102cc55e776a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4b0c5a55471bcc060102cc55e776a6">&#9670;&#160;</a></span>getPressureStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getPressureStiffness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a377a71b1c272fd3df208f620026359eb" name="a377a71b1c272fd3df208f620026359eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a377a71b1c272fd3df208f620026359eb">&#9670;&#160;</a></span>getRestDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getRestDensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7794dd6051520b610f2f2ddf7353cd6d" name="a7794dd6051520b610f2f2ddf7353cd6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7794dd6051520b610f2f2ddf7353cd6d">&#9670;&#160;</a></span>getSmoothingRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getSmoothingRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5d86ba87f9c3e7a84ecda8bc4145039" name="ae5d86ba87f9c3e7a84ecda8bc4145039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5d86ba87f9c3e7a84ecda8bc4145039">&#9670;&#160;</a></span>getViscosity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fluid2D::getViscosity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a> 第 <a class="el" href="Fluid2D_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9eff6ad0549846a76687cb3cf0e9e4d" name="ae9eff6ad0549846a76687cb3cf0e9e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9eff6ad0549846a76687cb3cf0e9e4d">&#9670;&#160;</a></span>interactAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::interactAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mouse / pointer interaction: positive strength attracts, negative repels. Applied as acceleration within radius (pixels). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a8a09552fb7f75cb7a75349de9e7fc80e" name="a8a09552fb7f75cb7a75349de9e7fc80e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a09552fb7f75cb7a75349de9e7fc80e">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp; eve::physics::Fluid2D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49b334b830650a5cab863997ad997672" name="a49b334b830650a5cab863997ad997672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b334b830650a5cab863997ad997672">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Axis-aligned container; particles bounce inside. </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fluid2D_8cpp_source.html#l00063">clearBounds()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ae8f37911d6c8bfba40797e31c456303c" name="ae8f37911d6c8bfba40797e31c456303c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8f37911d6c8bfba40797e31c456303c">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a6465e2d36501c37fe2a7565c590b40c6" name="a6465e2d36501c37fe2a7565c590b40c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6465e2d36501c37fe2a7565c590b40c6">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30f81ed150249a0dc5937b24c1abb2c9" name="a30f81ed150249a0dc5937b24c1abb2c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f81ed150249a0dc5937b24c1abb2c9">&#9670;&#160;</a></span>setIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solver iterations per frame (default 3). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>.</p>
+
+</div>
+</div>
+<a id="adeeb3f93c61d656c840aee12459a0efc" name="adeeb3f93c61d656c840aee12459a0efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeeb3f93c61d656c840aee12459a0efc">&#9670;&#160;</a></span>setNearPressureStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setNearPressureStiffness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Near-pressure (anti-clustering) stiffness (default 0.5). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac21e565b01a827bee82ae304f3009e10" name="ac21e565b01a827bee82ae304f3009e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac21e565b01a827bee82ae304f3009e10">&#9670;&#160;</a></span>setParticleSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setParticleSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Particle draw size in pixels (default 5). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad5d254f9f7ea4f1c65e9ee27adf3525" name="aad5d254f9f7ea4f1c65e9ee27adf3525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5d254f9f7ea4f1c65e9ee27adf3525">&#9670;&#160;</a></span>setPressureStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setPressureStiffness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pressure stiffness (default 0.5). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a598e44a06f4ec4bcefe08b1ba4374b98" name="a598e44a06f4ec4bcefe08b1ba4374b98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598e44a06f4ec4bcefe08b1ba4374b98">&#9670;&#160;</a></span>setRestDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setRestDensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Target rest density for the relaxation solver (default 4). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac51b0990481f398c35047c178f454618" name="ac51b0990481f398c35047c178f454618"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51b0990481f398c35047c178f454618">&#9670;&#160;</a></span>setSmoothingRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setSmoothingRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interaction / neighbor radius in pixels (default 18). </p>
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a05ec00b0adcd3f35c11305d1e0418067" name="a05ec00b0adcd3f35c11305d1e0418067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05ec00b0adcd3f35c11305d1e0418067">&#9670;&#160;</a></span>setViscosity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::setViscosity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viscosity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2054493498f03c0507da32133467417a" name="a2054493498f03c0507da32133467417a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2054493498f03c0507da32133467417a">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fluid2D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a> 第 <a class="el" href="Fluid2D_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fluid2D_8h_source.html#l00086">getParticleCount()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Fluid2D_8h_source.html">Fluid2D.h</a></li>
+<li>src/modules/physics/<a class="el" href="Fluid2D_8cpp_source.html">Fluid2D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

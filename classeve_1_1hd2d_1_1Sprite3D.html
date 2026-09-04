@@ -1,0 +1,1133 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hd2d::Sprite3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hd2d.html">hd2d</a></li><li class="navelem"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1hd2d_1_1Sprite3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hd2d::Sprite3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Camera-facing 2D sprite billboard rendered inside the 3D scene.  
+ <a href="classeve_1_1hd2d_1_1Sprite3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Hd2d_8h_source.html">Hd2d.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afeac823910d3c55c932c44340c0b2a91" id="r_afeac823910d3c55c932c44340c0b2a91"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#afeac823910d3c55c932c44340c0b2a91">Sprite3D</a> ()</td></tr>
+<tr class="separator:afeac823910d3c55c932c44340c0b2a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87e9ea7a19db72fd1555bde41e64a9f9" id="r_a87e9ea7a19db72fd1555bde41e64a9f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a87e9ea7a19db72fd1555bde41e64a9f9">~Sprite3D</a> ()</td></tr>
+<tr class="separator:a87e9ea7a19db72fd1555bde41e64a9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eccb9a3c47a464ccac02cdcc6010721" id="r_a0eccb9a3c47a464ccac02cdcc6010721"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a0eccb9a3c47a464ccac02cdcc6010721">Sprite3D</a> (const <a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a0eccb9a3c47a464ccac02cdcc6010721"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5369a2ae61bb913782d911f05348532" id="r_ac5369a2ae61bb913782d911f05348532"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ac5369a2ae61bb913782d911f05348532">operator=</a> (const <a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp;)=delete</td></tr>
+<tr class="separator:ac5369a2ae61bb913782d911f05348532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad738597b49e536d6dfb43503dd33105c" id="r_ad738597b49e536d6dfb43503dd33105c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ad738597b49e536d6dfb43503dd33105c">setTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="memdesc:ad738597b49e536d6dfb43503dd33105c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Albedo texture (a sprite frame / sheet / animation image).  <br /></td></tr>
+<tr class="separator:ad738597b49e536d6dfb43503dd33105c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4aa09d3672da2fc7fa7f9c728197cf" id="r_aac4aa09d3672da2fc7fa7f9c728197cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aac4aa09d3672da2fc7fa7f9c728197cf">getTexture</a> () const</td></tr>
+<tr class="separator:aac4aa09d3672da2fc7fa7f9c728197cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca9625e922da658d2586e95df06fed4f" id="r_aca9625e922da658d2586e95df06fed4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aca9625e922da658d2586e95df06fed4f">setFrame</a> (float u0, float v0, float u1, float v1)</td></tr>
+<tr class="memdesc:aca9625e922da658d2586e95df06fed4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct atlas sub-rect frame selection (0..1 UV).  <br /></td></tr>
+<tr class="separator:aca9625e922da658d2586e95df06fed4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ee1586fa9ff27973add60a91dd0aef" id="r_a99ee1586fa9ff27973add60a91dd0aef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a99ee1586fa9ff27973add60a91dd0aef">getFrame</a> (float &amp;u0, float &amp;v0, float &amp;u1, float &amp;v1) const</td></tr>
+<tr class="separator:a99ee1586fa9ff27973add60a91dd0aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a306e80b77e1fc3d83892ad955c13b842" id="r_a306e80b77e1fc3d83892ad955c13b842"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a306e80b77e1fc3d83892ad955c13b842">setFlipX</a> (bool flip)</td></tr>
+<tr class="memdesc:a306e80b77e1fc3d83892ad955c13b842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the sampled frame horizontally / vertically.  <br /></td></tr>
+<tr class="separator:a306e80b77e1fc3d83892ad955c13b842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5f1a9ea8b6132e71463718dab6a1487" id="r_ad5f1a9ea8b6132e71463718dab6a1487"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ad5f1a9ea8b6132e71463718dab6a1487">setFlipY</a> (bool flip)</td></tr>
+<tr class="separator:ad5f1a9ea8b6132e71463718dab6a1487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1be52e8738bfff033f33a5623b6c39a" id="r_ad1be52e8738bfff033f33a5623b6c39a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ad1be52e8738bfff033f33a5623b6c39a">setFrameGrid</a> (int <a class="el" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a>, int rows)</td></tr>
+<tr class="memdesc:ad1be52e8738bfff033f33a5623b6c39a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure a sprite-sheet frame grid (cell frame 0 = top-left).  <br /></td></tr>
+<tr class="separator:ad1be52e8738bfff033f33a5623b6c39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fcf4d4ee3054ed1b118a7d9580bd880" id="r_a0fcf4d4ee3054ed1b118a7d9580bd880"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a0fcf4d4ee3054ed1b118a7d9580bd880">getFrameGridColumns</a> () const</td></tr>
+<tr class="separator:a0fcf4d4ee3054ed1b118a7d9580bd880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec0c82ec1ab6f97bd3a18e55d047e79" id="r_adec0c82ec1ab6f97bd3a18e55d047e79"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#adec0c82ec1ab6f97bd3a18e55d047e79">getFrameGridRows</a> () const</td></tr>
+<tr class="separator:adec0c82ec1ab6f97bd3a18e55d047e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa46c889b28eb7ace01386b9f2a7c4c00" id="r_aa46c889b28eb7ace01386b9f2a7c4c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">setFrameIndex</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:aa46c889b28eb7ace01386b9f2a7c4c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Jump to a grid frame index; wraps within the grid.  <br /></td></tr>
+<tr class="separator:aa46c889b28eb7ace01386b9f2a7c4c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c1021159bcb681a992c821ddc4e5d01" id="r_a3c1021159bcb681a992c821ddc4e5d01"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a3c1021159bcb681a992c821ddc4e5d01">getFrameIndex</a> () const</td></tr>
+<tr class="separator:a3c1021159bcb681a992c821ddc4e5d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9999342ce4417fa6822142b609574fcd" id="r_a9999342ce4417fa6822142b609574fcd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a9999342ce4417fa6822142b609574fcd">getFrameCount</a> () const</td></tr>
+<tr class="memdesc:a9999342ce4417fa6822142b609574fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total grid frames.  <br /></td></tr>
+<tr class="separator:a9999342ce4417fa6822142b609574fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6884516f08b47d403f246af6bb9594c7" id="r_a6884516f08b47d403f246af6bb9594c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a6884516f08b47d403f246af6bb9594c7">play</a> (int <a class="el" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, int <a class="el" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, float fps)</td></tr>
+<tr class="memdesc:a6884516f08b47d403f246af6bb9594c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a frame animation.  <br /></td></tr>
+<tr class="separator:a6884516f08b47d403f246af6bb9594c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa049cb6b4b9db03729489f8be6deb4e0" id="r_aa049cb6b4b9db03729489f8be6deb4e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aa049cb6b4b9db03729489f8be6deb4e0">stop</a> ()</td></tr>
+<tr class="separator:aa049cb6b4b9db03729489f8be6deb4e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20138e8eaf8666cd0fb17b7425893c3a" id="r_a20138e8eaf8666cd0fb17b7425893c3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a20138e8eaf8666cd0fb17b7425893c3a">isPlaying</a> () const</td></tr>
+<tr class="separator:a20138e8eaf8666cd0fb17b7425893c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56804972a75b416fad8501ae660cbe04" id="r_a56804972a75b416fad8501ae660cbe04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a56804972a75b416fad8501ae660cbe04">update</a> (float dt)</td></tr>
+<tr class="memdesc:a56804972a75b416fad8501ae660cbe04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the animation clock and re-orient the billboard toward the attached camera. Call once per frame.  <br /></td></tr>
+<tr class="separator:a56804972a75b416fad8501ae660cbe04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a798db7dfcfd960f469d2b9d6ec6c7a31" id="r_a798db7dfcfd960f469d2b9d6ec6c7a31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a798db7dfcfd960f469d2b9d6ec6c7a31">setCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *camera)</td></tr>
+<tr class="memdesc:a798db7dfcfd960f469d2b9d6ec6c7a31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Camera the billboard faces; null disables auto-orientation.  <br /></td></tr>
+<tr class="separator:a798db7dfcfd960f469d2b9d6ec6c7a31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31aa91de805f0f25668776f8718ab640" id="r_a31aa91de805f0f25668776f8718ab640"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a31aa91de805f0f25668776f8718ab640">setPosition</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a31aa91de805f0f25668776f8718ab640"><td class="mdescLeft">&#160;</td><td class="mdescRight">World position (billboard center).  <br /></td></tr>
+<tr class="separator:a31aa91de805f0f25668776f8718ab640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa34d711dfbd13edb5bc467c96760ff0" id="r_aaa34d711dfbd13edb5bc467c96760ff0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aaa34d711dfbd13edb5bc467c96760ff0">getPositionX</a> () const</td></tr>
+<tr class="separator:aaa34d711dfbd13edb5bc467c96760ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a296dbf2029714c8aaa63e49b5a604a2a" id="r_a296dbf2029714c8aaa63e49b5a604a2a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a296dbf2029714c8aaa63e49b5a604a2a">getPositionY</a> () const</td></tr>
+<tr class="separator:a296dbf2029714c8aaa63e49b5a604a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35d30e2280bfeb75d21751027d5a5bcf" id="r_a35d30e2280bfeb75d21751027d5a5bcf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a35d30e2280bfeb75d21751027d5a5bcf">getPositionZ</a> () const</td></tr>
+<tr class="separator:a35d30e2280bfeb75d21751027d5a5bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f2d693b210093c6c98a4c08bb6f1bfe" id="r_a8f2d693b210093c6c98a4c08bb6f1bfe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a8f2d693b210093c6c98a4c08bb6f1bfe">setSize</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:a8f2d693b210093c6c98a4c08bb6f1bfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Billboard size in world units.  <br /></td></tr>
+<tr class="separator:a8f2d693b210093c6c98a4c08bb6f1bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab607e817ad394dd728f728f4ebb0fbe0" id="r_ab607e817ad394dd728f728f4ebb0fbe0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ab607e817ad394dd728f728f4ebb0fbe0">getWidth</a> () const</td></tr>
+<tr class="separator:ab607e817ad394dd728f728f4ebb0fbe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28379860f4a541fb9888fffe2a7f9b51" id="r_a28379860f4a541fb9888fffe2a7f9b51"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a28379860f4a541fb9888fffe2a7f9b51">getHeight</a> () const</td></tr>
+<tr class="separator:a28379860f4a541fb9888fffe2a7f9b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaafbb5c5adb98aa7235637e5fcbab5f4" id="r_aaafbb5c5adb98aa7235637e5fcbab5f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aaafbb5c5adb98aa7235637e5fcbab5f4">setTint</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aaafbb5c5adb98aa7235637e5fcbab5f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color multiplier (alpha participates in cutout discards).  <br /></td></tr>
+<tr class="separator:aaafbb5c5adb98aa7235637e5fcbab5f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1876e21d4c5a588403799fc2358a5fd" id="r_aa1876e21d4c5a588403799fc2358a5fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#aa1876e21d4c5a588403799fc2358a5fd">setVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="separator:aa1876e21d4c5a588403799fc2358a5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae38c3d9218d8c15d9550702ccf54ff15" id="r_ae38c3d9218d8c15d9550702ccf54ff15"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#ae38c3d9218d8c15d9550702ccf54ff15">getVisible</a> () const</td></tr>
+<tr class="separator:ae38c3d9218d8c15d9550702ccf54ff15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7482ac2d7adcf5a177a2fb469bc3e127" id="r_a7482ac2d7adcf5a177a2fb469bc3e127"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a7482ac2d7adcf5a177a2fb469bc3e127">quadMesh</a> () const</td></tr>
+<tr class="separator:a7482ac2d7adcf5a177a2fb469bc3e127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a763a7ce6f1476a3569df735587003aeb" id="r_a763a7ce6f1476a3569df735587003aeb"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html#a763a7ce6f1476a3569df735587003aeb">Hd2D</a></td></tr>
+<tr class="separator:a763a7ce6f1476a3569df735587003aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Camera-facing 2D sprite billboard rendered inside the 3D scene. </p>
+<p>A unit quad is drawn through the alpha-cutout G-buffer + shadow extra-drawer path (<a class="el" href="RenderSystem3D_8h.html">graphics/RenderSystem3D.h</a>), so transparent sprite pixels discard and the sprite casts a silhouette shadow like other billboard/card geometry. The billboard is oriented toward the active camera each frame.</p>
+<p>2D sprite-sheet animation: setFrameGrid(cols, rows) + setFrameIndex / play advance a frame index; update(dt) steps the clock. This lets existing 2D character animations run in 3D. </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00108">108</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="afeac823910d3c55c932c44340c0b2a91" name="afeac823910d3c55c932c44340c0b2a91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeac823910d3c55c932c44340c0b2a91">&#9670;&#160;</a></span>Sprite3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hd2d::Sprite3D::Sprite3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87e9ea7a19db72fd1555bde41e64a9f9" name="a87e9ea7a19db72fd1555bde41e64a9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87e9ea7a19db72fd1555bde41e64a9f9">&#9670;&#160;</a></span>~Sprite3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hd2d::Sprite3D::~Sprite3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00523">eve::graphics::Renderable3D::setVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a0eccb9a3c47a464ccac02cdcc6010721" name="a0eccb9a3c47a464ccac02cdcc6010721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eccb9a3c47a464ccac02cdcc6010721">&#9670;&#160;</a></span>Sprite3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hd2d::Sprite3D::Sprite3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a99ee1586fa9ff27973add60a91dd0aef" name="a99ee1586fa9ff27973add60a91dd0aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ee1586fa9ff27973add60a91dd0aef">&#9670;&#160;</a></span>getFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::getFrame </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>u0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>v0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>u1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>v1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9999342ce4417fa6822142b609574fcd" name="a9999342ce4417fa6822142b609574fcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9999342ce4417fa6822142b609574fcd">&#9670;&#160;</a></span>getFrameCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d::Sprite3D::getFrameCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Total grid frames. </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0fcf4d4ee3054ed1b118a7d9580bd880" name="a0fcf4d4ee3054ed1b118a7d9580bd880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fcf4d4ee3054ed1b118a7d9580bd880">&#9670;&#160;</a></span>getFrameGridColumns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d::Sprite3D::getFrameGridColumns </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adec0c82ec1ab6f97bd3a18e55d047e79" name="adec0c82ec1ab6f97bd3a18e55d047e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec0c82ec1ab6f97bd3a18e55d047e79">&#9670;&#160;</a></span>getFrameGridRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d::Sprite3D::getFrameGridRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c1021159bcb681a992c821ddc4e5d01" name="a3c1021159bcb681a992c821ddc4e5d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1021159bcb681a992c821ddc4e5d01">&#9670;&#160;</a></span>getFrameIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d::Sprite3D::getFrameIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28379860f4a541fb9888fffe2a7f9b51" name="a28379860f4a541fb9888fffe2a7f9b51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28379860f4a541fb9888fffe2a7f9b51">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Sprite3D::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa34d711dfbd13edb5bc467c96760ff0" name="aaa34d711dfbd13edb5bc467c96760ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa34d711dfbd13edb5bc467c96760ff0">&#9670;&#160;</a></span>getPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Sprite3D::getPositionX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a296dbf2029714c8aaa63e49b5a604a2a" name="a296dbf2029714c8aaa63e49b5a604a2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a296dbf2029714c8aaa63e49b5a604a2a">&#9670;&#160;</a></span>getPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Sprite3D::getPositionY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a35d30e2280bfeb75d21751027d5a5bcf" name="a35d30e2280bfeb75d21751027d5a5bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35d30e2280bfeb75d21751027d5a5bcf">&#9670;&#160;</a></span>getPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Sprite3D::getPositionZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac4aa09d3672da2fc7fa7f9c728197cf" name="aac4aa09d3672da2fc7fa7f9c728197cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4aa09d3672da2fc7fa7f9c728197cf">&#9670;&#160;</a></span>getTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::hd2d::Sprite3D::getTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae38c3d9218d8c15d9550702ccf54ff15" name="ae38c3d9218d8c15d9550702ccf54ff15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae38c3d9218d8c15d9550702ccf54ff15">&#9670;&#160;</a></span>getVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hd2d::Sprite3D::getVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab607e817ad394dd728f728f4ebb0fbe0" name="ab607e817ad394dd728f728f4ebb0fbe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab607e817ad394dd728f728f4ebb0fbe0">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Sprite3D::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20138e8eaf8666cd0fb17b7425893c3a" name="a20138e8eaf8666cd0fb17b7425893c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20138e8eaf8666cd0fb17b7425893c3a">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hd2d::Sprite3D::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5369a2ae61bb913782d911f05348532" name="ac5369a2ae61bb913782d911f05348532"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5369a2ae61bb913782d911f05348532">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp; eve::hd2d::Sprite3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html">Sprite3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6884516f08b47d403f246af6bb9594c7" name="a6884516f08b47d403f246af6bb9594c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6884516f08b47d403f246af6bb9594c7">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::play </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run a frame animation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">start</td><td>First grid frame. </td></tr>
+    <tr><td class="paramname">end</td><td>Inclusive last grid frame. </td></tr>
+    <tr><td class="paramname">fps</td><td>Frames per second (must be &gt; 0). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Sprite3D_8cpp_source.html#l00115">setFrameIndex()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>.</p>
+
+</div>
+</div>
+<a id="a7482ac2d7adcf5a177a2fb469bc3e127" name="a7482ac2d7adcf5a177a2fb469bc3e127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7482ac2d7adcf5a177a2fb469bc3e127">&#9670;&#160;</a></span>quadMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::hd2d::Sprite3D::quadMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a798db7dfcfd960f469d2b9d6ec6c7a31" name="a798db7dfcfd960f469d2b9d6ec6c7a31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a798db7dfcfd960f469d2b9d6ec6c7a31">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Camera the billboard faces; null disables auto-orientation. </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a306e80b77e1fc3d83892ad955c13b842" name="a306e80b77e1fc3d83892ad955c13b842"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a306e80b77e1fc3d83892ad955c13b842">&#9670;&#160;</a></span>setFlipX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setFlipX </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>flip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flip the sampled frame horizontally / vertically. </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5f1a9ea8b6132e71463718dab6a1487" name="ad5f1a9ea8b6132e71463718dab6a1487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5f1a9ea8b6132e71463718dab6a1487">&#9670;&#160;</a></span>setFlipY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setFlipY </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>flip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca9625e922da658d2586e95df06fed4f" name="aca9625e922da658d2586e95df06fed4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca9625e922da658d2586e95df06fed4f">&#9670;&#160;</a></span>setFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setFrame </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Direct atlas sub-rect frame selection (0..1 UV). </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sprite3D_8cpp_source.html#l00115">setFrameIndex()</a>.</p>
+
+</div>
+</div>
+<a id="ad1be52e8738bfff033f33a5623b6c39a" name="ad1be52e8738bfff033f33a5623b6c39a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1be52e8738bfff033f33a5623b6c39a">&#9670;&#160;</a></span>setFrameGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setFrameGrid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure a sprite-sheet frame grid (cell frame 0 = top-left). </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00132">columns</a> , 以及 <a class="el" href="Sprite3D_8cpp_source.html#l00115">setFrameIndex()</a>.</p>
+
+</div>
+</div>
+<a id="aa46c889b28eb7ace01386b9f2a7c4c00" name="aa46c889b28eb7ace01386b9f2a7c4c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa46c889b28eb7ace01386b9f2a7c4c00">&#9670;&#160;</a></span>setFrameIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setFrameIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Jump to a grid frame index; wraps within the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Sprite3D_8cpp_source.html#l00081">setFrame()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sprite3D_8cpp_source.html#l00127">play()</a>, <a class="el" href="Sprite3D_8cpp_source.html#l00103">setFrameGrid()</a> , 以及 <a class="el" href="Sprite3D_8cpp_source.html#l00137">update()</a>.</p>
+
+</div>
+</div>
+<a id="a31aa91de805f0f25668776f8718ab640" name="a31aa91de805f0f25668776f8718ab640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31aa91de805f0f25668776f8718ab640">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World position (billboard center). </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00366">eve::graphics::Renderable3D::setPosition()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a8f2d693b210093c6c98a4c08bb6f1bfe" name="a8f2d693b210093c6c98a4c08bb6f1bfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f2d693b210093c6c98a4c08bb6f1bfe">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Billboard size in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00384">eve::graphics::Renderable3D::setScale()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="ad738597b49e536d6dfb43503dd33105c" name="ad738597b49e536d6dfb43503dd33105c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad738597b49e536d6dfb43503dd33105c">&#9670;&#160;</a></span>setTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Albedo texture (a sprite frame / sheet / animation image). </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00395">eve::graphics::Renderable3D::setTexture()</a>.</p>
+
+</div>
+</div>
+<a id="aaafbb5c5adb98aa7235637e5fcbab5f4" name="aaafbb5c5adb98aa7235637e5fcbab5f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaafbb5c5adb98aa7235637e5fcbab5f4">&#9670;&#160;</a></span>setTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Color multiplier (alpha participates in cutout discards). </p>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00482">eve::graphics::Renderable3D::setTint()</a>.</p>
+
+</div>
+</div>
+<a id="aa1876e21d4c5a588403799fc2358a5fd" name="aa1876e21d4c5a588403799fc2358a5fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1876e21d4c5a588403799fc2358a5fd">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00523">eve::graphics::Renderable3D::setVisible()</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+</div>
+</div>
+<a id="aa049cb6b4b9db03729489f8be6deb4e0" name="aa049cb6b4b9db03729489f8be6deb4e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa049cb6b4b9db03729489f8be6deb4e0">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56804972a75b416fad8501ae660cbe04" name="a56804972a75b416fad8501ae660cbe04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56804972a75b416fad8501ae660cbe04">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Sprite3D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the animation clock and re-orient the billboard toward the attached camera. Call once per frame. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Seconds elapsed since the last update. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a> 第 <a class="el" href="Sprite3D_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Sprite3D_8cpp_source.html#l00115">setFrameIndex()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a763a7ce6f1476a3569df735587003aeb" name="a763a7ce6f1476a3569df735587003aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a763a7ce6f1476a3569df735587003aeb">&#9670;&#160;</a></span>Hd2D</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1hd2d_1_1Hd2D.html">Hd2D</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hd2d/<a class="el" href="Hd2d_8h_source.html">Hd2d.h</a></li>
+<li>src/modules/hd2d/<a class="el" href="Sprite3D_8cpp_source.html">Sprite3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

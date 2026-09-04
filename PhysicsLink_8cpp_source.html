@@ -1,0 +1,358 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/PhysicsLink.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PhysicsLink.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PhysicsLink_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicsLink_8h.html">physics/PhysicsLink.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Body_8h.html">physics/Body.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Body3D_8h.html">physics/Body3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Joint3D_8h.html">physics/Joint3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Shape3D_8h.html">physics/Shape3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="World_8h.html">physics/World.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="World3D_8h.html">physics/World3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><a class="code hl_class" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> invalidLinkDiagnostic(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* message) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, message, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><a class="code hl_class" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> staleLinkDiagnostic(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                  <span class="stringliteral">&quot;Physics link does not resolve to a live object owned by this world&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Link, <span class="keyword">typename</span> Handle&gt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Link&gt;</a> attachLink(<a class="code hl_typedef" href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">PhysicsWorldHandle</a> <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, Handle <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* message) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>.isInvalid() || <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.isInvalid())</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Link&gt;::failure</a>(invalidLinkDiagnostic(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, message));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;Link&gt;::success</a>(Link{<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>});</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsLink.html#ac1cf67402a132251e1078aa55b4feda9">   31</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#ac1cf67402a132251e1078aa55b4feda9">PhysicsLink::attach</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsWorldHandle</a> <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a215ff13fe8ce7355648563059491b458">isInvalid</a>() || <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a215ff13fe8ce7355648563059491b458">isInvalid</a>()) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;PhysicsLink&gt;::failure</a>(</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            invalidLinkDiagnostic(<span class="stringliteral">&quot;physics.link&quot;</span>, <span class="stringliteral">&quot;PhysicsLink requires valid world and body handles&quot;</span>));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;PhysicsLink&gt;::success</a>({<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>});</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsLink.html#aa4b04e3dd491dff6dcf7bf2ca4e1e78b">   39</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#aa4b04e3dd491dff6dcf7bf2ca4e1e78b">PhysicsLink::fromBody</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Body.html">Body</a>&amp; <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a>* <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a> = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.getWorld();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>() || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a> || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>-&gt;<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>()) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;PhysicsLink&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.body&quot;</span>));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#ac1cf67402a132251e1078aa55b4feda9">attach</a>(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>-&gt;runtimeHandle(), <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.runtimeHandle());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsLink.html#aa0df087ed842f0e09c72b2847af1023e">   47</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#aa4b04e3dd491dff6dcf7bf2ca4e1e78b">PhysicsLink::fromBody</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>&amp; <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>* <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a> = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.getWorld();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>() || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a> || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>-&gt;<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>()) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;PhysicsLink&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.body3d&quot;</span>));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#ac1cf67402a132251e1078aa55b4feda9">attach</a>(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>-&gt;runtimeHandle(), <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>.runtimeHandle());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsLink.html#a8d35a83f2cd3ba76df191607c5623f69">   55</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Body*&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#a8d35a83f2cd3ba76df191607c5623f69">PhysicsLink::resolve</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#a670b1583686c25aac6b3390ee259cc31">isValid</a>() || <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>.runtimeHandle() != this-&gt;world) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Body*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.resolve&quot;</span>));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body.html">Body</a>* resolved = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>.findBody(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (!resolved) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Body*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.resolve&quot;</span>));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;Body*&gt;::success</a>(resolved);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsLink.html#acfb623420f2579e9190d82e935f5ea8a">   66</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Body3D*&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#a8d35a83f2cd3ba76df191607c5623f69">PhysicsLink::resolve</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="structeve_1_1physics_1_1PhysicsLink.html#a670b1583686c25aac6b3390ee259cc31">isValid</a>() || <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>.runtimeHandle() != this-&gt;world) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Body3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.resolve3d&quot;</span>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>* resolved = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">world</a>.findBody(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">body</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!resolved) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Body3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.link.resolve3d&quot;</span>));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;Body3D*&gt;::success</a>(resolved);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsShapeLink.html#adafcc18f2599b7300fedc868bb8c858e">   77</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsShapeLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsShapeLink.html#adafcc18f2599b7300fedc868bb8c858e">PhysicsShapeLink::attach</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsWorldHandle</a> <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsShapeHandle</a> shape) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> attachLink&lt;PhysicsShapeLink&gt;(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">shape</a>, <span class="stringliteral">&quot;physics.shapeLink&quot;</span>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                        <span class="stringliteral">&quot;PhysicsShapeLink requires valid world and shape handles&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a81acdf4a301ba0d16732a86b77d0e9a7">   82</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsShapeLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a81acdf4a301ba0d16732a86b77d0e9a7">PhysicsShapeLink::fromShape</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a>&amp; shape) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>*  <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>  = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">shape</a>.getBody();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>* <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a> = <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a> ? <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>-&gt;getWorld() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">shape</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>() || !<a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a> || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a> || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a>-&gt;<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>())</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;PhysicsShapeLink&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.shapeLink.shape&quot;</span>));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsShapeLink.html#adafcc18f2599b7300fedc868bb8c858e">attach</a>(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a>-&gt;runtimeHandle(), <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">shape</a>.runtimeHandle());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="}">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a517762b2e84e97d67dfa88450689ce46">   90</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Shape3D*&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a517762b2e84e97d67dfa88450689ce46">PhysicsShapeLink::resolve</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="structeve_1_1physics_1_1PhysicsShapeLink.html#aece23d3e6dc5bcf6e190f9587cea006f">isValid</a>() || <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a>.runtimeHandle() != this-&gt;world)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Shape3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.shapeLink.resolve&quot;</span>));</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a>* resolved = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">world</a>.findShape(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">shape</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!resolved) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Shape3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.shapeLink.resolve&quot;</span>));</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;Shape3D*&gt;::success</a>(resolved);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="}">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsJointLink.html#a421b7d81184b9f2f906027038999ae2d">   98</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsJointLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsJointLink.html#a421b7d81184b9f2f906027038999ae2d">PhysicsJointLink::attach</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsWorldHandle</a> <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsJointHandle</a> joint) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> attachLink&lt;PhysicsJointLink&gt;(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">joint</a>, <span class="stringliteral">&quot;physics.jointLink&quot;</span>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                        <span class="stringliteral">&quot;PhysicsJointLink requires valid world and joint handles&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsJointLink.html#ae7d9d40250520f2b9033c718f25533b3">  103</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsJointLink&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsJointLink.html#ae7d9d40250520f2b9033c718f25533b3">PhysicsJointLink::fromJoint</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a>&amp; joint) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>* <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a> = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">joint</a>.getWorld();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">joint</a>.<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>() || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a> || !<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a>-&gt;<a class="code hl_function" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a>())</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;PhysicsJointLink&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.jointLink.joint&quot;</span>));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsJointLink.html#a421b7d81184b9f2f906027038999ae2d">attach</a>(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a>-&gt;runtimeHandle(), <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">joint</a>.runtimeHandle());</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1PhysicsJointLink.html#a4b470df56455df0c48164402015c3d6d">  110</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Joint3D*&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1PhysicsJointLink.html#a4b470df56455df0c48164402015c3d6d">PhysicsJointLink::resolve</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="structeve_1_1physics_1_1PhysicsJointLink.html#a871c5527117e7caf8feb9191a43d06c3">isValid</a>() || <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a>.runtimeHandle() != this-&gt;world)</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Joint3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.jointLink.resolve&quot;</span>));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a>* resolved = <a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">world</a>.findJoint(<a class="code hl_variable" href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">joint</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!resolved) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;Joint3D*&gt;::failure</a>(staleLinkDiagnostic(<span class="stringliteral">&quot;physics.jointLink.resolve&quot;</span>));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;Joint3D*&gt;::success</a>(resolved);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aBody3D_8h_html"><div class="ttname"><a href="Body3D_8h.html">Body3D.h</a></div></div>
+<div class="ttc" id="aBody_8h_html"><div class="ttname"><a href="Body_8h.html">Body.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aJoint3D_8h_html"><div class="ttname"><a href="Joint3D_8h.html">Joint3D.h</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPhysicsLink_8h_html"><div class="ttname"><a href="PhysicsLink_8h.html">PhysicsLink.h</a></div><div class="ttdoc">Typed composition link from a gameplay entity to a physics body.</div></div>
+<div class="ttc" id="aShape3D_8h_html"><div class="ttname"><a href="Shape3D_8h.html">Shape3D.h</a></div></div>
+<div class="ttc" id="aUnityImporter_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8cpp_source.html#l00226">UnityImporter.cpp:226</a></div></div>
+<div class="ttc" id="aWorld3D_8h_html"><div class="ttname"><a href="World3D_8h.html">World3D.h</a></div></div>
+<div class="ttc" id="aWorld_8h_html"><div class="ttname"><a href="World_8h.html">World.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; PhysicsWorldHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a215ff13fe8ce7355648563059491b458"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a215ff13fe8ce7355648563059491b458">eve::RuntimeHandle::isInvalid</a></div><div class="ttdeci">constexpr bool isInvalid() const noexcept</div><div class="ttdoc">Returns whether this value is the invalid sentinel.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00072">RuntimeHandle.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a3af61a1aadfc37cdd8611cc5c57526e2"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">eve::RuntimeHandle::isValid</a></div><div class="ttdeci">constexpr bool isValid() const noexcept</div><div class="ttdoc">Returns whether both coordinates are usable handle values.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00067">RuntimeHandle.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html">eve::physics::Body3D</a></div><div class="ttdoc">3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00022">Body3D.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body_html"><div class="ttname"><a href="classeve_1_1physics_1_1Body.html">eve::physics::Body</a></div><div class="ttdoc">2D rigid body (Box2D) in pixel-space coordinates. Owned by a World; create shapes with newRectangleFi...</div><div class="ttdef"><b>Definition</b> <a href="Body_8h_source.html#l00019">Body.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Joint3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Joint3D.html">eve::physics::Joint3D</a></div><div class="ttdoc">Script-facing Box3D joint owned by a World3D.</div><div class="ttdef"><b>Definition</b> <a href="Joint3D_8h_source.html#l00015">Joint3D.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Shape3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></div><div class="ttdoc">3D shape (box/sphere/capsule) attached to a Body3D with material settings. Created via Body3D::new*Sh...</div><div class="ttdef"><b>Definition</b> <a href="Shape3D_8h_source.html#l00022">Shape3D.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World_html"><div class="ttname"><a href="classeve_1_1physics_1_1World.html">eve::physics::World</a></div><div class="ttdoc">Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...</div><div class="ttdef"><b>Definition</b> <a href="World_8h_source.html#l00035">World.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_acfb417bf113fda3ce332253c1cd30cd4"><div class="ttname"><a href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">eve::physics::PhysicsWorldHandle</a></div><div class="ttdeci">eve::RuntimeHandle&lt; PhysicsWorldHandleTag &gt; PhysicsWorldHandle</div><div class="ttdoc">Generation-qualified runtime identity for a physics world.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsHandles_8h_source.html#l00025">PhysicsHandles.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_a36cdbea728dba85a00b07b0037021ba1"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#a36cdbea728dba85a00b07b0037021ba1">eve::physics::PhysicsJointLink::world</a></div><div class="ttdeci">PhysicsWorldHandle world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00092">PhysicsLink.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_a421b7d81184b9f2f906027038999ae2d"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#a421b7d81184b9f2f906027038999ae2d">eve::physics::PhysicsJointLink::attach</a></div><div class="ttdeci">static eve::Result&lt; PhysicsJointLink &gt; attach(PhysicsWorldHandle world, PhysicsJointHandle joint)</div><div class="ttdoc">Constructs a joint link candidate; ownership is checked by resolve().</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00098">PhysicsLink.cpp:98</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_a4b470df56455df0c48164402015c3d6d"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#a4b470df56455df0c48164402015c3d6d">eve::physics::PhysicsJointLink::resolve</a></div><div class="ttdeci">eve::Result&lt; Joint3D * &gt; resolve(World3D &amp;world) const</div><div class="ttdoc">Resolves a live joint or returns StaleHandle.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00110">PhysicsLink.cpp:110</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_a871c5527117e7caf8feb9191a43d06c3"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#a871c5527117e7caf8feb9191a43d06c3">eve::physics::PhysicsJointLink::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether both encoded handle values are non-invalid.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00096">PhysicsLink.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_aa44db649325bb27a0ccf03e2c150f026"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#aa44db649325bb27a0ccf03e2c150f026">eve::physics::PhysicsJointLink::joint</a></div><div class="ttdeci">PhysicsJointHandle joint</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00093">PhysicsLink.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsJointLink_html_ae7d9d40250520f2b9033c718f25533b3"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsJointLink.html#ae7d9d40250520f2b9033c718f25533b3">eve::physics::PhysicsJointLink::fromJoint</a></div><div class="ttdeci">static eve::Result&lt; PhysicsJointLink &gt; fromJoint(const Joint3D &amp;joint)</div><div class="ttdoc">Creates a link from a live joint.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00103">PhysicsLink.cpp:103</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_a65d5efecbc0a39c66be14161623b37b9"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#a65d5efecbc0a39c66be14161623b37b9">eve::physics::PhysicsLink::body</a></div><div class="ttdeci">PhysicsBodyHandle body</div><div class="ttdoc">Process-local solver-body handle.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00035">PhysicsLink.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_a670b1583686c25aac6b3390ee259cc31"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#a670b1583686c25aac6b3390ee259cc31">eve::physics::PhysicsLink::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether both encoded handle values are non-invalid.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00038">PhysicsLink.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_a7c2577a292dabe9f78e3a23d6d51c607"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#a7c2577a292dabe9f78e3a23d6d51c607">eve::physics::PhysicsLink::world</a></div><div class="ttdeci">PhysicsWorldHandle world</div><div class="ttdoc">Process-local owning-world handle.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00033">PhysicsLink.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_a8d35a83f2cd3ba76df191607c5623f69"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#a8d35a83f2cd3ba76df191607c5623f69">eve::physics::PhysicsLink::resolve</a></div><div class="ttdeci">eve::Result&lt; Body * &gt; resolve(World &amp;world) const</div><div class="ttdoc">Resolves this link against a 2D world or returns StaleHandle.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00055">PhysicsLink.cpp:55</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_aa4b04e3dd491dff6dcf7bf2ca4e1e78b"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#aa4b04e3dd491dff6dcf7bf2ca4e1e78b">eve::physics::PhysicsLink::fromBody</a></div><div class="ttdeci">static eve::Result&lt; PhysicsLink &gt; fromBody(const Body &amp;body)</div><div class="ttdoc">Creates a link from a live 2D body.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00039">PhysicsLink.cpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html_ac1cf67402a132251e1078aa55b4feda9"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html#ac1cf67402a132251e1078aa55b4feda9">eve::physics::PhysicsLink::attach</a></div><div class="ttdeci">static eve::Result&lt; PhysicsLink &gt; attach(PhysicsWorldHandle world, PhysicsBodyHandle body)</div><div class="ttdoc">Validates and constructs a link from explicit runtime handles.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00031">PhysicsLink.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_a517762b2e84e97d67dfa88450689ce46"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#a517762b2e84e97d67dfa88450689ce46">eve::physics::PhysicsShapeLink::resolve</a></div><div class="ttdeci">eve::Result&lt; Shape3D * &gt; resolve(World3D &amp;world) const</div><div class="ttdoc">Resolves a live shape or returns StaleHandle.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00090">PhysicsLink.cpp:90</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_a5514965c26afd846a82f8c3bc5b86cac"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#a5514965c26afd846a82f8c3bc5b86cac">eve::physics::PhysicsShapeLink::shape</a></div><div class="ttdeci">PhysicsShapeHandle shape</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00070">PhysicsLink.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_a81acdf4a301ba0d16732a86b77d0e9a7"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#a81acdf4a301ba0d16732a86b77d0e9a7">eve::physics::PhysicsShapeLink::fromShape</a></div><div class="ttdeci">static eve::Result&lt; PhysicsShapeLink &gt; fromShape(const Shape3D &amp;shape)</div><div class="ttdoc">Creates a link from a live shape.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00082">PhysicsLink.cpp:82</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_a8e4638ec2c225db67abf617f09b12698"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#a8e4638ec2c225db67abf617f09b12698">eve::physics::PhysicsShapeLink::world</a></div><div class="ttdeci">PhysicsWorldHandle world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00069">PhysicsLink.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_adafcc18f2599b7300fedc868bb8c858e"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#adafcc18f2599b7300fedc868bb8c858e">eve::physics::PhysicsShapeLink::attach</a></div><div class="ttdeci">static eve::Result&lt; PhysicsShapeLink &gt; attach(PhysicsWorldHandle world, PhysicsShapeHandle shape)</div><div class="ttdoc">Constructs a shape link candidate; ownership is checked by resolve().</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8cpp_source.html#l00077">PhysicsLink.cpp:77</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsShapeLink_html_aece23d3e6dc5bcf6e190f9587cea006f"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsShapeLink.html#aece23d3e6dc5bcf6e190f9587cea006f">eve::physics::PhysicsShapeLink::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether both encoded handle values are non-invalid.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00073">PhysicsLink.h:73</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::ReflectionProbeVisualizer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html">ReflectionProbeVisualizer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1ReflectionProbeVisualizer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::ReflectionProbeVisualizer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Renderer-independent wire-box and status description for a reflection probe.  
+ <a href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ReflectionProbeVisualizer_8h_source.html">ReflectionProbeVisualizer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a874e23ff11f1d6ebe9b533713a13023d" id="r_a874e23ff11f1d6ebe9b533713a13023d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a874e23ff11f1d6ebe9b533713a13023d">ReflectionProbeVisualizer</a> (<a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">graphics::ReflectionProbeCapture</a> *probe)</td></tr>
+<tr class="memdesc:a874e23ff11f1d6ebe9b533713a13023d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a visualizer attached to a runtime reflection probe.  <br /></td></tr>
+<tr class="separator:a874e23ff11f1d6ebe9b533713a13023d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67a0586b236b8a78dc6dd14ba2e6fd18" id="r_a67a0586b236b8a78dc6dd14ba2e6fd18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a67a0586b236b8a78dc6dd14ba2e6fd18">setExtents</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a67a0586b236b8a78dc6dd14ba2e6fd18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set positive influence-box half extents.  <br /></td></tr>
+<tr class="separator:a67a0586b236b8a78dc6dd14ba2e6fd18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a161218c91ffa80fba3482f50408f2581" id="r_a161218c91ffa80fba3482f50408f2581"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a161218c91ffa80fba3482f50408f2581">getLineCount</a> () const</td></tr>
+<tr class="memdesc:a161218c91ffa80fba3482f50408f2581"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of wire-box line segments.  <br /></td></tr>
+<tr class="separator:a161218c91ffa80fba3482f50408f2581"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8821d558da1bc88425575dee323a9b47" id="r_a8821d558da1bc88425575dee323a9b47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a8821d558da1bc88425575dee323a9b47">getLineStart</a> (int <a class="el" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, int component) const</td></tr>
+<tr class="memdesc:a8821d558da1bc88425575dee323a9b47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one line start coordinate, where component is 0=x,1=y,2=z.  <br /></td></tr>
+<tr class="separator:a8821d558da1bc88425575dee323a9b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9be97c115066663ca252963bbb04063a" id="r_a9be97c115066663ca252963bbb04063a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a9be97c115066663ca252963bbb04063a">getLineEnd</a> (int <a class="el" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, int component) const</td></tr>
+<tr class="memdesc:a9be97c115066663ca252963bbb04063a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one line end coordinate, where component is 0=x,1=y,2=z.  <br /></td></tr>
+<tr class="separator:a9be97c115066663ca252963bbb04063a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51260a53472a1e85c3334231f61d2751" id="r_a51260a53472a1e85c3334231f61d2751"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a51260a53472a1e85c3334231f61d2751">getColorR</a> () const</td></tr>
+<tr class="memdesc:a51260a53472a1e85c3334231f61d2751"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return status color red channel.  <br /></td></tr>
+<tr class="separator:a51260a53472a1e85c3334231f61d2751"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3b3831de318e9ba304f8a3576386377" id="r_ad3b3831de318e9ba304f8a3576386377"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#ad3b3831de318e9ba304f8a3576386377">getColorG</a> () const</td></tr>
+<tr class="memdesc:ad3b3831de318e9ba304f8a3576386377"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return status color green channel.  <br /></td></tr>
+<tr class="separator:ad3b3831de318e9ba304f8a3576386377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19d984c1ec5aae568dd05f6089f7572d" id="r_a19d984c1ec5aae568dd05f6089f7572d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#a19d984c1ec5aae568dd05f6089f7572d">getColorB</a> () const</td></tr>
+<tr class="memdesc:a19d984c1ec5aae568dd05f6089f7572d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return status color blue channel.  <br /></td></tr>
+<tr class="separator:a19d984c1ec5aae568dd05f6089f7572d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6265d9741c3851531d1c1ec0d224bc8" id="r_af6265d9741c3851531d1c1ec0d224bc8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#af6265d9741c3851531d1c1ec0d224bc8">getCenterX</a> () const</td></tr>
+<tr class="memdesc:af6265d9741c3851531d1c1ec0d224bc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe center X.  <br /></td></tr>
+<tr class="separator:af6265d9741c3851531d1c1ec0d224bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5c7725745e5b77991815e7804f4367a" id="r_ab5c7725745e5b77991815e7804f4367a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#ab5c7725745e5b77991815e7804f4367a">getCenterY</a> () const</td></tr>
+<tr class="memdesc:ab5c7725745e5b77991815e7804f4367a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe center Y.  <br /></td></tr>
+<tr class="separator:ab5c7725745e5b77991815e7804f4367a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6c6134ec9a6e699b1651ff8949d14f5" id="r_ae6c6134ec9a6e699b1651ff8949d14f5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#ae6c6134ec9a6e699b1651ff8949d14f5">getCenterZ</a> () const</td></tr>
+<tr class="memdesc:ae6c6134ec9a6e699b1651ff8949d14f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe center Z.  <br /></td></tr>
+<tr class="separator:ae6c6134ec9a6e699b1651ff8949d14f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a3437611c07ec9f7ae155b1b309e87" id="r_aa5a3437611c07ec9f7ae155b1b309e87"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ReflectionProbeVisualizer.html#aa5a3437611c07ec9f7ae155b1b309e87">getStatusLabel</a> () const</td></tr>
+<tr class="memdesc:aa5a3437611c07ec9f7ae155b1b309e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a concise capture/staging/publication status annotation.  <br /></td></tr>
+<tr class="separator:aa5a3437611c07ec9f7ae155b1b309e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Renderer-independent wire-box and status description for a reflection probe. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8h_source.html">ReflectionProbeVisualizer.h</a> 第 <a class="el" href="ReflectionProbeVisualizer_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a874e23ff11f1d6ebe9b533713a13023d" name="a874e23ff11f1d6ebe9b533713a13023d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a874e23ff11f1d6ebe9b533713a13023d">&#9670;&#160;</a></span>ReflectionProbeVisualizer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::ReflectionProbeVisualizer::ReflectionProbeVisualizer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">graphics::ReflectionProbeCapture</a> *&#160;</td>
+          <td class="paramname"><em>probe</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a visualizer attached to a runtime reflection probe. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af6265d9741c3851531d1c1ec0d224bc8" name="af6265d9741c3851531d1c1ec0d224bc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6265d9741c3851531d1c1ec0d224bc8">&#9670;&#160;</a></span>getCenterX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getCenterX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return probe center X. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00235">eve::graphics::ReflectionProbeCapture::getCenterX()</a>.</p>
+
+</div>
+</div>
+<a id="ab5c7725745e5b77991815e7804f4367a" name="ab5c7725745e5b77991815e7804f4367a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5c7725745e5b77991815e7804f4367a">&#9670;&#160;</a></span>getCenterY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getCenterY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return probe center Y. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00237">eve::graphics::ReflectionProbeCapture::getCenterY()</a>.</p>
+
+</div>
+</div>
+<a id="ae6c6134ec9a6e699b1651ff8949d14f5" name="ae6c6134ec9a6e699b1651ff8949d14f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6c6134ec9a6e699b1651ff8949d14f5">&#9670;&#160;</a></span>getCenterZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getCenterZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return probe center Z. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00239">eve::graphics::ReflectionProbeCapture::getCenterZ()</a>.</p>
+
+</div>
+</div>
+<a id="a19d984c1ec5aae568dd05f6089f7572d" name="a19d984c1ec5aae568dd05f6089f7572d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d984c1ec5aae568dd05f6089f7572d">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return status color blue channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00094">eve::graphics::ReflectionProbeCapture::getPublishedRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00070">eve::graphics::ReflectionProbeCapture::getRevision()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00064">eve::graphics::ReflectionProbeCapture::isCapturePending()</a>.</p>
+
+</div>
+</div>
+<a id="ad3b3831de318e9ba304f8a3576386377" name="ad3b3831de318e9ba304f8a3576386377"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3b3831de318e9ba304f8a3576386377">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return status color green channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00094">eve::graphics::ReflectionProbeCapture::getPublishedRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00070">eve::graphics::ReflectionProbeCapture::getRevision()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00064">eve::graphics::ReflectionProbeCapture::isCapturePending()</a>.</p>
+
+</div>
+</div>
+<a id="a51260a53472a1e85c3334231f61d2751" name="a51260a53472a1e85c3334231f61d2751"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51260a53472a1e85c3334231f61d2751">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return status color red channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00094">eve::graphics::ReflectionProbeCapture::getPublishedRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00070">eve::graphics::ReflectionProbeCapture::getRevision()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00064">eve::graphics::ReflectionProbeCapture::isCapturePending()</a>.</p>
+
+</div>
+</div>
+<a id="a161218c91ffa80fba3482f50408f2581" name="a161218c91ffa80fba3482f50408f2581"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a161218c91ffa80fba3482f50408f2581">&#9670;&#160;</a></span>getLineCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::ReflectionProbeVisualizer::getLineCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of wire-box line segments. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8h_source.html">ReflectionProbeVisualizer.h</a> 第 <a class="el" href="ReflectionProbeVisualizer_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9be97c115066663ca252963bbb04063a" name="a9be97c115066663ca252963bbb04063a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9be97c115066663ca252963bbb04063a">&#9670;&#160;</a></span>getLineEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getLineEnd </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>component</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one line end coordinate, where component is 0=x,1=y,2=z. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>.</p>
+
+</div>
+</div>
+<a id="a8821d558da1bc88425575dee323a9b47" name="a8821d558da1bc88425575dee323a9b47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8821d558da1bc88425575dee323a9b47">&#9670;&#160;</a></span>getLineStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::ReflectionProbeVisualizer::getLineStart </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>component</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one line start coordinate, where component is 0=x,1=y,2=z. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>.</p>
+
+</div>
+</div>
+<a id="aa5a3437611c07ec9f7ae155b1b309e87" name="aa5a3437611c07ec9f7ae155b1b309e87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5a3437611c07ec9f7ae155b1b309e87">&#9670;&#160;</a></span>getStatusLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::ReflectionProbeVisualizer::getStatusLabel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a concise capture/staging/publication status annotation. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00163">eve::graphics::ReflectionProbeCapture::getPendingFaceCount()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00094">eve::graphics::ReflectionProbeCapture::getPublishedRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00070">eve::graphics::ReflectionProbeCapture::getRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00082">eve::graphics::ReflectionProbeCapture::getStagedRevision()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00064">eve::graphics::ReflectionProbeCapture::isCapturePending()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00066">eve::graphics::ReflectionProbeCapture::isRecaptureQueued()</a>.</p>
+
+</div>
+</div>
+<a id="a67a0586b236b8a78dc6dd14ba2e6fd18" name="a67a0586b236b8a78dc6dd14ba2e6fd18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67a0586b236b8a78dc6dd14ba2e6fd18">&#9670;&#160;</a></span>setExtents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ReflectionProbeVisualizer::setExtents </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set positive influence-box half extents. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a> 第 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00387">eve::graphics::ReflectionProbeCapture::configureInfluence()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00217">eve::graphics::ReflectionProbeCapture::getInfluenceBlendDistance()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00215">eve::graphics::ReflectionProbeCapture::getInfluenceIntensity()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00219">eve::graphics::ReflectionProbeCapture::getInfluencePriority()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics_editor/<a class="el" href="ReflectionProbeVisualizer_8h_source.html">ReflectionProbeVisualizer.h</a></li>
+<li>src/modules/graphics_editor/<a class="el" href="ReflectionProbeVisualizer_8cpp_source.html">ReflectionProbeVisualizer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/FieldBrushTool.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FieldBrushTool.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FieldBrushTool_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BrushKernel_8h.html">editor/BrushKernel.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorTool_8h.html">editor/EditorTool.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IFieldBrushOperation.html">   11</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IFieldBrushOperation.html#a3f35ee34ae75aff18ec7b01e87a650fc">   13</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1IFieldBrushOperation.html#a3f35ee34ae75aff18ec7b01e87a650fc">~IFieldBrushOperation</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IFieldBrushOperation.html#ae6ae7bac76bfd94f47aad2e9ef7db147">   16</a></span>    <span class="keyword">virtual</span> std::unique_ptr&lt;IEditCommand&gt; <a class="code hl_function" href="classeve_1_1editor_1_1IFieldBrushOperation.html#ae6ae7bac76bfd94f47aad2e9ef7db147">createCommand</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1BrushSampleBuffer.html">BrushSampleBuffer</a> &amp;samples,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                                                        <span class="keywordtype">float</span> strength) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntFieldOperation.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1PaintIntFieldOperation.html">PaintIntFieldOperation</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a82d8239446f678cb820d6bc77aefd3e2">   24</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a82d8239446f678cb820d6bc77aefd3e2">PaintIntFieldOperation</a>(<span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">value</a> = 1) : value_(<a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">value</a>) {}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#aee4919d7e66155712d70a763191a2d2e">   26</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#aee4919d7e66155712d70a763191a2d2e">setValue</a>(<span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">value</a>) { value_ = <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">value</a>; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">   28</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">value</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    std::unique_ptr&lt;IEditCommand&gt; <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntFieldOperation.html#abdd22446ef286daeda6937c118380658">createCommand</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                                <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1BrushSampleBuffer.html">BrushSampleBuffer</a> &amp;samples,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                                <span class="keywordtype">float</span> strength) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">int</span> value_ = 1;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1AddScalarFieldOperation.html">   37</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1AddScalarFieldOperation.html">AddScalarFieldOperation</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::unique_ptr&lt;IEditCommand&gt; <a class="code hl_function" href="classeve_1_1editor_1_1AddScalarFieldOperation.html#a309653af90b54a2f3dcef5aa5e2134c7">createCommand</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1BrushSampleBuffer.html">BrushSampleBuffer</a> &amp;samples,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                <span class="keywordtype">float</span> strength) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1FieldBrushTool.html">FieldBrushTool</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1editor_1_1FieldBrushTool.html">FieldBrushTool</a>(std::string <span class="keywordtype">id</span>, std::string label, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IBrushKernel.html">IBrushKernel</a> *kernel,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                   <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> *operation);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#a0011e4c6b06ccae30d765ff08ccc0605">   53</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a> &amp;<a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0011e4c6b06ccae30d765ff08ccc0605">descriptor</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> descriptor_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#a8bb8045b09d7abecb2f992f1ca1ef3ef">   55</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a8bb8045b09d7abecb2f992f1ca1ef3ef">setKernel</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IBrushKernel.html">IBrushKernel</a> *kernel) { kernel_ = kernel; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#afb0d58c5b5f7252b197adb47b44a50f8">   57</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#afb0d58c5b5f7252b197adb47b44a50f8">setOperation</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> *operation) { operation_ = operation; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a3574c2e3d66c9aee135ffa61868080a9">setRadius</a>(<span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0661b60d0794501857e391479b090246">radius</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#a0e76682653dcd1793bf80f7fb4e79a53">   61</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0e76682653dcd1793bf80f7fb4e79a53">setStrength</a>(<span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0a5c069b3fb9121cef85126de655ca2f">strength</a>) { strength_ = <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0a5c069b3fb9121cef85126de655ca2f">strength</a>; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#a0661b60d0794501857e391479b090246">   62</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0661b60d0794501857e391479b090246">radius</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> radius_; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1FieldBrushTool.html#a0a5c069b3fb9121cef85126de655ca2f">   63</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a0a5c069b3fb9121cef85126de655ca2f">strength</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> strength_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a61dfa8ad09c4bbcf62d101f84fe4221d">pointerEvent</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a> &amp;event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#a9110fdf0a9ed646b92b462d46f98d994">cancel</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#abb101b9db4a3de693aaaa84d65cb89c2">drawOverlay</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="code hl_class" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;overlay) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1FieldBrushTool.html#aeeb3393bd15de48130e10e9a4f00b19f">inspect</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="code hl_class" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;inspector) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span> stamp(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a> descriptor_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IBrushKernel.html">IBrushKernel</a> *kernel_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IFieldBrushOperation.html">IFieldBrushOperation</a> *operation_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">float</span> radius_ = 1.f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">float</span> strength_ = 1.f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">float</span> cursorX_ = 0.f;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> cursorY_ = 0.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">bool</span> stroking_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_class" href="classeve_1_1editor_1_1BrushSampleBuffer.html">BrushSampleBuffer</a> samples_;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBrushKernel_8h_html"><div class="ttname"><a href="BrushKernel_8h.html">BrushKernel.h</a></div></div>
+<div class="ttc" id="aEditorTool_8h_html"><div class="ttname"><a href="EditorTool_8h.html">EditorTool.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AddScalarFieldOperation_html"><div class="ttname"><a href="classeve_1_1editor_1_1AddScalarFieldOperation.html">eve::editor::AddScalarFieldOperation</a></div><div class="ttdoc">Adds weighted strength to targets exposing IScalarFieldTarget.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00037">FieldBrushTool.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AddScalarFieldOperation_html_a309653af90b54a2f3dcef5aa5e2134c7"><div class="ttname"><a href="classeve_1_1editor_1_1AddScalarFieldOperation.html#a309653af90b54a2f3dcef5aa5e2134c7">eve::editor::AddScalarFieldOperation::createCommand</a></div><div class="ttdeci">std::unique_ptr&lt; IEditCommand &gt; createCommand(IEditableTarget *target, const BrushSampleBuffer &amp;samples, float strength) const override</div><div class="ttdoc">Create one reversible command, or nullptr for an incompatible target.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00023">FieldBrushTool.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BrushSampleBuffer_html"><div class="ttname"><a href="classeve_1_1editor_1_1BrushSampleBuffer.html">eve::editor::BrushSampleBuffer</a></div><div class="ttdoc">Convenience sink for previews, tests and command construction.</div><div class="ttdef"><b>Definition</b> <a href="BrushKernel_8h_source.html#l00084">BrushKernel.h:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html">eve::editor::EditorContext</a></div><div class="ttdoc">Context supplied by EditorSession to tools.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00064">EditorTool.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html">eve::editor::FieldBrushTool</a></div><div class="ttdoc">Generic stroke tool composed from a brush kernel and field operation.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00049">FieldBrushTool.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a0011e4c6b06ccae30d765ff08ccc0605"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a0011e4c6b06ccae30d765ff08ccc0605">eve::editor::FieldBrushTool::descriptor</a></div><div class="ttdeci">const ToolDescriptor &amp; descriptor() const override</div><div class="ttdoc">Stable tool identity and presentation metadata.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00053">FieldBrushTool.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a0661b60d0794501857e391479b090246"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a0661b60d0794501857e391479b090246">eve::editor::FieldBrushTool::radius</a></div><div class="ttdeci">float radius() const</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00062">FieldBrushTool.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a0a5c069b3fb9121cef85126de655ca2f"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a0a5c069b3fb9121cef85126de655ca2f">eve::editor::FieldBrushTool::strength</a></div><div class="ttdeci">float strength() const</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00063">FieldBrushTool.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a0e76682653dcd1793bf80f7fb4e79a53"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a0e76682653dcd1793bf80f7fb4e79a53">eve::editor::FieldBrushTool::setStrength</a></div><div class="ttdeci">void setStrength(float strength)</div><div class="ttdoc">Set the operation strength; negative values are permitted.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00061">FieldBrushTool.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a3574c2e3d66c9aee135ffa61868080a9"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a3574c2e3d66c9aee135ffa61868080a9">eve::editor::FieldBrushTool::setRadius</a></div><div class="ttdeci">void setRadius(float radius)</div><div class="ttdoc">Set brush radius in target coordinates.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00042">FieldBrushTool.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a61dfa8ad09c4bbcf62d101f84fe4221d"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a61dfa8ad09c4bbcf62d101f84fe4221d">eve::editor::FieldBrushTool::pointerEvent</a></div><div class="ttdeci">ToolResponse pointerEvent(EditorContext &amp;context, const EditorPointerEvent &amp;event) override</div><div class="ttdoc">Handle normalized pointer input.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00052">FieldBrushTool.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a8bb8045b09d7abecb2f992f1ca1ef3ef"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a8bb8045b09d7abecb2f992f1ca1ef3ef">eve::editor::FieldBrushTool::setKernel</a></div><div class="ttdeci">void setKernel(const IBrushKernel *kernel)</div><div class="ttdoc">Replace the shape/falloff implementation used by later stamps.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00055">FieldBrushTool.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_a9110fdf0a9ed646b92b462d46f98d994"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#a9110fdf0a9ed646b92b462d46f98d994">eve::editor::FieldBrushTool::cancel</a></div><div class="ttdeci">void cancel(EditorContext &amp;context) override</div><div class="ttdoc">Cancel the active gesture while keeping the tool selected.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00076">FieldBrushTool.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_abb101b9db4a3de693aaaa84d65cb89c2"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#abb101b9db4a3de693aaaa84d65cb89c2">eve::editor::FieldBrushTool::drawOverlay</a></div><div class="ttdeci">void drawOverlay(EditorContext &amp;context, IEditorOverlay &amp;overlay) override</div><div class="ttdoc">Emit renderer-independent feedback for the active viewport.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00081">FieldBrushTool.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_aeeb3393bd15de48130e10e9a4f00b19f"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#aeeb3393bd15de48130e10e9a4f00b19f">eve::editor::FieldBrushTool::inspect</a></div><div class="ttdeci">void inspect(EditorContext &amp;context, IEditorInspector &amp;inspector) override</div><div class="ttdoc">Expose configurable settings through a host-provided inspector.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00085">FieldBrushTool.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1FieldBrushTool_html_afb0d58c5b5f7252b197adb47b44a50f8"><div class="ttname"><a href="classeve_1_1editor_1_1FieldBrushTool.html#afb0d58c5b5f7252b197adb47b44a50f8">eve::editor::FieldBrushTool::setOperation</a></div><div class="ttdeci">void setOperation(const IFieldBrushOperation *operation)</div><div class="ttdoc">Replace the edit semantics used by later stamps.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00057">FieldBrushTool.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBrushKernel_html"><div class="ttname"><a href="classeve_1_1editor_1_1IBrushKernel.html">eve::editor::IBrushKernel</a></div><div class="ttdoc">Shape protocol shared by tile, terrain, mask and custom tools.</div><div class="ttdef"><b>Definition</b> <a href="BrushKernel_8h_source.html#l00054">BrushKernel.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorInspector_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorInspector.html">eve::editor::IEditorInspector</a></div><div class="ttdoc">UI-independent property editor used by tools to expose settings.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00046">EditorPresentation.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorOverlay_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorOverlay.html">eve::editor::IEditorOverlay</a></div><div class="ttdoc">Sink implemented by a 2D or 3D viewport to render tool feedback.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00027">EditorPresentation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorTool_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorTool.html">eve::editor::IEditorTool</a></div><div class="ttdoc">Protocol implemented by every editor tool.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00100">EditorTool.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IFieldBrushOperation_html"><div class="ttname"><a href="classeve_1_1editor_1_1IFieldBrushOperation.html">eve::editor::IFieldBrushOperation</a></div><div class="ttdoc">Replaceable operation that converts brush samples into a command.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00011">FieldBrushTool.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IFieldBrushOperation_html_a3f35ee34ae75aff18ec7b01e87a650fc"><div class="ttname"><a href="classeve_1_1editor_1_1IFieldBrushOperation.html#a3f35ee34ae75aff18ec7b01e87a650fc">eve::editor::IFieldBrushOperation::~IFieldBrushOperation</a></div><div class="ttdeci">virtual ~IFieldBrushOperation()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IFieldBrushOperation_html_ae6ae7bac76bfd94f47aad2e9ef7db147"><div class="ttname"><a href="classeve_1_1editor_1_1IFieldBrushOperation.html#ae6ae7bac76bfd94f47aad2e9ef7db147">eve::editor::IFieldBrushOperation::createCommand</a></div><div class="ttdeci">virtual std::unique_ptr&lt; IEditCommand &gt; createCommand(IEditableTarget *target, const BrushSampleBuffer &amp;samples, float strength) const =0</div><div class="ttdoc">Create one reversible command, or nullptr for an incompatible target.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntFieldOperation_html"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntFieldOperation.html">eve::editor::PaintIntFieldOperation</a></div><div class="ttdoc">Paints a fixed integer into targets exposing IIntFieldTarget.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00022">FieldBrushTool.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntFieldOperation_html_a74b391193f39d49bd380bb429d36b343"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a74b391193f39d49bd380bb429d36b343">eve::editor::PaintIntFieldOperation::value</a></div><div class="ttdeci">int value() const</div><div class="ttdoc">Return the integer written by this operation.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00028">FieldBrushTool.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntFieldOperation_html_a82d8239446f678cb820d6bc77aefd3e2"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntFieldOperation.html#a82d8239446f678cb820d6bc77aefd3e2">eve::editor::PaintIntFieldOperation::PaintIntFieldOperation</a></div><div class="ttdeci">PaintIntFieldOperation(int value=1)</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00024">FieldBrushTool.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntFieldOperation_html_abdd22446ef286daeda6937c118380658"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntFieldOperation.html#abdd22446ef286daeda6937c118380658">eve::editor::PaintIntFieldOperation::createCommand</a></div><div class="ttdeci">std::unique_ptr&lt; IEditCommand &gt; createCommand(IEditableTarget *target, const BrushSampleBuffer &amp;samples, float strength) const override</div><div class="ttdoc">Create one reversible command, or nullptr for an incompatible target.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8cpp_source.html#l00011">FieldBrushTool.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntFieldOperation_html_aee4919d7e66155712d70a763191a2d2e"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntFieldOperation.html#aee4919d7e66155712d70a763191a2d2e">eve::editor::PaintIntFieldOperation::setValue</a></div><div class="ttdeci">void setValue(int value)</div><div class="ttdoc">Change the integer written by subsequent stamps.</div><div class="ttdef"><b>Definition</b> <a href="FieldBrushTool_8h_source.html#l00026">FieldBrushTool.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html">eve::editor::EditorPointerEvent</a></div><div class="ttdoc">Pointer input normalized by an editor viewport adapter.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00018">EditorTool.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolDescriptor.html">eve::editor::ToolDescriptor</a></div><div class="ttdoc">UI-facing metadata supplied by a tool implementation.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00088">EditorTool.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html">eve::editor::ToolResponse</a></div><div class="ttdoc">Result returned by a tool after processing input.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00047">EditorTool.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

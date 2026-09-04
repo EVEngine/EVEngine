@@ -1,0 +1,1437 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Camera3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Camera3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Camera3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Camera3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Camera3D.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html">Data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0417c8d9dd27691b570e3b9abe0d0e26" id="r_a0417c8d9dd27691b570e3b9abe0d0e26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a0417c8d9dd27691b570e3b9abe0d0e26">release</a> () override</td></tr>
+<tr class="separator:a0417c8d9dd27691b570e3b9abe0d0e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5be52991401fb9cf94c566ed08b3a44" id="r_ae5be52991401fb9cf94c566ed08b3a44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ae5be52991401fb9cf94c566ed08b3a44">setEye</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ae5be52991401fb9cf94c566ed08b3a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbd098df21fd74087a9df2f919eb65e0" id="r_acbd098df21fd74087a9df2f919eb65e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#acbd098df21fd74087a9df2f919eb65e0">setTarget</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:acbd098df21fd74087a9df2f919eb65e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aa865ad3399e27ffff7e436749172ae" id="r_a7aa865ad3399e27ffff7e436749172ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a7aa865ad3399e27ffff7e436749172ae">setUp</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a7aa865ad3399e27ffff7e436749172ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5f33c2499620e7979aa13121e8d6bff" id="r_aa5f33c2499620e7979aa13121e8d6bff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aa5f33c2499620e7979aa13121e8d6bff">setFov</a> (float fovYDeg)</td></tr>
+<tr class="separator:aa5f33c2499620e7979aa13121e8d6bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822523a80e84bd26c2b6a8d7896221cc" id="r_a822523a80e84bd26c2b6a8d7896221cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a822523a80e84bd26c2b6a8d7896221cc">setOrthographic</a> (float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:a822523a80e84bd26c2b6a8d7896221cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable an orthographic projection with the given vertical world-space span.  <br /></td></tr>
+<tr class="separator:a822523a80e84bd26c2b6a8d7896221cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e409e7f67b683b95d711a649c0f6062" id="r_a5e409e7f67b683b95d711a649c0f6062"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a5e409e7f67b683b95d711a649c0f6062">setPerspective</a> ()</td></tr>
+<tr class="memdesc:a5e409e7f67b683b95d711a649c0f6062"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return to perspective projection, retaining the configured field of view.  <br /></td></tr>
+<tr class="separator:a5e409e7f67b683b95d711a649c0f6062"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1e3ef53de084957c924cd899b501cb" id="r_aee1e3ef53de084957c924cd899b501cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aee1e3ef53de084957c924cd899b501cb">setClipPlanes</a> (float nearZ, float farZ)</td></tr>
+<tr class="memdesc:aee1e3ef53de084957c924cd899b501cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set positive near/far clipping distances; far is kept beyond near.  <br /></td></tr>
+<tr class="separator:aee1e3ef53de084957c924cd899b501cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc2dfc26036f7c26678844e0a8c325f4" id="r_adc2dfc26036f7c26678844e0a8c325f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#adc2dfc26036f7c26678844e0a8c325f4">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>)</td></tr>
+<tr class="separator:adc2dfc26036f7c26678844e0a8c325f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad940f8c3c64e96169643d60137ed40da" id="r_ad940f8c3c64e96169643d60137ed40da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ad940f8c3c64e96169643d60137ed40da">setAmbient</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:ad940f8c3c64e96169643d60137ed40da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec48ba24d6b3f09a5adee20d863d21a4" id="r_aec48ba24d6b3f09a5adee20d863d21a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aec48ba24d6b3f09a5adee20d863d21a4">setEnvMap</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *cube)</td></tr>
+<tr class="memdesc:aec48ba24d6b3f09a5adee20d863d21a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specular IBL cubemap (<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a03f776d2d37e9b834f4d7d134870d1d8" title="Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z (each faceSize×faceSize,...">Graphics::newCubemap</a>). nullptr disables IBL.  <br /></td></tr>
+<tr class="separator:aec48ba24d6b3f09a5adee20d863d21a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbb29e259127259996042f83bbbf9e3d" id="r_abbb29e259127259996042f83bbbf9e3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#abbb29e259127259996042f83bbbf9e3d">setEnvIntensity</a> (float intensity)</td></tr>
+<tr class="separator:abbb29e259127259996042f83bbbf9e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab94abd097e9e881787c1f3946e0cfca2" id="r_ab94abd097e9e881787c1f3946e0cfca2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ab94abd097e9e881787c1f3946e0cfca2">setExposure</a> (float ev)</td></tr>
+<tr class="memdesc:ab94abd097e9e881787c1f3946e0cfca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set exposure compensation in photographic stops. Positive values brighten.  <br /></td></tr>
+<tr class="separator:ab94abd097e9e881787c1f3946e0cfca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64502b7a2a114c2e6f0b08e5b649395c" id="r_a64502b7a2a114c2e6f0b08e5b649395c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a64502b7a2a114c2e6f0b08e5b649395c">getExposure</a> ()</td></tr>
+<tr class="memdesc:a64502b7a2a114c2e6f0b08e5b649395c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return exposure compensation in photographic stops.  <br /></td></tr>
+<tr class="separator:a64502b7a2a114c2e6f0b08e5b649395c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb210c662cfa4ca022ddccfa84d622e1" id="r_acb210c662cfa4ca022ddccfa84d622e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#acb210c662cfa4ca022ddccfa84d622e1">setAutoExposure</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float minEV=-8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float maxEV=8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:acb210c662cfa4ca022ddccfa84d622e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable log-average automatic exposure and set its EV clamp range.  <br /></td></tr>
+<tr class="separator:acb210c662cfa4ca022ddccfa84d622e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b097c1b8274d65078aff07d28076fa3" id="r_a5b097c1b8274d65078aff07d28076fa3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a5b097c1b8274d65078aff07d28076fa3">isAutoExposure</a> ()</td></tr>
+<tr class="memdesc:a5b097c1b8274d65078aff07d28076fa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether automatic exposure is enabled.  <br /></td></tr>
+<tr class="separator:a5b097c1b8274d65078aff07d28076fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00272bbaa1c4401a8e096dd43fb6d85e" id="r_a00272bbaa1c4401a8e096dd43fb6d85e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a00272bbaa1c4401a8e096dd43fb6d85e">setBloom</a> (float intensity, float threshold=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a00272bbaa1c4401a8e096dd43fb6d85e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure HDR bloom. Zero intensity disables it.  <br /></td></tr>
+<tr class="separator:a00272bbaa1c4401a8e096dd43fb6d85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1374bcf8f2b39fe05e3ed1093ba6b9f" id="r_ab1374bcf8f2b39fe05e3ed1093ba6b9f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ab1374bcf8f2b39fe05e3ed1093ba6b9f">getBloomIntensity</a> ()</td></tr>
+<tr class="memdesc:ab1374bcf8f2b39fe05e3ed1093ba6b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return bloom intensity.  <br /></td></tr>
+<tr class="separator:ab1374bcf8f2b39fe05e3ed1093ba6b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bcfe39b5f43a7498b9e1b53ca8c0aee" id="r_a5bcfe39b5f43a7498b9e1b53ca8c0aee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a5bcfe39b5f43a7498b9e1b53ca8c0aee">getBloomThreshold</a> ()</td></tr>
+<tr class="memdesc:a5bcfe39b5f43a7498b9e1b53ca8c0aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return bloom threshold in linear HDR units.  <br /></td></tr>
+<tr class="separator:a5bcfe39b5f43a7498b9e1b53ca8c0aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd54f6e6e9a3c752dad4ef061d6cf68c" id="r_abd54f6e6e9a3c752dad4ef061d6cf68c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#abd54f6e6e9a3c752dad4ef061d6cf68c">setEnvProbe</a> (float centerX, float centerY, float centerZ, float extentX, float extentY, float extentZ)</td></tr>
+<tr class="memdesc:abd54f6e6e9a3c752dad4ef061d6cf68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable box-projected IBL for the camera environment cubemap.  <br /></td></tr>
+<tr class="separator:abd54f6e6e9a3c752dad4ef061d6cf68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915da07e0b459a7ec99de950a83d44d2" id="r_a915da07e0b459a7ec99de950a83d44d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a915da07e0b459a7ec99de950a83d44d2">clearEnvProbe</a> ()</td></tr>
+<tr class="memdesc:a915da07e0b459a7ec99de950a83d44d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable box projection and return to an infinite-distance environment.  <br /></td></tr>
+<tr class="separator:a915da07e0b459a7ec99de950a83d44d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea6059a2e3f63748c1229bc0f224be29" id="r_aea6059a2e3f63748c1229bc0f224be29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aea6059a2e3f63748c1229bc0f224be29">hasEnvProbe</a> ()</td></tr>
+<tr class="memdesc:aea6059a2e3f63748c1229bc0f224be29"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when all three box-probe extents are positive.  <br /></td></tr>
+<tr class="separator:aea6059a2e3f63748c1229bc0f224be29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d781946b0f11b856675a0bb6b728189" id="r_a6d781946b0f11b856675a0bb6b728189"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a6d781946b0f11b856675a0bb6b728189">getEnvProbeCenterX</a> ()</td></tr>
+<tr class="separator:a6d781946b0f11b856675a0bb6b728189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c5b57f7fe799df3030bc8a5d976ea0" id="r_a68c5b57f7fe799df3030bc8a5d976ea0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a68c5b57f7fe799df3030bc8a5d976ea0">getEnvProbeCenterY</a> ()</td></tr>
+<tr class="separator:a68c5b57f7fe799df3030bc8a5d976ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb73f4657fef260644d25ac120ed475b" id="r_aeb73f4657fef260644d25ac120ed475b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aeb73f4657fef260644d25ac120ed475b">getEnvProbeCenterZ</a> ()</td></tr>
+<tr class="separator:aeb73f4657fef260644d25ac120ed475b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e5dc7c4e0e979527d86cfa3a40027cf" id="r_a2e5dc7c4e0e979527d86cfa3a40027cf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a2e5dc7c4e0e979527d86cfa3a40027cf">getEnvProbeExtentX</a> ()</td></tr>
+<tr class="separator:a2e5dc7c4e0e979527d86cfa3a40027cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab527c6c1206bdd49417fc2a7e4354610" id="r_ab527c6c1206bdd49417fc2a7e4354610"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ab527c6c1206bdd49417fc2a7e4354610">getEnvProbeExtentY</a> ()</td></tr>
+<tr class="separator:ab527c6c1206bdd49417fc2a7e4354610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a848b1ffd333605980092e71b606513" id="r_a9a848b1ffd333605980092e71b606513"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a9a848b1ffd333605980092e71b606513">getEnvProbeExtentZ</a> ()</td></tr>
+<tr class="separator:a9a848b1ffd333605980092e71b606513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56eb39ed6e0b78cdc12d541e6057ddbe" id="r_a56eb39ed6e0b78cdc12d541e6057ddbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a56eb39ed6e0b78cdc12d541e6057ddbe">setReflectionProbe</a> (int slot, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *cubemap, float centerX, float centerY, float centerZ, float extentX, float extentY, float extentZ, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float blendDistance=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:a56eb39ed6e0b78cdc12d541e6057ddbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure one local reflection probe slot.  <br /></td></tr>
+<tr class="separator:a56eb39ed6e0b78cdc12d541e6057ddbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b20e56ff93d6fc701ea028972d5d06" id="r_aa5b20e56ff93d6fc701ea028972d5d06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aa5b20e56ff93d6fc701ea028972d5d06">clearReflectionProbe</a> (int slot)</td></tr>
+<tr class="memdesc:aa5b20e56ff93d6fc701ea028972d5d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable one local reflection probe slot.  <br /></td></tr>
+<tr class="separator:aa5b20e56ff93d6fc701ea028972d5d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0e7363b47701ff03113ac4225eaa572" id="r_ae0e7363b47701ff03113ac4225eaa572"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ae0e7363b47701ff03113ac4225eaa572">getReflectionProbeCount</a> ()</td></tr>
+<tr class="memdesc:ae0e7363b47701ff03113ac4225eaa572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of enabled local reflection probes.  <br /></td></tr>
+<tr class="separator:ae0e7363b47701ff03113ac4225eaa572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7f6baef5b8d9a4c46f8cdf196dde87e" id="r_ab7f6baef5b8d9a4c46f8cdf196dde87e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#ab7f6baef5b8d9a4c46f8cdf196dde87e">screenToRay</a> (float screenX, float screenY, float viewW, float viewH)</td></tr>
+<tr class="memdesc:ab7f6baef5b8d9a4c46f8cdf196dde87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a world-space picking ray from a screen pixel. Stores origin (camera eye) and normalized direction; read via getScreenRay*. viewW/viewH must match the drawable used for rendering.  <br /></td></tr>
+<tr class="separator:ab7f6baef5b8d9a4c46f8cdf196dde87e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbc1abc3d219c5cb0cc53e0450e9c8d2" id="r_afbc1abc3d219c5cb0cc53e0450e9c8d2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#afbc1abc3d219c5cb0cc53e0450e9c8d2">getScreenRayOriginX</a> ()</td></tr>
+<tr class="separator:afbc1abc3d219c5cb0cc53e0450e9c8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06ca94a5263f76f662e33d9b92ef63a7" id="r_a06ca94a5263f76f662e33d9b92ef63a7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a06ca94a5263f76f662e33d9b92ef63a7">getScreenRayOriginY</a> ()</td></tr>
+<tr class="separator:a06ca94a5263f76f662e33d9b92ef63a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a553dd47acd01897dce459068fdab5896" id="r_a553dd47acd01897dce459068fdab5896"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a553dd47acd01897dce459068fdab5896">getScreenRayOriginZ</a> ()</td></tr>
+<tr class="separator:a553dd47acd01897dce459068fdab5896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af52247a0445309addf2e8a92eb575dd8" id="r_af52247a0445309addf2e8a92eb575dd8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#af52247a0445309addf2e8a92eb575dd8">getScreenRayDirX</a> ()</td></tr>
+<tr class="separator:af52247a0445309addf2e8a92eb575dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02ac0e2d630a56857385251e1580c639" id="r_a02ac0e2d630a56857385251e1580c639"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a02ac0e2d630a56857385251e1580c639">getScreenRayDirY</a> ()</td></tr>
+<tr class="separator:a02ac0e2d630a56857385251e1580c639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eb48f3cc2d4f3d7ce5462d3600f1cb8" id="r_a4eb48f3cc2d4f3d7ce5462d3600f1cb8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#a4eb48f3cc2d4f3d7ce5462d3600f1cb8">getScreenRayDirZ</a> ()</td></tr>
+<tr class="separator:a4eb48f3cc2d4f3d7ce5462d3600f1cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aca91aa72f8c28a84f852158d46c2de4b" id="r_aca91aa72f8c28a84f852158d46c2de4b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html#aca91aa72f8c28a84f852158d46c2de4b">createCamera</a> ()</td></tr>
+<tr class="separator:aca91aa72f8c28a84f852158d46c2de4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a915da07e0b459a7ec99de950a83d44d2" name="a915da07e0b459a7ec99de950a83d44d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a915da07e0b459a7ec99de950a83d44d2">&#9670;&#160;</a></span>clearEnvProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::clearEnvProbe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable box projection and return to an infinite-distance environment. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="aa5b20e56ff93d6fc701ea028972d5d06" name="aa5b20e56ff93d6fc701ea028972d5d06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5b20e56ff93d6fc701ea028972d5d06">&#9670;&#160;</a></span>clearReflectionProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::clearReflectionProbe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable one local reflection probe slot. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a> , 以及 <a class="el" href="RenderSystem3D_8h_source.html#l00028">eve::graphics::Camera3D::Data::kMaxReflectionProbes</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="aca91aa72f8c28a84f852158d46c2de4b" name="aca91aa72f8c28a84f852158d46c2de4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca91aa72f8c28a84f852158d46c2de4b">&#9670;&#160;</a></span>createCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> * eve::graphics::Camera3D::createCamera </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="ab1374bcf8f2b39fe05e3ed1093ba6b9f" name="ab1374bcf8f2b39fe05e3ed1093ba6b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1374bcf8f2b39fe05e3ed1093ba6b9f">&#9670;&#160;</a></span>getBloomIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getBloomIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return bloom intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a5bcfe39b5f43a7498b9e1b53ca8c0aee" name="a5bcfe39b5f43a7498b9e1b53ca8c0aee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bcfe39b5f43a7498b9e1b53ca8c0aee">&#9670;&#160;</a></span>getBloomThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getBloomThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return bloom threshold in linear HDR units. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a6d781946b0f11b856675a0bb6b728189" name="a6d781946b0f11b856675a0bb6b728189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d781946b0f11b856675a0bb6b728189">&#9670;&#160;</a></span>getEnvProbeCenterX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeCenterX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a68c5b57f7fe799df3030bc8a5d976ea0" name="a68c5b57f7fe799df3030bc8a5d976ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c5b57f7fe799df3030bc8a5d976ea0">&#9670;&#160;</a></span>getEnvProbeCenterY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeCenterY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="aeb73f4657fef260644d25ac120ed475b" name="aeb73f4657fef260644d25ac120ed475b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb73f4657fef260644d25ac120ed475b">&#9670;&#160;</a></span>getEnvProbeCenterZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeCenterZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a2e5dc7c4e0e979527d86cfa3a40027cf" name="a2e5dc7c4e0e979527d86cfa3a40027cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e5dc7c4e0e979527d86cfa3a40027cf">&#9670;&#160;</a></span>getEnvProbeExtentX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeExtentX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="ab527c6c1206bdd49417fc2a7e4354610" name="ab527c6c1206bdd49417fc2a7e4354610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab527c6c1206bdd49417fc2a7e4354610">&#9670;&#160;</a></span>getEnvProbeExtentY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeExtentY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a9a848b1ffd333605980092e71b606513" name="a9a848b1ffd333605980092e71b606513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a848b1ffd333605980092e71b606513">&#9670;&#160;</a></span>getEnvProbeExtentZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getEnvProbeExtentZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a64502b7a2a114c2e6f0b08e5b649395c" name="a64502b7a2a114c2e6f0b08e5b649395c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64502b7a2a114c2e6f0b08e5b649395c">&#9670;&#160;</a></span>getExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getExposure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return exposure compensation in photographic stops. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="ae0e7363b47701ff03113ac4225eaa572" name="ae0e7363b47701ff03113ac4225eaa572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0e7363b47701ff03113ac4225eaa572">&#9670;&#160;</a></span>getReflectionProbeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Camera3D::getReflectionProbeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of enabled local reflection probes. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="af52247a0445309addf2e8a92eb575dd8" name="af52247a0445309addf2e8a92eb575dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52247a0445309addf2e8a92eb575dd8">&#9670;&#160;</a></span>getScreenRayDirX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayDirX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="a02ac0e2d630a56857385251e1580c639" name="a02ac0e2d630a56857385251e1580c639"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ac0e2d630a56857385251e1580c639">&#9670;&#160;</a></span>getScreenRayDirY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayDirY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="a4eb48f3cc2d4f3d7ce5462d3600f1cb8" name="a4eb48f3cc2d4f3d7ce5462d3600f1cb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eb48f3cc2d4f3d7ce5462d3600f1cb8">&#9670;&#160;</a></span>getScreenRayDirZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayDirZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="afbc1abc3d219c5cb0cc53e0450e9c8d2" name="afbc1abc3d219c5cb0cc53e0450e9c8d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbc1abc3d219c5cb0cc53e0450e9c8d2">&#9670;&#160;</a></span>getScreenRayOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="a06ca94a5263f76f662e33d9b92ef63a7" name="a06ca94a5263f76f662e33d9b92ef63a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ca94a5263f76f662e33d9b92ef63a7">&#9670;&#160;</a></span>getScreenRayOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="a553dd47acd01897dce459068fdab5896" name="a553dd47acd01897dce459068fdab5896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a553dd47acd01897dce459068fdab5896">&#9670;&#160;</a></span>getScreenRayOriginZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::getScreenRayOriginZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="aea6059a2e3f63748c1229bc0f224be29" name="aea6059a2e3f63748c1229bc0f224be29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea6059a2e3f63748c1229bc0f224be29">&#9670;&#160;</a></span>hasEnvProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Camera3D::hasEnvProbe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when all three box-probe extents are positive. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a5b097c1b8274d65078aff07d28076fa3" name="a5b097c1b8274d65078aff07d28076fa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b097c1b8274d65078aff07d28076fa3">&#9670;&#160;</a></span>isAutoExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Camera3D::isAutoExposure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether automatic exposure is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a0417c8d9dd27691b570e3b9abe0d0e26" name="a0417c8d9dd27691b570e3b9abe0d0e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0417c8d9dd27691b570e3b9abe0d0e26">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7f6baef5b8d9a4c46f8cdf196dde87e" name="ab7f6baef5b8d9a4c46f8cdf196dde87e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7f6baef5b8d9a4c46f8cdf196dde87e">&#9670;&#160;</a></span>screenToRay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::screenToRay </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a world-space picking ray from a screen pixel. Stores origin (camera eye) and normalized direction; read via getScreenRay*. viewW/viewH must match the drawable used for rendering. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClipSpace_8h_source.html#l00037">eve::graphics::cameraProjectionVulkanRH_ZO()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00687">fovRad</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00024">eve::scene::Scene::pickScreenAt()</a>.</p>
+
+</div>
+</div>
+<a id="adc2dfc26036f7c26678844e0a8c325f4" name="adc2dfc26036f7c26678844e0a8c325f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc2dfc26036f7c26678844e0a8c325f4">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="ad940f8c3c64e96169643d60137ed40da" name="ad940f8c3c64e96169643d60137ed40da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad940f8c3c64e96169643d60137ed40da">&#9670;&#160;</a></span>setAmbient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setAmbient </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="acb210c662cfa4ca022ddccfa84d622e1" name="acb210c662cfa4ca022ddccfa84d622e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb210c662cfa4ca022ddccfa84d622e1">&#9670;&#160;</a></span>setAutoExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setAutoExposure </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minEV</em> = <code>-8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxEV</em> = <code>8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable log-average automatic exposure and set its EV clamp range. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a> , 以及 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a00272bbaa1c4401a8e096dd43fb6d85e" name="a00272bbaa1c4401a8e096dd43fb6d85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00272bbaa1c4401a8e096dd43fb6d85e">&#9670;&#160;</a></span>setBloom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setBloom </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure HDR bloom. Zero intensity disables it. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="aee1e3ef53de084957c924cd899b501cb" name="aee1e3ef53de084957c924cd899b501cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1e3ef53de084957c924cd899b501cb">&#9670;&#160;</a></span>setClipPlanes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setClipPlanes </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set positive near/far clipping distances; far is kept beyond near. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="abbb29e259127259996042f83bbbf9e3d" name="abbb29e259127259996042f83bbbf9e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbb29e259127259996042f83bbbf9e3d">&#9670;&#160;</a></span>setEnvIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setEnvIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00051">eve::graphics::ReflectionProbeCapture::requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="aec48ba24d6b3f09a5adee20d863d21a4" name="aec48ba24d6b3f09a5adee20d863d21a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec48ba24d6b3f09a5adee20d863d21a4">&#9670;&#160;</a></span>setEnvMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setEnvMap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>cube</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Specular IBL cubemap (<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a03f776d2d37e9b834f4d7d134870d1d8" title="Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z (each faceSize×faceSize,...">Graphics::newCubemap</a>). nullptr disables IBL. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00051">eve::graphics::ReflectionProbeCapture::requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="abd54f6e6e9a3c752dad4ef061d6cf68c" name="abd54f6e6e9a3c752dad4ef061d6cf68c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd54f6e6e9a3c752dad4ef061d6cf68c">&#9670;&#160;</a></span>setEnvProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setEnvProbe </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable box-projected IBL for the camera environment cubemap. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="ab94abd097e9e881787c1f3946e0cfca2" name="ab94abd097e9e881787c1f3946e0cfca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab94abd097e9e881787c1f3946e0cfca2">&#9670;&#160;</a></span>setExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setExposure </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set exposure compensation in photographic stops. Positive values brighten. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="ae5be52991401fb9cf94c566ed08b3a44" name="ae5be52991401fb9cf94c566ed08b3a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5be52991401fb9cf94c566ed08b3a44">&#9670;&#160;</a></span>setEye()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setEye </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa5f33c2499620e7979aa13121e8d6bff" name="aa5f33c2499620e7979aa13121e8d6bff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5f33c2499620e7979aa13121e8d6bff">&#9670;&#160;</a></span>setFov()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setFov </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a822523a80e84bd26c2b6a8d7896221cc" name="a822523a80e84bd26c2b6a8d7896221cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822523a80e84bd26c2b6a8d7896221cc">&#9670;&#160;</a></span>setOrthographic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setOrthographic </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable an orthographic projection with the given vertical world-space span. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>.</p>
+
+</div>
+</div>
+<a id="a5e409e7f67b683b95d711a649c0f6062" name="a5e409e7f67b683b95d711a649c0f6062"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e409e7f67b683b95d711a649c0f6062">&#9670;&#160;</a></span>setPerspective()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setPerspective </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return to perspective projection, retaining the configured field of view. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a56eb39ed6e0b78cdc12d541e6057ddbe" name="a56eb39ed6e0b78cdc12d541e6057ddbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56eb39ed6e0b78cdc12d541e6057ddbe">&#9670;&#160;</a></span>setReflectionProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setReflectionProbe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>cubemap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendDistance</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure one local reflection probe slot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slot</td><td>Slot in [0,7]. </td></tr>
+    <tr><td class="paramname">cubemap</td><td>Prefiltered cubemap; nullptr disables the slot. </td></tr>
+    <tr><td class="paramname">blendDistance</td><td>Inward edge fade distance in world units. </td></tr>
+    <tr><td class="paramname">priority</td><td>Higher values win when more than two probes are relevant. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00028">eve::graphics::Camera3D::Data::kMaxReflectionProbes</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00398">eve::graphics::ReflectionProbeCapture::applyConfiguredToCamera()</a>.</p>
+
+</div>
+</div>
+<a id="acbd098df21fd74087a9df2f919eb65e0" name="acbd098df21fd74087a9df2f919eb65e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbd098df21fd74087a9df2f919eb65e0">&#9670;&#160;</a></span>setTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setTarget </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a7aa865ad3399e27ffff7e436749172ae" name="a7aa865ad3399e27ffff7e436749172ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aa865ad3399e27ffff7e436749172ae">&#9670;&#160;</a></span>setUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Camera3D::setUp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a> 第 <a class="el" href="RenderSystem3D_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a></li>
+<li>src/modules/graphics/<a class="el" href="RenderSystem3D_8cpp_source.html">RenderSystem3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

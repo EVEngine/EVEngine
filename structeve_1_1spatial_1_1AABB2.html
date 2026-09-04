@@ -1,0 +1,587 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::spatial::AABB2结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spatial.html">spatial</a></li><li class="navelem"><a class="el" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1spatial_1_1AABB2-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::spatial::AABB2结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Bounds_8h_source.html">Bounds.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac3490cb2f10fa75848cbb39e5385c0bc" id="r_ac3490cb2f10fa75848cbb39e5385c0bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#ac3490cb2f10fa75848cbb39e5385c0bc">width</a> () const</td></tr>
+<tr class="separator:ac3490cb2f10fa75848cbb39e5385c0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af803582b58adf181c76c068f375203aa" id="r_af803582b58adf181c76c068f375203aa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#af803582b58adf181c76c068f375203aa">height</a> () const</td></tr>
+<tr class="separator:af803582b58adf181c76c068f375203aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f95a21e790166858d7020a9fae158b" id="r_a37f95a21e790166858d7020a9fae158b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a37f95a21e790166858d7020a9fae158b">centerX</a> () const</td></tr>
+<tr class="separator:a37f95a21e790166858d7020a9fae158b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf34fec1fcfafb73ef63673a164ba5c2" id="r_aaf34fec1fcfafb73ef63673a164ba5c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#aaf34fec1fcfafb73ef63673a164ba5c2">centerY</a> () const</td></tr>
+<tr class="separator:aaf34fec1fcfafb73ef63673a164ba5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256ddae5b87e9b155ba1c2e3e14e3bff" id="r_a256ddae5b87e9b155ba1c2e3e14e3bff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a256ddae5b87e9b155ba1c2e3e14e3bff">valid</a> () const</td></tr>
+<tr class="separator:a256ddae5b87e9b155ba1c2e3e14e3bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014c2e0f9e0346e2c1fed99f1f868c99" id="r_a014c2e0f9e0346e2c1fed99f1f868c99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a014c2e0f9e0346e2c1fed99f1f868c99">containsPoint</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:a014c2e0f9e0346e2c1fed99f1f868c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a004433d3777bd27e0359ce5eb06ab" id="r_a79a004433d3777bd27e0359ce5eb06ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a79a004433d3777bd27e0359ce5eb06ab">containsAABB</a> (const <a class="el" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;o) const</td></tr>
+<tr class="separator:a79a004433d3777bd27e0359ce5eb06ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fb854634d0603c19179fcfc41f87eed" id="r_a7fb854634d0603c19179fcfc41f87eed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a7fb854634d0603c19179fcfc41f87eed">intersectsAABB</a> (const <a class="el" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;o) const</td></tr>
+<tr class="separator:a7fb854634d0603c19179fcfc41f87eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fa894b5b9afb23261d0558dad076467" id="r_a8fa894b5b9afb23261d0558dad076467"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a8fa894b5b9afb23261d0558dad076467">intersectsCircle</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) const</td></tr>
+<tr class="separator:a8fa894b5b9afb23261d0558dad076467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab77c5683901189e110a23471b61ce7bf" id="r_ab77c5683901189e110a23471b61ce7bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab77c5683901189e110a23471b61ce7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4504a37186019a69d4b5c814caae3bbe" id="r_a4504a37186019a69d4b5c814caae3bbe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4504a37186019a69d4b5c814caae3bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7365bc33d3f04ec4c9b8ef8b582ddf9" id="r_aa7365bc33d3f04ec4c9b8ef8b582ddf9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa7365bc33d3f04ec4c9b8ef8b582ddf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a213425d18e091f343ca578439cffe036" id="r_a213425d18e091f343ca578439cffe036"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a213425d18e091f343ca578439cffe036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00009">9</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a37f95a21e790166858d7020a9fae158b" name="a37f95a21e790166858d7020a9fae158b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37f95a21e790166858d7020a9fae158b">&#9670;&#160;</a></span>centerX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::centerX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">maxX</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00010">minX</a>.</p>
+
+</div>
+</div>
+<a id="aaf34fec1fcfafb73ef63673a164ba5c2" name="aaf34fec1fcfafb73ef63673a164ba5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf34fec1fcfafb73ef63673a164ba5c2">&#9670;&#160;</a></span>centerY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::centerY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00013">maxY</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00011">minY</a>.</p>
+
+</div>
+</div>
+<a id="a79a004433d3777bd27e0359ce5eb06ab" name="a79a004433d3777bd27e0359ce5eb06ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a004433d3777bd27e0359ce5eb06ab">&#9670;&#160;</a></span>containsAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::AABB2::containsAABB </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">maxX</a>, <a class="el" href="Bounds_8h_source.html#l00013">maxY</a>, <a class="el" href="Bounds_8h_source.html#l00010">minX</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00011">minY</a>.</p>
+
+</div>
+</div>
+<a id="a014c2e0f9e0346e2c1fed99f1f868c99" name="a014c2e0f9e0346e2c1fed99f1f868c99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014c2e0f9e0346e2c1fed99f1f868c99">&#9670;&#160;</a></span>containsPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::AABB2::containsPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00013">maxY</a>, <a class="el" href="Bounds_8h_source.html#l00010">minX</a>, <a class="el" href="Bounds_8h_source.html#l00011">minY</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="af803582b58adf181c76c068f375203aa" name="af803582b58adf181c76c068f375203aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af803582b58adf181c76c068f375203aa">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00013">maxY</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00011">minY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00007">eve::spatial::BSPTree2D::BSPTree2D()</a> , 以及 <a class="el" href="QuadTree_8cpp_source.html#l00007">eve::spatial::QuadTree::QuadTree()</a>.</p>
+
+</div>
+</div>
+<a id="a7fb854634d0603c19179fcfc41f87eed" name="a7fb854634d0603c19179fcfc41f87eed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb854634d0603c19179fcfc41f87eed">&#9670;&#160;</a></span>intersectsAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::AABB2::intersectsAABB </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">maxX</a>, <a class="el" href="Bounds_8h_source.html#l00013">maxY</a>, <a class="el" href="Bounds_8h_source.html#l00010">minX</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00011">minY</a>.</p>
+
+</div>
+</div>
+<a id="a8fa894b5b9afb23261d0558dad076467" name="a8fa894b5b9afb23261d0558dad076467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fa894b5b9afb23261d0558dad076467">&#9670;&#160;</a></span>intersectsCircle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::AABB2::intersectsCircle </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Bounds_8h_source.html#l00012">maxX</a>, <a class="el" href="Bounds_8h_source.html#l00013">maxY</a>, <a class="el" href="Bounds_8h_source.html#l00010">minX</a>, <a class="el" href="Bounds_8h_source.html#l00011">minY</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a256ddae5b87e9b155ba1c2e3e14e3bff" name="a256ddae5b87e9b155ba1c2e3e14e3bff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256ddae5b87e9b155ba1c2e3e14e3bff">&#9670;&#160;</a></span>valid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::AABB2::valid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">maxX</a>, <a class="el" href="Bounds_8h_source.html#l00013">maxY</a>, <a class="el" href="Bounds_8h_source.html#l00010">minX</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00011">minY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00007">eve::spatial::BSPTree2D::BSPTree2D()</a> , 以及 <a class="el" href="QuadTree_8cpp_source.html#l00007">eve::spatial::QuadTree::QuadTree()</a>.</p>
+
+</div>
+</div>
+<a id="ac3490cb2f10fa75848cbb39e5385c0bc" name="ac3490cb2f10fa75848cbb39e5385c0bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3490cb2f10fa75848cbb39e5385c0bc">&#9670;&#160;</a></span>width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">maxX</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00010">minX</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00007">eve::spatial::BSPTree2D::BSPTree2D()</a> , 以及 <a class="el" href="QuadTree_8cpp_source.html#l00007">eve::spatial::QuadTree::QuadTree()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aa7365bc33d3f04ec4c9b8ef8b582ddf9" name="aa7365bc33d3f04ec4c9b8ef8b582ddf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7365bc33d3f04ec4c9b8ef8b582ddf9">&#9670;&#160;</a></span>maxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::maxX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bounds_8h_source.html#l00017">centerX()</a>, <a class="el" href="Bounds_8h_source.html#l00026">containsAABB()</a>, <a class="el" href="BSPTree2D_8h_source.html#l00041">eve::spatial::BSPTree2D::getMaxX()</a>, <a class="el" href="QuadTree_8h_source.html#l00042">eve::spatial::QuadTree::getMaxX()</a>, <a class="el" href="Bounds_8h_source.html#l00030">intersectsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00034">intersectsCircle()</a>, <a class="el" href="Bounds_8h_source.html#l00020">valid()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00015">width()</a>.</p>
+
+</div>
+</div>
+<a id="a213425d18e091f343ca578439cffe036" name="a213425d18e091f343ca578439cffe036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a213425d18e091f343ca578439cffe036">&#9670;&#160;</a></span>maxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::maxY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bounds_8h_source.html#l00018">centerY()</a>, <a class="el" href="Bounds_8h_source.html#l00026">containsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00022">containsPoint()</a>, <a class="el" href="BSPTree2D_8h_source.html#l00042">eve::spatial::BSPTree2D::getMaxY()</a>, <a class="el" href="QuadTree_8h_source.html#l00043">eve::spatial::QuadTree::getMaxY()</a>, <a class="el" href="Bounds_8h_source.html#l00016">height()</a>, <a class="el" href="Bounds_8h_source.html#l00030">intersectsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00034">intersectsCircle()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00020">valid()</a>.</p>
+
+</div>
+</div>
+<a id="ab77c5683901189e110a23471b61ce7bf" name="ab77c5683901189e110a23471b61ce7bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab77c5683901189e110a23471b61ce7bf">&#9670;&#160;</a></span>minX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::minX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bounds_8h_source.html#l00017">centerX()</a>, <a class="el" href="Bounds_8h_source.html#l00026">containsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00022">containsPoint()</a>, <a class="el" href="BSPTree2D_8h_source.html#l00039">eve::spatial::BSPTree2D::getMinX()</a>, <a class="el" href="QuadTree_8h_source.html#l00040">eve::spatial::QuadTree::getMinX()</a>, <a class="el" href="Bounds_8h_source.html#l00030">intersectsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00034">intersectsCircle()</a>, <a class="el" href="Bounds_8h_source.html#l00020">valid()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00015">width()</a>.</p>
+
+</div>
+</div>
+<a id="a4504a37186019a69d4b5c814caae3bbe" name="a4504a37186019a69d4b5c814caae3bbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4504a37186019a69d4b5c814caae3bbe">&#9670;&#160;</a></span>minY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::AABB2::minY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Bounds_8h_source.html">Bounds.h</a> 第 <a class="el" href="Bounds_8h_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bounds_8h_source.html#l00018">centerY()</a>, <a class="el" href="Bounds_8h_source.html#l00026">containsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00022">containsPoint()</a>, <a class="el" href="BSPTree2D_8h_source.html#l00040">eve::spatial::BSPTree2D::getMinY()</a>, <a class="el" href="QuadTree_8h_source.html#l00041">eve::spatial::QuadTree::getMinY()</a>, <a class="el" href="Bounds_8h_source.html#l00016">height()</a>, <a class="el" href="Bounds_8h_source.html#l00030">intersectsAABB()</a>, <a class="el" href="Bounds_8h_source.html#l00034">intersectsCircle()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00020">valid()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/spatial/<a class="el" href="Bounds_8h_source.html">Bounds.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

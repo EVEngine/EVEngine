@@ -1,0 +1,656 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids_editing::SurfaceFluidSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids__editing.html">fluids_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html">SurfaceFluidSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids_editing::SurfaceFluidSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Renderer-neutral droplet motion, wet-film and wet-material authoring values.  
+ <a href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6501ef7f10b22240a71bab94fbf153f0" id="r_a6501ef7f10b22240a71bab94fbf153f0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a6501ef7f10b22240a71bab94fbf153f0">operator&lt;=&gt;</a> (const <a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html">SurfaceFluidSettings</a> &amp;) const =default</td></tr>
+<tr class="separator:a6501ef7f10b22240a71bab94fbf153f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3a51d4e35bc35bbbd79ef0afdceec329" id="r_a3a51d4e35bc35bbbd79ef0afdceec329"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a3a51d4e35bc35bbbd79ef0afdceec329">gravityX</a> = 0.0</td></tr>
+<tr class="separator:a3a51d4e35bc35bbbd79ef0afdceec329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c8ce355b59d2b688e4f55f7253d44b" id="r_aa9c8ce355b59d2b688e4f55f7253d44b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#aa9c8ce355b59d2b688e4f55f7253d44b">gravityY</a> = -9.8</td></tr>
+<tr class="separator:aa9c8ce355b59d2b688e4f55f7253d44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64470b91d362f8823dd610458afa0e9f" id="r_a64470b91d362f8823dd610458afa0e9f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a64470b91d362f8823dd610458afa0e9f">gravityZ</a> = 0.0</td></tr>
+<tr class="separator:a64470b91d362f8823dd610458afa0e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2bde587e454afe2fedaef0639fbe607" id="r_ab2bde587e454afe2fedaef0639fbe607"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#ab2bde587e454afe2fedaef0639fbe607">friction</a> = 1.5</td></tr>
+<tr class="separator:ab2bde587e454afe2fedaef0639fbe607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f094649a89af47097e04ebb20790023" id="r_a8f094649a89af47097e04ebb20790023"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a8f094649a89af47097e04ebb20790023">maxSpeed</a> = 12.0</td></tr>
+<tr class="separator:a8f094649a89af47097e04ebb20790023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a008534dd3ef4c1650dc5000754d9d526" id="r_a008534dd3ef4c1650dc5000754d9d526"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a008534dd3ef4c1650dc5000754d9d526">adhesionAcceleration</a> = 12.0</td></tr>
+<tr class="separator:a008534dd3ef4c1650dc5000754d9d526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ec6715d24c7e7d182a44ecc9d83205" id="r_ac2ec6715d24c7e7d182a44ecc9d83205"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#ac2ec6715d24c7e7d182a44ecc9d83205">maxCrossings</a> = 16</td></tr>
+<tr class="separator:ac2ec6715d24c7e7d182a44ecc9d83205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6852132613cac5e4b2d57ee552e3460a" id="r_a6852132613cac5e4b2d57ee552e3460a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a6852132613cac5e4b2d57ee552e3460a">contactAngleDegrees</a> = 72.0</td></tr>
+<tr class="separator:a6852132613cac5e4b2d57ee552e3460a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae749305f1e8b4cd3b4e93a57065f40a5" id="r_ae749305f1e8b4cd3b4e93a57065f40a5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#ae749305f1e8b4cd3b4e93a57065f40a5">mergeRadiusScale</a> = 0.72</td></tr>
+<tr class="separator:ae749305f1e8b4cd3b4e93a57065f40a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a471cb32182e37ec4b75a41639f93a222" id="r_a471cb32182e37ec4b75a41639f93a222"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a471cb32182e37ec4b75a41639f93a222">trailDeposition</a> = 0.22</td></tr>
+<tr class="separator:a471cb32182e37ec4b75a41639f93a222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f6c15ca651143355a9a5467f448568" id="r_a29f6c15ca651143355a9a5467f448568"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a29f6c15ca651143355a9a5467f448568">airDrag</a> = 0.08</td></tr>
+<tr class="separator:a29f6c15ca651143355a9a5467f448568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38d0192f8a93065a3136754409bb589c" id="r_a38d0192f8a93065a3136754409bb589c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a38d0192f8a93065a3136754409bb589c">reattachDistance</a> = 0.035</td></tr>
+<tr class="separator:a38d0192f8a93065a3136754409bb589c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4221d78e4ec71f0e6eabf6293245eb" id="r_a1d4221d78e4ec71f0e6eabf6293245eb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a1d4221d78e4ec71f0e6eabf6293245eb">diffusion</a> = 0.18</td></tr>
+<tr class="separator:a1d4221d78e4ec71f0e6eabf6293245eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0af421db1710b096f38815b0f2d700df" id="r_a0af421db1710b096f38815b0f2d700df"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a0af421db1710b096f38815b0f2d700df">evaporation</a> = 0.025</td></tr>
+<tr class="separator:a0af421db1710b096f38815b0f2d700df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb4e17648e6c83e27dbd76c9dff6792" id="r_acbb4e17648e6c83e27dbd76c9dff6792"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#acbb4e17648e6c83e27dbd76c9dff6792">maxWetness</a> = 1.0</td></tr>
+<tr class="separator:acbb4e17648e6c83e27dbd76c9dff6792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ba9c61212e45163bb717d71884775f5" id="r_a6ba9c61212e45163bb717d71884775f5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a6ba9c61212e45163bb717d71884775f5">velocityStretch</a> = 0.30</td></tr>
+<tr class="separator:a6ba9c61212e45163bb717d71884775f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9309da4edbc8f9b0568565be35f1b2e" id="r_ae9309da4edbc8f9b0568565be35f1b2e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#ae9309da4edbc8f9b0568565be35f1b2e">maxAspectRatio</a> = 2.6</td></tr>
+<tr class="separator:ae9309da4edbc8f9b0568565be35f1b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e151820ba7a049ea9b87d32514027c" id="r_a24e151820ba7a049ea9b87d32514027c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a24e151820ba7a049ea9b87d32514027c">surfaceOffset</a> = 0.001</td></tr>
+<tr class="separator:a24e151820ba7a049ea9b87d32514027c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a865798781934c23445ebb97f2f46f4de" id="r_a865798781934c23445ebb97f2f46f4de"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a865798781934c23445ebb97f2f46f4de">dryRoughness</a> = 0.48</td></tr>
+<tr class="separator:a865798781934c23445ebb97f2f46f4de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f0dc9cfa3a5b188bce9577fe6121c0a" id="r_a6f0dc9cfa3a5b188bce9577fe6121c0a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a6f0dc9cfa3a5b188bce9577fe6121c0a">wetRoughness</a> = 0.08</td></tr>
+<tr class="separator:a6f0dc9cfa3a5b188bce9577fe6121c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d45ce010bf726a32206b9c6034c7187" id="r_a4d45ce010bf726a32206b9c6034c7187"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a4d45ce010bf726a32206b9c6034c7187">drySpecular</a> = 0.35</td></tr>
+<tr class="separator:a4d45ce010bf726a32206b9c6034c7187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b25e58f6c9923c2009a5c7f3b8c817" id="r_a85b25e58f6c9923c2009a5c7f3b8c817"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#a85b25e58f6c9923c2009a5c7f3b8c817">wetSpecular</a> = 0.92</td></tr>
+<tr class="separator:a85b25e58f6c9923c2009a5c7f3b8c817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced91756e2567223f3b9a53397cd75ed" id="r_aced91756e2567223f3b9a53397cd75ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#aced91756e2567223f3b9a53397cd75ed">wetDarkening</a> = 0.12</td></tr>
+<tr class="separator:aced91756e2567223f3b9a53397cd75ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae84570454fbef7bcda4d1d9552eeb184" id="r_ae84570454fbef7bcda4d1d9552eeb184"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html#ae84570454fbef7bcda4d1d9552eeb184">normalStrength</a> = 0.18</td></tr>
+<tr class="separator:ae84570454fbef7bcda4d1d9552eeb184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Renderer-neutral droplet motion, wet-film and wet-material authoring values. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6501ef7f10b22240a71bab94fbf153f0" name="a6501ef7f10b22240a71bab94fbf153f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6501ef7f10b22240a71bab94fbf153f0">&#9670;&#160;</a></span>operator&lt;=&gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto eve::fluids_editing::SurfaceFluidSettings::operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids__editing_1_1SurfaceFluidSettings.html">SurfaceFluidSettings</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a008534dd3ef4c1650dc5000754d9d526" name="a008534dd3ef4c1650dc5000754d9d526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a008534dd3ef4c1650dc5000754d9d526">&#9670;&#160;</a></span>adhesionAcceleration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::adhesionAcceleration = 12.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29f6c15ca651143355a9a5467f448568" name="a29f6c15ca651143355a9a5467f448568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f6c15ca651143355a9a5467f448568">&#9670;&#160;</a></span>airDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::airDrag = 0.08</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6852132613cac5e4b2d57ee552e3460a" name="a6852132613cac5e4b2d57ee552e3460a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6852132613cac5e4b2d57ee552e3460a">&#9670;&#160;</a></span>contactAngleDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::contactAngleDegrees = 72.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d4221d78e4ec71f0e6eabf6293245eb" name="a1d4221d78e4ec71f0e6eabf6293245eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4221d78e4ec71f0e6eabf6293245eb">&#9670;&#160;</a></span>diffusion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::diffusion = 0.18</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a865798781934c23445ebb97f2f46f4de" name="a865798781934c23445ebb97f2f46f4de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a865798781934c23445ebb97f2f46f4de">&#9670;&#160;</a></span>dryRoughness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::dryRoughness = 0.48</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d45ce010bf726a32206b9c6034c7187" name="a4d45ce010bf726a32206b9c6034c7187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d45ce010bf726a32206b9c6034c7187">&#9670;&#160;</a></span>drySpecular</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::drySpecular = 0.35</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0af421db1710b096f38815b0f2d700df" name="a0af421db1710b096f38815b0f2d700df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0af421db1710b096f38815b0f2d700df">&#9670;&#160;</a></span>evaporation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::evaporation = 0.025</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab2bde587e454afe2fedaef0639fbe607" name="ab2bde587e454afe2fedaef0639fbe607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2bde587e454afe2fedaef0639fbe607">&#9670;&#160;</a></span>friction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::friction = 1.5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a51d4e35bc35bbbd79ef0afdceec329" name="a3a51d4e35bc35bbbd79ef0afdceec329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a51d4e35bc35bbbd79ef0afdceec329">&#9670;&#160;</a></span>gravityX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::gravityX = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9c8ce355b59d2b688e4f55f7253d44b" name="aa9c8ce355b59d2b688e4f55f7253d44b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9c8ce355b59d2b688e4f55f7253d44b">&#9670;&#160;</a></span>gravityY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::gravityY = -9.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64470b91d362f8823dd610458afa0e9f" name="a64470b91d362f8823dd610458afa0e9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64470b91d362f8823dd610458afa0e9f">&#9670;&#160;</a></span>gravityZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::gravityZ = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9309da4edbc8f9b0568565be35f1b2e" name="ae9309da4edbc8f9b0568565be35f1b2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9309da4edbc8f9b0568565be35f1b2e">&#9670;&#160;</a></span>maxAspectRatio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::maxAspectRatio = 2.6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2ec6715d24c7e7d182a44ecc9d83205" name="ac2ec6715d24c7e7d182a44ecc9d83205"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ec6715d24c7e7d182a44ecc9d83205">&#9670;&#160;</a></span>maxCrossings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids_editing::SurfaceFluidSettings::maxCrossings = 16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f094649a89af47097e04ebb20790023" name="a8f094649a89af47097e04ebb20790023"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f094649a89af47097e04ebb20790023">&#9670;&#160;</a></span>maxSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::maxSpeed = 12.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acbb4e17648e6c83e27dbd76c9dff6792" name="acbb4e17648e6c83e27dbd76c9dff6792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb4e17648e6c83e27dbd76c9dff6792">&#9670;&#160;</a></span>maxWetness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::maxWetness = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae749305f1e8b4cd3b4e93a57065f40a5" name="ae749305f1e8b4cd3b4e93a57065f40a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae749305f1e8b4cd3b4e93a57065f40a5">&#9670;&#160;</a></span>mergeRadiusScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::mergeRadiusScale = 0.72</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae84570454fbef7bcda4d1d9552eeb184" name="ae84570454fbef7bcda4d1d9552eeb184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84570454fbef7bcda4d1d9552eeb184">&#9670;&#160;</a></span>normalStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::normalStrength = 0.18</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38d0192f8a93065a3136754409bb589c" name="a38d0192f8a93065a3136754409bb589c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38d0192f8a93065a3136754409bb589c">&#9670;&#160;</a></span>reattachDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::reattachDistance = 0.035</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24e151820ba7a049ea9b87d32514027c" name="a24e151820ba7a049ea9b87d32514027c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e151820ba7a049ea9b87d32514027c">&#9670;&#160;</a></span>surfaceOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::surfaceOffset = 0.001</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a471cb32182e37ec4b75a41639f93a222" name="a471cb32182e37ec4b75a41639f93a222"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471cb32182e37ec4b75a41639f93a222">&#9670;&#160;</a></span>trailDeposition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::trailDeposition = 0.22</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ba9c61212e45163bb717d71884775f5" name="a6ba9c61212e45163bb717d71884775f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ba9c61212e45163bb717d71884775f5">&#9670;&#160;</a></span>velocityStretch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::velocityStretch = 0.30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aced91756e2567223f3b9a53397cd75ed" name="aced91756e2567223f3b9a53397cd75ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced91756e2567223f3b9a53397cd75ed">&#9670;&#160;</a></span>wetDarkening</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::wetDarkening = 0.12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f0dc9cfa3a5b188bce9577fe6121c0a" name="a6f0dc9cfa3a5b188bce9577fe6121c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f0dc9cfa3a5b188bce9577fe6121c0a">&#9670;&#160;</a></span>wetRoughness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::wetRoughness = 0.08</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85b25e58f6c9923c2009a5c7f3b8c817" name="a85b25e58f6c9923c2009a5c7f3b8c817"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b25e58f6c9923c2009a5c7f3b8c817">&#9670;&#160;</a></span>wetSpecular</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::SurfaceFluidSettings::wetSpecular = 0.92</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a> 第 <a class="el" href="SurfaceFluidTarget_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids_editing/<a class="el" href="SurfaceFluidTarget_8h_source.html">SurfaceFluidTarget.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

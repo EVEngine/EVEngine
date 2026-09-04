@@ -1,0 +1,446 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::EncounterCatalogue类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html">EncounterCatalogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1EncounterCatalogue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::EncounterCatalogue类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Process-local strict encounter content catalogue.  
+ <a href="classeve_1_1rpg_1_1EncounterCatalogue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aac7e44e68d71f9f2d0278db807f8ad10" id="r_aac7e44e68d71f9f2d0278db807f8ad10"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#aac7e44e68d71f9f2d0278db807f8ad10">replaceFromJsonStrict</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:aac7e44e68d71f9f2d0278db807f8ad10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically replace every encounter definition.  <br /></td></tr>
+<tr class="separator:aac7e44e68d71f9f2d0278db807f8ad10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02e8b19a111c60c6d77f36550b28f722" id="r_a02e8b19a111c60c6d77f36550b28f722"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#a02e8b19a111c60c6d77f36550b28f722">clear</a> ()</td></tr>
+<tr class="separator:a02e8b19a111c60c6d77f36550b28f722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac02afa8bbbe63e06c1e8cf85a973583d" id="r_ac02afa8bbbe63e06c1e8cf85a973583d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ac02afa8bbbe63e06c1e8cf85a973583d">count</a> ()</td></tr>
+<tr class="separator:ac02afa8bbbe63e06c1e8cf85a973583d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad08eb9cb77f5ee69a127d9b637f55338" id="r_ad08eb9cb77f5ee69a127d9b637f55338"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html">EncounterDefinition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ad08eb9cb77f5ee69a127d9b637f55338">find</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ad08eb9cb77f5ee69a127d9b637f55338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b23dfbee9d2cd57cc7459958fb56d2d" id="r_a2b23dfbee9d2cd57cc7459958fb56d2d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#a2b23dfbee9d2cd57cc7459958fb56d2d">memberCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a2b23dfbee9d2cd57cc7459958fb56d2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of ordered enemy members in an encounter, or zero when unknown.  <br /></td></tr>
+<tr class="separator:a2b23dfbee9d2cd57cc7459958fb56d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0ac2b9d4b63536bc503a09dd686e7e0" id="r_ae0ac2b9d4b63536bc503a09dd686e7e0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ae0ac2b9d4b63536bc503a09dd686e7e0">createActor</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:ae0ac2b9d4b63536bc503a09dd686e7e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create and initialize an ECS-owned enemy actor from one definition.  <br /></td></tr>
+<tr class="separator:ae0ac2b9d4b63536bc503a09dd686e7e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2dd3e5f01463475fa6ed9a4f80e4267" id="r_ab2dd3e5f01463475fa6ed9a4f80e4267"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ab2dd3e5f01463475fa6ed9a4f80e4267">createMemberActor</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int memberIndex)</td></tr>
+<tr class="memdesc:ab2dd3e5f01463475fa6ed9a4f80e4267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create one indexed member of an encounter composition.  <br /></td></tr>
+<tr class="separator:ab2dd3e5f01463475fa6ed9a4f80e4267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Process-local strict encounter content catalogue. </p>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a02e8b19a111c60c6d77f36550b28f722" name="a02e8b19a111c60c6d77f36550b28f722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02e8b19a111c60c6d77f36550b28f722">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::EncounterCatalogue::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00191">eve::rpg::RPG::clearEncounters()</a>.</p>
+
+</div>
+</div>
+<a id="ac02afa8bbbe63e06c1e8cf85a973583d" name="ac02afa8bbbe63e06c1e8cf85a973583d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac02afa8bbbe63e06c1e8cf85a973583d">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::EncounterCatalogue::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0ac2b9d4b63536bc503a09dd686e7e0" name="ae0ac2b9d4b63536bc503a09dd686e7e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0ac2b9d4b63536bc503a09dd686e7e0">&#9670;&#160;</a></span>createActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::EncounterCatalogue::createActor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create and initialize an ECS-owned enemy actor from one definition. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed actor owned by the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world, or null for an unknown id/allocation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">createMemberActor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00198">eve::rpg::RPG::newEncounterActor()</a>.</p>
+
+</div>
+</div>
+<a id="ab2dd3e5f01463475fa6ed9a4f80e4267" name="ab2dd3e5f01463475fa6ed9a4f80e4267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2dd3e5f01463475fa6ed9a4f80e4267">&#9670;&#160;</a></span>createMemberActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::EncounterCatalogue::createMemberActor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>memberIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create one indexed member of an encounter composition. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed actor owned by the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world, or null for an invalid id/index/allocation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00028">eve::rpg::RPGActor::createActor()</a>, <a class="el" href="EncounterCatalogue_8cpp_source.html#l00181">find()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00197">eve::rpg::RPGActor::learnSkill()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00059">eve::rpg::RPGActor::setBaseAttribute()</a> , 以及 <a class="el" href="RPGActor_8cpp_source.html#l00255">eve::rpg::RPGActor::setCurrent()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00191">createActor()</a> , 以及 <a class="el" href="RPG_8cpp_source.html#l00201">eve::rpg::RPG::newEncounterMemberActor()</a>.</p>
+
+</div>
+</div>
+<a id="ad08eb9cb77f5ee69a127d9b637f55338" name="ad08eb9cb77f5ee69a127d9b637f55338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad08eb9cb77f5ee69a127d9b637f55338">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html">EncounterDefinition</a> * eve::rpg::EncounterCatalogue::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">createMemberActor()</a>, <a class="el" href="RPG_8cpp_source.html#l00204">eve::rpg::RPG::getEncounterDisplayName()</a>, <a class="el" href="RPG_8cpp_source.html#l00208">eve::rpg::RPG::getEncounterMaxHp()</a>, <a class="el" href="RPG_8cpp_source.html#l00212">eve::rpg::RPG::getEncounterMemberDisplayName()</a>, <a class="el" href="RPG_8cpp_source.html#l00220">eve::rpg::RPG::getEncounterMemberMaxHp()</a>, <a class="el" href="RPG_8cpp_source.html#l00192">eve::rpg::RPG::hasEncounter()</a>, <a class="el" href="EncounterCatalogue_8cpp_source.html#l00186">memberCount()</a> , 以及 <a class="el" href="RPG_8cpp_source.html#l00246">eve::rpg::RPG::settleEncounterVictory()</a>.</p>
+
+</div>
+</div>
+<a id="a2b23dfbee9d2cd57cc7459958fb56d2d" name="a2b23dfbee9d2cd57cc7459958fb56d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b23dfbee9d2cd57cc7459958fb56d2d">&#9670;&#160;</a></span>memberCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::EncounterCatalogue::memberCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of ordered enemy members in an encounter, or zero when unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00181">find()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00195">eve::rpg::RPG::getEncounterMemberCount()</a>.</p>
+
+</div>
+</div>
+<a id="aac7e44e68d71f9f2d0278db807f8ad10" name="aac7e44e68d71f9f2d0278db807f8ad10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac7e44e68d71f9f2d0278db807f8ad10">&#9670;&#160;</a></span>replaceFromJsonStrict()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::EncounterCatalogue::replaceFromJsonStrict </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate and atomically replace every encounter definition. </p>
+<dl class="section return"><dt>返回</dt><dd>Committed definition count, or a structured failure preserving the prior catalogue. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Referenced skills and quests must already exist. Unknown fields are rejected. @thread Call on the owning content/simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a> 第 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00106">eve::Value::at()</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00019">eve::rpg::EncounterMemberDefinition::attack</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00020">eve::rpg::EncounterMemberDefinition::defense</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00017">eve::rpg::EncounterMemberDefinition::displayName</a>, <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="Skill_8cpp_source.html#l00090">eve::rpg::SkillRegistry::find()</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00016">eve::rpg::EncounterMemberDefinition::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Value_8cpp_source.html#l00138">eve::Value::keys()</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00021">eve::rpg::EncounterMemberDefinition::maxHp</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00018">eve::rpg::EncounterMemberDefinition::skillId</a>, <a class="el" href="EncounterCatalogue_8h_source.html#l00022">eve::rpg::EncounterMemberDefinition::speed</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00188">eve::rpg::RPG::replaceEncountersFromJson()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a></li>
+<li>src/modules/rpg/<a class="el" href="EncounterCatalogue_8cpp_source.html">EncounterCatalogue.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

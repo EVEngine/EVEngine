@@ -1,0 +1,359 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1UI.html">UI</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::ui::UI 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab2155e3ce7c2107e2df95d479c9b7d73">addBadge</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad6a4168ca7cb4c147c8d088f08a318fe">addButton</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7db96f0f9887da2d114cb3e4c79ec532">addCheckbox</a>(const std::string &amp;label, bool checked, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0785f2c3039bd30652c6cfed9d31fa95">addCombo</a>(const std::string &amp;label, const std::string &amp;options, int selected, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a42ecd6be9f1b9ef49e26da2e7e868e82">addIcon</a>(const std::string &amp;name, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6fef5b827d558d506b6ff4728742bbc3">addIconButton</a>(const std::string &amp;name, const std::string &amp;label=&quot;&quot;, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3a024281fa6ea89922bb7b9b94ff66eb">addImage</a>(const std::string &amp;id=&quot;&quot;, float width=0.f, float height=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a58b74dc91aa07edadc5f9b74f4f087a7">addImageButton</a>(const std::string &amp;id, float width, float height)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a526e7b98813bc9a49d7eefb4c6f8655e">addInputText</a>(const std::string &amp;label, const std::string &amp;value, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae707194861107184622528330f59d69d">addListItem</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa66ba3564b9edd77f8a9e0d467b9ba14">addMenuItem</a>(const std::string &amp;label, const std::string &amp;shortcut=&quot;&quot;, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab718da4c09e84735963c4a5ca1632865">addNinePatch</a>(const std::string &amp;path, const std::string &amp;id=&quot;&quot;, float width=0.f, float height=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a8994c8cff38cd55ae2b9febb398f3ee6">addProgress</a>(float fraction, const std::string &amp;id=&quot;&quot;, const std::string &amp;overlay=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab8523ebd783d6ec6d3b444ef756f07b0">addSameLine</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5d34719ea3755f98e5a6e0ef4aa33a10">addSearchField</a>(const std::string &amp;hint, const std::string &amp;value=&quot;&quot;, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0942d3a79f1a03a76c2d3901f8cf49b8">addSectionHeader</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aacc99177865b7f9d676863938fe90858">addSeparator</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a87d65467eab3ab5448e5184dc272eae3">addSlider</a>(const std::string &amp;label, float value, float minV, float maxV, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a385eabb6e290e4b7eb8ad6dc86538807">addSpacer</a>(const std::string &amp;id=&quot;&quot;, float grow=1.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a8c4de4b4afb0520a358344ec9edaf23e">addSwitch</a>(const std::string &amp;label, bool checked, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a295c57ec5761637dd8ded3fc582b2fa3">addText</a>(const std::string &amp;content, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa09cecca636338f932773edb05bd8ad9">addTextWrapped</a>(const std::string &amp;content, float width, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5708f5ac982a5a482d09ca4fbf2d620a">addViewport</a>(const std::string &amp;id, float width=0.f, float height=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac9e4bce5e61f63c3c1381d0d70c60910">animateHostPos</a>(float x, float y, float durationMs)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a857918380599e2fa61d8abf6b7dea7f7">beginBuild</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a786e6f0d31baf54c6ca1b593df1bcdcd">beginCard</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab0ccd8b5768f493a1515f5488c96e62e">beginChild</a>(const std::string &amp;id, float width=0.f, float height=120.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a66613419573e483ad4cbfaa1e2824a52">beginCollapsing</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;, bool open=true)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7a65eb80de77fe361710905d1b14b04d">beginColumn</a>(const std::string &amp;id=&quot;&quot;, float gap=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a523e61e76af24c14dcc615a53dfe9e7f">beginFlex</a>(const std::string &amp;direction=&quot;row&quot;, const std::string &amp;id=&quot;&quot;, float gap=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6d4127f4ea3c07723102e9448b8449fb">beginFrameAndRender</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5fe6c1259f7a9135bd07a891f8ef3e4a">beginGroup</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aab05c4ffed99d50a76d4a1d96635e98b">beginList</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad8d3017d7734757aef92691710e903a9">beginMenu</a>(const std::string &amp;label, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3a1c93d9aa11a86285d5b90286f1738e">beginMenuBar</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa51957d9640a48248703922aafc771f3">beginNinePatch</a>(const std::string &amp;path, const std::string &amp;id=&quot;&quot;, float width=0.f, float height=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad42d36cac93af4a8dc57bfcb7103e24c">beginRow</a>(const std::string &amp;id=&quot;&quot;, float gap=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac9784b4f04f9df5ea0bb28d6b6b7562e">beginScrollList</a>(const std::string &amp;id=&quot;&quot;, float height=0.f, float itemHeight=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae56c758a7b1c0103db517e7cb58531f6">beginSidebar</a>(const std::string &amp;id=&quot;&quot;, float width=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#abb5ce34ebad4dfe2cc6d423c9166f9d3">beginSplitPane</a>(const std::string &amp;direction=&quot;row&quot;, float ratio=0.25f, const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a9927241b91a3473a1f1df2dfc6ee1ed9">beginStatusBar</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac1b2d701db234b8f14b17961f8b40238">beginToolbar</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5f968eb3814e23e10c86617d78a34e78">beginToolbox</a>(const std::string &amp;id=&quot;&quot;, float cellSize=0.f, int columns=0)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4a356005f0f0367a01cf563328ced66a">beginWindow</a>(const std::string &amp;title, const std::string &amp;id=&quot;root&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2482aa9bfc40bdf9769b622e1e198f23">bindOwner</a>(uint32_t ownerId)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa09ca8dc8714dfe843ec7ac51de01b76">clearHostWorldAnchor</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac554e2c17fb2f7f23b8d1e8f50a06da1">consumeChange</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a10c4400e60bd219377d20bbfce46437e">consumeClick</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae5c81eddb460414c266c71a070c51f9a">consumeDrop</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a46dbdd2e3e79dbd585607fc4204947ea">current</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af382abfe2760098b590384703a3c4447">dbClose</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a9d3a4998c5350b9e725dc0355cb888ae">dbCreateInstance</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae26d7ce170b6a126182970330abaab1c">dbOpen</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a86223eb8fed8d67331a9c885170d1681">dbRefresh</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a8ebcb13463b647c58987eb4021337b21">dbRegister</a>(ssq::Object object, const std::string &amp;label)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a8168daeed38fae350d852c126fb5ddd1">dbSelectClass</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5193e1faf4e25eaee1af69f1a1e9f9ec">dbUnregister</a>(uint64_t id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a20de542faf3fc901c9a79bd38d0d141c">dispatchEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a92e6e1bd60bdd2a8e552af356d00eb04">dragDropSupport</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2fbc7f8359a06cb9e057fbe62e16c02b">editorClose</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5707f029ca1eab76d06e8191b73c03e8">editorOpen</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1f82beea8fa8c4345bb201f20c294113">editorSelectPanel</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a505dc2e210a27aec2eb2718f40239e5d">end</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5abd7aedea8833f43e653f90c490dbcb">findHost</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a413f980a4ab698056f96ed1277ab156b">findHostByOwner</a>(uint32_t ownerId) const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a89e26d1d140460ce234958b3d1198f08">getChecked</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad3f7e06eebd5a9a5b46b4ce0a1485908">getDropOrigin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2ba2f0c052426ebe8b1b3ffe79920561">getDropSource</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#abcaa91a3c2d9b02100121fa7614a1ed7">getDropText</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a75e383d6e905a14a8004aab1c552d952">getDropType</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a943411f4ca1174506f7203a3d399b980">getFocusedId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af707e66eeb853ea9150c7f7b037d8248">getHostWorldScreenX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab2ec629f68fb1fad13eb892b464948f2">getHostWorldScreenY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a29e01aaca0aa3776f0ac543696a4d937">getHostWorldState</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a71022fd808c13b21f68b0013cf084dbe">getScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a5d45b96c2d5f9fdb1aaca8a86ee87bef">getStats</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af09ce5656e37c78bc08fb4ee662c426a">getTheme</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a33206ba4964d1066c514eb47e30e1a60">getValue</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae387ac94b7486abec9ee25f450cfaffa">getValueText</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a12c60df5f0b1760e563cb41f3c94a58a">initBackend</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac81b6969e54df2bd691eea12ec55a8ba">inspectAddInstance</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae8f952c49075e3cb80ace716fe7ee3b0">inspectClose</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#abff27c72e2b4b7eb3b64ed13fcc7a68b">inspectObject</a>(ssq::Object object)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2af4ccb50a40ef8e4e2a55535c532884">inspectOpen</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1fcde7d99dcc8424b5210842b2326f6a">inspectPickScene</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a809e22f0f2115a68ab5465bdbc09f27d">inspectRefresh</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a02f6c33733f6fa9274cc610bddf88229">inspectSelectClass</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#adead5619b6e912b7ef3b51b54bebc096">inspectSetPickHandler</a>(ssq::Function fn)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a842b51198f51d4acea9e31f94a023796">isBackendReady</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#afa6100f1ea28e1c901c74ae11e676d9b">loadTreeJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4cd531c054dd540839f6223a010356f4">Module_REG</a>(UI)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a12e0ad53cbda74b28fc1c91829cb2c03">mount</a>(WidgetDesc root)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6b7b65493700073576f39a48bb926e42">mountAs</a>(const std::string &amp;name, WidgetDesc root)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0650081af842a8e032560f97577ba767">mountBuild</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#adcfef840f372fbffab898e1e0e85c8e0">mountBuildAs</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad353ffd8501f5f32374468aa673efc69">mountSimple</a>(const std::string &amp;title, const std::string &amp;labelText, const std::string &amp;buttonText)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a88efd4f0850750e97c878e0a090bc70f">moveFocus</a>(const std::string &amp;direction)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#abd6e71ee8161eb12417e902e4335422c">onChange</a>(const std::string &amp;id, ssq::Function fn)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6256fd32bd1e31294edd39a63acbfff2">onClick</a>(const std::string &amp;id, ssq::Function fn)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a29f0e3c0712499621e95cdd9db5682a7">processEvent</a>(const SDL_Event *event)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0af1c808b1434a18c21ba5f87262a7df">registerTexture</a>(graphics::Texture *tex)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4bfa32fed4dc1c08157ca222e6690aaa">remount</a>(WidgetDesc root)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a76d6bc57dcec8c5d2edd10c49e042b40">remountAs</a>(const std::string &amp;name, WidgetDesc root)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a50f4ac7891dc4e87806b392adb78732b">remountBuildAs</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a453bf3373b321d5cfd39210628eddd9e">remountReconcile</a>(WidgetDesc root)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab3de2275a300fd8c1086c7af37471774">requestFocus</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1f4bdb5cde58cfa2b5a832a2f06740de">saveTreeJson</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a515f2c70b8c537a43ebe99377bc87737">sceneClose</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2ee7b7dbd4521bd309577a3df608d3ca">sceneOpen</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a90d8059effbede8a438b3029fbbe56bf">sceneSelectNode</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2f2cd50755e41a2edde7c93253f5b7f0">sceneSetPickHandler</a>(ssq::Function fn)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6f34a3fd549474d4efed63d4a31db9d2">select</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af83226d2e69a21ca7ddaa4fb83ed3018">setChecked</a>(const std::string &amp;id, bool checked)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab8bfc2c8276c5c7f764c1c48ac4d7b54">setEnabled</a>(const std::string &amp;id, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a87f2cc147ac9e1f841d8f81e677579f9">setFlexAlign</a>(const std::string &amp;align)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae1a1d8bb856455e7399cf43a986cc547">setFlexJustify</a>(const std::string &amp;justify)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab39de7723018bbf1bad2a8db9250202b">setHostAnchor</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a66712addc13d1e6c008e0cada032c7ff">setHostLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7c62e59bde65e41a2c6cc145d7b56204">setHostModal</a>(bool modal)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a53535321598583eee617408998cd5ba4">setHostMovable</a>(bool movable)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#acc26deb8cf2eba428e97f4cc8b5d2f7b">setHostOverlay</a>(bool overlay)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac8978892bd21c325c69b529e581d5209">setHostOverlayAlpha</a>(float alpha)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a146932d83132535d590a8ed926ccbce9">setHostPercent</a>(float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1e92c93c046bda7235f476e6eb00e239">setHostPos</a>(float x, float y, float pivotX=0.f, float pivotY=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a670f06c0e9de6f3f68ce98b718091c7c">setHostResizable</a>(bool resizable)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2a0600c76fbdbd1fb73cff7d5977aad8">setHostSize</a>(float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a934486cf1163a0c9289a3afd75fd04db">setHostVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a08d34b8ee79e3f0cfcb913202f3ddf31">setHostWorldAnchor</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a8f978765f0b701457f244a0d6a6ae539">setHostWorldDistanceScale</a>(bool enabled, float referenceDistance=10.f, float minScale=0.65f, float maxScale=1.25f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac9b24a426086e985699e70f6d06b13ab">setHostWorldEdgePolicy</a>(const std::string &amp;policy, float safeMargin=8.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3fd1eeaeaaa1cc5ec1c6922e22f8de7c">setHostWorldOverlap</a>(bool enabled, int priority=0, float padding=4.f, float maxDisplacement=96.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a298c4fa566b1c2b2f4c232aa2edebce4">setImageCornerRadius</a>(const std::string &amp;id, float radius)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab78e519b641545621c5116a8f3d761a4">setImageNinePatch</a>(const std::string &amp;id, float l, float t, float r, float b)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0ad1c68e72b5d86b26db420a7bd7bd2b">setImageNinePatchFile</a>(const std::string &amp;id, const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1c744bc8568335ffdcf67cb23d2f1c7a">setImageTextureId</a>(const std::string &amp;id, uint64_t textureId)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab93af73f8bbfde3ccfb8159d65bf9bc0">setImageTint</a>(const std::string &amp;id, float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a9e416b0eb0477327d2fc4f7eff8776ce">setImageUv</a>(const std::string &amp;id, float u0, float v0, float u1, float v1)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a6b5b6e815303eaadc01a305914052ee7">setItemAbsolute</a>(float anchorX, float anchorY, float x=0.f, float y=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4dac40dbfb3ce8cf1c5f93fb73270a78">setItemAccessibility</a>(const std::string &amp;role, const std::string &amp;name, const std::string &amp;description=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0aa105f23d819b663f56dbc61950fef4">setItemDragSource</a>(const std::string &amp;payloadType, const std::string &amp;payloadText)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af3dd28f08cae747a792bdab6801581b5">setItemDropTarget</a>(const std::string &amp;acceptedType)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#adf8cc458d8dd90f8b33bb005cbaee137">setItemEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4a214dbf71df9ef2c1b9454da1096b00">setItemFlexGrow</a>(float grow)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a2272981e41c74bf3d9151363080d8228">setItemFocusMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a79d0947bc1ce90e1d67f9ebf7ad6c999">setItemFocusNeighbors</a>(const std::string &amp;left, const std::string &amp;right, const std::string &amp;up, const std::string &amp;down)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af40277111d840eefee4aaaf1bccb5bdd">setItemFocusOrder</a>(const std::string &amp;previous, const std::string &amp;next)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7127ffd1be8f226f244a0bb6bb21d74d">setItemMargin</a>(float l, float t, float r, float b)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a41304745ed75a3d82290846ff0670c15">setItemMaxSize</a>(float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ac8aef0910f767a8b294c747d1967d1fd">setItemMinSize</a>(float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ab4a7f9a6bd0e5c940de86d2f17ef4618">setItemMouseFilter</a>(const std::string &amp;filter)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4782cdbbc80098fa9875a600392d769c">setItemPadding</a>(float l, float t, float r, float b)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a229b95e438d01ef966b79417c1f2621e">setItemPercent</a>(float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7c3ed168c3cdfd2be82759073575292c">setItemSize</a>(float width, float height)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#af02be3ce5a37a7d9f13500d84c1f0fb5">setItemTabIndex</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0a5e3aa3d4bbec6c0dffc8944715485e">setItemTheme</a>(const std::string &amp;theme)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa3a2308a881808723103a87a5381b8bc">setItemTooltip</a>(const std::string &amp;text)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a4468712053d15590963f32b7942a3e2c">setListItems</a>(const std::string &amp;listId, const std::vector&lt; std::string &gt; &amp;items)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7b9075e9cce2156eb01dc2a9b1bda0d5">setNavGamepad</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3d8f87c692356aeb2d130eaa35bd5476">setNavKeyboard</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a7a529cf525832275a6ae42dffc15699c">setScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aa5b9714652059a9675f3e65bddd62016">setText</a>(const std::string &amp;id, const std::string &amp;text)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a04ffff2f3c7c55d1d09355a7875cb722">setTextWrap</a>(const std::string &amp;id, float width)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a666c1ceb89e1e1e7df01f0198f0e60c1">setTheme</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#abd66c2e46eb6238a9d387bce811a1355">setThemeDark</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a69ad4bd2b05eb46277ca1e98e95dd6b9">setThemeLight</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a144008f79c759522a1f1b0cc57a5fa59">setThemeScope</a>(const std::string &amp;theme)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ae619dbbae2455030cc4eea0cda675afe">setValue</a>(const std::string &amp;id, float value)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#acd85e0df981997ed5cd17b3bb6633b89">setValueText</a>(const std::string &amp;id, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#aecdca4438d2648c49c5b84d6ede06557">setVisible</a>(const std::string &amp;id, bool visible)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a308b0f20f18bc5166be3a864c4557379">shutdownBackend</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a1fd0b883c8a07799ab1fcdd1a73bfffc">UI</a>()</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3e0f3c3f9a9dde47e6862b758c3313ce">unregisterTexture</a>(uint64_t textureId)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3bc6240624f218a723bdfca3e58907d2">viewportActive</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a9969397bc9115a4179f7a7f9ea65fa17">viewportCanvas</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a3149d1f636e7613954252a12b788755d">viewportDragDX</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#addbce742ae62d186f6b8b89e31c00d7a">viewportDragDY</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a74325bc048a020a9f124c92572003724">viewportHovered</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0868b79bf4a4193b199567dc19ef8715">viewportMouseX</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#afc732c8648396534577f2d57aee34625">viewportMouseY</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a78f744691acc2bced06a90d73e225bed">viewportWheel</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a0ad8becedc6e55209928ea015892222e">wantCaptureKeyboard</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#ad64d7b25ac72f3d448d965cbf26bdf33">wantCaptureMouse</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html#a37fd360c2bec9feb23ae7f0d27ed9af9">~UI</a>() override</td><td class="entry"><a class="el" href="classeve_1_1ui_1_1UI.html">eve::ui::UI</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

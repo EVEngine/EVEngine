@@ -1,0 +1,1414 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::GlobalIllumination类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1GlobalIllumination-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::GlobalIllumination类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Screen-space single-bounce GI (SSGI). @lifetime All texture arguments are borrowed for the duration of each call.  
+ <a href="classeve_1_1graphics_1_1GlobalIllumination.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a92cf1d24e9cefbbaf544d7ea659df9b9" id="r_a92cf1d24e9cefbbaf544d7ea659df9b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a92cf1d24e9cefbbaf544d7ea659df9b9">GlobalIllumination</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a92cf1d24e9cefbbaf544d7ea659df9b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49070022fcef9b7158486ea5c4e5a67a" id="r_a49070022fcef9b7158486ea5c4e5a67a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a49070022fcef9b7158486ea5c4e5a67a">~GlobalIllumination</a> ()</td></tr>
+<tr class="separator:a49070022fcef9b7158486ea5c4e5a67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e12517372658af60502f222681142f7" id="r_a8e12517372658af60502f222681142f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a8e12517372658af60502f222681142f7">GlobalIllumination</a> (const <a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;)=delete</td></tr>
+<tr class="separator:a8e12517372658af60502f222681142f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c7620c2a1b4720d6b5b2f08cac27ee" id="r_a66c7620c2a1b4720d6b5b2f08cac27ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a66c7620c2a1b4720d6b5b2f08cac27ee">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;)=delete</td></tr>
+<tr class="separator:a66c7620c2a1b4720d6b5b2f08cac27ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a504f39adac5d341c722f0d798d08678c" id="r_a504f39adac5d341c722f0d798d08678c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a504f39adac5d341c722f0d798d08678c">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:a504f39adac5d341c722f0d798d08678c"><td class="mdescLeft">&#160;</td><td class="mdescRight">"low" | "medium" | "high" | "ultra" (unknown becomes medium).  <br /></td></tr>
+<tr class="separator:a504f39adac5d341c722f0d798d08678c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5547fc172056cff3e2d8af349e301d25" id="r_a5547fc172056cff3e2d8af349e301d25"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a5547fc172056cff3e2d8af349e301d25">getQuality</a> () const</td></tr>
+<tr class="separator:a5547fc172056cff3e2d8af349e301d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56da28b82562909246db83a31f0515ea" id="r_a56da28b82562909246db83a31f0515ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a56da28b82562909246db83a31f0515ea">setCamera</a> (float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:a56da28b82562909246db83a31f0515ea"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by applyFromDepth.  <br /></td></tr>
+<tr class="separator:a56da28b82562909246db83a31f0515ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa596fa0b100acea2d79a5ec009ff9c4c" id="r_aa596fa0b100acea2d79a5ec009ff9c4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa596fa0b100acea2d79a5ec009ff9c4c">setInvViewProj</a> (const glm::mat4 &amp;invViewProj)</td></tr>
+<tr class="separator:aa596fa0b100acea2d79a5ec009ff9c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab69c04956b54ec2fcb2a4004971d35b9" id="r_ab69c04956b54ec2fcb2a4004971d35b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ab69c04956b54ec2fcb2a4004971d35b9">setWorldNormalTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal)</td></tr>
+<tr class="memdesc:ab69c04956b54ec2fcb2a4004971d35b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> world-normal texture used for guided GI sampling.  <br /></td></tr>
+<tr class="separator:ab69c04956b54ec2fcb2a4004971d35b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec9ac936948f8f46832a6171c623aa14" id="r_aec9ac936948f8f46832a6171c623aa14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#aec9ac936948f8f46832a6171c623aa14">setAlbedoTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>)</td></tr>
+<tr class="memdesc:aec9ac936948f8f46832a6171c623aa14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set receiver albedo used for energy-conserving diffuse GI response.  <br /></td></tr>
+<tr class="separator:aec9ac936948f8f46832a6171c623aa14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c2b02027dd2e47e0ed51b03aab8ee82" id="r_a1c2b02027dd2e47e0ed51b03aab8ee82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1c2b02027dd2e47e0ed51b03aab8ee82">setTemporalMotionTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motionDepth)</td></tr>
+<tr class="memdesc:a1c2b02027dd2e47e0ed51b03aab8ee82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set packed linear-depth and motion texture used by temporal GI resolve.  <br /></td></tr>
+<tr class="separator:a1c2b02027dd2e47e0ed51b03aab8ee82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3b6ad3d78d224ddc2ed5445fe0a321d" id="r_aa3b6ad3d78d224ddc2ed5445fe0a321d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa3b6ad3d78d224ddc2ed5445fe0a321d">setDepthPyramid</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *atlas, int levels)</td></tr>
+<tr class="memdesc:aa3b6ad3d78d224ddc2ed5445fe0a321d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the shared horizontally packed RG min/max depth hierarchy.  <br /></td></tr>
+<tr class="separator:aa3b6ad3d78d224ddc2ed5445fe0a321d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b487b2221aa234adc3b29510a80f1b1" id="r_a1b487b2221aa234adc3b29510a80f1b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b487b2221aa234adc3b29510a80f1b1">invalidateHistory</a> ()</td></tr>
+<tr class="memdesc:a1b487b2221aa234adc3b29510a80f1b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard temporal GI history after a render-chain discontinuity.  <br /></td></tr>
+<tr class="separator:a1b487b2221aa234adc3b29510a80f1b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a45d9ad07cfd43fcecb112868c0f350" id="r_a6a45d9ad07cfd43fcecb112868c0f350"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a6a45d9ad07cfd43fcecb112868c0f350">setRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a6a45d9ad07cfd43fcecb112868c0f350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c979c188021c9c610d453c50d33890c" id="r_a9c979c188021c9c610d453c50d33890c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a9c979c188021c9c610d453c50d33890c">setIntensity</a> (float intensity)</td></tr>
+<tr class="separator:a9c979c188021c9c610d453c50d33890c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9921589d0c573def300977af54bd7b0a" id="r_a9921589d0c573def300977af54bd7b0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a9921589d0c573def300977af54bd7b0a">setThickness</a> (float <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>)</td></tr>
+<tr class="memdesc:a9921589d0c573def300977af54bd7b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set world-space hit thickness used to reject screen-space GI leaks.  <br /></td></tr>
+<tr class="separator:a9921589d0c573def300977af54bd7b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a53f05f22f93e80a4afb359e1887426" id="r_a1a53f05f22f93e80a4afb359e1887426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1a53f05f22f93e80a4afb359e1887426">setResolutionScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a1a53f05f22f93e80a4afb359e1887426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal GI resolution scale in the range 0.25 to 1.0.  <br /></td></tr>
+<tr class="separator:a1a53f05f22f93e80a4afb359e1887426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a247f8561c5ac342d0fead743d9890c25" id="r_a247f8561c5ac342d0fead743d9890c25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a247f8561c5ac342d0fead743d9890c25">setLightDirection</a> (float dx, float dy, float dz)</td></tr>
+<tr class="separator:a247f8561c5ac342d0fead743d9890c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13d82125fa16333db5aeb093c4bf843" id="r_ad13d82125fa16333db5aeb093c4bf843"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ad13d82125fa16333db5aeb093c4bf843">setLightColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:ad13d82125fa16333db5aeb093c4bf843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97f3c4714b0d7a9938a05cad6aec60ae" id="r_a97f3c4714b0d7a9938a05cad6aec60ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a97f3c4714b0d7a9938a05cad6aec60ae">getRadius</a> () const</td></tr>
+<tr class="separator:a97f3c4714b0d7a9938a05cad6aec60ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19a8e62c2dc23b049bb541fa14ba0a36" id="r_a19a8e62c2dc23b049bb541fa14ba0a36"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a19a8e62c2dc23b049bb541fa14ba0a36">getIntensity</a> () const</td></tr>
+<tr class="separator:a19a8e62c2dc23b049bb541fa14ba0a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad22bb1d0c678af969073b094494fc596" id="r_ad22bb1d0c678af969073b094494fc596"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ad22bb1d0c678af969073b094494fc596">getThickness</a> () const</td></tr>
+<tr class="memdesc:ad22bb1d0c678af969073b094494fc596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return world-space GI hit thickness.  <br /></td></tr>
+<tr class="separator:ad22bb1d0c678af969073b094494fc596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b9a054f76c7b2afd4989af125e3f514" id="r_a7b9a054f76c7b2afd4989af125e3f514"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a7b9a054f76c7b2afd4989af125e3f514">getResolutionScale</a> () const</td></tr>
+<tr class="separator:a7b9a054f76c7b2afd4989af125e3f514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b5c0272e94d08ad2e4b440e410f27e0" id="r_a1b5c0272e94d08ad2e4b440e410f27e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b5c0272e94d08ad2e4b440e410f27e0">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a1b5c0272e94d08ad2e4b440e410f27e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a666d1826bf30db1c824ab286a9925885" id="r_a666d1826bf30db1c824ab286a9925885"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a666d1826bf30db1c824ab286a9925885">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a666d1826bf30db1c824ab286a9925885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7e2a6cec4b596e4580ed60d32543cfe" id="r_ae7e2a6cec4b596e4580ed60d32543cfe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ae7e2a6cec4b596e4580ed60d32543cfe">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ae7e2a6cec4b596e4580ed60d32543cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a722f362892a16e369efb7aee190a9" id="r_a63a722f362892a16e369efb7aee190a9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a63a722f362892a16e369efb7aee190a9">getSampleCount</a> () const</td></tr>
+<tr class="separator:a63a722f362892a16e369efb7aee190a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6884d16590770b06007e61ccbb9af8f" id="r_ac6884d16590770b06007e61ccbb9af8f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ac6884d16590770b06007e61ccbb9af8f">getSpatialPassCount</a> () const</td></tr>
+<tr class="memdesc:ac6884d16590770b06007e61ccbb9af8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of explicit A-trous prefilter passes for the active quality.  <br /></td></tr>
+<tr class="separator:ac6884d16590770b06007e61ccbb9af8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a030905a192f6b7903e71a69d23025b30" id="r_a030905a192f6b7903e71a69d23025b30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a030905a192f6b7903e71a69d23025b30">applyFromDepth</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *packedAlbedo)</td></tr>
+<tr class="memdesc:a030905a192f6b7903e71a69d23025b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overlay bounced light onto the currently bound canvas / screen. Packed path (tests): RGB=albedo/lit, A=linear depth 0..1. 3D path: applyFromScene(color, hwDepth) with D32 NDC z.  <br /></td></tr>
+<tr class="separator:a030905a192f6b7903e71a69d23025b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade2492242fd37dd2b0d71514ed57303f" id="r_ade2492242fd37dd2b0d71514ed57303f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#ade2492242fd37dd2b0d71514ed57303f">applyFromDepthTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *packedAlbedo, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:ade2492242fd37dd2b0d71514ed57303f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1efa9dc95a9dfc94e7b7a25575a979ab" id="r_a1efa9dc95a9dfc94e7b7a25575a979ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1efa9dc95a9dfc94e7b7a25575a979ab">applyFromSceneTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a1efa9dc95a9dfc94e7b7a25575a979ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e309998056757dfee4729b3e0095bfa" id="r_a5e309998056757dfee4729b3e0095bfa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a5e309998056757dfee4729b3e0095bfa">applyFromSceneTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth)</td></tr>
+<tr class="separator:a5e309998056757dfee4729b3e0095bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09607621a9472b9e587975ee8a9e4ce2" id="r_a09607621a9472b9e587975ee8a9e4ce2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a09607621a9472b9e587975ee8a9e4ce2">getWorkingCanvas</a> ()</td></tr>
+<tr class="separator:a09607621a9472b9e587975ee8a9e4ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d57865503c98424975c5e4c0eff9445" id="r_a3d57865503c98424975c5e4c0eff9445"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a3d57865503c98424975c5e4c0eff9445">getWorkingTexture</a> ()</td></tr>
+<tr class="memdesc:a3d57865503c98424975c5e4c0eff9445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporally resolved GI texture, or the raw working texture before history exists. @lifetime Returned texture is borrowed from this effect until its targets are recreated.  <br /></td></tr>
+<tr class="separator:a3d57865503c98424975c5e4c0eff9445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17ace29b43e990867c00a035d063994e" id="r_a17ace29b43e990867c00a035d063994e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#a17ace29b43e990867c00a035d063994e">applyFromScene</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth)</td></tr>
+<tr class="separator:a17ace29b43e990867c00a035d063994e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8575a1c53c18f51d006fea4797ead8e" id="r_aa8575a1c53c18f51d006fea4797ead8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa8575a1c53c18f51d006fea4797ead8e">getShader</a> () const</td></tr>
+<tr class="separator:aa8575a1c53c18f51d006fea4797ead8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Screen-space single-bounce GI (SSGI). @lifetime All texture arguments are borrowed for the duration of each call. </p>
+<p>Samples scene color (RGB = lit radiance) plus hardware D32 depth, and adds bounced light from nearby occluders. It can be used as a manual fullscreen overlay (<code>applyFromScene</code> / <code>applyFromDepth</code>), and <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> runs it automatically when <code>rtgi</code> or <code>reflectionChain</code> is enabled. Tests may also pass a packed RGBA8 texture (RGB = albedo, A = linear depth) through applyFromDepth.</p>
+<p>Quality presets ("low" | "medium" | "high") tune sample count and radius. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a92cf1d24e9cefbbaf544d7ea659df9b9" name="a92cf1d24e9cefbbaf544d7ea659df9b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92cf1d24e9cefbbaf544d7ea659df9b9">&#9670;&#160;</a></span>GlobalIllumination() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GlobalIllumination::GlobalIllumination </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49070022fcef9b7158486ea5c4e5a67a" name="a49070022fcef9b7158486ea5c4e5a67a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49070022fcef9b7158486ea5c4e5a67a">&#9670;&#160;</a></span>~GlobalIllumination()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GlobalIllumination::~GlobalIllumination </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e12517372658af60502f222681142f7" name="a8e12517372658af60502f222681142f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e12517372658af60502f222681142f7">&#9670;&#160;</a></span>GlobalIllumination() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GlobalIllumination::GlobalIllumination </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a030905a192f6b7903e71a69d23025b30" name="a030905a192f6b7903e71a69d23025b30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030905a192f6b7903e71a69d23025b30">&#9670;&#160;</a></span>applyFromDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::applyFromDepth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>packedAlbedo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overlay bounced light onto the currently bound canvas / screen. Packed path (tests): RGB=albedo/lit, A=linear depth 0..1. 3D path: applyFromScene(color, hwDepth) with D32 NDC z. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00333">applyFromDepthTo()</a>.</p>
+
+</div>
+</div>
+<a id="ade2492242fd37dd2b0d71514ed57303f" name="ade2492242fd37dd2b0d71514ed57303f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade2492242fd37dd2b0d71514ed57303f">&#9670;&#160;</a></span>applyFromDepthTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::applyFromDepthTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>packedAlbedo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GlobalIllumination_8cpp_source.html#l00315">applyFromDepth()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a17ace29b43e990867c00a035d063994e" name="a17ace29b43e990867c00a035d063994e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ace29b43e990867c00a035d063994e">&#9670;&#160;</a></span>applyFromScene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::applyFromScene </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00414">applyFromSceneTo()</a>.</p>
+
+</div>
+</div>
+<a id="a5e309998056757dfee4729b3e0095bfa" name="a5e309998056757dfee4729b3e0095bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e309998056757dfee4729b3e0095bfa">&#9670;&#160;</a></span>applyFromSceneTo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::applyFromSceneTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GlobalIllumination_8cpp_source.html#l00414">applyFromSceneTo()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>.</p>
+
+</div>
+</div>
+<a id="a1efa9dc95a9dfc94e7b7a25575a979ab" name="a1efa9dc95a9dfc94e7b7a25575a979ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1efa9dc95a9dfc94e7b7a25575a979ab">&#9670;&#160;</a></span>applyFromSceneTo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::applyFromSceneTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GlobalIllumination_8cpp_source.html#l00323">applyFromScene()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00424">applyFromSceneTo()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ae7e2a6cec4b596e4580ed60d32543cfe" name="ae7e2a6cec4b596e4580ed60d32543cfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e2a6cec4b596e4580ed60d32543cfe">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GlobalIllumination::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00257">getSampleCount()</a>.</p>
+
+</div>
+</div>
+<a id="a19a8e62c2dc23b049bb541fa14ba0a36" name="a19a8e62c2dc23b049bb541fa14ba0a36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19a8e62c2dc23b049bb541fa14ba0a36">&#9670;&#160;</a></span>getIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GlobalIllumination::getIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5547fc172056cff3e2d8af349e301d25" name="a5547fc172056cff3e2d8af349e301d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5547fc172056cff3e2d8af349e301d25">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::GlobalIllumination::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a97f3c4714b0d7a9938a05cad6aec60ae" name="a97f3c4714b0d7a9938a05cad6aec60ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97f3c4714b0d7a9938a05cad6aec60ae">&#9670;&#160;</a></span>getRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GlobalIllumination::getRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b9a054f76c7b2afd4989af125e3f514" name="a7b9a054f76c7b2afd4989af125e3f514"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b9a054f76c7b2afd4989af125e3f514">&#9670;&#160;</a></span>getResolutionScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GlobalIllumination::getResolutionScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63a722f362892a16e369efb7aee190a9" name="a63a722f362892a16e369efb7aee190a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a722f362892a16e369efb7aee190a9">&#9670;&#160;</a></span>getSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GlobalIllumination::getSampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GlobalIllumination_8cpp_source.html#l00248">getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aa8575a1c53c18f51d006fea4797ead8e" name="aa8575a1c53c18f51d006fea4797ead8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8575a1c53c18f51d006fea4797ead8e">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::GlobalIllumination::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>@lifetime Returned shader is borrowed and owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6884d16590770b06007e61ccbb9af8f" name="ac6884d16590770b06007e61ccbb9af8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6884d16590770b06007e61ccbb9af8f">&#9670;&#160;</a></span>getSpatialPassCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GlobalIllumination::getSpatialPassCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of explicit A-trous prefilter passes for the active quality. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad22bb1d0c678af969073b094494fc596" name="ad22bb1d0c678af969073b094494fc596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad22bb1d0c678af969073b094494fc596">&#9670;&#160;</a></span>getThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GlobalIllumination::getThickness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return world-space GI hit thickness. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09607621a9472b9e587975ee8a9e4ce2" name="a09607621a9472b9e587975ee8a9e4ce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09607621a9472b9e587975ee8a9e4ce2">&#9670;&#160;</a></span>getWorkingCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> * eve::graphics::GlobalIllumination::getWorkingCanvas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>@lifetime Returned canvas is borrowed from this effect until its targets are recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a3d57865503c98424975c5e4c0eff9445" name="a3d57865503c98424975c5e4c0eff9445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d57865503c98424975c5e4c0eff9445">&#9670;&#160;</a></span>getWorkingTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::GlobalIllumination::getWorkingTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Temporally resolved GI texture, or the raw working texture before history exists. @lifetime Returned texture is borrowed from this effect until its targets are recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a1b5c0272e94d08ad2e4b440e410f27e0" name="a1b5c0272e94d08ad2e4b440e410f27e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b5c0272e94d08ad2e4b440e410f27e0">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::GlobalIllumination::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a1b487b2221aa234adc3b29510a80f1b1" name="a1b487b2221aa234adc3b29510a80f1b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b487b2221aa234adc3b29510a80f1b1">&#9670;&#160;</a></span>invalidateHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::invalidateHistory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard temporal GI history after a render-chain discontinuity. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66c7620c2a1b4720d6b5b2f08cac27ee" name="a66c7620c2a1b4720d6b5b2f08cac27ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c7620c2a1b4720d6b5b2f08cac27ee">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp; eve::graphics::GlobalIllumination::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec9ac936948f8f46832a6171c623aa14" name="aec9ac936948f8f46832a6171c623aa14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec9ac936948f8f46832a6171c623aa14">&#9670;&#160;</a></span>setAlbedoTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setAlbedoTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set receiver albedo used for energy-conserving diffuse GI response. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a56da28b82562909246db83a31f0515ea" name="a56da28b82562909246db83a31f0515ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56da28b82562909246db83a31f0515ea">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by applyFromDepth. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00687">fovRad</a>, <a class="el" href="ClipSpace_8h_source.html#l00022">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00683">proj</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00142">setInvViewProj()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="aa3b6ad3d78d224ddc2ed5445fe0a321d" name="aa3b6ad3d78d224ddc2ed5445fe0a321d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3b6ad3d78d224ddc2ed5445fe0a321d">&#9670;&#160;</a></span>setDepthPyramid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setDepthPyramid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>atlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>levels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the shared horizontally packed RG min/max depth hierarchy. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a666d1826bf30db1c824ab286a9925885" name="a666d1826bf30db1c824ab286a9925885"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a666d1826bf30db1c824ab286a9925885">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00197">setThickness()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00192">setIntensity()</a> , 以及 <a class="el" href="GlobalIllumination_8cpp_source.html#l00187">setRadius()</a>.</p>
+
+</div>
+</div>
+<a id="a9c979c188021c9c610d453c50d33890c" name="a9c979c188021c9c610d453c50d33890c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c979c188021c9c610d453c50d33890c">&#9670;&#160;</a></span>setIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GlobalIllumination_8cpp_source.html#l00233">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aa596fa0b100acea2d79a5ec009ff9c4c" name="aa596fa0b100acea2d79a5ec009ff9c4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa596fa0b100acea2d79a5ec009ff9c4c">&#9670;&#160;</a></span>setInvViewProj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setInvViewProj </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00099">eve::graphics::Shader::sendMatrix()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00156">setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="ad13d82125fa16333db5aeb093c4bf843" name="ad13d82125fa16333db5aeb093c4bf843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad13d82125fa16333db5aeb093c4bf843">&#9670;&#160;</a></span>setLightColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setLightColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a247f8561c5ac342d0fead743d9890c25" name="a247f8561c5ac342d0fead743d9890c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a247f8561c5ac342d0fead743d9890c25">&#9670;&#160;</a></span>setLightDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setLightDirection </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a504f39adac5d341c722f0d798d08678c" name="a504f39adac5d341c722f0d798d08678c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a504f39adac5d341c722f0d798d08678c">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"low" | "medium" | "high" | "ultra" (unknown becomes medium). </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a6a45d9ad07cfd43fcecb112868c0f350" name="a6a45d9ad07cfd43fcecb112868c0f350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a45d9ad07cfd43fcecb112868c0f350">&#9670;&#160;</a></span>setRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="GlobalIllumination_8cpp_source.html#l00233">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a1a53f05f22f93e80a4afb359e1887426" name="a1a53f05f22f93e80a4afb359e1887426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a53f05f22f93e80a4afb359e1887426">&#9670;&#160;</a></span>setResolutionScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setResolutionScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set internal GI resolution scale in the range 0.25 to 1.0. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a1c2b02027dd2e47e0ed51b03aab8ee82" name="a1c2b02027dd2e47e0ed51b03aab8ee82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c2b02027dd2e47e0ed51b03aab8ee82">&#9670;&#160;</a></span>setTemporalMotionTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setTemporalMotionTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>motionDepth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set packed linear-depth and motion texture used by temporal GI resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a9921589d0c573def300977af54bd7b0a" name="a9921589d0c573def300977af54bd7b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9921589d0c573def300977af54bd7b0a">&#9670;&#160;</a></span>setThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setThickness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thickness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set world-space hit thickness used to reject screen-space GI leaks. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a> 第 <a class="el" href="GlobalIllumination_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00083">thickness</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GlobalIllumination_8cpp_source.html#l00233">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="ab69c04956b54ec2fcb2a4004971d35b9" name="ab69c04956b54ec2fcb2a4004971d35b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab69c04956b54ec2fcb2a4004971d35b9">&#9670;&#160;</a></span>setWorldNormalTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GlobalIllumination::setWorldNormalTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> world-normal texture used for guided GI sampling. </p>
+
+<p class="definition">在文件 <a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a> 第 <a class="el" href="GlobalIllumination_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="GlobalIllumination_8h_source.html">GlobalIllumination.h</a></li>
+<li>src/modules/graphics/<a class="el" href="GlobalIllumination_8cpp_source.html">GlobalIllumination.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

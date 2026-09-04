@@ -1,0 +1,498 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::voxel::CubeTypeRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1voxel_1_1CubeTypeRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::voxel::CubeTypeRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="CubeTypeRegistry_8h_source.html">CubeTypeRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3033bc6c1f932cc2f7a29d0a14a1b9ba" id="r_a3033bc6c1f932cc2f7a29d0a14a1b9ba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a3033bc6c1f932cc2f7a29d0a14a1b9ba">CubeTypeRegistry</a> ()=default</td></tr>
+<tr class="separator:a3033bc6c1f932cc2f7a29d0a14a1b9ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a066ff1804bd73e4abc15d754584e1" id="r_a99a066ff1804bd73e4abc15d754584e1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a99a066ff1804bd73e4abc15d754584e1">add</a> (const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:a99a066ff1804bd73e4abc15d754584e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">注册一个方块类型，返回其基础类型 id（0 保留给空气）。 方向性方块会按 orientation ∈ {0,1,2,3} 绕 Y 轴旋转 faceTex， 展开成 4 个连续的具体类型变体；基础 id 指向 0 度变体。  <br /></td></tr>
+<tr class="separator:a99a066ff1804bd73e4abc15d754584e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa58b958e55676f824f1c1648496303a0" id="r_aa58b958e55676f824f1c1648496303a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#aa58b958e55676f824f1c1648496303a0">loadFromJson</a> (const std::string &amp;json, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:aa58b958e55676f824f1c1648496303a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 JSON 数组或单对象批量注册，返回成功数量。 元素形如： { "name": "furnace", "faceTex": [4, 4, 4, 4, 5, 4], "directional": true, "composeGroup": "furnace", "connects": false }  <br /></td></tr>
+<tr class="separator:aa58b958e55676f824f1c1648496303a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66f88607e6b3beed04409a882310eda5" id="r_a66f88607e6b3beed04409a882310eda5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a66f88607e6b3beed04409a882310eda5">find</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a66f88607e6b3beed04409a882310eda5"><td class="mdescLeft">&#160;</td><td class="mdescRight">按名字返回 0 度变体；未找到返回 nullptr。  <br /></td></tr>
+<tr class="separator:a66f88607e6b3beed04409a882310eda5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21007485a7a613d7d61aa59363954116" id="r_a21007485a7a613d7d61aa59363954116"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a21007485a7a613d7d61aa59363954116">find</a> (uint8_t <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a21007485a7a613d7d61aa59363954116"><td class="mdescLeft">&#160;</td><td class="mdescRight">按类型 id 返回变体（含方向变体）；未找到返回 nullptr。  <br /></td></tr>
+<tr class="separator:a21007485a7a613d7d61aa59363954116"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7f09e0305b906f5503fa5203ca0a1cd" id="r_ad7f09e0305b906f5503fa5203ca0a1cd"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#ad7f09e0305b906f5503fa5203ca0a1cd">variantId</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int orientation) const</td></tr>
+<tr class="memdesc:ad7f09e0305b906f5503fa5203ca0a1cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">名字 + orientation(0..3) 对应的具体类型 id；非方向性类型忽略 orientation。  <br /></td></tr>
+<tr class="separator:ad7f09e0305b906f5503fa5203ca0a1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e67c18848f3bb65911dc68c863a8e73" id="r_a5e67c18848f3bb65911dc68c863a8e73"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a5e67c18848f3bb65911dc68c863a8e73">count</a> () const</td></tr>
+<tr class="memdesc:a5e67c18848f3bb65911dc68c863a8e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">命名的方块类型数量（不含方向变体）。  <br /></td></tr>
+<tr class="separator:a5e67c18848f3bb65911dc68c863a8e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb6fcd12e4065380b362e5842094998" id="r_a1eb6fcd12e4065380b362e5842094998"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a1eb6fcd12e4065380b362e5842094998">variantCount</a> () const</td></tr>
+<tr class="memdesc:a1eb6fcd12e4065380b362e5842094998"><td class="mdescLeft">&#160;</td><td class="mdescRight">类型总数（含方向变体，不含空气占位）。  <br /></td></tr>
+<tr class="separator:a1eb6fcd12e4065380b362e5842094998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72d2e9694fed36ef876ab2e210e7e58c" id="r_a72d2e9694fed36ef876ab2e210e7e58c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a72d2e9694fed36ef876ab2e210e7e58c">clear</a> ()</td></tr>
+<tr class="separator:a72d2e9694fed36ef876ab2e210e7e58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7ed5f3ff5e2da3ed985577ee70a1aff6" id="r_a7ed5f3ff5e2da3ed985577ee70a1aff6"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">empty</a> ()</td></tr>
+<tr class="memdesc:a7ed5f3ff5e2da3ed985577ee70a1aff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">进程级空注册表（默认参数与向后兼容回退用）。  <br /></td></tr>
+<tr class="separator:a7ed5f3ff5e2da3ed985577ee70a1aff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8h_source.html">CubeTypeRegistry.h</a> 第 <a class="el" href="CubeTypeRegistry_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3033bc6c1f932cc2f7a29d0a14a1b9ba" name="a3033bc6c1f932cc2f7a29d0a14a1b9ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3033bc6c1f932cc2f7a29d0a14a1b9ba">&#9670;&#160;</a></span>CubeTypeRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel::CubeTypeRegistry::CubeTypeRegistry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a99a066ff1804bd73e4abc15d754584e1" name="a99a066ff1804bd73e4abc15d754584e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a066ff1804bd73e4abc15d754584e1">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::voxel::CubeTypeRegistry::add </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>注册一个方块类型，返回其基础类型 id（0 保留给空气）。 方向性方块会按 orientation ∈ {0,1,2,3} 绕 Y 轴旋转 faceTex， 展开成 4 个连续的具体类型变体；基础 id 指向 0 度变体。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CubeType_8h_source.html#l00017">eve::voxel::CubeType::id</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00071">loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a72d2e9694fed36ef876ab2e210e7e58c" name="a72d2e9694fed36ef876ab2e210e7e58c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72d2e9694fed36ef876ab2e210e7e58c">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::CubeTypeRegistry::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e67c18848f3bb65911dc68c863a8e73" name="a5e67c18848f3bb65911dc68c863a8e73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e67c18848f3bb65911dc68c863a8e73">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::CubeTypeRegistry::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>命名的方块类型数量（不含方向变体）。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8h_source.html">CubeTypeRegistry.h</a> 第 <a class="el" href="CubeTypeRegistry_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ed5f3ff5e2da3ed985577ee70a1aff6" name="a7ed5f3ff5e2da3ed985577ee70a1aff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ed5f3ff5e2da3ed985577ee70a1aff6">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp; eve::voxel::CubeTypeRegistry::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>进程级空注册表（默认参数与向后兼容回退用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66f88607e6b3beed04409a882310eda5" name="a66f88607e6b3beed04409a882310eda5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f88607e6b3beed04409a882310eda5">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> * eve::voxel::CubeTypeRegistry::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>按名字返回 0 度变体；未找到返回 nullptr。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00667">eve::voxel::VoxelWorld::getCubeTypeName()</a>, <a class="el" href="CubeTypeRegistry_8h_source.html#l00066">eve::voxel::resolveFaceTex()</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00660">eve::voxel::VoxelWorld::setVoxelByName()</a>.</p>
+
+</div>
+</div>
+<a id="a21007485a7a613d7d61aa59363954116" name="a21007485a7a613d7d61aa59363954116"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21007485a7a613d7d61aa59363954116">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> * eve::voxel::CubeTypeRegistry::find </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>按类型 id 返回变体（含方向变体）；未找到返回 nullptr。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="aa58b958e55676f824f1c1648496303a0" name="aa58b958e55676f824f1c1648496303a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa58b958e55676f824f1c1648496303a0">&#9670;&#160;</a></span>loadFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::CubeTypeRegistry::loadFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从 JSON 数组或单对象批量注册，返回成功数量。 元素形如： { "name": "furnace", "faceTex": [4, 4, 4, 4, 5, 4], "directional": true, "composeGroup": "furnace", "connects": false } </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00049">add()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="Json_8h_source.html#l00123">eve::json::Document::root()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="Json_8h_source.html#l00122">eve::json::Document::valid()</a>.</p>
+
+</div>
+</div>
+<a id="a1eb6fcd12e4065380b362e5842094998" name="a1eb6fcd12e4065380b362e5842094998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb6fcd12e4065380b362e5842094998">&#9670;&#160;</a></span>variantCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::CubeTypeRegistry::variantCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>类型总数（含方向变体，不含空气占位）。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8h_source.html">CubeTypeRegistry.h</a> 第 <a class="el" href="CubeTypeRegistry_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7f09e0305b906f5503fa5203ca0a1cd" name="ad7f09e0305b906f5503fa5203ca0a1cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7f09e0305b906f5503fa5203ca0a1cd">&#9670;&#160;</a></span>variantId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::voxel::CubeTypeRegistry::variantId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>orientation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>名字 + orientation(0..3) 对应的具体类型 id；非方向性类型忽略 orientation。 </p>
+
+<p class="definition">在文件 <a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a> 第 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CubeType_8h_source.html#l00021">eve::voxel::CubeType::directional</a>, <a class="el" href="CubeType_8h_source.html#l00017">eve::voxel::CubeType::id</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00660">eve::voxel::VoxelWorld::setVoxelByName()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/voxel/<a class="el" href="CubeTypeRegistry_8h_source.html">CubeTypeRegistry.h</a></li>
+<li>src/modules/voxel/<a class="el" href="CubeTypeRegistry_8cpp_source.html">CubeTypeRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

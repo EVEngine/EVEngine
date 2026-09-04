@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Transform.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Transform.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Transform_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Transform_8h.html">graphics/Transform.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span>{</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a6b8f22457542495e175ecab2ff3c1bf6">    7</a></span><a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a6b8f22457542495e175ecab2ff3c1bf6">Transform::Transform</a>() {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a7606bece69690696df1adb4e22e3bc27">origin</a>(); <span class="comment">// load I</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#afcfd4a6e4e73879c3f9ff1d3dbdd7ff9">   11</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#afcfd4a6e4e73879c3f9ff1d3dbdd7ff9">Transform::rotate</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, glm::vec2 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a02c94b509500425d932cee20648eb92a">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a02c94b509500425d932cee20648eb92a">Transform::scale</a>(<span class="keywordtype">float</span> all) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a32e66184454dac6b8da99245e9fbc400">   19</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a02c94b509500425d932cee20648eb92a">Transform::scale</a>(glm::vec2 <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#aaa0c05c6e5170544257ae52473cb8963">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#aaa0c05c6e5170544257ae52473cb8963">Transform::translate</a>(glm::vec2 <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a7606bece69690696df1adb4e22e3bc27">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a7606bece69690696df1adb4e22e3bc27">Transform::origin</a>() {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a54f6bf147dc1af9d131bf685372ffd49">   32</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a54f6bf147dc1af9d131bf685372ffd49">Transform::rotate3d</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, glm::vec3 <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#ac311efa0cdb658a2d360636852933e62">   36</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#ac311efa0cdb658a2d360636852933e62">Transform::scale3d</a>(glm::vec3 <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a189cf8d7d872554a0c6bb48ddb0067ae">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a189cf8d7d872554a0c6bb48ddb0067ae">Transform::translate3d</a>(glm::vec3 <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a8c6a8777021d9ec0ca6d9b1e0e512f1e">   45</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a8c6a8777021d9ec0ca6d9b1e0e512f1e">Transform::push</a>() {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.size() == 0) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.push(glm::mat4{1,0,0,0,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                              0,1,0,0,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                              0,0,1,0,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                              0,0,0,1});</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> = <a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.top();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.push(<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#afdefd37c2d2b084242c97af7258a736c">   57</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#afdefd37c2d2b084242c97af7258a736c">Transform::pop</a>() {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.size() &gt; 0) <a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.pop();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Transform.html#a9fec706387cd991dc9edb4c69e09d474">   61</a></span>glm::mat4 <a class="code hl_function" href="classeve_1_1graphics_1_1Transform.html#a9fec706387cd991dc9edb4c69e09d474">Transform::top</a>() {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.size() &gt; 0) <span class="keywordflow">return</span> <a class="code hl_variable" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a>.top();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">else</span> <span class="keywordflow">return</span> glm::mat4{0,0,0,0,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                          0,0,0,0,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                          0,0,0,0,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                          0,0,0,0};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>} <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aTransform_8h_html"><div class="ttname"><a href="Transform_8h.html">Transform.h</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a02c94b509500425d932cee20648eb92a"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a02c94b509500425d932cee20648eb92a">eve::graphics::Transform::scale</a></div><div class="ttdeci">void scale(float all)</div><div class="ttdoc">2D 均匀/非均匀缩放。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00015">Transform.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a189cf8d7d872554a0c6bb48ddb0067ae"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a189cf8d7d872554a0c6bb48ddb0067ae">eve::graphics::Transform::translate3d</a></div><div class="ttdeci">void translate3d(glm::vec3 v)</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00040">Transform.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a54f6bf147dc1af9d131bf685372ffd49"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a54f6bf147dc1af9d131bf685372ffd49">eve::graphics::Transform::rotate3d</a></div><div class="ttdeci">void rotate3d(float r, glm::vec3 v)</div><div class="ttdoc">3D 绕轴旋转 / 缩放 / 平移。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00032">Transform.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a6b8f22457542495e175ecab2ff3c1bf6"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a6b8f22457542495e175ecab2ff3c1bf6">eve::graphics::Transform::Transform</a></div><div class="ttdeci">Transform()</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00007">Transform.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a7606bece69690696df1adb4e22e3bc27"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a7606bece69690696df1adb4e22e3bc27">eve::graphics::Transform::origin</a></div><div class="ttdeci">void origin()</div><div class="ttdoc">重置为单位矩阵。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00027">Transform.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a8c6a8777021d9ec0ca6d9b1e0e512f1e"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a8c6a8777021d9ec0ca6d9b1e0e512f1e">eve::graphics::Transform::push</a></div><div class="ttdeci">void push()</div><div class="ttdoc">压栈 / 弹栈 / 取栈顶矩阵。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00045">Transform.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_a9fec706387cd991dc9edb4c69e09d474"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#a9fec706387cd991dc9edb4c69e09d474">eve::graphics::Transform::top</a></div><div class="ttdeci">glm::mat4 top()</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00061">Transform.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_aaa0c05c6e5170544257ae52473cb8963"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#aaa0c05c6e5170544257ae52473cb8963">eve::graphics::Transform::translate</a></div><div class="ttdeci">void translate(glm::vec2 v)</div><div class="ttdoc">2D 平移。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00023">Transform.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_ac0319b1d4f1493bfae5c4082f2e8f8af"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">eve::graphics::Transform::matrix</a></div><div class="ttdeci">std::stack&lt; glm::mat4 &gt; matrix</div><div class="ttdef"><b>Definition</b> <a href="Transform_8h_source.html#l00036">Transform.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_ac311efa0cdb658a2d360636852933e62"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#ac311efa0cdb658a2d360636852933e62">eve::graphics::Transform::scale3d</a></div><div class="ttdeci">void scale3d(glm::vec3 s)</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00036">Transform.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_afcfd4a6e4e73879c3f9ff1d3dbdd7ff9"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#afcfd4a6e4e73879c3f9ff1d3dbdd7ff9">eve::graphics::Transform::rotate</a></div><div class="ttdeci">void rotate(float r, glm::vec2 p)</div><div class="ttdoc">2D 绕点 (p) 旋转 r（弧度）。</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00011">Transform.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Transform_html_afdefd37c2d2b084242c97af7258a736c"><div class="ttname"><a href="classeve_1_1graphics_1_1Transform.html#afdefd37c2d2b084242c97af7258a736c">eve::graphics::Transform::pop</a></div><div class="ttdeci">void pop()</div><div class="ttdef"><b>Definition</b> <a href="Transform_8cpp_source.html#l00057">Transform.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

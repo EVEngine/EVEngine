@@ -1,0 +1,342 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/BeamEffect.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BeamEffect.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BeamEffect_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="BeamEffect_8h.html">stylize/BeamEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;glm/gtc/constants.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">bool</span> finite(glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.x) &amp;&amp; std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.y) &amp;&amp; std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.z);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">struct </span>RandomStream {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="BeamEffect_8cpp.html#a4ddbf000644c5c97e9c3bc78b5785f55">   18</a></span>    std::uint32_t <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = 1;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">float</span> signedUnit() {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> ^= <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &lt;&lt; 13u;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> ^= <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &gt;&gt; 17u;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> ^= <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &lt;&lt; 5u;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &gt;&gt; 8u) * (2.f / 16777216.f) - 1.f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>glm::vec3 safeNormal(glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, glm::vec3 fallback) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> = glm::length(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> &gt; 1e-6f &amp;&amp; std::isfinite(<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>) ? <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> / <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> : fallback;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keywordtype">void</span> appendRibbon(TrailMeshSnapshot&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <span class="keyword">const</span> std::vector&lt;glm::vec3&gt;&amp; centers,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                  <span class="keyword">const</span> glm::vec3&amp; cameraForward, <span class="keywordtype">float</span> widthStart, <span class="keywordtype">float</span> widthEnd,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                  <span class="keywordtype">float</span> alphaStart, <span class="keywordtype">float</span> alphaEnd) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (centers.size() &lt; 2) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> std::uint32_t base = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.size());</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; centers.size(); ++i) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(i) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(centers.size() - 1u);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = centers[i == 0 ? 0 : i - 1u];</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> glm::vec3 next = centers[std::min(i + 1u, centers.size() - 1u)];</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> = safeNormal(next - <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>, glm::vec3(0.f, 1.f, 0.f));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        glm::vec3 <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = glm::cross(cameraForward, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (glm::length(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>) &lt;= 1e-6f) <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = glm::cross(glm::vec3(0.f, 1.f, 0.f), <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (glm::length(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>) &lt;= 1e-6f) <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = glm::vec3(1.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = glm::normalize(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#aa7f0235de7acde8ba613b4ee33f404be">halfWidth</a> = 0.5f * (widthStart + (widthEnd - widthStart) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> alpha = alphaStart + (alphaEnd - alphaStart) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.push_back({centers[i] - <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> * <a class="code hl_variable" href="PlacementSystem_8cpp.html#aa7f0235de7acde8ba613b4ee33f404be">halfWidth</a>, {<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0.f}, alpha});</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.push_back({centers[i] + <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> * <a class="code hl_variable" href="PlacementSystem_8cpp.html#aa7f0235de7acde8ba613b4ee33f404be">halfWidth</a>, {<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 1.f}, alpha});</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (i == 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> std::uint32_t left0 = base + <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>((i - 1u) * 2u);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> std::uint32_t right0 = left0 + 1u;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> std::uint32_t left1 = base + <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(i * 2u);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">const</span> std::uint32_t right1 = left1 + 1u;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.indices.insert(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.indices.end(), {left0, right0, left1, left1, right0, right1});</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>std::vector&lt;glm::vec3&gt; makeCenters(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                   std::uint32_t segments, <span class="keywordtype">float</span> amplitude, <span class="keywordtype">float</span> cycles,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                   <span class="keyword">const</span> glm::vec3&amp; cameraForward, RandomStream&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;glm::vec3&gt; centers;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    centers.reserve(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(segments) + 1u);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> glm::vec3 direction = safeNormal(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, glm::vec3(0.f, 1.f, 0.f));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    glm::vec3 <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = safeNormal(glm::cross(cameraForward, direction), glm::vec3(1.f, 0.f, 0.f));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    glm::vec3 up = safeNormal(glm::cross(direction, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>), glm::vec3(0.f, 1.f, 0.f));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">for</span> (std::uint32_t i = 0; i &lt;= segments; ++i) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(i) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(segments);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> envelope = std::sin(glm::pi&lt;float&gt;() * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> wave = std::sin(glm::two_pi&lt;float&gt;() * cycles * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> + <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.signedUnit());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> glm::vec3 noise =</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> * (wave + <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.signedUnit() * 0.5f) + up * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.signedUnit()) *</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            (amplitude * envelope);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        centers.push_back(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> + (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> + noise);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    centers.front() = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    centers.back() = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">return</span> centers;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#ab062e3936b44b1e673e425bf287ae595">   84</a></span><a class="code hl_struct" href="structeve_1_1stylize_1_1BeamBuildResult.html">BeamBuildResult</a> <a class="code hl_function" href="namespaceeve_1_1stylize.html#ab062e3936b44b1e673e425bf287ae595">buildBeamEffect</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                <span class="keyword">const</span> glm::vec3&amp; cameraForward,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1BeamEffectConfig.html">BeamEffectConfig</a>&amp; config) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1BeamBuildResult.html">BeamBuildResult</a> result;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (!finite(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>) || !finite(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>) || !finite(cameraForward) || config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a8cf7473ea8bd4aafdb7cf13648ce4a4c">segments</a> == 0 ||</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#abba7ff9cf77f3c776b92d0a49566a88d">branchSegments</a> == 0 || !std::isfinite(config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#af47a19835b2bdfe4a87c5d0abef5c22d">widthStart</a>) ||</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        !std::isfinite(config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2ea219095e2820c50d312a16fc228619">widthEnd</a>) || config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#af47a19835b2bdfe4a87c5d0abef5c22d">widthStart</a> &lt;= 0.f || config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2ea219095e2820c50d312a16fc228619">widthEnd</a> &lt; 0.f ||</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        !std::isfinite(config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2a674866d6e757836a7fa6d1b6b7c1a1">noiseAmplitude</a>) || config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2a674866d6e757836a7fa6d1b6b7c1a1">noiseAmplitude</a> &lt; 0.f ||</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        !std::isfinite(config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a71c81ac77f3ae107225b1735f84fcdb8">branchLength</a>) || config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a71c81ac77f3ae107225b1735f84fcdb8">branchLength</a> &lt; 0.f) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        result.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamBuildResult.html#a6ef9bad9a688110e5ad440926ef968e9">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca636bc5ca1e0ceb3e4c67067618d7ae09">BeamBuildStatus::InvalidConfig</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">const</span> glm::vec3 delta = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> = glm::length(delta);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>) || <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> &lt;= 1e-6f) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        result.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamBuildResult.html#a6ef9bad9a688110e5ad440926ef968e9">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca75b2a10bc45a376a89134a0631491c33">BeamBuildStatus::DegenerateInput</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    RandomStream <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>{config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a81044864b112d2bae7940339e261ec2f">randomSeed</a> ? config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a81044864b112d2bae7940339e261ec2f">randomSeed</a> : 1u};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> = safeNormal(cameraForward, glm::vec3(0.f, 0.f, -1.f));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">auto</span> centers = makeCenters(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a8cf7473ea8bd4aafdb7cf13648ce4a4c">segments</a>, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2a674866d6e757836a7fa6d1b6b7c1a1">noiseAmplitude</a>,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                               config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a092e62cc551e24c54a2e068cc87aa17b">noiseCycles</a>, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    appendRibbon(result.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamBuildResult.html#af0366b97d117dfa71cb96c9ffdff10ef">mesh</a>, centers, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#af47a19835b2bdfe4a87c5d0abef5c22d">widthStart</a>, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2ea219095e2820c50d312a16fc228619">widthEnd</a>,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                 config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a9315f3bd3ed888bc0d3c8759e8cf6bb0">alphaStart</a>, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a819294f6a9e4204d67ff062952d8c0e3">alphaEnd</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">const</span> glm::vec3 direction = delta / <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    glm::vec3 <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = safeNormal(glm::cross(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, direction), glm::vec3(1.f, 0.f, 0.f));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    glm::vec3 up = safeNormal(glm::cross(direction, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>), glm::vec3(0.f, 1.f, 0.f));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">for</span> (std::uint32_t branch = 0; branch &lt; config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#aa3fc00d87d9bb9bad06308cecdb4941a">branchCount</a>; ++branch) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(branch + 1u) /</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                        <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#aa3fc00d87d9bb9bad06308cecdb4941a">branchCount</a> + 1u);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">const</span> std::size_t parentIndex = std::min(</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(std::round(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a8cf7473ea8bd4aafdb7cf13648ce4a4c">segments</a>)), centers.size() - 1u);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">const</span> glm::vec3 branchDirection = safeNormal(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            direction * 0.35f + <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.signedUnit() + up * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.signedUnit(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keyword">const</span> glm::vec3 branchStart = centers[parentIndex];</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">const</span> glm::vec3 branchEnd =</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            branchStart + branchDirection * (<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> * config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a71c81ac77f3ae107225b1735f84fcdb8">branchLength</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keyword">auto</span> branchCenters = makeCenters(branchStart, branchEnd, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#abba7ff9cf77f3c776b92d0a49566a88d">branchSegments</a>,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                         config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2a674866d6e757836a7fa6d1b6b7c1a1">noiseAmplitude</a> * 0.5f, config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a092e62cc551e24c54a2e068cc87aa17b">noiseCycles</a>,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                         <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        appendRibbon(result.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamBuildResult.html#af0366b97d117dfa71cb96c9ffdff10ef">mesh</a>, branchCenters, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                     config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#af47a19835b2bdfe4a87c5d0abef5c22d">widthStart</a> * config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#ac006597c0145419fc54aa53c4ed4761d">branchWidthScale</a>, 0.f,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                     config.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamEffectConfig.html#a9315f3bd3ed888bc0d3c8759e8cf6bb0">alphaStart</a>, 0.f);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    result.<a class="code hl_variable" href="structeve_1_1stylize_1_1BeamBuildResult.html#a6ef9bad9a688110e5ad440926ef968e9">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca2d9f7fa495972ca9d3c905d6546a2a2b">BeamBuildStatus::Built</a>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}</div>
+</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aBeamEffect_8h_html"><div class="ttname"><a href="BeamEffect_8h.html">BeamEffect.h</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_aa7f0235de7acde8ba613b4ee33f404be"><div class="ttname"><a href="PlacementSystem_8cpp.html#aa7f0235de7acde8ba613b4ee33f404be">halfWidth</a></div><div class="ttdeci">float halfWidth</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00043">PlacementSystem.cpp:43</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00682">RenderSystem3D.cpp:682</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_abeba743eb8c6a0bb955d78e10ab27d50"><div class="ttname"><a href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a></div><div class="ttdeci">Battle::Random random</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00139">TacticsPersistence.cpp:139</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_af7594145399eb356e6b338bf7d5a5c54"><div class="ttname"><a href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a></div><div class="ttdeci">ecs::EntityHandle side</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00114">TacticsPersistence.cpp:114</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a51980944e5dd0410d785767bcfad72aca2d9f7fa495972ca9d3c905d6546a2a2b"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca2d9f7fa495972ca9d3c905d6546a2a2b">eve::stylize::BeamBuildStatus::Built</a></div><div class="ttdeci">@ Built</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a51980944e5dd0410d785767bcfad72aca636bc5ca1e0ceb3e4c67067618d7ae09"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca636bc5ca1e0ceb3e4c67067618d7ae09">eve::stylize::BeamBuildStatus::InvalidConfig</a></div><div class="ttdeci">@ InvalidConfig</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a51980944e5dd0410d785767bcfad72aca75b2a10bc45a376a89134a0631491c33"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a51980944e5dd0410d785767bcfad72aca75b2a10bc45a376a89134a0631491c33">eve::stylize::BeamBuildStatus::DegenerateInput</a></div><div class="ttdeci">@ DegenerateInput</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ab062e3936b44b1e673e425bf287ae595"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ab062e3936b44b1e673e425bf287ae595">eve::stylize::buildBeamEffect</a></div><div class="ttdeci">BeamBuildResult buildBeamEffect(const glm::vec3 &amp;start, const glm::vec3 &amp;end, const glm::vec3 &amp;cameraForward, const BeamEffectConfig &amp;config)</div><div class="ttdoc">Generate a camera-facing beam or branched lightning ribbon.</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8cpp_source.html#l00084">BeamEffect.cpp:84</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamBuildResult_html"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamBuildResult.html">eve::stylize::BeamBuildResult</a></div><div class="ttdoc">Owning beam generation result suitable for MeshEffectRenderer::submitTrail.</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00031">BeamEffect.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamBuildResult_html_a6ef9bad9a688110e5ad440926ef968e9"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamBuildResult.html#a6ef9bad9a688110e5ad440926ef968e9">eve::stylize::BeamBuildResult::status</a></div><div class="ttdeci">BeamBuildStatus status</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00032">BeamEffect.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamBuildResult_html_af0366b97d117dfa71cb96c9ffdff10ef"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamBuildResult.html#af0366b97d117dfa71cb96c9ffdff10ef">eve::stylize::BeamBuildResult::mesh</a></div><div class="ttdeci">TrailMeshSnapshot mesh</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00033">BeamEffect.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html">eve::stylize::BeamEffectConfig</a></div><div class="ttdoc">Shape and deterministic noise controls for one 3D beam or lightning arc.</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00012">BeamEffect.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a092e62cc551e24c54a2e068cc87aa17b"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a092e62cc551e24c54a2e068cc87aa17b">eve::stylize::BeamEffectConfig::noiseCycles</a></div><div class="ttdeci">float noiseCycles</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00019">BeamEffect.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a2a674866d6e757836a7fa6d1b6b7c1a1"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2a674866d6e757836a7fa6d1b6b7c1a1">eve::stylize::BeamEffectConfig::noiseAmplitude</a></div><div class="ttdeci">float noiseAmplitude</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00018">BeamEffect.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a2ea219095e2820c50d312a16fc228619"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a2ea219095e2820c50d312a16fc228619">eve::stylize::BeamEffectConfig::widthEnd</a></div><div class="ttdeci">float widthEnd</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00015">BeamEffect.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a71c81ac77f3ae107225b1735f84fcdb8"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a71c81ac77f3ae107225b1735f84fcdb8">eve::stylize::BeamEffectConfig::branchLength</a></div><div class="ttdeci">float branchLength</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00023">BeamEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a81044864b112d2bae7940339e261ec2f"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a81044864b112d2bae7940339e261ec2f">eve::stylize::BeamEffectConfig::randomSeed</a></div><div class="ttdeci">std::uint32_t randomSeed</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00020">BeamEffect.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a819294f6a9e4204d67ff062952d8c0e3"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a819294f6a9e4204d67ff062952d8c0e3">eve::stylize::BeamEffectConfig::alphaEnd</a></div><div class="ttdeci">float alphaEnd</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00017">BeamEffect.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a8cf7473ea8bd4aafdb7cf13648ce4a4c"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a8cf7473ea8bd4aafdb7cf13648ce4a4c">eve::stylize::BeamEffectConfig::segments</a></div><div class="ttdeci">std::uint32_t segments</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00013">BeamEffect.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_a9315f3bd3ed888bc0d3c8759e8cf6bb0"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#a9315f3bd3ed888bc0d3c8759e8cf6bb0">eve::stylize::BeamEffectConfig::alphaStart</a></div><div class="ttdeci">float alphaStart</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00016">BeamEffect.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_aa3fc00d87d9bb9bad06308cecdb4941a"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#aa3fc00d87d9bb9bad06308cecdb4941a">eve::stylize::BeamEffectConfig::branchCount</a></div><div class="ttdeci">std::uint32_t branchCount</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00021">BeamEffect.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_abba7ff9cf77f3c776b92d0a49566a88d"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#abba7ff9cf77f3c776b92d0a49566a88d">eve::stylize::BeamEffectConfig::branchSegments</a></div><div class="ttdeci">std::uint32_t branchSegments</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00022">BeamEffect.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_ac006597c0145419fc54aa53c4ed4761d"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#ac006597c0145419fc54aa53c4ed4761d">eve::stylize::BeamEffectConfig::branchWidthScale</a></div><div class="ttdeci">float branchWidthScale</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00024">BeamEffect.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1BeamEffectConfig_html_af47a19835b2bdfe4a87c5d0abef5c22d"><div class="ttname"><a href="structeve_1_1stylize_1_1BeamEffectConfig.html#af47a19835b2bdfe4a87c5d0abef5c22d">eve::stylize::BeamEffectConfig::widthStart</a></div><div class="ttdeci">float widthStart</div><div class="ttdef"><b>Definition</b> <a href="BeamEffect_8h_source.html#l00014">BeamEffect.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

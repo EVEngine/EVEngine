@@ -1,0 +1,592 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::FlexItemSpec结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html">FlexItemSpec</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1ui_1_1FlexItemSpec-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::FlexItemSpec结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Layout_8h_source.html">Layout.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a66e3168b18288240ecf49143e7010d03" id="r_a66e3168b18288240ecf49143e7010d03"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a66e3168b18288240ecf49143e7010d03">basisMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66e3168b18288240ecf49143e7010d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fb83d2cb8fd630b5ac833795c5f19a" id="r_a78fb83d2cb8fd630b5ac833795c5f19a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a78fb83d2cb8fd630b5ac833795c5f19a">basisCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a78fb83d2cb8fd630b5ac833795c5f19a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fccd0bd2e819757b62030ce317ea437" id="r_a4fccd0bd2e819757b62030ce317ea437"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a4fccd0bd2e819757b62030ce317ea437">marginBefore</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4fccd0bd2e819757b62030ce317ea437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20334fe0f3a60a091c9859386a0b77f5" id="r_a20334fe0f3a60a091c9859386a0b77f5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a20334fe0f3a60a091c9859386a0b77f5">marginAfter</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a20334fe0f3a60a091c9859386a0b77f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ab3e5688d1112c1486dbff4725e1b96" id="r_a3ab3e5688d1112c1486dbff4725e1b96"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a3ab3e5688d1112c1486dbff4725e1b96">marginCrossBefore</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3ab3e5688d1112c1486dbff4725e1b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9cb8251227b164af2e7b6f1dc1e1878" id="r_ab9cb8251227b164af2e7b6f1dc1e1878"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#ab9cb8251227b164af2e7b6f1dc1e1878">marginCrossAfter</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab9cb8251227b164af2e7b6f1dc1e1878"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bfa701c193061a24f93c896d21f57cd" id="r_a9bfa701c193061a24f93c896d21f57cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a9bfa701c193061a24f93c896d21f57cd">flexGrow</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9bfa701c193061a24f93c896d21f57cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affcead5b48b00909acf122bf05155fd5" id="r_affcead5b48b00909acf122bf05155fd5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#affcead5b48b00909acf122bf05155fd5">isSpacer</a> = false</td></tr>
+<tr class="separator:affcead5b48b00909acf122bf05155fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5c380d039dff5d3eaaa87b77643b0b0" id="r_ae5c380d039dff5d3eaaa87b77643b0b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#ae5c380d039dff5d3eaaa87b77643b0b0">absolute</a> = false</td></tr>
+<tr class="separator:ae5c380d039dff5d3eaaa87b77643b0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44e8916759602eb59c612274417a8e7e" id="r_a44e8916759602eb59c612274417a8e7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a44e8916759602eb59c612274417a8e7e">anchorMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a44e8916759602eb59c612274417a8e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad85f3a7316481981717577a94481e490" id="r_ad85f3a7316481981717577a94481e490"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#ad85f3a7316481981717577a94481e490">anchorCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad85f3a7316481981717577a94481e490"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a526ccface785e21a791e73bd7ca15f17" id="r_a526ccface785e21a791e73bd7ca15f17"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a526ccface785e21a791e73bd7ca15f17">posMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a526ccface785e21a791e73bd7ca15f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2258a948e3074ee1c166ac021f195277" id="r_a2258a948e3074ee1c166ac021f195277"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a2258a948e3074ee1c166ac021f195277">posCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2258a948e3074ee1c166ac021f195277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b7368ba19e5713dc6d22e5dbdeadfa6" id="r_a5b7368ba19e5713dc6d22e5dbdeadfa6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a5b7368ba19e5713dc6d22e5dbdeadfa6">percentMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5b7368ba19e5713dc6d22e5dbdeadfa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f512d6af254375900eb9e7999285587" id="r_a8f512d6af254375900eb9e7999285587"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f512d6af254375900eb9e7999285587">percentCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8f512d6af254375900eb9e7999285587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9442fde025bec87e272671837ee4eb" id="r_a8f9442fde025bec87e272671837ee4eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f9442fde025bec87e272671837ee4eb">minMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8f9442fde025bec87e272671837ee4eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12717e2345d349ae68071c937a6df666" id="r_a12717e2345d349ae68071c937a6df666"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a12717e2345d349ae68071c937a6df666">maxMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a12717e2345d349ae68071c937a6df666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c5696136d9513004b2bfce8fa90ec5b" id="r_a3c5696136d9513004b2bfce8fa90ec5b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a3c5696136d9513004b2bfce8fa90ec5b">minCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3c5696136d9513004b2bfce8fa90ec5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97385d4b0dd0e1faad8d3db481ac4cfb" id="r_a97385d4b0dd0e1faad8d3db481ac4cfb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a97385d4b0dd0e1faad8d3db481ac4cfb">maxCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a97385d4b0dd0e1faad8d3db481ac4cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebfad07e842b621a0337af95e6450a60" id="r_aebfad07e842b621a0337af95e6450a60"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#aebfad07e842b621a0337af95e6450a60">explicitMain</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aebfad07e842b621a0337af95e6450a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a0d190fb7d767582cf9aa91a524ce37" id="r_a4a0d190fb7d767582cf9aa91a524ce37"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#a4a0d190fb7d767582cf9aa91a524ce37">explicitCross</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4a0d190fb7d767582cf9aa91a524ce37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa351a0d5a38bce9652c9480384aed335" id="r_aa351a0d5a38bce9652c9480384aed335"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#aa351a0d5a38bce9652c9480384aed335">alignSelf</a> = -1</td></tr>
+<tr class="separator:aa351a0d5a38bce9652c9480384aed335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Two-phase retained layout: measure — <code><a class="el" href="namespaceeve_1_1ui.html#a718c393a0584399febb4df7375658d9b">measureTree()</a></code> computes real desired sizes (recursive, includes nested containers, text metrics, margins/padding/min/max); arrange — <code><a class="el" href="namespaceeve_1_1ui.html#acea1706c110e7cd7a08878a41d574d8e">flexArrange()</a></code> is a pure function that distributes flex items into rects given measured sizes + layout props.</p>
+<p>Rendering consumes the arranged rects instead of guessing sizes from the <a class="el" href="namespaceImGui.html">ImGui</a> cursor, which fixes nested elastic layouts and enables anchors, percentage sizing, margins and absolute placement. One flex item as seen by the arrange pass (already measured). </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ae5c380d039dff5d3eaaa87b77643b0b0" name="ae5c380d039dff5d3eaaa87b77643b0b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c380d039dff5d3eaaa87b77643b0b0">&#9670;&#160;</a></span>absolute</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::FlexItemSpec::absolute = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa351a0d5a38bce9652c9480384aed335" name="aa351a0d5a38bce9652c9480384aed335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa351a0d5a38bce9652c9480384aed335">&#9670;&#160;</a></span>alignSelf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::FlexItemSpec::alignSelf = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>-1 = inherit container align; otherwise FlexAlign value (int). </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad85f3a7316481981717577a94481e490" name="ad85f3a7316481981717577a94481e490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad85f3a7316481981717577a94481e490">&#9670;&#160;</a></span>anchorCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::anchorCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00025">eve::ui::flexArrange()</a>.</p>
+
+</div>
+</div>
+<a id="a44e8916759602eb59c612274417a8e7e" name="a44e8916759602eb59c612274417a8e7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44e8916759602eb59c612274417a8e7e">&#9670;&#160;</a></span>anchorMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::anchorMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00025">eve::ui::flexArrange()</a>.</p>
+
+</div>
+</div>
+<a id="a78fb83d2cb8fd630b5ac833795c5f19a" name="a78fb83d2cb8fd630b5ac833795c5f19a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fb83d2cb8fd630b5ac833795c5f19a">&#9670;&#160;</a></span>basisCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::basisCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66e3168b18288240ecf49143e7010d03" name="a66e3168b18288240ecf49143e7010d03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e3168b18288240ecf49143e7010d03">&#9670;&#160;</a></span>basisMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::basisMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4a0d190fb7d767582cf9aa91a524ce37" name="a4a0d190fb7d767582cf9aa91a524ce37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a0d190fb7d767582cf9aa91a524ce37">&#9670;&#160;</a></span>explicitCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::explicitCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aebfad07e842b621a0337af95e6450a60" name="aebfad07e842b621a0337af95e6450a60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebfad07e842b621a0337af95e6450a60">&#9670;&#160;</a></span>explicitMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::explicitMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00025">eve::ui::flexArrange()</a>.</p>
+
+</div>
+</div>
+<a id="a9bfa701c193061a24f93c896d21f57cd" name="a9bfa701c193061a24f93c896d21f57cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bfa701c193061a24f93c896d21f57cd">&#9670;&#160;</a></span>flexGrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::flexGrow = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affcead5b48b00909acf122bf05155fd5" name="affcead5b48b00909acf122bf05155fd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affcead5b48b00909acf122bf05155fd5">&#9670;&#160;</a></span>isSpacer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::FlexItemSpec::isSpacer = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20334fe0f3a60a091c9859386a0b77f5" name="a20334fe0f3a60a091c9859386a0b77f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20334fe0f3a60a091c9859386a0b77f5">&#9670;&#160;</a></span>marginAfter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::marginAfter = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fccd0bd2e819757b62030ce317ea437" name="a4fccd0bd2e819757b62030ce317ea437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fccd0bd2e819757b62030ce317ea437">&#9670;&#160;</a></span>marginBefore</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::marginBefore = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9cb8251227b164af2e7b6f1dc1e1878" name="ab9cb8251227b164af2e7b6f1dc1e1878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9cb8251227b164af2e7b6f1dc1e1878">&#9670;&#160;</a></span>marginCrossAfter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::marginCrossAfter = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ab3e5688d1112c1486dbff4725e1b96" name="a3ab3e5688d1112c1486dbff4725e1b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ab3e5688d1112c1486dbff4725e1b96">&#9670;&#160;</a></span>marginCrossBefore</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::marginCrossBefore = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97385d4b0dd0e1faad8d3db481ac4cfb" name="a97385d4b0dd0e1faad8d3db481ac4cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97385d4b0dd0e1faad8d3db481ac4cfb">&#9670;&#160;</a></span>maxCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::maxCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12717e2345d349ae68071c937a6df666" name="a12717e2345d349ae68071c937a6df666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12717e2345d349ae68071c937a6df666">&#9670;&#160;</a></span>maxMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::maxMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c5696136d9513004b2bfce8fa90ec5b" name="a3c5696136d9513004b2bfce8fa90ec5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c5696136d9513004b2bfce8fa90ec5b">&#9670;&#160;</a></span>minCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::minCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f9442fde025bec87e272671837ee4eb" name="a8f9442fde025bec87e272671837ee4eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f9442fde025bec87e272671837ee4eb">&#9670;&#160;</a></span>minMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::minMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f512d6af254375900eb9e7999285587" name="a8f512d6af254375900eb9e7999285587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f512d6af254375900eb9e7999285587">&#9670;&#160;</a></span>percentCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::percentCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b7368ba19e5713dc6d22e5dbdeadfa6" name="a5b7368ba19e5713dc6d22e5dbdeadfa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b7368ba19e5713dc6d22e5dbdeadfa6">&#9670;&#160;</a></span>percentMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::percentMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2258a948e3074ee1c166ac021f195277" name="a2258a948e3074ee1c166ac021f195277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2258a948e3074ee1c166ac021f195277">&#9670;&#160;</a></span>posCross</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::posCross = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a526ccface785e21a791e73bd7ca15f17" name="a526ccface785e21a791e73bd7ca15f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a526ccface785e21a791e73bd7ca15f17">&#9670;&#160;</a></span>posMain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::FlexItemSpec::posMain = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Layout_8h_source.html">Layout.h</a> 第 <a class="el" href="Layout_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="Layout_8h_source.html">Layout.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

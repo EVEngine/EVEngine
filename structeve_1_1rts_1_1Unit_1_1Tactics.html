@@ -1,0 +1,605 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::Unit::Tactics结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html">Tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1Unit_1_1Tactics-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::Unit::Tactics结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Escort geometry and combat-group coordination state.  
+ <a href="structeve_1_1rts_1_1Unit_1_1Tactics.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:af74f28c5033d08a133ecb33f5ce3ab8e" id="r_af74f28c5033d08a133ecb33f5ce3ab8e"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#af74f28c5033d08a133ecb33f5ce3ab8e">combatGroup</a> = 0</td></tr>
+<tr class="separator:af74f28c5033d08a133ecb33f5ce3ab8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab456b43b0a43d9fb7742b594a33cc155" id="r_ab456b43b0a43d9fb7742b594a33cc155"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#ab456b43b0a43d9fb7742b594a33cc155">threatSector</a> = 0</td></tr>
+<tr class="separator:ab456b43b0a43d9fb7742b594a33cc155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ec269118853887afd85a6a3f93365ae" id="r_a3ec269118853887afd85a6a3f93365ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a3ec269118853887afd85a6a3f93365ae">coordinatedVolleyInterval</a> = 0.0f</td></tr>
+<tr class="separator:a3ec269118853887afd85a6a3f93365ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c07b62e36410da594a871d8578827fb" id="r_a6c07b62e36410da594a871d8578827fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a6c07b62e36410da594a871d8578827fb">volleyReleaseRemaining</a> = 0.0f</td></tr>
+<tr class="separator:a6c07b62e36410da594a871d8578827fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00706aff2477481fa669d37806f7451a" id="r_a00706aff2477481fa669d37806f7451a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a00706aff2477481fa669d37806f7451a">fireControlEffectiveness</a> = 1.0f</td></tr>
+<tr class="separator:a00706aff2477481fa669d37806f7451a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40302cbf91ec698b3e9572b614d8ff83" id="r_a40302cbf91ec698b3e9572b614d8ff83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a40302cbf91ec698b3e9572b614d8ff83">volleyHolding</a> = false</td></tr>
+<tr class="separator:a40302cbf91ec698b3e9572b614d8ff83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3eb6f250866d24bf875e56f8546b700" id="r_ad3eb6f250866d24bf875e56f8546b700"><td class="memItemLeft" align="right" valign="top">ecs::EntityHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#ad3eb6f250866d24bf875e56f8546b700">escortTarget</a> {}</td></tr>
+<tr class="separator:ad3eb6f250866d24bf875e56f8546b700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce1d9ee0f49f75344600b911bf1ff51" id="r_acce1d9ee0f49f75344600b911bf1ff51"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#acce1d9ee0f49f75344600b911bf1ff51">escortOffsetX</a> = 0.0f</td></tr>
+<tr class="separator:acce1d9ee0f49f75344600b911bf1ff51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2613dab9a22eae4f42d64a9fe82a656" id="r_ad2613dab9a22eae4f42d64a9fe82a656"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#ad2613dab9a22eae4f42d64a9fe82a656">escortOffsetY</a> = 0.0f</td></tr>
+<tr class="separator:ad2613dab9a22eae4f42d64a9fe82a656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ed1bd1c0c4fc5ccda1a4bcf863f6877" id="r_a0ed1bd1c0c4fc5ccda1a4bcf863f6877"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a0ed1bd1c0c4fc5ccda1a4bcf863f6877">protectionRange</a> = 8.0f</td></tr>
+<tr class="separator:a0ed1bd1c0c4fc5ccda1a4bcf863f6877"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46fd1b6e6435650dff5e3d88dc671921" id="r_a46fd1b6e6435650dff5e3d88dc671921"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a46fd1b6e6435650dff5e3d88dc671921">guardX</a> = 0.0f</td></tr>
+<tr class="separator:a46fd1b6e6435650dff5e3d88dc671921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b25e5373be9595d4360d9ad5b605482" id="r_a5b25e5373be9595d4360d9ad5b605482"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a5b25e5373be9595d4360d9ad5b605482">guardY</a> = 0.0f</td></tr>
+<tr class="separator:a5b25e5373be9595d4360d9ad5b605482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f9ac74c702c7d25387be85bd30e6c5" id="r_a73f9ac74c702c7d25387be85bd30e6c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a73f9ac74c702c7d25387be85bd30e6c5">guardSet</a> = false</td></tr>
+<tr class="separator:a73f9ac74c702c7d25387be85bd30e6c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd8d0f69baef19aadc2f85c4659f7e83" id="r_abd8d0f69baef19aadc2f85c4659f7e83"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#abd8d0f69baef19aadc2f85c4659f7e83">escortScreenSector</a> = 0</td></tr>
+<tr class="separator:abd8d0f69baef19aadc2f85c4659f7e83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a501dff8b47157924d92eb1f65d2c3acd" id="r_a501dff8b47157924d92eb1f65d2c3acd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a501dff8b47157924d92eb1f65d2c3acd">escortSectorMatched</a> = false</td></tr>
+<tr class="separator:a501dff8b47157924d92eb1f65d2c3acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b27a53893e8b3c78a30d79355f28db4" id="r_a9b27a53893e8b3c78a30d79355f28db4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a9b27a53893e8b3c78a30d79355f28db4">escortReinforcing</a> = false</td></tr>
+<tr class="separator:a9b27a53893e8b3c78a30d79355f28db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22f6e8eaf2ab7d8f050d88c7c8537ff" id="r_af22f6e8eaf2ab7d8f050d88c7c8537ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#af22f6e8eaf2ab7d8f050d88c7c8537ff">escortReinforcementSector</a> = 0</td></tr>
+<tr class="separator:af22f6e8eaf2ab7d8f050d88c7c8537ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a967d17909b88ed6b315a45ae7620e1f7" id="r_a967d17909b88ed6b315a45ae7620e1f7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a967d17909b88ed6b315a45ae7620e1f7">escortRearGuard</a> = false</td></tr>
+<tr class="separator:a967d17909b88ed6b315a45ae7620e1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab677ac474a997e5d7060249d48e12732" id="r_ab677ac474a997e5d7060249d48e12732"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#ab677ac474a997e5d7060249d48e12732">escortInterceptTarget</a></td></tr>
+<tr class="separator:ab677ac474a997e5d7060249d48e12732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84b04bbe2938743dda71803a20701b10" id="r_a84b04bbe2938743dda71803a20701b10"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a84b04bbe2938743dda71803a20701b10">escortHandoffCount</a> = 0</td></tr>
+<tr class="separator:a84b04bbe2938743dda71803a20701b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf9b61f2dc0e893d001d9a2c32e3b11e" id="r_aaf9b61f2dc0e893d001d9a2c32e3b11e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#aaf9b61f2dc0e893d001d9a2c32e3b11e">retreatFireTeam</a> = -1</td></tr>
+<tr class="separator:aaf9b61f2dc0e893d001d9a2c32e3b11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4185d9afe92e89bae911b7cbd29f6e3d" id="r_a4185d9afe92e89bae911b7cbd29f6e3d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#a4185d9afe92e89bae911b7cbd29f6e3d">retreatCoverElapsed</a> = 0.0f</td></tr>
+<tr class="separator:a4185d9afe92e89bae911b7cbd29f6e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab151a0e5cc288d6df98913fda4de6de3" id="r_ab151a0e5cc288d6df98913fda4de6de3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Tactics.html#ab151a0e5cc288d6df98913fda4de6de3">retreatCovering</a> = false</td></tr>
+<tr class="separator:ab151a0e5cc288d6df98913fda4de6de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Escort geometry and combat-group coordination state. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00715">715</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af74f28c5033d08a133ecb33f5ce3ab8e" name="af74f28c5033d08a133ecb33f5ce3ab8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74f28c5033d08a133ecb33f5ce3ab8e">&#9670;&#160;</a></span>combatGroup</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::rts::Unit::Tactics::combatGroup = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00716">716</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ec269118853887afd85a6a3f93365ae" name="a3ec269118853887afd85a6a3f93365ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ec269118853887afd85a6a3f93365ae">&#9670;&#160;</a></span>coordinatedVolleyInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::coordinatedVolleyInterval = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00718">718</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84b04bbe2938743dda71803a20701b10" name="a84b04bbe2938743dda71803a20701b10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84b04bbe2938743dda71803a20701b10">&#9670;&#160;</a></span>escortHandoffCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::rts::Unit::Tactics::escortHandoffCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00735">735</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab677ac474a997e5d7060249d48e12732" name="ab677ac474a997e5d7060249d48e12732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab677ac474a997e5d7060249d48e12732">&#9670;&#160;</a></span>escortInterceptTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::Unit::Tactics::escortInterceptTarget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00734">734</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acce1d9ee0f49f75344600b911bf1ff51" name="acce1d9ee0f49f75344600b911bf1ff51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce1d9ee0f49f75344600b911bf1ff51">&#9670;&#160;</a></span>escortOffsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::escortOffsetX = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00723">723</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2613dab9a22eae4f42d64a9fe82a656" name="ad2613dab9a22eae4f42d64a9fe82a656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2613dab9a22eae4f42d64a9fe82a656">&#9670;&#160;</a></span>escortOffsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::escortOffsetY = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00724">724</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a967d17909b88ed6b315a45ae7620e1f7" name="a967d17909b88ed6b315a45ae7620e1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a967d17909b88ed6b315a45ae7620e1f7">&#9670;&#160;</a></span>escortRearGuard</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::escortRearGuard = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00733">733</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af22f6e8eaf2ab7d8f050d88c7c8537ff" name="af22f6e8eaf2ab7d8f050d88c7c8537ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af22f6e8eaf2ab7d8f050d88c7c8537ff">&#9670;&#160;</a></span>escortReinforcementSector</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::Unit::Tactics::escortReinforcementSector = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00732">732</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b27a53893e8b3c78a30d79355f28db4" name="a9b27a53893e8b3c78a30d79355f28db4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b27a53893e8b3c78a30d79355f28db4">&#9670;&#160;</a></span>escortReinforcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::escortReinforcing = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00731">731</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd8d0f69baef19aadc2f85c4659f7e83" name="abd8d0f69baef19aadc2f85c4659f7e83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd8d0f69baef19aadc2f85c4659f7e83">&#9670;&#160;</a></span>escortScreenSector</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::Unit::Tactics::escortScreenSector = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00729">729</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a501dff8b47157924d92eb1f65d2c3acd" name="a501dff8b47157924d92eb1f65d2c3acd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a501dff8b47157924d92eb1f65d2c3acd">&#9670;&#160;</a></span>escortSectorMatched</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::escortSectorMatched = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00730">730</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3eb6f250866d24bf875e56f8546b700" name="ad3eb6f250866d24bf875e56f8546b700"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3eb6f250866d24bf875e56f8546b700">&#9670;&#160;</a></span>escortTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::EntityHandle eve::rts::Unit::Tactics::escortTarget {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00722">722</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a00706aff2477481fa669d37806f7451a" name="a00706aff2477481fa669d37806f7451a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00706aff2477481fa669d37806f7451a">&#9670;&#160;</a></span>fireControlEffectiveness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::fireControlEffectiveness = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00720">720</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73f9ac74c702c7d25387be85bd30e6c5" name="a73f9ac74c702c7d25387be85bd30e6c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f9ac74c702c7d25387be85bd30e6c5">&#9670;&#160;</a></span>guardSet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::guardSet = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00728">728</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46fd1b6e6435650dff5e3d88dc671921" name="a46fd1b6e6435650dff5e3d88dc671921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46fd1b6e6435650dff5e3d88dc671921">&#9670;&#160;</a></span>guardX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::guardX = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00726">726</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b25e5373be9595d4360d9ad5b605482" name="a5b25e5373be9595d4360d9ad5b605482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b25e5373be9595d4360d9ad5b605482">&#9670;&#160;</a></span>guardY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::guardY = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00727">727</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ed1bd1c0c4fc5ccda1a4bcf863f6877" name="a0ed1bd1c0c4fc5ccda1a4bcf863f6877"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed1bd1c0c4fc5ccda1a4bcf863f6877">&#9670;&#160;</a></span>protectionRange</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::protectionRange = 8.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00725">725</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4185d9afe92e89bae911b7cbd29f6e3d" name="a4185d9afe92e89bae911b7cbd29f6e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4185d9afe92e89bae911b7cbd29f6e3d">&#9670;&#160;</a></span>retreatCoverElapsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::retreatCoverElapsed = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00737">737</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab151a0e5cc288d6df98913fda4de6de3" name="ab151a0e5cc288d6df98913fda4de6de3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab151a0e5cc288d6df98913fda4de6de3">&#9670;&#160;</a></span>retreatCovering</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::retreatCovering = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00738">738</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf9b61f2dc0e893d001d9a2c32e3b11e" name="aaf9b61f2dc0e893d001d9a2c32e3b11e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf9b61f2dc0e893d001d9a2c32e3b11e">&#9670;&#160;</a></span>retreatFireTeam</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::Unit::Tactics::retreatFireTeam = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00736">736</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab456b43b0a43d9fb7742b594a33cc155" name="ab456b43b0a43d9fb7742b594a33cc155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab456b43b0a43d9fb7742b594a33cc155">&#9670;&#160;</a></span>threatSector</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::Unit::Tactics::threatSector = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00717">717</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40302cbf91ec698b3e9572b614d8ff83" name="a40302cbf91ec698b3e9572b614d8ff83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40302cbf91ec698b3e9572b614d8ff83">&#9670;&#160;</a></span>volleyHolding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Tactics::volleyHolding = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00721">721</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c07b62e36410da594a871d8578827fb" name="a6c07b62e36410da594a871d8578827fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c07b62e36410da594a871d8578827fb">&#9670;&#160;</a></span>volleyReleaseRemaining</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Tactics::volleyReleaseRemaining = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00719">719</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

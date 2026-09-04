@@ -1,0 +1,355 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorAutomationProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorAutomationProvider.html">EditorAutomationProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditorAutomationProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorAutomationProvider类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>MCP/DevTools adapter over command discovery and target coordination.  
+ <a href="classeve_1_1editor_1_1EditorAutomationProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorAutomationProvider_8h_source.html">EditorAutomationProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::EditorAutomationProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1EditorAutomationProvider.png" usemap="#eve::editor::EditorAutomationProvider_map" alt=""/>
+  <map id="eve::editor::EditorAutomationProvider_map" name="eve::editor::EditorAutomationProvider_map">
+<area href="classeve_1_1IEditorAutomation.html" title="Module-neutral bridge from DevTools/MCP to the editor command protocol." alt="eve::IEditorAutomation" shape="rect" coords="0,0,221,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorAutomationProvider_1_1ObservationSession.html">ObservationSession</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a577989d2cbc1a8e31a47a90b8a5496f6" id="r_a577989d2cbc1a8e31a47a90b8a5496f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorAutomationProvider.html#a577989d2cbc1a8e31a47a90b8a5496f6">EditorAutomationProvider</a> (<a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;<a class="el" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>, <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;targets)</td></tr>
+<tr class="memdesc:a577989d2cbc1a8e31a47a90b8a5496f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind borrowed services that outlive this provider.  <br /></td></tr>
+<tr class="separator:a577989d2cbc1a8e31a47a90b8a5496f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a566f023bf1ab716ccc65e4596f42b89e" id="r_a566f023bf1ab716ccc65e4596f42b89e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorAutomationProvider.html#a566f023bf1ab716ccc65e4596f42b89e">~EditorAutomationProvider</a> () override</td></tr>
+<tr class="separator:a566f023bf1ab716ccc65e4596f42b89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6fceff5c92059b5514d8adfa80a3b63" id="r_ad6fceff5c92059b5514d8adfa80a3b63"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorAutomationProvider.html#ad6fceff5c92059b5514d8adfa80a3b63">invoke</a> (const std::string &amp;operation, const std::string &amp;requestJson) override</td></tr>
+<tr class="memdesc:ad6fceff5c92059b5514d8adfa80a3b63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke discovery, inspect, execute, plan, commit, undo or redo.  <br /></td></tr>
+<tr class="separator:ad6fceff5c92059b5514d8adfa80a3b63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86c52147ab9911a3b9d0513f21566de9" id="r_a86c52147ab9911a3b9d0513f21566de9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorAutomationProvider.html#a86c52147ab9911a3b9d0513f21566de9">targetUnregistered</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a86c52147ab9911a3b9d0513f21566de9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear automation state that still borrows an unregistered target.  <br /></td></tr>
+<tr class="separator:a86c52147ab9911a3b9d0513f21566de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IEditorAutomation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IEditorAutomation')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IEditorAutomation.html">eve::IEditorAutomation</a></td></tr>
+<tr class="memitem:a6b4b764179f6e89bc972f26970f1c7f0 inherit pub_methods_classeve_1_1IEditorAutomation" id="r_a6b4b764179f6e89bc972f26970f1c7f0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorAutomation.html#a6b4b764179f6e89bc972f26970f1c7f0">~IEditorAutomation</a> ()=default</td></tr>
+<tr class="separator:a6b4b764179f6e89bc972f26970f1c7f0 inherit pub_methods_classeve_1_1IEditorAutomation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IEditorAutomation"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IEditorAutomation')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IEditorAutomation.html">eve::IEditorAutomation</a></td></tr>
+<tr class="memitem:a8ed4e6a12749424b2450de6b2e98621f inherit pub_static_attribs_classeve_1_1IEditorAutomation" id="r_a8ed4e6a12749424b2450de6b2e98621f"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorAutomation.html#a8ed4e6a12749424b2450de6b2e98621f">capabilityName</a> = &quot;IEditorAutomation&quot;</td></tr>
+<tr class="separator:a8ed4e6a12749424b2450de6b2e98621f inherit pub_static_attribs_classeve_1_1IEditorAutomation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>MCP/DevTools adapter over command discovery and target coordination. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAutomationProvider_8h_source.html">EditorAutomationProvider.h</a> 第 <a class="el" href="EditorAutomationProvider_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a577989d2cbc1a8e31a47a90b8a5496f6" name="a577989d2cbc1a8e31a47a90b8a5496f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a577989d2cbc1a8e31a47a90b8a5496f6">&#9670;&#160;</a></span>EditorAutomationProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorAutomationProvider::EditorAutomationProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;&#160;</td>
+          <td class="paramname"><em>commands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;&#160;</td>
+          <td class="paramname"><em>targets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind borrowed services that outlive this provider. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAutomationProvider_8cpp_source.html">EditorAutomationProvider.cpp</a> 第 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8h_source.html#l00095">eve::editor::EditorSession::setCommandService()</a> , 以及 <a class="el" href="EditorSession_8h_source.html#l00103">eve::editor::EditorSession::setSessionId()</a>.</p>
+
+</div>
+</div>
+<a id="a566f023bf1ab716ccc65e4596f42b89e" name="a566f023bf1ab716ccc65e4596f42b89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a566f023bf1ab716ccc65e4596f42b89e">&#9670;&#160;</a></span>~EditorAutomationProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorAutomationProvider::~EditorAutomationProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad6fceff5c92059b5514d8adfa80a3b63" name="ad6fceff5c92059b5514d8adfa80a3b63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6fceff5c92059b5514d8adfa80a3b63">&#9670;&#160;</a></span>invoke()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorAutomationProvider::invoke </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>requestJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Invoke discovery, inspect, execute, plan, commit, undo or redo. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IEditorAutomation.html#a3fe037f66654ef6f41257d18a69b6ff7">eve::IEditorAutomation</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorAutomationProvider_8cpp_source.html">EditorAutomationProvider.cpp</a> 第 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00254">eve::editor::EditorSession::cancelRetainedPlan()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00208">eve::editor::EditorSession::executeCommandReceipt()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00190">eve::editor::EditorSession::executePlan()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00243">eve::editor::EditorSession::executeRetainedPlan()</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00195">eve::editor::EditorTargetCoordinator::inspect()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00174">eve::editor::EditorSession::planCommand()</a>, <a class="el" href="EditorTransactions_8cpp_source.html#l00045">eve::editor::EditorTransactions::redo()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00215">eve::editor::EditorTargetCoordinator::redo()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00231">eve::editor::EditorSession::retainPlan()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00118">eve::editor::EditorCommandService::supportsPlanning()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="EditorSession_8h_source.html#l00083">eve::editor::EditorSession::transactions()</a>, <a class="el" href="EditorTransactions_8cpp_source.html#l00041">eve::editor::EditorTransactions::undo()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00207">eve::editor::EditorTargetCoordinator::undo()</a>, <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a86c52147ab9911a3b9d0513f21566de9" name="a86c52147ab9911a3b9d0513f21566de9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86c52147ab9911a3b9d0513f21566de9">&#9670;&#160;</a></span>targetUnregistered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorAutomationProvider::targetUnregistered </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear automation state that still borrows an unregistered target. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAutomationProvider_8cpp_source.html">EditorAutomationProvider.cpp</a> 第 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8h_source.html#l00082">eve::editor::EditorSession::boundTargetId()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00264">eve::editor::EditorSession::clearRetainedPlans()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00084">eve::editor::EditorSession::clearTarget()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorAutomationProvider_8h_source.html">EditorAutomationProvider.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorAutomationProvider_8cpp_source.html">EditorAutomationProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

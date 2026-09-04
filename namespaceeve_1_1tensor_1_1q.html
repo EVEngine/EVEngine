@@ -1,0 +1,760 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::q 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor_1_1q.html">q</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::q 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1q_1_1QuantPayload.html">QuantPayload</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ae96108b5240e382a658fb62ba3cbd05a" id="r_ae96108b5240e382a658fb62ba3cbd05a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#ae96108b5240e382a658fb62ba3cbd05a">isQuantDType</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt)</td></tr>
+<tr class="separator:ae96108b5240e382a658fb62ba3cbd05a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ee581f0a6fad59bbf6cdaab8a25ede" id="r_ad1ee581f0a6fad59bbf6cdaab8a25ede"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#ad1ee581f0a6fad59bbf6cdaab8a25ede">quantByteSize</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="separator:ad1ee581f0a6fad59bbf6cdaab8a25ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdc385a30590f03c34f7736b6d69df9c" id="r_afdc385a30590f03c34f7736b6d69df9c"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#afdc385a30590f03c34f7736b6d69df9c">f32ToF16</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:afdc385a30590f03c34f7736b6d69df9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2769405153da1da2f68b9bdc5a42a769" id="r_a2769405153da1da2f68b9bdc5a42a769"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a2769405153da1da2f68b9bdc5a42a769">f16ToF32</a> (uint16_t <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:a2769405153da1da2f68b9bdc5a42a769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad43181f0841354ba1fa09ec7ba355ffd" id="r_ad43181f0841354ba1fa09ec7ba355ffd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#ad43181f0841354ba1fa09ec7ba355ffd">fp8E4M3ToF32</a> (uint8_t <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:ad43181f0841354ba1fa09ec7ba355ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e1b3962b46f1f2b93784d6f98e1eacb" id="r_a1e1b3962b46f1f2b93784d6f98e1eacb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a1e1b3962b46f1f2b93784d6f98e1eacb">fp4E2M1ToF32</a> (uint8_t nib)</td></tr>
+<tr class="separator:a1e1b3962b46f1f2b93784d6f98e1eacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e1f81fd8d04f464eb860bbd70cfb23e" id="r_a3e1f81fd8d04f464eb860bbd70cfb23e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a3e1f81fd8d04f464eb860bbd70cfb23e">floatToEfm</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int expBits, int manBits, int bias)</td></tr>
+<tr class="separator:a3e1f81fd8d04f464eb860bbd70cfb23e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79d07279c79747d91b489e4b42422820" id="r_a79d07279c79747d91b489e4b42422820"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a79d07279c79747d91b489e4b42422820">f32ToFp8E4M3</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:a79d07279c79747d91b489e4b42422820"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad02589604414be80ef2adb7ac693dd2c" id="r_ad02589604414be80ef2adb7ac693dd2c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#ad02589604414be80ef2adb7ac693dd2c">f32ToFp4E2M1</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:ad02589604414be80ef2adb7ac693dd2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a6325b467fdb2c68a29e6a08549436" id="r_a96a6325b467fdb2c68a29e6a08549436"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a96a6325b467fdb2c68a29e6a08549436">efmMaxMagnitude</a> (int expBits, int manBits, int bias)</td></tr>
+<tr class="separator:a96a6325b467fdb2c68a29e6a08549436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99b0f771ed1a430bb61de8deb4315c1a" id="r_a99b0f771ed1a430bb61de8deb4315c1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a99b0f771ed1a430bb61de8deb4315c1a">dequantValue</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, const uint8_t *bytes, const float *scales, int <a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, int <a class="el" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>)</td></tr>
+<tr class="separator:a99b0f771ed1a430bb61de8deb4315c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b7ca0c12144a3c4581752c5c92e6f57" id="r_a0b7ca0c12144a3c4581752c5c92e6f57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a0b7ca0c12144a3c4581752c5c92e6f57">dequantizeAll</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, const uint8_t *bytes, const float *scales, int <a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, float *out)</td></tr>
+<tr class="separator:a0b7ca0c12144a3c4581752c5c92e6f57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a274cb7158dc44a770b9e0ef708ef32a4" id="r_a274cb7158dc44a770b9e0ef708ef32a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1q_1_1QuantPayload.html">QuantPayload</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html#a274cb7158dc44a770b9e0ef708ef32a4">quantize</a> (const float *src, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, int <a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>)</td></tr>
+<tr class="separator:a274cb7158dc44a770b9e0ef708ef32a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a0b7ca0c12144a3c4581752c5c92e6f57" name="a0b7ca0c12144a3c4581752c5c92e6f57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b7ca0c12144a3c4581752c5c92e6f57">&#9670;&#160;</a></span>dequantizeAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::q::dequantizeAll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>scales</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00174">dequantValue()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00210">eve::tensor::Tensor::dequantized()</a>.</p>
+
+</div>
+</div>
+<a id="a99b0f771ed1a430bb61de8deb4315c1a" name="a99b0f771ed1a430bb61de8deb4315c1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99b0f771ed1a430bb61de8deb4315c1a">&#9670;&#160;</a></span>dequantValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::q::dequantValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>scales</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00056">f16ToF32()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">eve::tensor::Fp4E2M1</a>, <a class="el" href="Quant_8h_source.html#l00098">fp4E2M1ToF32()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">eve::tensor::Fp8E4M3</a>, <a class="el" href="Quant_8h_source.html#l00082">fp8E4M3ToF32()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">eve::tensor::Int4</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00204">dequantizeAll()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00196">eve::tensor::Tensor::get()</a>.</p>
+
+</div>
+</div>
+<a id="a96a6325b467fdb2c68a29e6a08549436" name="a96a6325b467fdb2c68a29e6a08549436"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a6325b467fdb2c68a29e6a08549436">&#9670;&#160;</a></span>efmMaxMagnitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::q::efmMaxMagnitude </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>manBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bias</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Largest finite magnitude of an e/m format (used for block scaling). </p>
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00216">quantize()</a>.</p>
+
+</div>
+</div>
+<a id="a2769405153da1da2f68b9bdc5a42a769" name="a2769405153da1da2f68b9bdc5a42a769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2769405153da1da2f68b9bdc5a42a769">&#9670;&#160;</a></span>f16ToF32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::q::f16ToF32 </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00174">dequantValue()</a>.</p>
+
+</div>
+</div>
+<a id="afdc385a30590f03c34f7736b6d69df9c" name="afdc385a30590f03c34f7736b6d69df9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdc385a30590f03c34f7736b6d69df9c">&#9670;&#160;</a></span>f32ToF16()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::tensor::q::f32ToF16 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00216">quantize()</a>.</p>
+
+</div>
+</div>
+<a id="ad02589604414be80ef2adb7ac693dd2c" name="ad02589604414be80ef2adb7ac693dd2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad02589604414be80ef2adb7ac693dd2c">&#9670;&#160;</a></span>f32ToFp4E2M1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::tensor::q::f32ToFp4E2M1 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00110">floatToEfm()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00216">quantize()</a>.</p>
+
+</div>
+</div>
+<a id="a79d07279c79747d91b489e4b42422820" name="a79d07279c79747d91b489e4b42422820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79d07279c79747d91b489e4b42422820">&#9670;&#160;</a></span>f32ToFp8E4M3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::tensor::q::f32ToFp8E4M3 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00110">floatToEfm()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00216">quantize()</a>.</p>
+
+</div>
+</div>
+<a id="a3e1f81fd8d04f464eb860bbd70cfb23e" name="a3e1f81fd8d04f464eb860bbd70cfb23e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e1f81fd8d04f464eb860bbd70cfb23e">&#9670;&#160;</a></span>floatToEfm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::tensor::q::floatToEfm </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>manBits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bias</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Round-trip encode of an arbitrary float into a tiny e/m format (nearest, via a cached value table + binary search — no per-element exponential math). </p>
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00162">f32ToFp4E2M1()</a> , 以及 <a class="el" href="Quant_8h_source.html#l00158">f32ToFp8E4M3()</a>.</p>
+
+</div>
+</div>
+<a id="a1e1b3962b46f1f2b93784d6f98e1eacb" name="a1e1b3962b46f1f2b93784d6f98e1eacb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1b3962b46f1f2b93784d6f98e1eacb">&#9670;&#160;</a></span>fp4E2M1ToF32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::q::fp4E2M1ToF32 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>nib</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00174">dequantValue()</a>.</p>
+
+</div>
+</div>
+<a id="ad43181f0841354ba1fa09ec7ba355ffd" name="ad43181f0841354ba1fa09ec7ba355ffd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad43181f0841354ba1fa09ec7ba355ffd">&#9670;&#160;</a></span>fp8E4M3ToF32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::q::fp8E4M3ToF32 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00174">dequantValue()</a>.</p>
+
+</div>
+</div>
+<a id="ae96108b5240e382a658fb62ba3cbd05a" name="ae96108b5240e382a658fb62ba3cbd05a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae96108b5240e382a658fb62ba3cbd05a">&#9670;&#160;</a></span>isQuantDType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::q::isQuantDType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True for the weight-quantization dtypes (stored packed, dequantized on use). </p>
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">eve::tensor::Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">eve::tensor::Fp8E4M3</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">eve::tensor::Int4</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8h_source.html#l00082">eve::tensor::Tensor::isQuantized()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00616">eve::tensor::TF::quantizeWeight()</a>.</p>
+
+</div>
+</div>
+<a id="ad1ee581f0a6fad59bbf6cdaab8a25ede" name="ad1ee581f0a6fad59bbf6cdaab8a25ede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1ee581f0a6fad59bbf6cdaab8a25ede">&#9670;&#160;</a></span>quantByteSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::q::quantByteSize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Bytes needed to store <code>count</code> elements of <code>dt</code> (int4/fp4 pack two per byte). </p>
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">eve::tensor::Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">eve::tensor::Fp8E4M3</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">eve::tensor::Int4</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Quant_8h_source.html#l00216">quantize()</a>.</p>
+
+</div>
+</div>
+<a id="a274cb7158dc44a770b9e0ef708ef32a4" name="a274cb7158dc44a770b9e0ef708ef32a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a274cb7158dc44a770b9e0ef708ef32a4">&#9670;&#160;</a></span>quantize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1q_1_1QuantPayload.html">QuantPayload</a> eve::tensor::q::quantize </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>group</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Quant_8h_source.html">Quant.h</a> 第 <a class="el" href="Quant_8h_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Quant_8h_source.html#l00167">efmMaxMagnitude()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Quant_8h_source.html#l00034">f32ToF16()</a>, <a class="el" href="Quant_8h_source.html#l00162">f32ToFp4E2M1()</a>, <a class="el" href="Quant_8h_source.html#l00158">f32ToFp8E4M3()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">eve::tensor::Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">eve::tensor::Fp8E4M3</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>, <a class="el" href="Quant_8h_source.html#l00213">eve::tensor::q::QuantPayload::group</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">eve::tensor::Int4</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Quant_8h_source.html#l00022">quantByteSize()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00616">eve::tensor::TF::quantizeWeight()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

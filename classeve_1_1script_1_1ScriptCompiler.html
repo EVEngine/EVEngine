@@ -1,0 +1,904 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::script::ScriptCompiler类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script.html">script</a></li><li class="navelem"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html">ScriptCompiler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1script_1_1ScriptCompiler-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::script::ScriptCompiler类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Unified <a class="el" href="classeve_1_1Runtime.html">Runtime</a> compiler facade for metadata, diagnostics, and module preparation.  
+ <a href="classeve_1_1script_1_1ScriptCompiler.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptCompiler_8h_source.html">ScriptCompiler.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab183237a7d6eb79b169a988ea87f8567" id="r_ab183237a7d6eb79b169a988ea87f8567"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#ab183237a7d6eb79b169a988ea87f8567">ScriptCompiler</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;modules)</td></tr>
+<tr class="separator:ab183237a7d6eb79b169a988ea87f8567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a868e1ab05decffd04226155e26309ab4" id="r_a868e1ab05decffd04226155e26309ab4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a868e1ab05decffd04226155e26309ab4">~ScriptCompiler</a> ()</td></tr>
+<tr class="separator:a868e1ab05decffd04226155e26309ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a899bec928ddac372858e46004ca74696" id="r_a899bec928ddac372858e46004ca74696"><td class="memItemLeft" align="right" valign="top">ssq::Script&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a899bec928ddac372858e46004ca74696">compileSource</a> (std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string_view sourceName)</td></tr>
+<tr class="memdesc:a899bec928ddac372858e46004ca74696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles UTF-8 source and records metadata under sourceName.  <br /></td></tr>
+<tr class="separator:a899bec928ddac372858e46004ca74696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa324ead16a193e9344ddccdbb7c9f7bc" id="r_aa324ead16a193e9344ddccdbb7c9f7bc"><td class="memItemLeft" align="right" valign="top">ssq::Script&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#aa324ead16a193e9344ddccdbb7c9f7bc">compileFile</a> (std::string_view <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:aa324ead16a193e9344ddccdbb7c9f7bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles a file through the VM and records its canonical identity.  <br /></td></tr>
+<tr class="separator:aa324ead16a193e9344ddccdbb7c9f7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb1dbd169a360fbbe0d55180909fb06" id="r_aabb1dbd169a360fbbe0d55180909fb06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#aabb1dbd169a360fbbe0d55180909fb06">metadata</a> (std::string_view canonicalUri) const noexcept</td></tr>
+<tr class="memdesc:aabb1dbd169a360fbbe0d55180909fb06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrows metadata for the most recent successful compilation.  <br /></td></tr>
+<tr class="separator:aabb1dbd169a360fbbe0d55180909fb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a59d9a37b70dc3a1c9be639b944dd8" id="r_a91a59d9a37b70dc3a1c9be639b944dd8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a91a59d9a37b70dc3a1c9be639b944dd8">metadataSnapshot</a> () const</td></tr>
+<tr class="memdesc:a91a59d9a37b70dc3a1c9be639b944dd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all successful compilation metadata sorted by URI.  <br /></td></tr>
+<tr class="separator:a91a59d9a37b70dc3a1c9be639b944dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377d452a16feeee23b1c89dc9d605f8f" id="r_a377d452a16feeee23b1c89dc9d605f8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a377d452a16feeee23b1c89dc9d605f8f">bindings</a> () noexcept</td></tr>
+<tr class="memdesc:a377d452a16feeee23b1c89dc9d605f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native binding contracts used by semantic checks and tools.  <br /></td></tr>
+<tr class="separator:a377d452a16feeee23b1c89dc9d605f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6983b83dac425d785950552f46a1426" id="r_ad6983b83dac425d785950552f46a1426"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#ad6983b83dac425d785950552f46a1426">bindings</a> () const noexcept</td></tr>
+<tr class="memdesc:ad6983b83dac425d785950552f46a1426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const native binding contract registry.  <br /></td></tr>
+<tr class="separator:ad6983b83dac425d785950552f46a1426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61df0e504925b32c386b103455decb3f" id="r_a61df0e504925b32c386b103455decb3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a61df0e504925b32c386b103455decb3f">registerAnnotation</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a61df0e504925b32c386b103455decb3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers one plugin annotation name accepted by the parser.  <br /></td></tr>
+<tr class="separator:a61df0e504925b32c386b103455decb3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad879912f4b378ae38bb7a20dd2d8a538" id="r_ad879912f4b378ae38bb7a20dd2d8a538"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#ad879912f4b378ae38bb7a20dd2d8a538">unregisterAnnotation</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ad879912f4b378ae38bb7a20dd2d8a538"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes one plugin annotation name.  <br /></td></tr>
+<tr class="separator:ad879912f4b378ae38bb7a20dd2d8a538"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14bb8d2c2a3671f4d870bd8bfe255fc" id="r_af14bb8d2c2a3671f4d870bd8bfe255fc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptCompletion.html">ScriptCompletion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#af14bb8d2c2a3671f4d870bd8bfe255fc">completions</a> (std::string_view canonicalUri, std::string_view prefix={}) const</td></tr>
+<tr class="memdesc:af14bb8d2c2a3671f4d870bd8bfe255fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns completion candidates from script metadata and native contracts.  <br /></td></tr>
+<tr class="separator:af14bb8d2c2a3671f4d870bd8bfe255fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5bc6ebced827e76a401ce90164fef68" id="r_ac5bc6ebced827e76a401ce90164fef68"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1script_1_1ScriptHover.html">ScriptHover</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#ac5bc6ebced827e76a401ce90164fef68">hover</a> (std::string_view canonicalUri, std::string_view symbol) const</td></tr>
+<tr class="memdesc:ac5bc6ebced827e76a401ce90164fef68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns hover information for a script or native symbol.  <br /></td></tr>
+<tr class="separator:ac5bc6ebced827e76a401ce90164fef68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fa3047d1fa32decc2f0525340157f5b" id="r_a0fa3047d1fa32decc2f0525340157f5b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">ScriptDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a0fa3047d1fa32decc2f0525340157f5b">diagnostics</a> (std::string_view canonicalUri) const</td></tr>
+<tr class="memdesc:a0fa3047d1fa32decc2f0525340157f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the latest diagnostics for one source unit.  <br /></td></tr>
+<tr class="separator:a0fa3047d1fa32decc2f0525340157f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198fbae8634f19e39fc8ef212bc73baa" id="r_a198fbae8634f19e39fc8ef212bc73baa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a198fbae8634f19e39fc8ef212bc73baa">setSourceMap</a> (std::string_view canonicalUri, <a class="el" href="structeve_1_1script_1_1ScriptSourceMap.html">ScriptSourceMap</a> sourceMap)</td></tr>
+<tr class="memdesc:a198fbae8634f19e39fc8ef212bc73baa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the source map retained for a compiled unit.  <br /></td></tr>
+<tr class="separator:a198fbae8634f19e39fc8ef212bc73baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a68174f1f79c664e5faf1435686653149" id="r_a68174f1f79c664e5faf1435686653149"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a68174f1f79c664e5faf1435686653149">toOriginalPosition</a> (std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a> generated)</td></tr>
+<tr class="memdesc:a68174f1f79c664e5faf1435686653149"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps a VM/generated location through any active compiler metadata.  <br /></td></tr>
+<tr class="separator:a68174f1f79c664e5faf1435686653149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9425dd919a7ed3ca1fa902e2a6096246" id="r_a9425dd919a7ed3ca1fa902e2a6096246"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a9425dd919a7ed3ca1fa902e2a6096246">toGeneratedPosition</a> (std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a> original)</td></tr>
+<tr class="memdesc:a9425dd919a7ed3ca1fa902e2a6096246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps an IDE/original location to the VM location used for breakpoints.  <br /></td></tr>
+<tr class="separator:a9425dd919a7ed3ca1fa902e2a6096246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf45b4c9ed74185819befdb757787713" id="r_abf45b4c9ed74185819befdb757787713"><td class="memItemLeft" align="right" valign="top">static SQRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#abf45b4c9ed74185819befdb757787713">compileBuffer</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const SQChar *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, SQInteger size, const SQChar *sourceName, SQBool raiseError)</td></tr>
+<tr class="memdesc:abf45b4c9ed74185819befdb757787713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified raw-VM entry used by REPL, debugger, MCP, and editor adapters.  <br /></td></tr>
+<tr class="separator:abf45b4c9ed74185819befdb757787713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f49347532fa1f20fd29715dc0f4c71" id="r_ab0f49347532fa1f20fd29715dc0f4c71"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">ScriptDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#ab0f49347532fa1f20fd29715dc0f4c71">validateProjectConfig</a> (std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string_view canonicalUri, const std::vector&lt; std::string &gt; &amp;knownModules, const std::vector&lt; std::string &gt; &amp;activeModules)</td></tr>
+<tr class="memdesc:ab0f49347532fa1f20fd29715dc0f4c71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statically checks literal config module lists without executing config.nut.  <br /></td></tr>
+<tr class="separator:ab0f49347532fa1f20fd29715dc0f4c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9ad027df7ae70ed69d68c93c0f41de" id="r_a1f9ad027df7ae70ed69d68c93c0f41de"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html#a1f9ad027df7ae70ed69d68c93c0f41de">analyze</a> (std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string_view canonicalUri)</td></tr>
+<tr class="memdesc:a1f9ad027df7ae70ed69d68c93c0f41de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs source-only metadata extraction without executing code.  <br /></td></tr>
+<tr class="separator:a1f9ad027df7ae70ed69d68c93c0f41de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Unified <a class="el" href="classeve_1_1Runtime.html">Runtime</a> compiler facade for metadata, diagnostics, and module preparation. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8h_source.html">ScriptCompiler.h</a> 第 <a class="el" href="ScriptCompiler_8h_source.html#l00191">191</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab183237a7d6eb79b169a988ea87f8567" name="ab183237a7d6eb79b169a988ea87f8567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab183237a7d6eb79b169a988ea87f8567">&#9670;&#160;</a></span>ScriptCompiler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::ScriptCompiler::ScriptCompiler </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;&#160;</td>
+          <td class="paramname"><em>modules</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapObjectContract_8cpp_source.html#l00072">choices</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00133">units</a>.</p>
+
+</div>
+</div>
+<a id="a868e1ab05decffd04226155e26309ab4" name="a868e1ab05decffd04226155e26309ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a868e1ab05decffd04226155e26309ab4">&#9670;&#160;</a></span>~ScriptCompiler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::ScriptCompiler::~ScriptCompiler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1f9ad027df7ae70ed69d68c93c0f41de" name="a1f9ad027df7ae70ed69d68c93c0f41de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f9ad027df7ae70ed69d68c93c0f41de">&#9670;&#160;</a></span>analyze()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a> eve::script::ScriptCompiler::analyze </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs source-only metadata extraction without executing code. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00621">621</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8h_source.html#l00094">eve::script::ScriptMetadata::asyncFunctions</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00076">eve::script::ScriptPropertyMetadata::attributes</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00095">eve::script::ScriptMetadata::awaitLocations</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00054">eve::script::ScriptSourceMap::canonicalUri</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00084">eve::script::ScriptMetadata::canonicalUri</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00077">eve::script::ScriptPropertyMetadata::choices</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00055">eve::script::ScriptSourceMap::entries</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00074">eve::script::ScriptPropertyMetadata::erasedType</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00087">eve::script::ScriptMetadata::exports</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00086">eve::script::ScriptMetadata::imports</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00093">eve::script::ScriptMetadata::moduleReferences</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00073">eve::script::ScriptPropertyMetadata::name</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00092">eve::script::ScriptMetadata::persistRoots</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00091">eve::script::ScriptMetadata::properties</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00085">eve::script::ScriptMetadata::providerOrigin</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00083">eve::script::ScriptMetadata::sourceHash</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00096">eve::script::ScriptMetadata::sourceMap</a> , 以及 <a class="el" href="ScriptCompiler_8h_source.html#l00090">eve::script::ScriptMetadata::symbols</a>.</p>
+
+</div>
+</div>
+<a id="ad6983b83dac425d785950552f46a1426" name="ad6983b83dac425d785950552f46a1426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6983b83dac425d785950552f46a1426">&#9670;&#160;</a></span>bindings() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp; eve::script::ScriptCompiler::bindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Const native binding contract registry. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a377d452a16feeee23b1c89dc9d605f8f" name="a377d452a16feeee23b1c89dc9d605f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a377d452a16feeee23b1c89dc9d605f8f">&#9670;&#160;</a></span>bindings() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp; eve::script::ScriptCompiler::bindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native binding contracts used by semantic checks and tools. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">eve::dev::LanguageServer::Impl::complete()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00804">eve::dev::LanguageServer::Impl::signatureHelp()</a>.</p>
+
+</div>
+</div>
+<a id="abf45b4c9ed74185819befdb757787713" name="abf45b4c9ed74185819befdb757787713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf45b4c9ed74185819befdb757787713">&#9670;&#160;</a></span>compileBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SQRESULT eve::script::ScriptCompiler::compileBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const SQChar *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SQInteger&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const SQChar *&#160;</td>
+          <td class="paramname"><em>sourceName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SQBool&#160;</td>
+          <td class="paramname"><em>raiseError</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unified raw-VM entry used by REPL, debugger, MCP, and editor adapters. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">548</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptModule_8cpp_source.html#l00341">eve::script::ScriptModuleResolver::beginCompilation()</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00040">eve::script::ScriptDiagnostic::canonicalUri</a>, <a class="el" href="ScriptError_8cpp_source.html#l00103">eve::script::captureCompileError()</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00037">eve::script::ScriptDiagnostic::code</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00032">eve::script::ScriptSourcePosition::column</a>, <a class="el" href="ScriptError_8h_source.html#l00030">eve::script::ScriptErrorContext::column</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00088">eve::script::ScriptMetadata::dependencies</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00427">eve::script::ScriptModuleResolver::dependencies()</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00097">eve::script::ScriptMetadata::diagnostics</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00031">eve::script::ScriptSourcePosition::line</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00039">eve::script::ScriptDiagnostic::message</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00041">eve::script::ScriptDiagnostic::position</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00352">eve::script::ScriptModuleResolver::prepareDependencies()</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConsolePanel_8cpp_source.html#l00218">eve::dev::ConsolePanel::eval()</a>.</p>
+
+</div>
+</div>
+<a id="aa324ead16a193e9344ddccdbb7c9f7bc" name="aa324ead16a193e9344ddccdbb7c9f7bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa324ead16a193e9344ddccdbb7c9f7bc">&#9670;&#160;</a></span>compileFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Script eve::script::ScriptCompiler::compileFile </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles a file through the VM and records its canonical identity. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8h_source.html#l00054">eve::script::ScriptSourceMap::canonicalUri</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00084">eve::script::ScriptMetadata::canonicalUri</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00088">eve::script::ScriptMetadata::dependencies</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00097">eve::script::ScriptMetadata::diagnostics</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="ScriptCompiler_8h_source.html#l00096">eve::script::ScriptMetadata::sourceMap</a>.</p>
+
+</div>
+</div>
+<a id="a899bec928ddac372858e46004ca74696" name="a899bec928ddac372858e46004ca74696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a899bec928ddac372858e46004ca74696">&#9670;&#160;</a></span>compileSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Script eve::script::ScriptCompiler::compileSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>sourceName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles UTF-8 source and records metadata under sourceName. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8h_source.html#l00088">eve::script::ScriptMetadata::dependencies</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00097">eve::script::ScriptMetadata::diagnostics</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="af14bb8d2c2a3671f4d870bd8bfe255fc" name="af14bb8d2c2a3671f4d870bd8bfe255fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14bb8d2c2a3671f4d870bd8bfe255fc">&#9670;&#160;</a></span>completions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptCompletion.html">ScriptCompletion</a> &gt; eve::script::ScriptCompiler::completions </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns completion candidates from script metadata and native contracts. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">eve::dev::LanguageServer::Impl::complete()</a>.</p>
+
+</div>
+</div>
+<a id="a0fa3047d1fa32decc2f0525340157f5b" name="a0fa3047d1fa32decc2f0525340157f5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fa3047d1fa32decc2f0525340157f5b">&#9670;&#160;</a></span>diagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">ScriptDiagnostic</a> &gt; eve::script::ScriptCompiler::diagnostics </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the latest diagnostics for one source unit. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00523">523</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">eve::dev::LanguageServer::Impl::diagnostics()</a>.</p>
+
+</div>
+</div>
+<a id="ac5bc6ebced827e76a401ce90164fef68" name="ac5bc6ebced827e76a401ce90164fef68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5bc6ebced827e76a401ce90164fef68">&#9670;&#160;</a></span>hover()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1script_1_1ScriptHover.html">ScriptHover</a> &gt; eve::script::ScriptCompiler::hover </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>symbol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns hover information for a script or native symbol. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00501">501</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8h_source.html#l00112">eve::script::ScriptHover::position</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">eve::dev::LanguageServer::Impl::hover()</a>.</p>
+
+</div>
+</div>
+<a id="aabb1dbd169a360fbbe0d55180909fb06" name="aabb1dbd169a360fbbe0d55180909fb06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb1dbd169a360fbbe0d55180909fb06">&#9670;&#160;</a></span>metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a> &gt; eve::script::ScriptCompiler::metadata </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrows metadata for the most recent successful compilation. </p>
+<dl class="section return"><dt>返回</dt><dd>Empty when no compiled unit exists for the URI. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>The compiler owns the metadata. The reference is invalidated by the next compile or source-map update and by destruction of this compiler. It must not be retained across those operations or across threads. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">eve::dev::LanguageServer::Impl::complete()</a>.</p>
+
+</div>
+</div>
+<a id="a91a59d9a37b70dc3a1c9be639b944dd8" name="a91a59d9a37b70dc3a1c9be639b944dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a59d9a37b70dc3a1c9be639b944dd8">&#9670;&#160;</a></span>metadataSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a> &gt; eve::script::ScriptCompiler::metadataSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns all successful compilation metadata sorted by URI. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+</div>
+</div>
+<a id="a61df0e504925b32c386b103455decb3f" name="a61df0e504925b32c386b103455decb3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61df0e504925b32c386b103455decb3f">&#9670;&#160;</a></span>registerAnnotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptCompiler::registerAnnotation </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers one plugin annotation name accepted by the parser. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a198fbae8634f19e39fc8ef212bc73baa" name="a198fbae8634f19e39fc8ef212bc73baa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198fbae8634f19e39fc8ef212bc73baa">&#9670;&#160;</a></span>setSourceMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::ScriptCompiler::setSourceMap </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1script_1_1ScriptSourceMap.html">ScriptSourceMap</a>&#160;</td>
+          <td class="paramname"><em>sourceMap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the source map retained for a compiled unit. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8h_source.html#l00054">eve::script::ScriptSourceMap::canonicalUri</a>.</p>
+
+</div>
+</div>
+<a id="a9425dd919a7ed3ca1fa902e2a6096246" name="a9425dd919a7ed3ca1fa902e2a6096246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9425dd919a7ed3ca1fa902e2a6096246">&#9670;&#160;</a></span>toGeneratedPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a> eve::script::ScriptCompiler::toGeneratedPosition </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a>&#160;</td>
+          <td class="paramname"><em>original</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maps an IDE/original location to the VM location used for breakpoints. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00542">542</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8cpp_source.html#l00190">eve::script::ScriptSourceMap::generatedPosition()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a68174f1f79c664e5faf1435686653149" name="a68174f1f79c664e5faf1435686653149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68174f1f79c664e5faf1435686653149">&#9670;&#160;</a></span>toOriginalPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a> eve::script::ScriptCompiler::toOriginalPosition </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a>&#160;</td>
+          <td class="paramname"><em>generated</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maps a VM/generated location through any active compiler metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptCompiler_8cpp_source.html#l00176">eve::script::ScriptSourceMap::originalPosition()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DebugAdapter_8cpp_source.html#l00357">eve::dev::DebugAdapter::notifyStopped()</a>.</p>
+
+</div>
+</div>
+<a id="ad879912f4b378ae38bb7a20dd2d8a538" name="ad879912f4b378ae38bb7a20dd2d8a538"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad879912f4b378ae38bb7a20dd2d8a538">&#9670;&#160;</a></span>unregisterAnnotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::ScriptCompiler::unregisterAnnotation </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes one plugin annotation name. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00459">459</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ab0f49347532fa1f20fd29715dc0f4c71" name="ab0f49347532fa1f20fd29715dc0f4c71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0f49347532fa1f20fd29715dc0f4c71">&#9670;&#160;</a></span>validateProjectConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">ScriptDiagnostic</a> &gt; eve::script::ScriptCompiler::validateProjectConfig </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>knownModules</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>activeModules</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Statically checks literal config module lists without executing config.nut. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a> 第 <a class="el" href="ScriptCompiler_8cpp_source.html#l00590">590</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00040">eve::script::ScriptDiagnostic::canonicalUri</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00037">eve::script::ScriptDiagnostic::code</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00043">eve::script::ScriptDiagnostic::fix</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00039">eve::script::ScriptDiagnostic::message</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00041">eve::script::ScriptDiagnostic::position</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00042">eve::script::ScriptDiagnostic::related</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">eve::dev::LanguageServer::Impl::diagnostics()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ScriptCompiler_8h_source.html">ScriptCompiler.h</a></li>
+<li>src/engine/common/<a class="el" href="ScriptCompiler_8cpp_source.html">ScriptCompiler.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

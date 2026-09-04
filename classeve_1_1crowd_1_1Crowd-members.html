@@ -1,0 +1,236 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::crowd::Crowd 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a662e29464afd16f0829540311b31553f">addAgent</a>(float x, float y, float heading, float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2f706747294079fc2184485aaa676077">addFlowGoal</a>(int gx, int gy)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a63c190a0ee1ad4501fd7672e80d386e2">addNamedAgent</a>(const std::string &amp;stableId, float x, float y, float heading, float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2d322b193f32d18914de2c6e659aee58">build</a>()</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a6368dcfb0711399ca06589948f73cc00">buildFlowField</a>(int gx, int gy)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa23e3369bf058dd78950d1caf7d3e863">clearAgents</a>()</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa0531d0cd1faa39f38146a419a74e6da">clearAgentTarget</a>(int id)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5d322560a19861cf62e9ed68df3d0c41">clearFlowGoals</a>()</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a3b7cde2d3f40b405c2e6b52362b87b4c">costAtWorld</a>(float wx, float wy) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a8bcbe25b805401f855063fcb7f0b42f8">Crowd</a>()</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0266fa3721cce9497cfdaa62e43d2050">flowAtCell</a>(int cx, int cy) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa5e57bdcaa01db159d4ef32dc7db2aa1">flowAtWorld</a>(float wx, float wy) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2508da2ca7e057a40c46425436d418cb">getAgentAction</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7229d6145bdf65a27d492e28925a0d5b">getAgentAvoidancePriority</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a4a9687082177f35ae5783cc696935cfe">getAgentCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae970a4900f18737600fb999af317a362">getAgentData</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a9ffc566f09bdb32f6d81f7fa8b3e96b3">getAgentStableId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a1470cf5464ce4f6fc7efe62f79603eff">getAgentState</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ab2a48e963895c27dc0f1e4d85855b40d">getCellCost</a>(int cx, int cy) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7cf64ca5938f2adaaceb1c6005c9dcfc">getCellSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ab5e8f11378dcfbc25f1a63518f155855">getFieldHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa97cb30239ba0436d220d282ece33c3e">getFieldOriginX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a81a2a8b01d746b327d75ebff68a903ab">getFieldOriginY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7ac25f22cb88eec9cb05385c4e7450a9">getFieldWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a44735398a01e0924e20595072dac31f3">getMaxAgents</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a420fa956945d877b02de684cea44cb68">getNamedAgentIndex</a>(const std::string &amp;stableId) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acbe961043154081686569d126204a15d">hasNamedAgent</a>(const std::string &amp;stableId) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a3e7a0367a62450707765b263c08805a0">isFieldBuilt</a>() const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7ac7551348a42295a156ae88c5f88398">isReachable</a>(int cx, int cy) const</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5b551d1a4636cdefd16ad3eead687293">Module_REG</a>(Crowd)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0f065ef1dd8d37eba81a2108870e818a">removeAgent</a>(int id)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a926272fcb46e4d71c076f46bbee1317a">removeNamedAgent</a>(const std::string &amp;stableId)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a39d512834c4db0c183f4c0ceb8c81c40">resizeField</a>(int width, int height, float cellSize, float originX, float originY)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a560d8d1df3b6ca77bcd835bd01f09827">setAgentAccel</a>(int id, float accel)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aacfae439ec860c01888a8ae9bf6f952b">setAgentAction</a>(int id, const std::string &amp;action)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acd4830e885a5cd0276195647f4f0b3ed">setAgentAvoidancePriority</a>(int id, int priority)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a46e6d33cc198f612845742539c6b7e42">setAgentData</a>(int id, int data)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a382117cf90a9e97a1ce50c01f144c9ef">setAgentPosition</a>(int id, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aca5e12ea9cab9df1658953853a85577a">setAgentRadius</a>(int id, float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa4ecddbfbe7d30fa31d7752c031b01e0">setAgentSpeed</a>(int id, float speed)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#af31752403de84d89a3853dd23954e634">setAgentTarget</a>(int id, float tx, float ty)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae2ba9acbe87f3f95432991752ad437aa">setAgentTurnRate</a>(int id, float radPerSec)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aefe48f6c34bc43645103980ac102b672">setAlignmentWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae2010dc2cfa44da038e3586bffb642e7">setArriveRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a681695c736e01c1a8832bee8a3e93f31">setBlocked</a>(int cx, int cy, bool blocked)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ada7a6edf07e68ad5e742fa7493e2ae13">setCellCost</a>(int cx, int cy, float cost)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a190a2b3db377572165e6479b18737e74">setClampToField</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0a464d1216ed72dd901b487be4335f50">setCohesionWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5640fbf733e3f267119908ac7e61ac79">setDefaultRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5d2737efaa7b09ef5f59d6e97e254118">setDefaultSpeed</a>(float speed)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#abc6372aa305feaa4f8dc3d5257f6b42b">setDefaultTurnRate</a>(float radPerSec)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#abb1db0f0406312c6e1a07f877e9e33e0">setGoalWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a8d42e9fa7cac9e5f077070b4a0606994">setMaxAgents</a>(int maxAgents)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aecb88dc184adc32a44b5c2e0800f75e3">setPerceptionRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a82b980f9393f4471232e63a1f7f48580">setResolveOverlaps</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5af257d6c943944680795e6f7cd731ae">setSeparationRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acf06a3c07dd6f8d7f58a9e5755f97b7a">setSeparationWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2bcd6109a58919ffbc85a436c5374371">setWanderWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a1a325b9da40b12da7e4bb293d89d1414">step</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a9c5494b93703b4ad494be25905134c8f">~Crowd</a>() override</td><td class="entry"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

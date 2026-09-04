@@ -1,0 +1,403 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingProperty.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditingProperty.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditingProperty_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProperty_8h.html">editing/EditingProperty.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">    9</a></span><a class="code hl_class" href="classeve_1_1editing_1_1PropertyDescriptorLookup.html">PropertyDescriptorLookup</a> <a class="code hl_function" href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">PropertySchema::find</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">auto</span> found = std::find_if(<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">properties</a>.begin(), <a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">properties</a>.end(),</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                              [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a>&amp; property) { return property.path == path; });</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (found == <a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">properties</a>.end()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyDescriptorLookup.html">PropertyDescriptorLookup</a>(*found);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><a class="code hl_enumeration" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">property_access::PropertyKind</a> convertKind(<a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">PropertyType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">using </span>Kind = <a class="code hl_enumeration" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">property_access::PropertyKind</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034">PropertyType::Bool</a>: <span class="keywordflow">return</span> Kind::Bool;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">PropertyType::Int</a>: <span class="keywordflow">return</span> Kind::Integer;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">PropertyType::Float</a>: <span class="keywordflow">return</span> Kind::Number;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98">PropertyType::String</a>: <span class="keywordflow">return</span> Kind::String;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c">PropertyType::Enum</a>: <span class="keywordflow">return</span> Kind::Enum;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295">PropertyType::Color</a>: <span class="keywordflow">return</span> Kind::Color;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">PropertyType::Vec2</a>: <span class="keywordflow">return</span> Kind::Vec2;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977">PropertyType::Vec3</a>: <span class="keywordflow">return</span> Kind::Vec3;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66">PropertyType::Vec4</a>: <span class="keywordflow">return</span> Kind::Vec4;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850">PropertyType::Transform</a>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e">PropertyType::Struct</a>: <span class="keywordflow">return</span> Kind::Struct;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e">PropertyType::AssetRef</a>: <span class="keywordflow">return</span> Kind::AssetRef;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d">PropertyType::ObjectRef</a>: <span class="keywordflow">return</span> Kind::ObjectRef;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17">PropertyType::Array</a>: <span class="keywordflow">return</span> Kind::Array;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c">PropertyType::Map</a>: <span class="keywordflow">return</span> Kind::Map;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53">PropertyType::Action</a>: <span class="keywordflow">return</span> Kind::Action;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1">PropertyType::ReadOnlyText</a>: <span class="keywordflow">return</span> Kind::ReadOnlyText;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> Kind::Auto;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><a class="code hl_enumeration" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">property_access::PropertyFlag</a> convertFlags(<a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">PropertyFlag</a> flags) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">using </span>Flag  = <a class="code hl_enumeration" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">property_access::PropertyFlag</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Flag result = Flag::None;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197">PropertyFlag::ReadOnly</a>)) result = result | Flag::ReadOnly;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b">PropertyFlag::Advanced</a>)) result = result | Flag::Advanced;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0">PropertyFlag::EditorOnly</a>)) result = result | Flag::EditorOnly;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">PropertyFlag::Runtime</a>)) result = result | Flag::Runtime;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475">PropertyFlag::Transient</a>)) result = result | Flag::Transient;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282">PropertyFlag::Dangerous</a>)) result = result | Flag::Dangerous;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (hasPropertyFlag(flags, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab">PropertyFlag::MultiEdit</a>)) result = result | Flag::MultiEdit;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">const</span> <span class="keywordtype">char</span>* legacyRule(<span class="keyword">const</span> std::string&amp; code) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.type&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.type-mismatch&quot;</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.read-only&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.read-only&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.choice&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.invalid-enum&quot;</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.finite&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.finite&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.minimum&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.below-minimum&quot;</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (code == <span class="stringliteral">&quot;property_access.property.maximum&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.above-maximum&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;editor.property.invalid-value&quot;</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> ResultValue&gt;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>Result&lt;ResultValue&gt; validationError(<span class="keyword">const</span> property_access::WriteResult&amp; validation,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                    <span class="keyword">const</span> PropertyDescriptor&amp;           <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> failed&lt;ResultValue&gt;(Status::Rejected, <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                               <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(legacyRule(validation.code)),</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                               validation.message + <span class="stringliteral">&quot;: &quot;</span> + <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.path.value());</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#af03da99aae4ebe85ff904496935c1958">   75</a></span><a class="code hl_struct" href="structeve_1_1property__access_1_1PropertyDescriptor.html">property_access::PropertyDescriptor</a> <a class="code hl_function" href="namespaceeve_1_1editing.html#af03da99aae4ebe85ff904496935c1958">toPresentationDescriptor</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_struct" href="structeve_1_1property__access_1_1PropertyDescriptor.html">property_access::PropertyDescriptor</a> result;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a871d69e7ddf3909b00d1282d14776370">path</a>              = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.path.value();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a6a915c7c226d1742ea9d36cbca3e038c">displayName</a>       = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.displayNameKey;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a60dc7bda0dbcaab846d6a157c7b294d8">description</a>       = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.descriptionKey;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#aaae49b7cf2b0ef0827c3eaa03fd9694c">category</a>          = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.category;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#ad61822ecc13bd0fda3b4938fc9849720">kind</a>              = convertKind(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.type);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#abe3548afa2acef5e26c0db899287b97b">flags</a>             = convertFlags(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.flags);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a5db2e68b9d0159fc06d98319c9a22791">defaultValue</a>      = <a class="code hl_function" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.defaultValue);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">numeric</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1NumericMetadata.html#af7fbe19a4059f25ac0fd5786b1db3cb3">minimum</a>   = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.numeric.minimum;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">numeric</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1NumericMetadata.html#a58f60bf34c696184d615b87df4ebd314">maximum</a>   = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.numeric.maximum;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">numeric</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1NumericMetadata.html#acdf831a266f9dfa4386ec23355bbfad5">step</a>      = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.numeric.step;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">numeric</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1NumericMetadata.html#a3f59b7d3814be4e0cea48edd17883434">units</a>     = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.numeric.units;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">numeric</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1NumericMetadata.html#a30984ebb5851144d9c061de5e63a68da">precision</a> = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.numeric.precision;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#ad3c49eb1f1b5f42f26e5fd40b8b781ad">choices</a>           = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.enumItems;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    result.<a class="code hl_variable" href="structeve_1_1property__access_1_1PropertyDescriptor.html#afcff82b9078c2ec1f4473850120368df">presenterHint</a>     = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.presenterHint;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">   94</a></span><a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_function" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> std::visit(</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; current) -&gt; <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keyword">using </span>T = std::decay_t&lt;<span class="keyword">decltype</span>(current)&gt;;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::monostate&gt;) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, Value::Array&gt;) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a> result;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                result.reserve(current.size());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>&amp; entry : current) result.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a>(entry));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, Value::Object&gt;) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> result;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, entry] : current) result.emplace(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="code hl_function" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a>(entry));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>(current);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        },</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.storage());</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">  116</a></span><a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a> <a class="code hl_function" href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">toEditingValue</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> std::visit(</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; current) -&gt; <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a> {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keyword">using </span>T = std::decay_t&lt;<span class="keyword">decltype</span>(current)&gt;;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::monostate&gt;) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, eve::Value::Array&gt;) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">Value::Array</a> result;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                result.reserve(current.size());</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; entry : current) result.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">toEditingValue</a>(entry));</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, eve::Value::Object&gt;) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">Value::Object</a> result;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, entry] : current) result.emplace(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="code hl_function" href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">toEditingValue</a>(entry));</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>(current);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        },</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.storage());</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="}">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">  138</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">validatePropertyValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyDescriptor.html">PropertyDescriptor</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1property__access_1_1WriteResult.html">property_access::WriteResult</a> validation =</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <a class="code hl_function" href="namespaceeve_1_1property__access.html#a9a04519cbcd2dda01a2943ce2685edb3">property_access::validatePropertyValue</a>(<a class="code hl_function" href="namespaceeve_1_1editing.html#af03da99aae4ebe85ff904496935c1958">toPresentationDescriptor</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>), <a class="code hl_function" href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">toPresentationValue</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>));</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (!validation.<a class="code hl_variable" href="structeve_1_1property__access_1_1WriteResult.html#ae8757b19e1ed9423e2acd299fda658b9">accepted</a>) <span class="keywordflow">return</span> validationError&lt;void&gt;(validation, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type == <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53">PropertyType::Action</a> &amp;&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.type() != <a class="code hl_enumvalue" href="classeve_1_1editing_1_1Value.html#a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94">Value::Type::Null</a>)</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(Status::Rejected, <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<span class="stringliteral">&quot;editor.property.type-mismatch&quot;</span>),</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                                   <span class="stringliteral">&quot;Value type does not match property: &quot;</span> + <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.path.value());</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>}</div>
+</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}  <span class="comment">// namespace eve::editing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEditingProperty_8h_html"><div class="ttname"><a href="EditingProperty_8h.html">EditingProperty.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyDescriptorLookup_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyDescriptorLookup.html">eve::editing::PropertyDescriptorLookup</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00081">EditingProperty.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94">eve::editing::Value::Type::Null</a></div><div class="ttdeci">@ Null</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00019">EditingValue.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2e67d25c77d8df76d66bb7ad69dc14a9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2e67d25c77d8df76d66bb7ad69dc14a9">eve::editing::toPresentationValue</a></div><div class="ttdeci">eve::Value toPresentationValue(const Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00094">EditingProperty.cpp:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::editing::PropertyType</a></div><div class="ttdeci">PropertyType</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00018">EditingProperty.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a004bf6c9a40003140292e97330236c53">eve::editing::PropertyType::Action</a></div><div class="ttdeci">@ Action</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a01b2dc1a2922d9be9e12ef0709600977">eve::editing::PropertyType::Vec3</a></div><div class="ttdeci">@ Vec3</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">eve::editing::PropertyType::Int</a></div><div class="ttdeci">@ Int</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">eve::editing::PropertyType::Float</a></div><div class="ttdeci">@ Float</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a27118326006d3829667a400ad23d5d98">eve::editing::PropertyType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a2ff4148554480a37f85efd299df04850">eve::editing::PropertyType::Transform</a></div><div class="ttdeci">@ Transform</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a4410ec34d9e6c1a68100ca0ce033fb17">eve::editing::PropertyType::Array</a></div><div class="ttdeci">@ Array</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a46f3ea056caa3126b91f3f70beea068c">eve::editing::PropertyType::Map</a></div><div class="ttdeci">@ Map</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a675714e2978e42bb70d853ddbd95fb9e">eve::editing::PropertyType::AssetRef</a></div><div class="ttdeci">@ AssetRef</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a771d51735305d4fccf5380814a764c3d">eve::editing::PropertyType::ObjectRef</a></div><div class="ttdeci">@ ObjectRef</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a886ef5dbd655a6c97726d7091c6b173e">eve::editing::PropertyType::Struct</a></div><div class="ttdeci">@ Struct</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034">eve::editing::PropertyType::Bool</a></div><div class="ttdeci">@ Bool</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac9414beaf0eba1e59bfe104f0ee222e1">eve::editing::PropertyType::ReadOnlyText</a></div><div class="ttdeci">@ ReadOnlyText</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acb5feb1b7314637725a2e73bdc9f7295">eve::editing::PropertyType::Color</a></div><div class="ttdeci">@ Color</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311acf20423ed48998082c20099488a0917c">eve::editing::PropertyType::Enum</a></div><div class="ttdeci">@ Enum</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311af67402842935c0240e8109e7312def66">eve::editing::PropertyType::Vec4</a></div><div class="ttdeci">@ Vec4</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">eve::editing::PropertyType::Vec2</a></div><div class="ttdeci">@ Vec2</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">eve::editing::PropertyFlag</a></div><div class="ttdeci">PropertyFlag</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00038">EditingProperty.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a131fb182a881796e7606ed6da27f1197">eve::editing::PropertyFlag::ReadOnly</a></div><div class="ttdeci">@ ReadOnly</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818a9b6545e4cea9b4ad4979d41bb9170e2b">eve::editing::PropertyFlag::Advanced</a></div><div class="ttdeci">@ Advanced</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818aa332d780e4ba495717077c780df4f8ab">eve::editing::PropertyFlag::MultiEdit</a></div><div class="ttdeci">@ MultiEdit</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818ab1f023eff9a6b5308d6024e4c6b3d475">eve::editing::PropertyFlag::Transient</a></div><div class="ttdeci">@ Transient</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">eve::editing::PropertyFlag::Runtime</a></div><div class="ttdeci">@ Runtime</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818adcce482edd4952b5db985648edea26a0">eve::editing::PropertyFlag::EditorOnly</a></div><div class="ttdeci">@ EditorOnly</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818af44f1629db33ba70816eb97d3c4e2282">eve::editing::PropertyFlag::Dangerous</a></div><div class="ttdeci">@ Dangerous</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ae41b256f9bfb4c63f69c328d47dd0e8c"><div class="ttname"><a href="namespaceeve_1_1editing.html#ae41b256f9bfb4c63f69c328d47dd0e8c">eve::editing::validatePropertyValue</a></div><div class="ttdeci">Result&lt; void &gt; validatePropertyValue(const PropertyDescriptor &amp;descriptor, const Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00138">EditingProperty.cpp:138</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ae99138c111d4bf768f53884d53267250"><div class="ttname"><a href="namespaceeve_1_1editing.html#ae99138c111d4bf768f53884d53267250">eve::editing::toEditingValue</a></div><div class="ttdeci">Value toEditingValue(const eve::Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00116">EditingProperty.cpp:116</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_af03da99aae4ebe85ff904496935c1958"><div class="ttname"><a href="namespaceeve_1_1editing.html#af03da99aae4ebe85ff904496935c1958">eve::editing::toPresentationDescriptor</a></div><div class="ttdeci">property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor &amp;source)</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00075">EditingProperty.cpp:75</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1property__access_html_a9a04519cbcd2dda01a2943ce2685edb3"><div class="ttname"><a href="namespaceeve_1_1property__access.html#a9a04519cbcd2dda01a2943ce2685edb3">eve::property_access::validatePropertyValue</a></div><div class="ttdeci">WriteResult validatePropertyValue(const PropertyDescriptor &amp;property, const Value &amp;value)</div><div class="ttdoc">Validate one candidate value against the shared property contract.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8cpp_source.html#l00016">PropertyAccess.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1property__access_html_ad86155da7237b52085a08d0ad15a0059"><div class="ttname"><a href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">eve::property_access::PropertyFlag</a></div><div class="ttdeci">PropertyFlag</div><div class="ttdoc">Cross-host property visibility and editing flags.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00040">PropertyAccess.h:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1property__access_html_ae28f734d649d2b3eb257179eea236638"><div class="ttname"><a href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">eve::property_access::PropertyKind</a></div><div class="ttdeci">PropertyKind</div><div class="ttdoc">Semantic property kind used by renderer-independent presenters.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00019">PropertyAccess.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1NumericMetadata_html_a30984ebb5851144d9c061de5e63a68da"><div class="ttname"><a href="structeve_1_1editing_1_1NumericMetadata.html#a30984ebb5851144d9c061de5e63a68da">eve::editing::NumericMetadata::precision</a></div><div class="ttdeci">int precision</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00063">EditingProperty.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1NumericMetadata_html_a3f59b7d3814be4e0cea48edd17883434"><div class="ttname"><a href="structeve_1_1editing_1_1NumericMetadata.html#a3f59b7d3814be4e0cea48edd17883434">eve::editing::NumericMetadata::units</a></div><div class="ttdeci">std::string units</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00062">EditingProperty.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1NumericMetadata_html_a58f60bf34c696184d615b87df4ebd314"><div class="ttname"><a href="structeve_1_1editing_1_1NumericMetadata.html#a58f60bf34c696184d615b87df4ebd314">eve::editing::NumericMetadata::maximum</a></div><div class="ttdeci">std::optional&lt; double &gt; maximum</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00060">EditingProperty.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1NumericMetadata_html_acdf831a266f9dfa4386ec23355bbfad5"><div class="ttname"><a href="structeve_1_1editing_1_1NumericMetadata.html#acdf831a266f9dfa4386ec23355bbfad5">eve::editing::NumericMetadata::step</a></div><div class="ttdeci">std::optional&lt; double &gt; step</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00061">EditingProperty.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1NumericMetadata_html_af7fbe19a4059f25ac0fd5786b1db3cb3"><div class="ttname"><a href="structeve_1_1editing_1_1NumericMetadata.html#af7fbe19a4059f25ac0fd5786b1db3cb3">eve::editing::NumericMetadata::minimum</a></div><div class="ttdeci">std::optional&lt; double &gt; minimum</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00059">EditingProperty.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyDescriptor.html">eve::editing::PropertyDescriptor</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00066">EditingProperty.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a4020b14546fac590b874f3decc6a1e3b"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">eve::editing::PropertySchema::properties</a></div><div class="ttdeci">std::vector&lt; PropertyDescriptor &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00102">EditingProperty.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_adb1650e8152384b2ff5123013b25ccce"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#adb1650e8152384b2ff5123013b25ccce">eve::editing::PropertySchema::find</a></div><div class="ttdeci">PropertyDescriptorLookup find(const PropertyPath &amp;path) const</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00009">EditingProperty.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html">eve::property_access::PropertyDescriptor</a></div><div class="ttdoc">One stable property description consumed by any UI shell.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00069">PropertyAccess.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_a55ce4afd776c3ba495bfb5715925ec3b"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#a55ce4afd776c3ba495bfb5715925ec3b">eve::property_access::PropertyDescriptor::numeric</a></div><div class="ttdeci">NumericMetadata numeric</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00077">PropertyAccess.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_a5db2e68b9d0159fc06d98319c9a22791"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#a5db2e68b9d0159fc06d98319c9a22791">eve::property_access::PropertyDescriptor::defaultValue</a></div><div class="ttdeci">Value defaultValue</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00076">PropertyAccess.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_a60dc7bda0dbcaab846d6a157c7b294d8"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#a60dc7bda0dbcaab846d6a157c7b294d8">eve::property_access::PropertyDescriptor::description</a></div><div class="ttdeci">std::string description</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00072">PropertyAccess.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_a6a915c7c226d1742ea9d36cbca3e038c"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#a6a915c7c226d1742ea9d36cbca3e038c">eve::property_access::PropertyDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00071">PropertyAccess.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_a871d69e7ddf3909b00d1282d14776370"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#a871d69e7ddf3909b00d1282d14776370">eve::property_access::PropertyDescriptor::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00070">PropertyAccess.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_aaae49b7cf2b0ef0827c3eaa03fd9694c"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#aaae49b7cf2b0ef0827c3eaa03fd9694c">eve::property_access::PropertyDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00073">PropertyAccess.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_abe3548afa2acef5e26c0db899287b97b"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#abe3548afa2acef5e26c0db899287b97b">eve::property_access::PropertyDescriptor::flags</a></div><div class="ttdeci">PropertyFlag flags</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00075">PropertyAccess.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_ad3c49eb1f1b5f42f26e5fd40b8b781ad"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#ad3c49eb1f1b5f42f26e5fd40b8b781ad">eve::property_access::PropertyDescriptor::choices</a></div><div class="ttdeci">std::vector&lt; std::string &gt; choices</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00078">PropertyAccess.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_ad61822ecc13bd0fda3b4938fc9849720"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#ad61822ecc13bd0fda3b4938fc9849720">eve::property_access::PropertyDescriptor::kind</a></div><div class="ttdeci">PropertyKind kind</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00074">PropertyAccess.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1PropertyDescriptor_html_afcff82b9078c2ec1f4473850120368df"><div class="ttname"><a href="structeve_1_1property__access_1_1PropertyDescriptor.html#afcff82b9078c2ec1f4473850120368df">eve::property_access::PropertyDescriptor::presenterHint</a></div><div class="ttdeci">std::string presenterHint</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00079">PropertyAccess.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1WriteResult_html"><div class="ttname"><a href="structeve_1_1property__access_1_1WriteResult.html">eve::property_access::WriteResult</a></div><div class="ttdoc">Result of a model write, including a stable diagnostic code.</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00093">PropertyAccess.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1property__access_1_1WriteResult_html_ae8757b19e1ed9423e2acd299fda658b9"><div class="ttname"><a href="structeve_1_1property__access_1_1WriteResult.html#ae8757b19e1ed9423e2acd299fda658b9">eve::property_access::WriteResult::accepted</a></div><div class="ttdeci">bool accepted</div><div class="ttdef"><b>Definition</b> <a href="PropertyAccess_8h_source.html#l00094">PropertyAccess.h:94</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

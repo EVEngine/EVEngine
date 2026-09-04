@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/economy/ResourceType.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6a909474890af3f60e8bc556ae1af9f1.html">economy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ResourceType.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ResourceType_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1economy.html">eve::economy</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="};">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120a">    9</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120a">DepletionModel</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa409ac3d4c1bc0daea43e1243a0f8d72a">Finite</a>,     <span class="comment">// 采完即枯竭（SC 矿簇）</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa0120f5862a27199ffc31190d0d06b70f">Renewable</a>,  <span class="comment">// 可再生（AoE 农田复种）</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aab10e24496ff8fec66189548a92a67045">Infinite</a>,   <span class="comment">// 无限供给</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa545e303beabc266f9c55f08c03784f35">Growing</a>     <span class="comment">// 随时间增长（C&amp;C 泰伯利亚）</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1economy_1_1ResourceTypeDef.html">ResourceTypeDef</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html#a5f94edffc1b6cf21e597f07151f6c71a">   20</a></span>    std::string <a class="code hl_variable" href="structeve_1_1economy_1_1ResourceTypeDef.html#a5f94edffc1b6cf21e597f07151f6c71a">id</a>;             <span class="comment">// 唯一标识（&quot;minerals&quot; / &quot;food&quot; ...）</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html#af40f3d2716601a04ab8911a78776272d">   21</a></span>    std::string <a class="code hl_variable" href="structeve_1_1economy_1_1ResourceTypeDef.html#af40f3d2716601a04ab8911a78776272d">category</a> = <span class="stringliteral">&quot;stock&quot;</span>;  <span class="comment">// 存量型 / 速率型 / 特殊（人口）</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html#a8d916ea9e8b8b6b5aec03dcdc8c1c870">   22</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1economy_1_1ResourceTypeDef.html#a8d916ea9e8b8b6b5aec03dcdc8c1c870">stockMax</a>  = 0;       <span class="comment">// 玩家持有上限；0 表示不限</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html#ab4c2ed33612dc1d39213a0399186b174">   23</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120a">DepletionModel</a> <a class="code hl_variable" href="structeve_1_1economy_1_1ResourceTypeDef.html#ab4c2ed33612dc1d39213a0399186b174">depletion</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa409ac3d4c1bc0daea43e1243a0f8d72a">DepletionModel::Finite</a>;  <span class="comment">// 供给模型</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1economy_1_1ResourceTypeDef.html#a22399f3c71d693dee13f04f1de1080fe">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1economy_1_1ResourceTypeDef.html#a22399f3c71d693dee13f04f1de1080fe">displayName</a>;         <span class="comment">// UI 显示名（可空）</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1economy_1_1ResourceTypeRegistry.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1economy_1_1ResourceTypeRegistry.html">ResourceTypeRegistry</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a6cfa89b543a4cbfe427a511d57c878bf">registerType</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1economy_1_1ResourceTypeDef.html">ResourceTypeDef</a>&amp; def);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1economy_1_1ResourceTypeDef.html">ResourceTypeDef</a>* <a class="code hl_function" href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a1d453fd0c6bb8158604faedf44eb9d19">find</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a337bdbf08bfbfe8decf9df502296481c">count</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a1d3927cfb21e2e9cdca6eed7ec9bca3f">clear</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, ResourceTypeDef&gt;&amp; types();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace eve::economy</span></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1ResourceTypeRegistry_html"><div class="ttname"><a href="classeve_1_1economy_1_1ResourceTypeRegistry.html">eve::economy::ResourceTypeRegistry</a></div><div class="ttdoc">资源类型注册表：注册 / 查询 / 清理。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00030">ResourceType.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1ResourceTypeRegistry_html_a1d3927cfb21e2e9cdca6eed7ec9bca3f"><div class="ttname"><a href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a1d3927cfb21e2e9cdca6eed7ec9bca3f">eve::economy::ResourceTypeRegistry::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdoc">清空注册表（测试用）。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8cpp_source.html#l00024">ResourceType.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1ResourceTypeRegistry_html_a1d453fd0c6bb8158604faedf44eb9d19"><div class="ttname"><a href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a1d453fd0c6bb8158604faedf44eb9d19">eve::economy::ResourceTypeRegistry::find</a></div><div class="ttdeci">static const ResourceTypeDef * find(const std::string &amp;id)</div><div class="ttdoc">按 id 查询；未注册时返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8cpp_source.html#l00016">ResourceType.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1ResourceTypeRegistry_html_a337bdbf08bfbfe8decf9df502296481c"><div class="ttname"><a href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a337bdbf08bfbfe8decf9df502296481c">eve::economy::ResourceTypeRegistry::count</a></div><div class="ttdeci">static int count()</div><div class="ttdoc">已注册类型数量。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8cpp_source.html#l00022">ResourceType.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1ResourceTypeRegistry_html_a6cfa89b543a4cbfe427a511d57c878bf"><div class="ttname"><a href="classeve_1_1economy_1_1ResourceTypeRegistry.html#a6cfa89b543a4cbfe427a511d57c878bf">eve::economy::ResourceTypeRegistry::registerType</a></div><div class="ttdeci">static bool registerType(const ResourceTypeDef &amp;def)</div><div class="ttdoc">注册或替换一个资源类型定义。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8cpp_source.html#l00010">ResourceType.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html"><div class="ttname"><a href="namespaceeve_1_1economy.html">eve::economy</a></div><div class="ttdef"><b>Definition</b> <a href="IEconomy_8h_source.html#l00005">IEconomy.h:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html_abecc6c642be6b02e3ef1b0afe04f120a"><div class="ttname"><a href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120a">eve::economy::DepletionModel</a></div><div class="ttdeci">DepletionModel</div><div class="ttdoc">资源节点的供给模型。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00009">ResourceType.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html_abecc6c642be6b02e3ef1b0afe04f120aa0120f5862a27199ffc31190d0d06b70f"><div class="ttname"><a href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa0120f5862a27199ffc31190d0d06b70f">eve::economy::DepletionModel::Renewable</a></div><div class="ttdeci">@ Renewable</div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html_abecc6c642be6b02e3ef1b0afe04f120aa409ac3d4c1bc0daea43e1243a0f8d72a"><div class="ttname"><a href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa409ac3d4c1bc0daea43e1243a0f8d72a">eve::economy::DepletionModel::Finite</a></div><div class="ttdeci">@ Finite</div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html_abecc6c642be6b02e3ef1b0afe04f120aa545e303beabc266f9c55f08c03784f35"><div class="ttname"><a href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aa545e303beabc266f9c55f08c03784f35">eve::economy::DepletionModel::Growing</a></div><div class="ttdeci">@ Growing</div></div>
+<div class="ttc" id="anamespaceeve_1_1economy_html_abecc6c642be6b02e3ef1b0afe04f120aab10e24496ff8fec66189548a92a67045"><div class="ttname"><a href="namespaceeve_1_1economy.html#abecc6c642be6b02e3ef1b0afe04f120aab10e24496ff8fec66189548a92a67045">eve::economy::DepletionModel::Infinite</a></div><div class="ttdeci">@ Infinite</div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html">eve::economy::ResourceTypeDef</a></div><div class="ttdoc">资源类型的静态定义（数据驱动配置的最小单元）。</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00019">ResourceType.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html_a22399f3c71d693dee13f04f1de1080fe"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html#a22399f3c71d693dee13f04f1de1080fe">eve::economy::ResourceTypeDef::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00024">ResourceType.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html_a5f94edffc1b6cf21e597f07151f6c71a"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html#a5f94edffc1b6cf21e597f07151f6c71a">eve::economy::ResourceTypeDef::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00020">ResourceType.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html_a8d916ea9e8b8b6b5aec03dcdc8c1c870"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html#a8d916ea9e8b8b6b5aec03dcdc8c1c870">eve::economy::ResourceTypeDef::stockMax</a></div><div class="ttdeci">int stockMax</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00022">ResourceType.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html_ab4c2ed33612dc1d39213a0399186b174"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html#ab4c2ed33612dc1d39213a0399186b174">eve::economy::ResourceTypeDef::depletion</a></div><div class="ttdeci">DepletionModel depletion</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00023">ResourceType.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1economy_1_1ResourceTypeDef_html_af40f3d2716601a04ab8911a78776272d"><div class="ttname"><a href="structeve_1_1economy_1_1ResourceTypeDef.html#af40f3d2716601a04ab8911a78776272d">eve::economy::ResourceTypeDef::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="ResourceType_8h_source.html#l00021">ResourceType.h:21</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

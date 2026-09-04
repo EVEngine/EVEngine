@@ -1,0 +1,1650 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::SpineAnim类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1animation_1_1SpineAnim-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::SpineAnim类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Spine animation player + 2D draw collector (region attachments).  
+ <a href="classeve_1_1animation_1_1SpineAnim.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa4e4d5f351e1b577bcaaa8435172e19b" id="r_aa4e4d5f351e1b577bcaaa8435172e19b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa4e4d5f351e1b577bcaaa8435172e19b">SpineAnim</a> (<a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> *skeleton)</td></tr>
+<tr class="separator:aa4e4d5f351e1b577bcaaa8435172e19b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eb5352b447be41f96a4660f799a605f" id="r_a9eb5352b447be41f96a4660f799a605f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a9eb5352b447be41f96a4660f799a605f">~SpineAnim</a> ()</td></tr>
+<tr class="separator:a9eb5352b447be41f96a4660f799a605f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a715e4e1505cc3cbf374698dbd75f5e65" id="r_a715e4e1505cc3cbf374698dbd75f5e65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a715e4e1505cc3cbf374698dbd75f5e65">SpineAnim</a> (const <a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:a715e4e1505cc3cbf374698dbd75f5e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef435d5b662b6f0953da6a9ec7789053" id="r_aef435d5b662b6f0953da6a9ec7789053"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aef435d5b662b6f0953da6a9ec7789053">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:aef435d5b662b6f0953da6a9ec7789053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42d2ca341885433e9ba62601edc9c336" id="r_a42d2ca341885433e9ba62601edc9c336"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42d2ca341885433e9ba62601edc9c336">getSkeleton</a> () const</td></tr>
+<tr class="separator:a42d2ca341885433e9ba62601edc9c336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e088e3481cfdd25707823a55ba46ef4" id="r_a2e088e3481cfdd25707823a55ba46ef4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2e088e3481cfdd25707823a55ba46ef4">setAtlas</a> (<a class="el" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> *atlas)</td></tr>
+<tr class="separator:a2e088e3481cfdd25707823a55ba46ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a064febfc2dea87c13507c335c379d9d3" id="r_a064febfc2dea87c13507c335c379d9d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a064febfc2dea87c13507c335c379d9d3">getAtlas</a> () const</td></tr>
+<tr class="separator:a064febfc2dea87c13507c335c379d9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0619c975b6045b19b5d9fd082eaf4c65" id="r_a0619c975b6045b19b5d9fd082eaf4c65"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0619c975b6045b19b5d9fd082eaf4c65">setPageTexture</a> (int pageIndex, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="memdesc:a0619c975b6045b19b5d9fd082eaf4c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a GPU texture to an atlas page (by index or page image name).  <br /></td></tr>
+<tr class="separator:a0619c975b6045b19b5d9fd082eaf4c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1679d215e1be74f965c22dc7ea2b3ef3" id="r_a1679d215e1be74f965c22dc7ea2b3ef3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a1679d215e1be74f965c22dc7ea2b3ef3">setPageTextureByName</a> (const std::string &amp;pageName, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="separator:a1679d215e1be74f965c22dc7ea2b3ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0710d00c50b0211db3d6cbd89eac5450" id="r_a0710d00c50b0211db3d6cbd89eac5450"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0710d00c50b0211db3d6cbd89eac5450">getPageTexture</a> (int pageIndex) const</td></tr>
+<tr class="separator:a0710d00c50b0211db3d6cbd89eac5450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e851e8bd34631293125b47d36cb79b2" id="r_a6e851e8bd34631293125b47d36cb79b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a6e851e8bd34631293125b47d36cb79b2">play</a> (const std::string &amp;animationName)</td></tr>
+<tr class="separator:a6e851e8bd34631293125b47d36cb79b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21161acb1c37322448ead448518905d4" id="r_a21161acb1c37322448ead448518905d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a21161acb1c37322448ead448518905d4">stop</a> ()</td></tr>
+<tr class="separator:a21161acb1c37322448ead448518905d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa81f8474de6014c016a45dbcdd282010" id="r_aa81f8474de6014c016a45dbcdd282010"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa81f8474de6014c016a45dbcdd282010">pause</a> ()</td></tr>
+<tr class="separator:aa81f8474de6014c016a45dbcdd282010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4bf5bf91310c92d6008fe08ff041371" id="r_ae4bf5bf91310c92d6008fe08ff041371"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae4bf5bf91310c92d6008fe08ff041371">resume</a> ()</td></tr>
+<tr class="separator:ae4bf5bf91310c92d6008fe08ff041371"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1126c56a256b9d2f49a97450f0bbbf4b" id="r_a1126c56a256b9d2f49a97450f0bbbf4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a1126c56a256b9d2f49a97450f0bbbf4b">setSpeed</a> (float speed)</td></tr>
+<tr class="separator:a1126c56a256b9d2f49a97450f0bbbf4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698864c3f58cc00aa1a06e98b339c4cd" id="r_a698864c3f58cc00aa1a06e98b339c4cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a698864c3f58cc00aa1a06e98b339c4cd">getSpeed</a> () const</td></tr>
+<tr class="separator:a698864c3f58cc00aa1a06e98b339c4cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae785d77cde59f2da10bb115c97075b51" id="r_ae785d77cde59f2da10bb115c97075b51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae785d77cde59f2da10bb115c97075b51">setTime</a> (float seconds)</td></tr>
+<tr class="separator:ae785d77cde59f2da10bb115c97075b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab531e92586e10210ad2742fd17902897" id="r_ab531e92586e10210ad2742fd17902897"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab531e92586e10210ad2742fd17902897">getTime</a> () const</td></tr>
+<tr class="separator:ab531e92586e10210ad2742fd17902897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fea1163a025ee6977a6b11599211156" id="r_a5fea1163a025ee6977a6b11599211156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a5fea1163a025ee6977a6b11599211156">setLoop</a> (bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>)</td></tr>
+<tr class="separator:a5fea1163a025ee6977a6b11599211156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70b2c70a124ada392e1286748aaa6cd8" id="r_a70b2c70a124ada392e1286748aaa6cd8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a70b2c70a124ada392e1286748aaa6cd8">getLoop</a> () const</td></tr>
+<tr class="separator:a70b2c70a124ada392e1286748aaa6cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5acaa257a83301be65772f0c474f758" id="r_ab5acaa257a83301be65772f0c474f758"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab5acaa257a83301be65772f0c474f758">setFlipY</a> (bool flip)</td></tr>
+<tr class="memdesc:ab5acaa257a83301be65772f0c474f758"><td class="mdescLeft">&#160;</td><td class="mdescRight">When true (default), Spine Y-up is flipped for screen Y-down draw items.  <br /></td></tr>
+<tr class="separator:ab5acaa257a83301be65772f0c474f758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a839b03caaefbe65ae90938386418536c" id="r_a839b03caaefbe65ae90938386418536c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a839b03caaefbe65ae90938386418536c">getFlipY</a> () const</td></tr>
+<tr class="separator:a839b03caaefbe65ae90938386418536c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a52d68f9afb342f4f5dd63a0ec9e79a" id="r_a6a52d68f9afb342f4f5dd63a0ec9e79a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a6a52d68f9afb342f4f5dd63a0ec9e79a">setPosition</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a6a52d68f9afb342f4f5dd63a0ec9e79a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a467a5906f77cd1b2289c5fdf702f9187" id="r_a467a5906f77cd1b2289c5fdf702f9187"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a467a5906f77cd1b2289c5fdf702f9187">getX</a> () const</td></tr>
+<tr class="separator:a467a5906f77cd1b2289c5fdf702f9187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53bf468b68d5ef2e1a7d6547a5f71c24" id="r_a53bf468b68d5ef2e1a7d6547a5f71c24"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a53bf468b68d5ef2e1a7d6547a5f71c24">getY</a> () const</td></tr>
+<tr class="separator:a53bf468b68d5ef2e1a7d6547a5f71c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39f77917a07fb72adf5b984ee7fe5b97" id="r_a39f77917a07fb72adf5b984ee7fe5b97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a39f77917a07fb72adf5b984ee7fe5b97">setScale</a> (float sx, float sy)</td></tr>
+<tr class="separator:a39f77917a07fb72adf5b984ee7fe5b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42bfc6d9452fbb1854f26f63a7735b16" id="r_a42bfc6d9452fbb1854f26f63a7735b16"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42bfc6d9452fbb1854f26f63a7735b16">getScaleX</a> () const</td></tr>
+<tr class="separator:a42bfc6d9452fbb1854f26f63a7735b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a27fcf0110e359d6b57743d6a492ab" id="r_ad4a27fcf0110e359d6b57743d6a492ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ad4a27fcf0110e359d6b57743d6a492ab">getScaleY</a> () const</td></tr>
+<tr class="separator:ad4a27fcf0110e359d6b57743d6a492ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a461b46c67974fa22e3f03d2d2375f957" id="r_a461b46c67974fa22e3f03d2d2375f957"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a461b46c67974fa22e3f03d2d2375f957">setLayer</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:a461b46c67974fa22e3f03d2d2375f957"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6e4850d9dad039e60680c74e6b7b8d0" id="r_ad6e4850d9dad039e60680c74e6b7b8d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ad6e4850d9dad039e60680c74e6b7b8d0">getLayer</a> () const</td></tr>
+<tr class="separator:ad6e4850d9dad039e60680c74e6b7b8d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1602e2a3dea0f6fdc151e04a0c48055" id="r_ab1602e2a3dea0f6fdc151e04a0c48055"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab1602e2a3dea0f6fdc151e04a0c48055">setColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ab1602e2a3dea0f6fdc151e04a0c48055"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1cef663907eaa0364d5e444ac33a43c" id="r_ae1cef663907eaa0364d5e444ac33a43c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">isPlaying</a> () const</td></tr>
+<tr class="separator:ae1cef663907eaa0364d5e444ac33a43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d775b24a9719e5ebde22e9945a55bd8" id="r_a3d775b24a9719e5ebde22e9945a55bd8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">isPaused</a> () const</td></tr>
+<tr class="separator:a3d775b24a9719e5ebde22e9945a55bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66d7490195151d4b84f0f4fddaa21f47" id="r_a66d7490195151d4b84f0f4fddaa21f47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">isFinished</a> () const</td></tr>
+<tr class="separator:a66d7490195151d4b84f0f4fddaa21f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae30ba4e8c3f4a493e46b9c2f0fa1787f" id="r_ae30ba4e8c3f4a493e46b9c2f0fa1787f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae30ba4e8c3f4a493e46b9c2f0fa1787f">getAnimation</a> () const</td></tr>
+<tr class="separator:ae30ba4e8c3f4a493e46b9c2f0fa1787f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4773144afc71845031ef0d537e43fc69" id="r_a4773144afc71845031ef0d537e43fc69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a4773144afc71845031ef0d537e43fc69">getAnimationDuration</a> () const</td></tr>
+<tr class="separator:a4773144afc71845031ef0d537e43fc69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01e9ba33bad49b0f4f426e206d4fb338" id="r_a01e9ba33bad49b0f4f426e206d4fb338"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338">apply</a> ()</td></tr>
+<tr class="memdesc:a01e9ba33bad49b0f4f426e206d4fb338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply current animation time to skeleton and update world transforms.  <br /></td></tr>
+<tr class="separator:a01e9ba33bad49b0f4f426e206d4fb338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a8b689724e833b0e1de9052b2699ee4" id="r_a3a8b689724e833b0e1de9052b2699ee4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3a8b689724e833b0e1de9052b2699ee4">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a3a8b689724e833b0e1de9052b2699ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance playback by one scheduler-owned deterministic step.  <br /></td></tr>
+<tr class="separator:a3a8b689724e833b0e1de9052b2699ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a528bed2cb2fb29942e4b866741153" id="r_ac7a528bed2cb2fb29942e4b866741153"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ac7a528bed2cb2fb29942e4b866741153">hasCurrentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:ac7a528bed2cb2fb29942e4b866741153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this Spine animation has consumed a scheduler step.  <br /></td></tr>
+<tr class="separator:ac7a528bed2cb2fb29942e4b866741153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b008c92dc30b499465c33ef9c83a5c" id="r_a42b008c92dc30b499465c33ef9c83a5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42b008c92dc30b499465c33ef9c83a5c">currentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:a42b008c92dc30b499465c33ef9c83a5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last scheduler tick consumed by this Spine animation.  <br /></td></tr>
+<tr class="separator:a42b008c92dc30b499465c33ef9c83a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa6d43b0d13072fb52a80d6ebe862df" id="r_a2aa6d43b0d13072fb52a80d6ebe862df"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2aa6d43b0d13072fb52a80d6ebe862df">update</a> (float dt)</td></tr>
+<tr class="memdesc:a2aa6d43b0d13072fb52a80d6ebe862df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3a8b689724e833b0e1de9052b2699ee4" title="Advance playback by one scheduler-owned deterministic step.">advance()</a>.  <br /></td></tr>
+<tr class="separator:a2aa6d43b0d13072fb52a80d6ebe862df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66608f196fb6b3f44e78b15ad6b8040e" id="r_a66608f196fb6b3f44e78b15ad6b8040e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a66608f196fb6b3f44e78b15ad6b8040e">collectDrawItems</a> (std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">graphics::DrawItem2D</a> &gt; &amp;out)</td></tr>
+<tr class="memdesc:a66608f196fb6b3f44e78b15ad6b8040e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append region attachment quads into the shared 2D draw queue.  <br /></td></tr>
+<tr class="separator:a66608f196fb6b3f44e78b15ad6b8040e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec1b4b824c1ab17968dd7f05d266526e" id="r_aec1b4b824c1ab17968dd7f05d266526e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aec1b4b824c1ab17968dd7f05d266526e">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:aec1b4b824c1ab17968dd7f05d266526e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the current pose into an existing frame without clearing or presenting it.  <br /></td></tr>
+<tr class="separator:aec1b4b824c1ab17968dd7f05d266526e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c6e11ddf1689769b204c2c0fe0076d" id="r_a45c6e11ddf1689769b204c2c0fe0076d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a45c6e11ddf1689769b204c2c0fe0076d">getDrawSlotCount</a> () const</td></tr>
+<tr class="memdesc:a45c6e11ddf1689769b204c2c0fe0076d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query posed draw slots without textures (for unit tests). Returns number of visible region attachments after <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338" title="Apply current animation time to skeleton and update world transforms.">apply()</a>.  <br /></td></tr>
+<tr class="separator:a45c6e11ddf1689769b204c2c0fe0076d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2387427afc9d91c6c98287808438b724" id="r_a2387427afc9d91c6c98287808438b724"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2387427afc9d91c6c98287808438b724">getDrawSlotX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a2387427afc9d91c6c98287808438b724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59e087ed76d67af8168c7e5c161bc75e" id="r_a59e087ed76d67af8168c7e5c161bc75e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a59e087ed76d67af8168c7e5c161bc75e">getDrawSlotY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a59e087ed76d67af8168c7e5c161bc75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a70c327f5603dd4cab54835edf48e9b" id="r_a9a70c327f5603dd4cab54835edf48e9b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a9a70c327f5603dd4cab54835edf48e9b">getDrawSlotWidth</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9a70c327f5603dd4cab54835edf48e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8bb5e25c042d58e9832344029b6dff" id="r_a0c8bb5e25c042d58e9832344029b6dff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0c8bb5e25c042d58e9832344029b6dff">getDrawSlotHeight</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0c8bb5e25c042d58e9832344029b6dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5120645b13f619c96e5309cd4e824712" id="r_a5120645b13f619c96e5309cd4e824712"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a5120645b13f619c96e5309cd4e824712">getDrawSlotRotation</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a5120645b13f619c96e5309cd4e824712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeedf16930ea10e23c2cd5f2bd2fae6fb" id="r_aeedf16930ea10e23c2cd5f2bd2fae6fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aeedf16930ea10e23c2cd5f2bd2fae6fb">getDrawSlotPage</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aeedf16930ea10e23c2cd5f2bd2fae6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8b041c64bca140e751a2bc9465adf6e" id="r_aa8b041c64bca140e751a2bc9465adf6e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa8b041c64bca140e751a2bc9465adf6e">getDrawSlotRegion</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa8b041c64bca140e751a2bc9465adf6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:af47625f50036c466946f960db7320bcf" id="r_af47625f50036c466946f960db7320bcf"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">Animation</a></td></tr>
+<tr class="separator:af47625f50036c466946f960db7320bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Spine animation player + 2D draw collector (region attachments). </p>
+<p>Applies bone/slot timelines onto a <a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html" title="Runtime Spine skeleton pose (local + world bone transforms, slot attachments). Script type: SpineSkel...">SpineSkeleton</a>, then emits DrawItem2D quads for the shared 2D queue. Bind atlas page textures before collecting. Script type: <code><a class="el" href="classeve_1_1animation_1_1SpineAnim.html" title="Spine animation player + 2D draw collector (region attachments).">SpineAnim</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00034">34</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa4e4d5f351e1b577bcaaa8435172e19b" name="aa4e4d5f351e1b577bcaaa8435172e19b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4e4d5f351e1b577bcaaa8435172e19b">&#9670;&#160;</a></span>SpineAnim() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpineAnim::SpineAnim </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9eb5352b447be41f96a4660f799a605f" name="a9eb5352b447be41f96a4660f799a605f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eb5352b447be41f96a4660f799a605f">&#9670;&#160;</a></span>~SpineAnim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpineAnim::~SpineAnim </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a715e4e1505cc3cbf374698dbd75f5e65" name="a715e4e1505cc3cbf374698dbd75f5e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a715e4e1505cc3cbf374698dbd75f5e65">&#9670;&#160;</a></span>SpineAnim() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpineAnim::SpineAnim </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3a8b689724e833b0e1de9052b2699ee4" name="a3a8b689724e833b0e1de9052b2699ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a8b689724e833b0e1de9052b2699ee4">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::SpineAnim::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance playback by one scheduler-owned deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00303">update()</a>.</p>
+
+</div>
+</div>
+<a id="a01e9ba33bad49b0f4f426e206d4fb338" name="a01e9ba33bad49b0f4f426e206d4fb338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01e9ba33bad49b0f4f426e206d4fb338">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::apply </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply current animation time to skeleton and update world transforms. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00164">angle</a>, <a class="el" href="SpineSkeletonData_8h_source.html#l00139">eve::animation::SpineSkeletonData::animation()</a>, <a class="el" href="SpineSkeletonData_8h_source.html#l00074">eve::animation::SpineSkeletonData::SlotData::attachment</a>, <a class="el" href="SpineSkeletonData_8h_source.html#l00136">eve::animation::SpineSkeletonData::bone()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00105">eve::animation::SpineSkeleton::getBoneLocalRotation()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00109">eve::animation::SpineSkeleton::getBoneLocalScaleX()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00113">eve::animation::SpineSkeleton::getBoneLocalScaleY()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00097">eve::animation::SpineSkeleton::getBoneLocalX()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00101">eve::animation::SpineSkeleton::getBoneLocalY()</a>, <a class="el" href="SpineSkeleton_8h_source.html#l00022">eve::animation::SpineSkeleton::getData()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00126">eve::animation::SpineSkeleton::setBoneLocalRotation()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00130">eve::animation::SpineSkeleton::setBoneLocalScaleX()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00134">eve::animation::SpineSkeleton::setBoneLocalScaleY()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00118">eve::animation::SpineSkeleton::setBoneLocalX()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00122">eve::animation::SpineSkeleton::setBoneLocalY()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00174">eve::animation::SpineSkeleton::setSlotAttachmentName()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00046">eve::animation::SpineSkeleton::setToSetupPose()</a>, <a class="el" href="SpineSkeletonData_8h_source.html#l00137">eve::animation::SpineSkeletonData::slot()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00060">eve::animation::SpineSkeleton::updateWorldTransform()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00417">collectDrawItems()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00061">play()</a> , 以及 <a class="el" href="SpineAnim_8cpp_source.html#l00097">setTime()</a>.</p>
+
+</div>
+</div>
+<a id="a66608f196fb6b3f44e78b15ad6b8040e" name="a66608f196fb6b3f44e78b15ad6b8040e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66608f196fb6b3f44e78b15ad6b8040e">&#9670;&#160;</a></span>collectDrawItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::collectDrawItems </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">graphics::DrawItem2D</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append region attachment quads into the shared 2D draw queue. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00417">417</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAnim_8cpp_source.html#l00214">apply()</a>, <a class="el" href="DrawItem2D_8h_source.html#l00033">eve::graphics::DrawItem2D::color</a>, <a class="el" href="DrawItem2D_8h_source.html#l00023">eve::graphics::DrawItem2D::depthY</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00056">getPageTexture()</a>, <a class="el" href="DrawItem2D_8h_source.html#l00022">eve::graphics::DrawItem2D::h</a>, <a class="el" href="DrawItem2D_8h_source.html#l00032">eve::graphics::DrawItem2D::hasOrder</a>, <a class="el" href="DrawItem2D_8h_source.html#l00049">eve::graphics::DrawItem2D::hasUV</a>, <a class="el" href="DrawItem2D_8h_source.html#l00034">eve::graphics::DrawItem2D::layer</a>, <a class="el" href="DrawItem2D_8h_source.html#l00031">eve::graphics::DrawItem2D::order</a>, <a class="el" href="DrawItem2D_8h_source.html#l00043">eve::graphics::DrawItem2D::receiveLight</a>, <a class="el" href="DrawItem2D_8h_source.html#l00051">eve::graphics::DrawItem2D::rotatedUV</a>, <a class="el" href="DrawItem2D_8h_source.html#l00025">eve::graphics::DrawItem2D::rotation</a>, <a class="el" href="DrawItem2D_8h_source.html#l00037">eve::graphics::DrawItem2D::texture</a>, <a class="el" href="DrawItem2D_8h_source.html#l00052">eve::graphics::DrawItem2D::u0</a>, <a class="el" href="DrawItem2D_8h_source.html#l00052">eve::graphics::DrawItem2D::u1</a>, <a class="el" href="DrawItem2D_8h_source.html#l00052">eve::graphics::DrawItem2D::v0</a>, <a class="el" href="DrawItem2D_8h_source.html#l00052">eve::graphics::DrawItem2D::v1</a>, <a class="el" href="DrawItem2D_8h_source.html#l00021">eve::graphics::DrawItem2D::w</a>, <a class="el" href="DrawItem2D_8h_source.html#l00019">eve::graphics::DrawItem2D::x</a> , 以及 <a class="el" href="DrawItem2D_8h_source.html#l00020">eve::graphics::DrawItem2D::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00314">draw()</a>.</p>
+
+</div>
+</div>
+<a id="a42b008c92dc30b499465c33ef9c83a5c" name="a42b008c92dc30b499465c33ef9c83a5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b008c92dc30b499465c33ef9c83a5c">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::animation::SpineAnim::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last scheduler tick consumed by this Spine animation. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec1b4b824c1ab17968dd7f05d266526e" name="aec1b4b824c1ab17968dd7f05d266526e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec1b4b824c1ab17968dd7f05d266526e">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the current pose into an existing frame without clearing or presenting it. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAnim_8cpp_source.html#l00417">collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00347">eve::graphics::RenderSystem::drawItems()</a>.</p>
+
+</div>
+</div>
+<a id="ae30ba4e8c3f4a493e46b9c2f0fa1787f" name="ae30ba4e8c3f4a493e46b9c2f0fa1787f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae30ba4e8c3f4a493e46b9c2f0fa1787f">&#9670;&#160;</a></span>getAnimation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::SpineAnim::getAnimation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4773144afc71845031ef0d537e43fc69" name="a4773144afc71845031ef0d537e43fc69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4773144afc71845031ef0d537e43fc69">&#9670;&#160;</a></span>getAnimationDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getAnimationDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineSkeletonData_8cpp_source.html#l00148">eve::animation::SpineSkeletonData::getAnimationDuration()</a> , 以及 <a class="el" href="SpineSkeleton_8h_source.html#l00022">eve::animation::SpineSkeleton::getData()</a>.</p>
+
+</div>
+</div>
+<a id="a064febfc2dea87c13507c335c379d9d3" name="a064febfc2dea87c13507c335c379d9d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a064febfc2dea87c13507c335c379d9d3">&#9670;&#160;</a></span>getAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> * eve::animation::SpineAnim::getAtlas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45c6e11ddf1689769b204c2c0fe0076d" name="a45c6e11ddf1689769b204c2c0fe0076d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c6e11ddf1689769b204c2c0fe0076d">&#9670;&#160;</a></span>getDrawSlotCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpineAnim::getDrawSlotCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query posed draw slots without textures (for unit tests). Returns number of visible region attachments after <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338" title="Apply current animation time to skeleton and update world transforms.">apply()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00460">460</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c8bb5e25c042d58e9832344029b6dff" name="a0c8bb5e25c042d58e9832344029b6dff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c8bb5e25c042d58e9832344029b6dff">&#9670;&#160;</a></span>getDrawSlotHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getDrawSlotHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00474">474</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aeedf16930ea10e23c2cd5f2bd2fae6fb" name="aeedf16930ea10e23c2cd5f2bd2fae6fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeedf16930ea10e23c2cd5f2bd2fae6fb">&#9670;&#160;</a></span>getDrawSlotPage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpineAnim::getDrawSlotPage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa8b041c64bca140e751a2bc9465adf6e" name="aa8b041c64bca140e751a2bc9465adf6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8b041c64bca140e751a2bc9465adf6e">&#9670;&#160;</a></span>getDrawSlotRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::SpineAnim::getDrawSlotRegion </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a5120645b13f619c96e5309cd4e824712" name="a5120645b13f619c96e5309cd4e824712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5120645b13f619c96e5309cd4e824712">&#9670;&#160;</a></span>getDrawSlotRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getDrawSlotRotation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>.</p>
+
+</div>
+</div>
+<a id="a9a70c327f5603dd4cab54835edf48e9b" name="a9a70c327f5603dd4cab54835edf48e9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a70c327f5603dd4cab54835edf48e9b">&#9670;&#160;</a></span>getDrawSlotWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getDrawSlotWidth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a2387427afc9d91c6c98287808438b724" name="a2387427afc9d91c6c98287808438b724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2387427afc9d91c6c98287808438b724">&#9670;&#160;</a></span>getDrawSlotX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getDrawSlotX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a59e087ed76d67af8168c7e5c161bc75e" name="a59e087ed76d67af8168c7e5c161bc75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e087ed76d67af8168c7e5c161bc75e">&#9670;&#160;</a></span>getDrawSlotY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getDrawSlotY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a839b03caaefbe65ae90938386418536c" name="a839b03caaefbe65ae90938386418536c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a839b03caaefbe65ae90938386418536c">&#9670;&#160;</a></span>getFlipY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::getFlipY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6e4850d9dad039e60680c74e6b7b8d0" name="ad6e4850d9dad039e60680c74e6b7b8d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6e4850d9dad039e60680c74e6b7b8d0">&#9670;&#160;</a></span>getLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpineAnim::getLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70b2c70a124ada392e1286748aaa6cd8" name="a70b2c70a124ada392e1286748aaa6cd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70b2c70a124ada392e1286748aaa6cd8">&#9670;&#160;</a></span>getLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::getLoop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0710d00c50b0211db3d6cbd89eac5450" name="a0710d00c50b0211db3d6cbd89eac5450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0710d00c50b0211db3d6cbd89eac5450">&#9670;&#160;</a></span>getPageTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::animation::SpineAnim::getPageTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00417">collectDrawItems()</a>.</p>
+
+</div>
+</div>
+<a id="a42bfc6d9452fbb1854f26f63a7735b16" name="a42bfc6d9452fbb1854f26f63a7735b16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42bfc6d9452fbb1854f26f63a7735b16">&#9670;&#160;</a></span>getScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getScaleX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4a27fcf0110e359d6b57743d6a492ab" name="ad4a27fcf0110e359d6b57743d6a492ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4a27fcf0110e359d6b57743d6a492ab">&#9670;&#160;</a></span>getScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getScaleY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a42d2ca341885433e9ba62601edc9c336" name="a42d2ca341885433e9ba62601edc9c336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42d2ca341885433e9ba62601edc9c336">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> * eve::animation::SpineAnim::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a698864c3f58cc00aa1a06e98b339c4cd" name="a698864c3f58cc00aa1a06e98b339c4cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698864c3f58cc00aa1a06e98b339c4cd">&#9670;&#160;</a></span>getSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab531e92586e10210ad2742fd17902897" name="ab531e92586e10210ad2742fd17902897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab531e92586e10210ad2742fd17902897">&#9670;&#160;</a></span>getTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a467a5906f77cd1b2289c5fdf702f9187" name="a467a5906f77cd1b2289c5fdf702f9187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a467a5906f77cd1b2289c5fdf702f9187">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53bf468b68d5ef2e1a7d6547a5f71c24" name="a53bf468b68d5ef2e1a7d6547a5f71c24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53bf468b68d5ef2e1a7d6547a5f71c24">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpineAnim::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7a528bed2cb2fb29942e4b866741153" name="ac7a528bed2cb2fb29942e4b866741153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a528bed2cb2fb29942e4b866741153">&#9670;&#160;</a></span>hasCurrentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::hasCurrentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this Spine animation has consumed a scheduler step. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66d7490195151d4b84f0f4fddaa21f47" name="a66d7490195151d4b84f0f4fddaa21f47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66d7490195151d4b84f0f4fddaa21f47">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d775b24a9719e5ebde22e9945a55bd8" name="a3d775b24a9719e5ebde22e9945a55bd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d775b24a9719e5ebde22e9945a55bd8">&#9670;&#160;</a></span>isPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::isPaused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1cef663907eaa0364d5e444ac33a43c" name="ae1cef663907eaa0364d5e444ac33a43c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1cef663907eaa0364d5e444ac33a43c">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef435d5b662b6f0953da6a9ec7789053" name="aef435d5b662b6f0953da6a9ec7789053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef435d5b662b6f0953da6a9ec7789053">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp; eve::animation::SpineAnim::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa81f8474de6014c016a45dbcdd282010" name="aa81f8474de6014c016a45dbcdd282010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa81f8474de6014c016a45dbcdd282010">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e851e8bd34631293125b47d36cb79b2" name="a6e851e8bd34631293125b47d36cb79b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e851e8bd34631293125b47d36cb79b2">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::play </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>animationName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAnim_8cpp_source.html#l00214">apply()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00093">eve::animation::SpineSkeletonData::findAnimation()</a>, <a class="el" href="SpineSkeleton_8h_source.html#l00022">eve::animation::SpineSkeleton::getData()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>.</p>
+
+</div>
+</div>
+<a id="ae4bf5bf91310c92d6008fe08ff041371" name="ae4bf5bf91310c92d6008fe08ff041371"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4bf5bf91310c92d6008fe08ff041371">&#9670;&#160;</a></span>resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::resume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e088e3481cfdd25707823a55ba46ef4" name="a2e088e3481cfdd25707823a55ba46ef4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e088e3481cfdd25707823a55ba46ef4">&#9670;&#160;</a></span>setAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setAtlas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> *&#160;</td>
+          <td class="paramname"><em>atlas</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAtlas_8h_source.html#l00027">eve::animation::SpineAtlas::getPageCount()</a>.</p>
+
+</div>
+</div>
+<a id="ab1602e2a3dea0f6fdc151e04a0c48055" name="ab1602e2a3dea0f6fdc151e04a0c48055"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1602e2a3dea0f6fdc151e04a0c48055">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="ab5acaa257a83301be65772f0c474f758" name="ab5acaa257a83301be65772f0c474f758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5acaa257a83301be65772f0c474f758">&#9670;&#160;</a></span>setFlipY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setFlipY </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>flip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>When true (default), Spine Y-up is flipped for screen Y-down draw items. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a461b46c67974fa22e3f03d2d2375f957" name="a461b46c67974fa22e3f03d2d2375f957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a461b46c67974fa22e3f03d2d2375f957">&#9670;&#160;</a></span>setLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a5fea1163a025ee6977a6b11599211156" name="a5fea1163a025ee6977a6b11599211156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fea1163a025ee6977a6b11599211156">&#9670;&#160;</a></span>setLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setLoop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>.</p>
+
+</div>
+</div>
+<a id="a0619c975b6045b19b5d9fd082eaf4c65" name="a0619c975b6045b19b5d9fd082eaf4c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0619c975b6045b19b5d9fd082eaf4c65">&#9670;&#160;</a></span>setPageTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setPageTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a GPU texture to an atlas page (by index or page image name). </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAtlas_8h_source.html#l00027">eve::animation::SpineAtlas::getPageCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00045">setPageTextureByName()</a>.</p>
+
+</div>
+</div>
+<a id="a1679d215e1be74f965c22dc7ea2b3ef3" name="a1679d215e1be74f965c22dc7ea2b3ef3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1679d215e1be74f965c22dc7ea2b3ef3">&#9670;&#160;</a></span>setPageTextureByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setPageTextureByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pageName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAtlas_8h_source.html#l00027">eve::animation::SpineAtlas::getPageCount()</a>, <a class="el" href="SpineAtlas_8cpp_source.html#l00199">eve::animation::SpineAtlas::getPageName()</a> , 以及 <a class="el" href="SpineAnim_8cpp_source.html#l00036">setPageTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a6a52d68f9afb342f4f5dd63a0ec9e79a" name="a6a52d68f9afb342f4f5dd63a0ec9e79a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a52d68f9afb342f4f5dd63a0ec9e79a">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a39f77917a07fb72adf5b984ee7fe5b97" name="a39f77917a07fb72adf5b984ee7fe5b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39f77917a07fb72adf5b984ee7fe5b97">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1126c56a256b9d2f49a97450f0bbbf4b" name="a1126c56a256b9d2f49a97450f0bbbf4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1126c56a256b9d2f49a97450f0bbbf4b">&#9670;&#160;</a></span>setSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae785d77cde59f2da10bb115c97075b51" name="ae785d77cde59f2da10bb115c97075b51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae785d77cde59f2da10bb115c97075b51">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAnim_8cpp_source.html#l00214">apply()</a>.</p>
+
+</div>
+</div>
+<a id="a21161acb1c37322448ead448518905d4" name="a21161acb1c37322448ead448518905d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21161acb1c37322448ead448518905d4">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpineAnim::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2aa6d43b0d13072fb52a80d6ebe862df" name="a2aa6d43b0d13072fb52a80d6ebe862df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa6d43b0d13072fb52a80d6ebe862df">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpineAnim::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3a8b689724e833b0e1de9052b2699ee4" title="Advance playback by one scheduler-owned deterministic step.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a> 第 <a class="el" href="SpineAnim_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpineAnim_8cpp_source.html#l00294">advance()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="af47625f50036c466946f960db7320bcf" name="af47625f50036c466946f960db7320bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47625f50036c466946f960db7320bcf">&#9670;&#160;</a></span>Animation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1animation_1_1Animation.html">Animation</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a> 第 <a class="el" href="SpineAnim_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="SpineAnim_8h_source.html">SpineAnim.h</a></li>
+<li>src/modules/animation/<a class="el" href="SpineAnim_8cpp_source.html">SpineAnim.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

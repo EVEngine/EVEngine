@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsReplay.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TacticsReplay.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TacticsReplay_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsReplay_8h.html">tactics/TacticsReplay.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>Result&lt;void&gt; fail(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(code, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)));</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>Result&lt;void&gt; consume(Result&lt;T&gt;&amp;&amp; result) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!result) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(result.status());</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    std::move(result).takeValue();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>Result&lt;void&gt; apply(Battle&amp; battle, <span class="keyword">const</span> BattleCommand&amp; command) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">switch</span> (command.kind) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37">BattleCommandKind::Start</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a89062c74a8720845e7b7f31a2c72c147">BattleSystem::start</a>(battle, command.policy);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee">BattleCommandKind::Advance</a>: <span class="keywordflow">return</span> consume(<a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#acb9e1011cac71a2b7d3613f4e74814ba">BattleSystem::advance</a>(battle, command.step));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">BattleCommandKind::Move</a>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keywordflow">return</span> consume(<a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">BattleSystem::moveUnit</a>(battle, command.actor, command.cell, command.step.tick));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f">BattleCommandKind::Face</a>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">BattleSystem::faceUnit</a>(battle, command.actor, command.facing, command.step.tick);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652">BattleCommandKind::Wait</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">BattleSystem::waitUnit</a>(battle, command.actor, command.step.tick);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb">BattleCommandKind::EndTurn</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a17160829bed5d0d51f8cf9a3359e230c">BattleSystem::endTurn</a>(battle, command.actor);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061">BattleCommandKind::Finish</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a3c57bf0a7bb3e8a6797a86785b61b843">BattleSystem::finish</a>(battle);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f">BattleCommandKind::OpenReaction</a>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> consume(<a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a1f121d1c82525e475e814e1a44e9e313">BattleSystem::openReaction</a>(battle, command.triggerSequence, command.candidates));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a">BattleCommandKind::AcceptReaction</a>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">return</span> consume(<a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#aa0ec3478423d2bfc00dd06a89029b13c">BattleSystem::acceptReaction</a>(battle, command.actor, command.action));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e">BattleCommandKind::DeclineReaction</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a368ce32fd9a58580dd11b59a4f1457d8">BattleSystem::declineReaction</a>(battle);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7">BattleCommandKind::DefeatUnit</a>: <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a1ce089705a27483c4eff4fc59506fe20">BattleSystem::defeatUnit</a>(battle, command.actor);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea">BattleCommandKind::RollRandom</a>: <span class="keywordflow">return</span> consume(<a class="code hl_function" href="classeve_1_1tactics_1_1BattleSystem.html#a2ec10450e74b449cc7a1a03a6ec037c0">BattleSystem::roll</a>(battle, command.action));</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">DiagnosticCode::UnknownVersion</a>, <span class="stringliteral">&quot;unknown tactics replay command kind&quot;</span>, <span class="stringliteral">&quot;command.kind&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1BattleReplay.html#a0dca12296992f7027aaca5563266e053">   43</a></span>std::vector&lt;BattleCommand&gt; <a class="code hl_function" href="classeve_1_1tactics_1_1BattleReplay.html#a0dca12296992f7027aaca5563266e053">BattleReplay::commandsFrom</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> fromRevision) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::vector&lt;BattleCommand&gt; result;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; command : battle.commands()-&gt;values)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (command.resultingRevision &gt; fromRevision) result.push_back(command);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1BattleReplay.html#a5f7034ac6ea26c1a01358a29eaac1e1b">   50</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1BattleReplay.html#a5f7034ac6ea26c1a01358a29eaac1e1b">BattleReplay::replay</a>(<a class="code hl_class" href="classeve_1_1tactics_1_1Battle.html">Battle</a>&amp; battle, std::span&lt;const BattleCommand&gt; <a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>.empty()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::uint64_t previousSequence = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = 0; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; <a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>.size(); ++<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1BattleCommand.html">BattleCommand</a>&amp; command = <a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">const</span> std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = <span class="stringliteral">&quot;commands[&quot;</span> + std::to_string(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) + <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">sequence</a> == 0 || (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt; 0 &amp;&amp; command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">sequence</a> != previousSequence + 1))</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;tactics replay command sequence is not contiguous&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (battle.commands()-&gt;nextSequence != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">sequence</a>)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;tactics replay command sequence differs from target&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (battle.turn()-&gt;revision != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#ae7bfa334d2d17fe5c2938a2b9edc7ecc">expectedRevision</a>)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;tactics replay expected revision differs from target&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">auto</span> applied = apply(battle, command);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">if</span> (!applied) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(applied.status());</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">if</span> (battle.turn()-&gt;revision != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#aa350a9be4db20ecdaa62dec9fb874815">resultingRevision</a>)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>, <span class="stringliteral">&quot;tactics replay produced a different revision&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; recorded = battle.commands()-&gt;values.back();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">if</span> (recorded.kind != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8280eecd7f9a5e4683bc8bc3b6beeedb">kind</a> || recorded.sequence != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">sequence</a> ||</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            recorded.expectedRevision != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#ae7bfa334d2d17fe5c2938a2b9edc7ecc">expectedRevision</a> ||</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            recorded.resultingRevision != command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#aa350a9be4db20ecdaa62dec9fb874815">resultingRevision</a>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>, <span class="stringliteral">&quot;tactics replay recorded a different command&quot;</span>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        previousSequence = command.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">sequence</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aEditorTransactionConsumer_8cpp_html_a91dfb623dcffda243afe1b1a57887e90"><div class="ttname"><a href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; IEditCommand &gt; &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00081">EditorTransactionConsumer.cpp:81</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTacticsReplay_8h_html"><div class="ttname"><a href="TacticsReplay_8h.html">TacticsReplay.h</a></div><div class="ttdoc">Deterministic accepted-command replay.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleReplay_html_a0dca12296992f7027aaca5563266e053"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleReplay.html#a0dca12296992f7027aaca5563266e053">eve::tactics::BattleReplay::commandsFrom</a></div><div class="ttdeci">static std::vector&lt; BattleCommand &gt; commandsFrom(Battle &amp;battle, Revision fromRevision)</div><div class="ttdoc">Return an owning copy of commands whose result is newer than fromRevision.</div><div class="ttdef"><b>Definition</b> <a href="TacticsReplay_8cpp_source.html#l00043">TacticsReplay.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleReplay_html_a5f7034ac6ea26c1a01358a29eaac1e1b"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleReplay.html#a5f7034ac6ea26c1a01358a29eaac1e1b">eve::tactics::BattleReplay::replay</a></div><div class="ttdeci">static Result&lt; void &gt; replay(Battle &amp;battle, std::span&lt; const BattleCommand &gt; commands)</div><div class="ttdoc">Apply commands in sequence and verify revision/sequence agreement after every commit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsReplay_8cpp_source.html#l00050">TacticsReplay.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a17160829bed5d0d51f8cf9a3359e230c"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a17160829bed5d0d51f8cf9a3359e230c">eve::tactics::BattleSystem::endTurn</a></div><div class="ttdeci">static Result&lt; void &gt; endTurn(Battle &amp;battle, SubjectRef actor)</div><div class="ttdoc">End the currently acting unit's turn and enter TurnEnd.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00343">TacticsBattle.cpp:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a1ce089705a27483c4eff4fc59506fe20"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a1ce089705a27483c4eff4fc59506fe20">eve::tactics::BattleSystem::defeatUnit</a></div><div class="ttdeci">static Result&lt; void &gt; defeatUnit(Battle &amp;battle, SubjectRef unit)</div><div class="ttdoc">Apply a tactical defeat outcome and evaluate affected objectives atomically.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00727">TacticsBattle.cpp:727</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a1f121d1c82525e475e814e1a44e9e313"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a1f121d1c82525e475e814e1a44e9e313">eve::tactics::BattleSystem::openReaction</a></div><div class="ttdeci">static Result&lt; std::size_t &gt; openReaction(Battle &amp;battle, std::uint64_t triggerSequence, std::vector&lt; ReactionCandidate &gt; candidates)</div><div class="ttdoc">Open a sorted reaction window for an existing battle event sequence.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00551">TacticsBattle.cpp:551</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a2ec10450e74b449cc7a1a03a6ec037c0"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a2ec10450e74b449cc7a1a03a6ec037c0">eve::tactics::BattleSystem::roll</a></div><div class="ttdeci">static Result&lt; std::uint64_t &gt; roll(Battle &amp;battle, const LogicalId &amp;stream)</div><div class="ttdoc">Consume one value from a battle-owned named deterministic stream.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00767">TacticsBattle.cpp:767</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a368ce32fd9a58580dd11b59a4f1457d8"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a368ce32fd9a58580dd11b59a4f1457d8">eve::tactics::BattleSystem::declineReaction</a></div><div class="ttdeci">static Result&lt; void &gt; declineReaction(Battle &amp;battle)</div><div class="ttdoc">Decline and close the top reaction window without consuming resources.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00659">TacticsBattle.cpp:659</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a3c57bf0a7bb3e8a6797a86785b61b843"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a3c57bf0a7bb3e8a6797a86785b61b843">eve::tactics::BattleSystem::finish</a></div><div class="ttdeci">static Result&lt; void &gt; finish(Battle &amp;battle)</div><div class="ttdoc">End a running battle and enter BattleEnd.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00531">TacticsBattle.cpp:531</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a89062c74a8720845e7b7f31a2c72c147"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a89062c74a8720845e7b7f31a2c72c147">eve::tactics::BattleSystem::start</a></div><div class="ttdeci">static Result&lt; void &gt; start(Battle &amp;battle, TurnPolicyKind policy)</div><div class="ttdoc">Start a configured battle and emit battle.started.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00211">TacticsBattle.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_a922e0f71b51199f87265ef0e9ef11d94"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#a922e0f71b51199f87265ef0e9ef11d94">eve::tactics::BattleSystem::faceUnit</a></div><div class="ttdeci">static Result&lt; void &gt; faceUnit(Battle &amp;battle, SubjectRef actor, int facing)</div><div class="ttdoc">Change the active unit's logical facing without consuming movement points.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00412">TacticsBattle.cpp:412</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_aa0ec3478423d2bfc00dd06a89029b13c"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#aa0ec3478423d2bfc00dd06a89029b13c">eve::tactics::BattleSystem::acceptReaction</a></div><div class="ttdeci">static Result&lt; ReactionReceipt &gt; acceptReaction(Battle &amp;battle, SubjectRef reactor, const LogicalId &amp;action)</div><div class="ttdoc">Accept one eligible reaction, consume one reaction point and close the top window.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00605">TacticsBattle.cpp:605</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_acb9e1011cac71a2b7d3613f4e74814ba"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#acb9e1011cac71a2b7d3613f4e74814ba">eve::tactics::BattleSystem::advance</a></div><div class="ttdeci">static Result&lt; BattlePhase &gt; advance(Battle &amp;battle, const SimulationStep &amp;step)</div><div class="ttdoc">Advance exactly one observable automatic phase transition.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00243">TacticsBattle.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ad1debba5c88a178763426a8f5cd03f01"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ad1debba5c88a178763426a8f5cd03f01">eve::tactics::BattleSystem::waitUnit</a></div><div class="ttdeci">static Result&lt; void &gt; waitUnit(Battle &amp;battle, SubjectRef actor)</div><div class="ttdoc">Commit a wait action and enter TurnEnd for the active unit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00462">TacticsBattle.cpp:462</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BattleSystem_html_ad58f3643dfa46e40ec68ffd04edd0547"><div class="ttname"><a href="classeve_1_1tactics_1_1BattleSystem.html#ad58f3643dfa46e40ec68ffd04edd0547">eve::tactics::BattleSystem::moveUnit</a></div><div class="ttdeci">static Result&lt; MoveReceipt &gt; moveUnit(Battle &amp;battle, SubjectRef actor, Cell destination)</div><div class="ttdoc">Validate and atomically commit movement for the active unit.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8cpp_source.html#l00370">TacticsBattle.cpp:370</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Battle_html"><div class="ttname"><a href="classeve_1_1tactics_1_1Battle.html">eve::tactics::Battle</a></div><div class="ttdoc">Battle short-root and authoritative owner of board and turn state.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00309">TacticsTypes.h:309</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Tactics_8cpp_source.html#l00014">Tactics.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee">eve::tactics::BattleCommandKind::Advance</a></div><div class="ttdeci">@ Advance</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea">eve::tactics::BattleCommandKind::RollRandom</a></div><div class="ttdeci">@ RollRandom</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb">eve::tactics::BattleCommandKind::EndTurn</a></div><div class="ttdeci">@ EndTurn</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652">eve::tactics::BattleCommandKind::Wait</a></div><div class="ttdeci">@ Wait</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">eve::tactics::BattleCommandKind::Move</a></div><div class="ttdeci">@ Move</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a">eve::tactics::BattleCommandKind::AcceptReaction</a></div><div class="ttdeci">@ AcceptReaction</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e">eve::tactics::BattleCommandKind::DeclineReaction</a></div><div class="ttdeci">@ DeclineReaction</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f">eve::tactics::BattleCommandKind::Face</a></div><div class="ttdeci">@ Face</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061">eve::tactics::BattleCommandKind::Finish</a></div><div class="ttdeci">@ Finish</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37">eve::tactics::BattleCommandKind::Start</a></div><div class="ttdeci">@ Start</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f">eve::tactics::BattleCommandKind::OpenReaction</a></div><div class="ttdeci">@ OpenReaction</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7">eve::tactics::BattleCommandKind::DefeatUnit</a></div><div class="ttdeci">@ DefeatUnit</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::DiagnosticCode::UnknownVersion</a></div><div class="ttdeci">@ UnknownVersion</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a></div><div class="ttdeci">@ NoOp</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html">eve::tactics::BattleCommand</a></div><div class="ttdoc">One accepted replay command using only persistent identities and values.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00269">TacticsTypes.h:269</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_a2d2e83bcc3b62c9f9571b009540a0316"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#a2d2e83bcc3b62c9f9571b009540a0316">eve::tactics::BattleCommand::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00270">TacticsTypes.h:270</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_a8280eecd7f9a5e4683bc8bc3b6beeedb"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#a8280eecd7f9a5e4683bc8bc3b6beeedb">eve::tactics::BattleCommand::kind</a></div><div class="ttdeci">BattleCommandKind kind</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00271">TacticsTypes.h:271</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_aa350a9be4db20ecdaa62dec9fb874815"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#aa350a9be4db20ecdaa62dec9fb874815">eve::tactics::BattleCommand::resultingRevision</a></div><div class="ttdeci">Revision resultingRevision</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00273">TacticsTypes.h:273</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_ae7bfa334d2d17fe5c2938a2b9edc7ecc"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#ae7bfa334d2d17fe5c2938a2b9edc7ecc">eve::tactics::BattleCommand::expectedRevision</a></div><div class="ttdeci">Revision expectedRevision</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00272">TacticsTypes.h:272</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

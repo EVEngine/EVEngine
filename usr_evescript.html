@@ -1,0 +1,781 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: EveScript 完整教程</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">EveScript 完整教程</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>EveScript 完整教程</h1>
+<p>EveScript 是 EVEngine 的游戏脚本语言。它以 Squirrel 为基础，保留 Squirrel 的对象模型、闭包、 协程和动态类型能力，同时增加脚本模块、渐进类型、空值运算、命名参数、Inspector 元数据、热重载 持久变量、单位字面量、模式匹配以及 <code>async</code> / <code>await</code>。</p>
+<p>所有游戏脚本仍使用 <code>.nut</code> 扩展名。项目不需要语言标记，也没有“启用 EveScript”的开关： <code>config.nut</code>、<code>main.nut</code>、导入的脚本、REPL、调试器和 MCP 执行的代码都使用同一套语法。 没有使用扩展语法的标准 Squirrel 文件可以直接运行。</p>
+<p>本教程面向使用 SDK 制作游戏的开发者。模块 API（图形、物理、UI、ECS 等）请配合 <a class="el" href="MODULES_8md.html">模块使用手册</a>查阅。</p>
+<h2>1. 第一个 EveScript 游戏</h2>
+<p>一个游戏至少包含 <code>config.nut</code> 和 <code>main.nut</code>：</p>
+<div class="fragment"><div class="line">my-game/</div>
+<div class="line">├── config.nut</div>
+<div class="line">├── main.nut</div>
+<div class="line">└── scripts/</div>
+<div class="line">    └── movement.nut</div>
+</div><!-- fragment --><p><code>config.nut</code> 是普通 Squirrel 配置脚本。模块需求是整个项目的属性，因此在这里统一声明：</p>
+<div class="fragment"><div class="line">config &lt;- {</div>
+<div class="line">    width = 960</div>
+<div class="line">    height = 540</div>
+<div class="line">    title = &quot;EveScript Tutorial&quot;</div>
+<div class="line">    hotReload = true</div>
+<div class="line"> </div>
+<div class="line">    modules = [&quot;gfx&quot;, &quot;keyboard&quot;, &quot;timer&quot;]</div>
+<div class="line">    optionalModules = [&quot;audio&quot;]</div>
+<div class="line">}</div>
+</div><!-- fragment --><ul>
+<li><code>modules</code> 中的模块必须存在，否则引擎会在执行 <code>main.nut</code> 前停止并报告缺失项；</li>
+<li>写出 <code>modules</code> 或 <code>optionalModules</code> 后，引擎只构造名单里的槽位，再加上启动循环需要的 <code>win</code> / <code>gfx</code> / <code>timer</code> / <code>platform_event</code> / <code>fs</code> / <code>hot</code>。未列出的模块不会实例化， <code>has_module()</code> 为 false；需要时可用 <code>ensure_module("audio")</code> 再加载；</li>
+<li>原生类的方法绑定也是按需的：第一次读取 <code>eve.Graphics</code> / <code>eve.Window</code> 等名字时才 注册该类的全部方法（以及它在同一次 <code>expose</code> 里挂上的嵌套类型，如 <code>WindowSettings</code>）。 Squirrel 的 <code>in</code> 不会触发这次绑定，因此不要用 <code>"Graphics" in eve</code> 判断模块是否在构建里， 请用 <code>eve.moduleList</code> / <code>ensure_module()</code>；</li>
+<li><code>optionalModules</code> 在 SDK 里有则加载，没有则跳过，使用前仍要调用 <code>has_module()</code>；</li>
+<li>名称是脚本中的 root slot，例如图形模块写 <code>gfx</code>，不是 CMake 名称 <code>graphics</code>；</li>
+<li>这两个字段必须是字符串数组字面量，语言服务器和打包器不会执行任意配置代码来推断模块。</li>
+<li>不写这两个字段的旧项目保持原来的行为：构造当前构建里的全部模块。</li>
+</ul>
+<p><code>scripts/movement.nut</code>：</p>
+<div class="fragment"><div class="line">export const PLAYER_SPEED = 180.0</div>
+<div class="line"> </div>
+<div class="line">export function wrap_x(x: float, width: float) -&gt; float {</div>
+<div class="line">    return x &gt; width ? -48.0 : x</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>main.nut</code>：</p>
+<div class="fragment"><div class="line">import { PLAYER_SPEED, wrap_x } from &quot;./scripts/movement.nut&quot;</div>
+<div class="line"> </div>
+<div class="line">persist playerX: float = 100.0</div>
+<div class="line"> </div>
+<div class="line">eve_init &lt;- function() {</div>
+<div class="line">    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_update &lt;- function(dt: float) {</div>
+<div class="line">    playerX = wrap_x(playerX + PLAYER_SPEED * dt, config.width)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear()</div>
+<div class="line">    gfx.drawSolidRect(playerX, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>运行：</p>
+<div class="fragment"><div class="line">eve run my-game</div>
+</div><!-- fragment --><p>保存脚本后，<code>persist playerX</code> 会在热重载时保留当前位置；函数和常量则由新代码替换。</p>
+<p>从旧项目批量迁移 root 持久状态时，可先预览再写入：</p>
+<div class="fragment"><div class="line">python scripts/migrate_evescript.py --check</div>
+<div class="line">python scripts/migrate_evescript.py --write</div>
+</div><!-- fragment --><p>迁移器只改写可证明等价的 root-table 判断和 <code>persist(name, initializer)</code> 样板；普通 Squirrel、 动态 root-table 操作和兼容性 <code>dofile()</code> 不会被猜测式重写。</p>
+<h2>2. 仍然需要掌握的 Squirrel 基础</h2>
+<p>EveScript 是 Squirrel 的兼容扩展，不是另一套对象模型。以下写法仍是日常代码的主体。</p>
+<h3>2.1 源文件、注释和语句</h3>
+<p>源码采用 UTF-8。标识符、字符串、数字和运算符沿用 Squirrel；语言关键字区分大小写。支持行注释 与块注释：</p>
+<div class="fragment"><div class="line">// 行注释</div>
+<div class="line"> </div>
+<div class="line">/*</div>
+<div class="line"> * 块注释</div>
+<div class="line"> */</div>
+</div><!-- fragment --><p>分号与标准 Squirrel 一样可以作为语句终止符。项目代码建议依靠换行和大括号，不混用多种风格； 同一行放多条语句时必须用分号分隔。</p>
+<p>常用运算符仍包括算术 <code>+ - * / %</code>、比较 <code>== != &lt; &lt;= &gt; &gt;=</code>、逻辑 <code>&amp;&amp; || !</code>、三元表达式 <code>condition ? yes : no</code>、成员访问 <code>.</code> / <code>[]</code> 和赋值运算。EveScript 新增的 <code>?.</code>、<code>??</code>、<code>??=</code> 见第 5 节。</p>
+<p><code>import</code>、<code>export</code>、<code>async</code>、<code>await</code>、<code>persist</code> 和 <code>match</code> 在对应语法位置具有语言含义；<code>from</code> 和 <code>as</code> 只在 import 子句中按关键字解析，因此旧脚本仍可把它们用作普通标识符。类型名称和单位 名称也主要在类型/字面量上下文中解析。</p>
+<h3>2.2 值、局部变量和 root slot</h3>
+<div class="fragment"><div class="line">local lives = 3</div>
+<div class="line">local speed = 120.0</div>
+<div class="line">local title = &quot;Arena&quot;</div>
+<div class="line">local enabled = true</div>
+<div class="line">local target = null</div>
+<div class="line"> </div>
+<div class="line">local spawn = { x = 20.0, y = 40.0 }</div>
+<div class="line">local enemies = [&quot;slime&quot;, &quot;bat&quot;]</div>
+</div><!-- fragment --><p><code>local</code> 创建词法作用域局部变量。<code>&lt;-</code> 在表中创建新 slot，<code>=</code> 修改已有 slot：</p>
+<div class="fragment"><div class="line">gameState &lt;- { score = 0 } // 在 root table 创建 gameState</div>
+<div class="line">gameState.score = 10       // 修改已有字段</div>
+</div><!-- fragment --><p>优先使用 <code>local</code>、模块内私有值和显式 <code>export</code>。只有引擎生命周期回调等约定入口才需要放在 root table。不要用 <code>const</code> 表达运行时只读状态：Squirrel 的 <code>const</code> 是编译期常量声明，适合固定数值和 导出的常量；普通可变游戏状态使用变量。</p>
+<h3>2.3 函数、闭包和默认参数</h3>
+<div class="fragment"><div class="line">function clamp_health(value, maximum = 100) {</div>
+<div class="line">    return value &lt; 0 ? 0 : (value &gt; maximum ? maximum : value)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">local multiplier = 2</div>
+<div class="line">local scale = function(value) {</div>
+<div class="line">    return value * multiplier // 闭包捕获外层变量</div>
+<div class="line">}</div>
+</div><!-- fragment --><h3>2.4 表、数组和遍历</h3>
+<div class="fragment"><div class="line">local inventory = {</div>
+<div class="line">    potion = 2</div>
+<div class="line">    key = 1</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">inventory.potion += 1</div>
+<div class="line">inventory[&quot;coin&quot;] &lt;- 20</div>
+<div class="line"> </div>
+<div class="line">foreach (name, count in inventory)</div>
+<div class="line">    print(name + &quot;: &quot; + count + &quot;\n&quot;)</div>
+<div class="line"> </div>
+<div class="line">local actors = [&quot;hero&quot;, &quot;merchant&quot;]</div>
+<div class="line">actors.append(&quot;guard&quot;)</div>
+<div class="line">foreach (index, actor in actors)</div>
+<div class="line">    print(index + &quot;: &quot; + actor + &quot;\n&quot;)</div>
+</div><!-- fragment --><h3>2.5 类、继承和 <code>this</code></h3>
+<div class="fragment"><div class="line">class Actor {</div>
+<div class="line">    name = &quot;&quot;</div>
+<div class="line">    health = 100</div>
+<div class="line"> </div>
+<div class="line">    constructor(name) {</div>
+<div class="line">        this.name = name</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    function damage(amount) {</div>
+<div class="line">        health -= amount</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">class Player extends Actor {</div>
+<div class="line">    coins = 0</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">local player = Player(&quot;Ada&quot;)</div>
+<div class="line">player.damage(10)</div>
+</div><!-- fragment --><p>类字段的默认值属于 Squirrel 类语义。引擎原生对象也通过相同的成员调用形式使用，但可调用的接口 以模块手册和绑定契约为准，并非 C++ 类的所有 public 方法。</p>
+<h3>2.6 控制流、异常和 generator</h3>
+<div class="fragment"><div class="line">if (player.health &lt;= 0) {</div>
+<div class="line">    print(&quot;game over\n&quot;)</div>
+<div class="line">} else {</div>
+<div class="line">    player.damage(1)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">for (local i = 0; i &lt; 3; ++i) {</div>
+<div class="line">    // ...</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">try {</div>
+<div class="line">    load_save()</div>
+<div class="line">} catch (error) {</div>
+<div class="line">    print(&quot;load failed: &quot; + error + &quot;\n&quot;)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">function dialogue_lines() {</div>
+<div class="line">    yield &quot;Hello&quot;</div>
+<div class="line">    yield &quot;Welcome to EVEngine&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>yield</code> 和 Squirrel generator 仍然保留，适合由调用者主动推进的序列。需要等待 Promise、计时器或 主线程事件时，优先使用 EveScript 的 <code>async function</code>。</p>
+<h2>3. 脚本模块：<code>import</code> 与 <code>export</code></h2>
+<p>新代码使用模块，而不是用 <code>dofile()</code> 把多个文件写入同一个全局表。</p>
+<h3>3.1 导出</h3>
+<p>模块 root scope 可以导出常量、函数和类：</p>
+<div class="fragment"><div class="line">local nextId = 1 // 模块私有</div>
+<div class="line"> </div>
+<div class="line">export const DEFAULT_HEALTH = 100</div>
+<div class="line"> </div>
+<div class="line">export class ActorId {</div>
+<div class="line">    value = 0</div>
+<div class="line">    constructor(value) { this.value = value }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">export function allocate_actor_id() {</div>
+<div class="line">    return ActorId(nextId++)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>export</code> 只能用于模块顶层的 <code>const</code>、<code>function</code> 或 <code>class</code> 声明。局部变量不会泄漏给导入方。</p>
+<h3>3.2 导入</h3>
+<div class="fragment"><div class="line">import { ActorId, allocate_actor_id } from &quot;game:/scripts/ids.nut&quot;</div>
+<div class="line">import { allocate_actor_id as allocate_id } from &quot;./ids.nut&quot;</div>
+<div class="line">import * as ids from &quot;./ids.nut&quot;</div>
+<div class="line"> </div>
+<div class="line">local first = allocate_actor_id()</div>
+<div class="line">local second = allocate_id()</div>
+<div class="line">local third = ids.allocate_actor_id()</div>
+</div><!-- fragment --><p>模块说明符必须是字符串字面量：</p>
+<ul>
+<li><code>game:/...</code> 指向游戏包中的脚本；</li>
+<li><code>engine:/...</code> 指向 SDK 标准脚本库；</li>
+<li><code>plugin:&lt;id&gt;/...</code> 指向插件公开的脚本模块；</li>
+<li><code>./...</code> 和 <code>../...</code> 相对于当前模块解析，但不能越出所属根目录。</li>
+</ul>
+<p>同一规范 URI 在一次 Runtime generation 中只实例化一次。多处导入不会重复执行顶层代码。 循环导入会在编译依赖图时被拒绝；把共享类型或常量提取到第三个无环模块即可。</p>
+<p>模块 URI 与物理文件格式无关，所以同一条 import 在开发目录、&lt;tt&gt;.eve ZIP、Android APK、iOS bundle 和 Web 预加载文件系统中保持一致。打包器会扫描依赖图；动态拼接路径不是合法 import。</p>
+<h3>3.3 与 <code>dofile</code> 的区别</h3>
+<p><code>dofile(path)</code> 仍为旧 Squirrel 脚本保留，但它表达的是“读取并执行文件”，没有私有命名空间、 显式导出、单次实例化缓存或静态依赖图。新项目应使用 <code>import</code>；只有迁移旧脚本或确实需要传统 共享 root-table 副作用时才使用 <code>dofile</code>。</p>
+<h2>4. 渐进类型</h2>
+<p>类型标注是可选的。未标注代码继续使用 Squirrel 动态语义；标注不会把值包装成新的运行时对象。</p>
+<div class="fragment"><div class="line">local speed: float = 180.0</div>
+<div class="line">local name: string = &quot;Ada&quot;</div>
+<div class="line">local targets: Array&lt;string&gt; = []</div>
+<div class="line">local scores: Table&lt;string, int&gt; = {}</div>
+<div class="line"> </div>
+<div class="line">function damage(amount: int, critical: bool) -&gt; int {</div>
+<div class="line">    return critical ? amount * 2 : amount</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>基础类型为 <code>null</code>、<code>bool</code>、<code>int</code>、<code>float</code>、<code>string</code> 和 <code>dynamic</code>。容器使用 <code>Array&lt;T&gt;</code>、 <code>Table&lt;K, V&gt;</code>；引擎绑定类使用文档中的脚本类名。</p>
+<p>类型是“渐进式静态检查”，不是完整的运行时类型系统：</p>
+<ul>
+<li>字面量与已知函数调用会在编译期检查；</li>
+<li>原生方法依赖 SDK 生成的 Binding Contract 检查参数名、类型和单位；</li>
+<li><code>dynamic</code> 或无法推断的旧代码仍可能在运行时失败；</li>
+<li>类型标注在生成字节码前擦除，普通局部值仍是原始 Squirrel 值。</li>
+</ul>
+<p>例如：</p>
+<div class="fragment"><div class="line">local count: int = &quot;many&quot; // 编译错误</div>
+<div class="line"> </div>
+<div class="line">function set_count(value: int) {}</div>
+<div class="line">set_count(1.5)             // 编译错误</div>
+</div><!-- fragment --><h2>5. Nullable 与空值运算</h2>
+<p><code>T?</code> 表示值可以为 <code>null</code>：</p>
+<div class="fragment"><div class="line">local target: Actor? = find_target()</div>
+</div><!-- fragment --><p>常用运算符：</p>
+<div class="fragment"><div class="line">target?.damage(10)                    // target 为 null 时不调用，结果为 null</div>
+<div class="line">local label = target?.name ?? &quot;None&quot; // 左侧为 null 才计算右侧</div>
+<div class="line">target ??= find_fallback_target()     // 仅在 target 为 null 时赋值</div>
+</div><!-- fragment --><p>接收者和左操作数只求值一次，<code>??</code> 具有短路语义：</p>
+<div class="fragment"><div class="line">local target = cached ?? expensive_lookup()</div>
+</div><!-- fragment --><p>当 <code>cached</code> 非空时，<code>expensive_lookup()</code> 不会执行。成员 slot 的 <code>??=</code> 也受支持：</p>
+<div class="fragment"><div class="line">local state = { checkpoint = null }</div>
+<div class="line">state.checkpoint ??= make_checkpoint()</div>
+</div><!-- fragment --><p>非 nullable 类型不能直接赋 <code>null</code>。来自旧代码的动态值仍应在原生资源、场景查询等边界做好错误 处理。</p>
+<h2>6. 字符串取值类型</h2>
+<p>EVEngine 的模式、类型和策略名称在 C++ 边界大量使用字符串。EveScript 用字符串字面量联合约束 合法值，而不强制把它们改成整数枚举：</p>
+<div class="fragment"><div class="line">local movement: &quot;idle&quot; | &quot;run&quot; | &quot;jump&quot; = &quot;idle&quot;</div>
+<div class="line"> </div>
+<div class="line">function set_surface(mode: &quot;opaque&quot; | &quot;mask&quot; | &quot;blend&quot;) {</div>
+<div class="line">    material.setSurfaceMode(mode)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>好处是补全、拼写检查、<code>match</code> 穷尽检查和 Inspector 下拉选项都能共享同一组值；传入 C++、 JSON 或日志时仍是普通字符串。</p>
+<div class="fragment"><div class="line">set_surface(&quot;transparent&quot;) // 已知字面量不在集合中，编译错误</div>
+</div><!-- fragment --><h2>7. 命名参数</h2>
+<p>调用时用 <code>name: value</code> 指明参数：</p>
+<div class="fragment"><div class="line">local world = physics.newWorld(</div>
+<div class="line">    gravityY: 980.0,</div>
+<div class="line">    sleep: true,</div>
+<div class="line">    gravityX: 0.0</div>
+<div class="line">)</div>
+</div><!-- fragment --><p>编译器根据脚本函数声明或原生 Binding Contract 还原成位置调用，因此不会创建参数表，也没有额外 逐帧分配。参数可以重排；未知、重复或缺失参数是编译错误。</p>
+<div class="fragment"><div class="line">function blend(from: float, to: float, weight: float) -&gt; float {</div>
+<div class="line">    return from + (to - from) * weight</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">local value = blend(weight: 0.25, from: 0.0, to: 1.0)</div>
+</div><!-- fragment --><p>参数表达式仍按源码出现顺序求值，而不是按声明顺序求值。不要依赖重排后的隐藏副作用：</p>
+<div class="fragment"><div class="line">compose(third: log_and_return(3), first: log_and_return(1), second: log_and_return(2))</div>
+<div class="line">// 调用日志顺序仍是 3、1、2；传给函数的槽位顺序则是 first、second、third。</div>
+</div><!-- fragment --><p>无法取得可靠 Binding Contract 的动态原生函数不能使用命名参数，改用位置参数。</p>
+<p>SDK 构建会从当前 profile 中实际参与编译的 SimpleSquirrel <code>addFunc</code> 声明生成契约。无法解析真实 参数名的绑定会直接使生成步骤失败，不会退化成 <code>arg0</code>、<code>arg1</code>。生成结果在 <code>ScriptCompiler</code> 创建时注册到 SimpleSquirrel 的 named-argument resolver，因此编译检查、补全、Hover 与运行时 使用的是同一份契约。C++ 默认实参不会自动成为脚本默认值；不同类上同名且签名有歧义的方法应 继续使用位置参数。契约类型、字符串选项和单位检查只约束参数表达式边界上的直接字面量；合法的 复合表达式（例如 <code>ui.setText("status", "count " + (count + 1))</code>）会按正常表达式语义编译， 不会把内部数值字面量误判成字符串参数。</p>
+<h2>8. Inspector 属性注解</h2>
+<p>注解是 Squirrel attribute 的短写，放在类字段之前：</p>
+<div class="fragment"><div class="line">class CharacterData {</div>
+<div class="line">    @editor(&quot;slider&quot;, min: 0, max: 100, step: 1)</div>
+<div class="line">    @unit(&quot;hp&quot;)</div>
+<div class="line">    health: int = 100</div>
+<div class="line"> </div>
+<div class="line">    @editor(&quot;combo&quot;)</div>
+<div class="line">    job: &quot;warrior&quot; | &quot;mage&quot; | &quot;rogue&quot; = &quot;warrior&quot;</div>
+<div class="line"> </div>
+<div class="line">    @editor(&quot;text&quot;)</div>
+<div class="line">    displayName: string = &quot;Ada&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>它等价于已有的 Squirrel attribute 元数据，Inspector、反射和 MCP 读取的仍是同一份信息。字符串 取值类型配合 <code>@editor("combo")</code> 时会自动生成选项。</p>
+<p>内置注解拼写错误会在编译期报告。插件注解必须先由插件注册，例如插件可能提供 <code>@plugin_asset("texture")</code>；未注册的未知注解不能静默忽略。</p>
+<h2>9. 热重载持久变量：<code>persist</code></h2>
+<p>普通变量在脚本重载后没有保留承诺。需要保留的模块/root 状态显式声明为 <code>persist</code>：</p>
+<div class="fragment"><div class="line">persist score: int = 0</div>
+<div class="line">persist session: Table&lt;string, dynamic&gt; = {}</div>
+</div><!-- fragment --><p>初始化表达式只在该名称第一次出现时执行：</p>
+<div class="fragment"><div class="line">persist world = create_world() // 后续热重载不会再次调用 create_world()</div>
+</div><!-- fragment --><p>规范：</p>
+<ul>
+<li><code>persist</code> 只允许在文件 root scope；</li>
+<li>名称在 root table 中必须唯一；</li>
+<li>未写 <code>persist</code> 的变量就是普通临时脚本状态，不需要 <code>transient</code>；</li>
+<li>优先保存普通数据；无法安全快照的原生句柄应由对应引擎模块的状态提供器管理；</li>
+<li>修改持久数据结构时，要在 <code>eve_reload()</code> 中做显式版本迁移或回退。</li>
+</ul>
+<p>旧式写法仍兼容：</p>
+<div class="fragment"><div class="line">score &lt;- persist(&quot;score&quot;, function() { return 0 })</div>
+</div><!-- fragment --><p>新代码使用声明形式，避免名称字符串与变量名不一致。</p>
+<h2>10. 单位字面量</h2>
+<p>时间、角度和空间量可以直接携带单位：</p>
+<div class="fragment"><div class="line">local fade: seconds = 250ms   // 0.25</div>
+<div class="line">local turn: radians = 90deg   // π / 2</div>
+<div class="line">local tileSize: pixels = 32px // 32.0</div>
+<div class="line">local height: meters = 1.8m   // 1.8</div>
+</div><!-- fragment --><p>v1 支持的量纲和后缀：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">量纲   </th><th class="markdownTableHeadNone">目标类型   </th><th class="markdownTableHeadNone">字面量后缀   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">时间   </td><td class="markdownTableBodyNone"><code>seconds</code>、<code>milliseconds</code>   </td><td class="markdownTableBodyNone"><code>ms</code>   </td><td class="markdownTableBodyNone"><code>250ms</code> 转为 <code>seconds</code> 时是 <code>0.25</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">角度   </td><td class="markdownTableBodyNone"><code>radians</code>、<code>degrees</code>   </td><td class="markdownTableBodyNone"><code>deg</code>   </td><td class="markdownTableBodyNone"><code>90deg</code> 转为 <code>radians</code> 时约为 <code>1.5708</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">像素   </td><td class="markdownTableBodyNone"><code>pixels</code>   </td><td class="markdownTableBodyNone"><code>px</code>   </td><td class="markdownTableBodyNone">保持浮点标量    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">距离   </td><td class="markdownTableBodyNone"><code>meters</code>   </td><td class="markdownTableBodyNone"><code>m</code>   </td><td class="markdownTableBodyNone">保持浮点标量   </td></tr>
+</table>
+<p>原生 Binding Contract 声明目标单位后，调用处会自动进行确定的换算：</p>
+<div class="fragment"><div class="line">camera.setYaw(90deg) // 若参数契约为 radians，编译为弧度标量</div>
+<div class="line">asyncSleep(250ms)    // asyncSleep 接收毫秒，数值为 250.0</div>
+</div><!-- fragment --><p>没有目标类型或绑定契约时，字面量采用自身的基础单位数值；不同量纲不能混传。单位只参与编译期 检查与常量换算，运行时仍是普通 float。</p>
+<h2>11. <code>match</code> 模式匹配</h2>
+<p>v1 的 <code>match</code> 是语句，不是返回值的表达式：</p>
+<div class="fragment"><div class="line">function update_animation(mode: &quot;idle&quot; | &quot;run&quot; | &quot;jump&quot;) {</div>
+<div class="line">    match mode {</div>
+<div class="line">        &quot;idle&quot; =&gt; animation.play(&quot;idle&quot;)</div>
+<div class="line">        &quot;run&quot; =&gt; animation.play(&quot;run&quot;)</div>
+<div class="line">        &quot;jump&quot; =&gt; animation.play(&quot;jump&quot;)</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>分支可以是单条语句或代码块：</p>
+<div class="fragment"><div class="line">match eventName {</div>
+<div class="line">    &quot;damage&quot; =&gt; {</div>
+<div class="line">        flash_red()</div>
+<div class="line">        play_hit_sound()</div>
+<div class="line">    }</div>
+<div class="line">    &quot;heal&quot; =&gt; show_heal_effect()</div>
+<div class="line">    else =&gt; print(&quot;unknown event: &quot; + eventName + &quot;\n&quot;)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>规则：</p>
+<ul>
+<li>字符串取值联合的所有选项都覆盖时，可以省略 <code>else</code>；</li>
+<li>未穷尽联合类型必须提供剩余分支，否则编译错误；</li>
+<li>动态值无法静态证明穷尽，因此必须有 <code>else</code>；</li>
+<li><code>else</code> 只能出现一次且必须是最后一个分支；</li>
+<li>被匹配的表达式只求值一次。</li>
+</ul>
+<p>需要产生值时，在各分支中赋给外部局部变量或直接 <code>return</code>；不要写成表达式赋值。</p>
+<h2>12. 异步编程：<code>async function</code> 与 <code>await</code></h2>
+<p>EveScript 异步建立在 EVEngine 现有 Promise、计时器、事件队列和主线程 pump 上：</p>
+<div class="fragment"><div class="line">async function intro_sequence() -&gt; string {</div>
+<div class="line">    await asyncSleep(250ms)</div>
+<div class="line">    ui.setText(&quot;message&quot;, &quot;Ready&quot;)</div>
+<div class="line"> </div>
+<div class="line">    local values = await Promise.all([</div>
+<div class="line">        load_profile_async(),</div>
+<div class="line">        load_inventory_async()</div>
+<div class="line">    ])</div>
+<div class="line">    return values[0].name</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">intro_sequence().then(</div>
+<div class="line">    function(name) { print(&quot;welcome &quot; + name + &quot;\n&quot;) },</div>
+<div class="line">    function(error) { print(&quot;intro failed: &quot; + error + &quot;\n&quot;) }</div>
+<div class="line">)</div>
+</div><!-- fragment --><p>语义：</p>
+<ul>
+<li>调用 <code>async function</code> 立即返回 Promise；</li>
+<li><code>await value</code> 会用 <code>Promise.resolve(value)</code> 统一普通值和 Promise；</li>
+<li>Promise 完成后，continuation 在游戏线程的异步队列恢复；</li>
+<li><code>try</code> / <code>catch</code> 可以捕获被拒绝 Promise 的原因；</li>
+<li><code>return value</code> 完成外层 Promise，未捕获异常会拒绝它；</li>
+<li><code>await</code> 只能出现在 <code>async function</code> 内；</li>
+<li>异步函数不会把 Squirrel VM 移到 worker 线程。</li>
+</ul>
+<p>循环、局部变量、<code>this</code> 和异常状态会跨 <code>await</code> 保存：</p>
+<div class="fragment"><div class="line">class Counter {</div>
+<div class="line">    offset = 4</div>
+<div class="line"> </div>
+<div class="line">    async function compute(limit: int) -&gt; int {</div>
+<div class="line">        local total = this.offset</div>
+<div class="line">        for (local i = 0; i &lt; limit; ++i)</div>
+<div class="line">            total += await Promise.resolve(i)</div>
+<div class="line"> </div>
+<div class="line">        try {</div>
+<div class="line">            await Promise.reject(&quot;expected&quot;)</div>
+<div class="line">        } catch (error) {</div>
+<div class="line">            total += 10</div>
+<div class="line">        }</div>
+<div class="line">        return total</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>引擎帧循环会自动调用 <code>async_pump()</code>，游戏代码通常不应手动 pump。脚本热重载会取消旧 generation 尚未恢复的 continuation，防止旧闭包在新代码和新状态上继续运行；需要长期可恢复的任务时，应把 进度保存为普通数据，并在重载后重新启动任务。</p>
+<p>Promise 不等于后台线程。CPU 密集任务应使用 thread 模块提供的受支持 worker 操作，再通过事件、 Channel 或 Promise 回到主线程；worker 不得访问 Squirrel VM、窗口、GPU 或脚本对象。</p>
+<p>当文件监听器发现已导入模块变化时，Runtime 会重编译该模块及反向依赖它的全部缓存 generation， 并在整组实例化成功后一次性提交。任一依赖编译或实例化失败都会恢复旧模块和旧依赖图；未进入 模块图的兼容性 root 脚本仍沿用软重载路径。</p>
+<h2>13. 与响应式事件配合</h2>
+<p><code>async</code> / <code>await</code> 适合有明确开始、等待和结束的流程；事件或 Rx 适合持续数据流。不要把所有异步 逻辑都写成永久等待的任务：</p>
+<ul>
+<li>一次加载、延迟、过场流程：<code>async function</code>；</li>
+<li>多个监听者的离散游戏事件：event 模块；</li>
+<li>输入、状态或事件的持续组合与过滤：rx 模块；</li>
+<li>跨线程工作：thread + Channel/Event，最终回到主线程。</li>
+</ul>
+<p>具体接口见<a class="el" href="event_8md.html">事件模块</a>、<a class="el" href="rx_8md.html">响应式编程模块</a>和 <a class="el" href="thread_8md.html">线程与异步模块</a>。</p>
+<h2>14. 生命周期、模块与推荐组织方式</h2>
+<p>生命周期回调仍使用引擎约定的 root slot：</p>
+<div class="fragment"><div class="line">eve_init &lt;- function() {}</div>
+<div class="line">eve_update &lt;- function(dt) {}</div>
+<div class="line">eve_render &lt;- function() {}</div>
+<div class="line">eve_reload &lt;- function() {}</div>
+<div class="line">eve_asset_reload &lt;- function(path) {}</div>
+<div class="line">eve_quit &lt;- function() {}</div>
+</div><!-- fragment --><p>推荐把 <code>main.nut</code> 保持为编排层：导入系统、创建顶层持久状态、连接生命周期。具体玩法逻辑放进 各自模块：</p>
+<div class="fragment"><div class="line">scripts/</div>
+<div class="line">├── player.nut</div>
+<div class="line">├── combat.nut</div>
+<div class="line">├── ui/</div>
+<div class="line">│   └── hud.nut</div>
+<div class="line">└── world/</div>
+<div class="line">    └── dungeon.nut</div>
+</div><!-- fragment --><p>模块建议：</p>
+<ul>
+<li>export 少量稳定的类和函数，不导出可随意修改的内部表；</li>
+<li>避免模块顶层产生不可重复的外部副作用，把初始化放进显式函数；</li>
+<li>模块间保持有向无环依赖；共享定义放到更底层的小模块；</li>
+<li>需要跨重载的数据用 <code>persist</code>，可重建缓存则保持普通变量；</li>
+<li>必需引擎模块写进 <code>config.modules</code>，可选功能同时使用 <code>optionalModules</code> 和 <code>has_module()</code>。</li>
+</ul>
+<p>可选模块示例：</p>
+<div class="fragment"><div class="line">if (has_module(&quot;audio&quot;)) {</div>
+<div class="line">    // audio 是当前构建注入的全局 Audio 实例；Source 由它创建并播放。</div>
+<div class="line">    audio.stopAll()</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>15. 错误处理和编码规范</h2>
+<p>推荐规范：</p>
+<ol type="1">
+<li>文件名使用小写 <code>snake_case.nut</code>，模块 URI 使用 <code>/</code>；</li>
+<li>局部变量和函数使用 <code>snake_case</code>，类使用 <code>PascalCase</code>，导出常量使用 <code>UPPER_SNAKE_CASE</code>；</li>
+<li>默认使用 <code>local</code>，跨文件接口使用 <code>export</code>，不要把普通状态随意写入 root table；</li>
+<li>公共函数、引擎边界和持久状态优先写类型；短小内部动态代码可以不标注；</li>
+<li>字符串模式使用联合类型，不为方便而引入脚本整数枚举；</li>
+<li>多个相邻数字或布尔参数优先使用命名参数；</li>
+<li>时间、角度和空间参数优先携带单位；</li>
+<li>对可恢复的资源错误使用 <code>try</code> / <code>catch</code>，不要吞掉编程错误；</li>
+<li>每帧热路径避免临时大数组、动态 import 和不必要的跨 C++/Squirrel 细粒度调用；</li>
+<li>异步任务必须考虑失败、退出和热重载取消。</li>
+</ol>
+<p>原生绑定遇到非法字符串选项、参数类型错误、空对象或资源不存在时通常会抛 Squirrel 异常。对可 恢复错误：</p>
+<div class="fragment"><div class="line">try {</div>
+<div class="line">    load_level(&quot;levels/forest.json&quot;)</div>
+<div class="line">} catch (error) {</div>
+<div class="line">    print(&quot;cannot load forest: &quot; + error + &quot;\n&quot;)</div>
+<div class="line">    load_level(&quot;levels/fallback.json&quot;)</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>16. EveScript 与标准 Squirrel 的区别</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">能力   </th><th class="markdownTableHeadNone">标准 Squirrel   </th><th class="markdownTableHeadNone">EveScript    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">文件   </td><td class="markdownTableBodyNone"><code>.nut</code>   </td><td class="markdownTableBodyNone">仍为 <code>.nut</code>，全项目默认启用    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">模块   </td><td class="markdownTableBodyNone">通常用 <code>dofile</code> 和共享 root table   </td><td class="markdownTableBodyNone"><code>import</code> / <code>export</code>、私有环境、缓存和静态依赖图    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">类型   </td><td class="markdownTableBodyNone">动态类型   </td><td class="markdownTableBodyNone">可选渐进类型，编译后擦除    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">空值   </td><td class="markdownTableBodyNone">手写 <code>x == null</code>   </td><td class="markdownTableBodyNone"><code>T?</code>、<code>?.</code>、<code>??</code>、<code>??=</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">有限选项   </td><td class="markdownTableBodyNone">字符串或整数常量   </td><td class="markdownTableBodyNone">字符串字面量联合，运行时仍是字符串    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">调用参数   </td><td class="markdownTableBodyNone">位置参数   </td><td class="markdownTableBodyNone">已知签名支持 <code>name: value</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">字段元数据   </td><td class="markdownTableBodyNone"><code>&lt;/ ... /&gt;</code> attribute   </td><td class="markdownTableBodyNone"><code>@editor(...)</code>、<code>@<a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit(...)</a></code> 短写    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">热重载状态   </td><td class="markdownTableBodyNone">手写 root 判断或 <code>persist(name, fn)</code>   </td><td class="markdownTableBodyNone"><code>persist name = initializer</code> 声明    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">单位   </td><td class="markdownTableBodyNone">裸数字   </td><td class="markdownTableBodyNone"><code>250ms</code>、<code>90deg</code>、<code>32px</code>、<code>1.8m</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">分支   </td><td class="markdownTableBodyNone"><code>if</code> / <code>switch</code>   </td><td class="markdownTableBodyNone">额外提供可穷尽检查的 <code>match</code> 语句    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">异步   </td><td class="markdownTableBodyNone">generator、thread、Promise 链   </td><td class="markdownTableBodyNone">额外提供 Promise 状态机 <code>async</code> / <code>await</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">VM 与对象模型   </td><td class="markdownTableBodyNone">Squirrel VM   </td><td class="markdownTableBodyNone">不变，继续使用同一 VM 和原生绑定   </td></tr>
+</table>
+<p>EveScript 没有增加以下概念：</p>
+<ul>
+<li>没有文件级语言版本标记；</li>
+<li>没有默认不可变变量，也没有 <code>let</code> / <code>var</code> 分裂；</li>
+<li>没有要求所有变量写类型；</li>
+<li>没有把普通变量标成 <code>transient</code>；未写 <code>persist</code> 就是普通变量；</li>
+<li>没有隐藏 ECS 的新 DSL，ECS 继续通过 <code>eve.Component</code>、<code>eve.Entity</code>、<code>eve.System</code> 和模块 API；</li>
+<li>没有统一的 Signal 关键字，事件、Rx、Promise 和状态绑定各自承担适合的职责；</li>
+<li>没有独立虚拟机或 TypeScript 式外部转译运行时。</li>
+</ul>
+<h2>17. 从现有 Squirrel 项目迁移</h2>
+<p>迁移可以逐文件进行，因为标准 Squirrel 是 EveScript 的兼容子集。</p>
+<h3>第一步：直接运行并建立基线</h3>
+<p>不要先机械重写。升级 SDK 后先运行现有游戏，修复真实的不兼容或绑定变化。原有类、闭包、 generator、table、array、attribute 和 <code>dofile</code> 都仍然可用。</p>
+<h3>第二步：声明项目模块</h3>
+<p>把所有脚本无条件使用的模块写入 <code>config.modules</code>；有降级路径的模块写入 <code>config.optionalModules</code> 并保留 <code>has_module()</code>。写出任一场后，未点名的模块不再在启动时构造。</p>
+<h3>第三步：用 import/export 替换文件级共享副作用</h3>
+<p>旧代码：</p>
+<div class="fragment"><div class="line">// player.nut</div>
+<div class="line">Player &lt;- class {}</div>
+<div class="line"> </div>
+<div class="line">// main.nut</div>
+<div class="line">dofile(&quot;scripts/player.nut&quot;)</div>
+<div class="line">local player = Player()</div>
+</div><!-- fragment --><p>新代码：</p>
+<div class="fragment"><div class="line">// scripts/player.nut</div>
+<div class="line">export class Player {}</div>
+<div class="line"> </div>
+<div class="line">// main.nut</div>
+<div class="line">import { Player } from &quot;./scripts/player.nut&quot;</div>
+<div class="line">local player = Player()</div>
+</div><!-- fragment --><h3>第四步：只给稳定边界补类型</h3>
+<p>先标注导出函数、持久状态、Inspector 字段和原生 API 边界，不必一次给所有局部变量加类型。</p>
+<h3>第五步：替换重复样板</h3>
+<ul>
+<li>root-table 热重载判断改成 <code>persist</code>；</li>
+<li>判空链改成 <code>?.</code> / <code>??</code>；</li>
+<li>多个同类型参数改成命名参数；</li>
+<li>毫秒、角度和距离裸数改成单位字面量；</li>
+<li>Promise 链较深且有顺序流程时改成 <code>async</code> / <code>await</code>。</li>
+</ul>
+<p>每一步都保持游戏可运行，并单独验证热重载和打包结果。</p>
+<h2>18. 工具、诊断和调试</h2>
+<p>桌面 SDK 提供 EveScript Language Server：</p>
+<div class="fragment"><div class="line">eve language-server --root /path/to/my-game</div>
+</div><!-- fragment --><p>它通过标准输入输出使用 LSP 协议，供编辑器插件启动；不要在同一 stdio 通道输出额外日志。当前 能力包括：</p>
+<ul>
+<li>语法和结构化诊断；</li>
+<li><code>config.modules</code> / <code>optionalModules</code> 检查；</li>
+<li>已知脚本符号、EveScript 关键字、模块 slot 与 Binding Contract 补全（含 <code>gfx.</code> 成员）；</li>
+<li>原生方法签名和文档 Hover；</li>
+<li>调用处 signature help；</li>
+<li>文档符号大纲；</li>
+<li>跨文件 <code>import</code> / <code>export</code> 定义跳转；</li>
+<li>项目级引用查找；</li>
+<li>导出符号和 import alias 的安全重命名；</li>
+<li>按花括号 / 方括号缩进的文档格式化（及范围格式化）；</li>
+<li>多行 <code>{ }</code>、<code>[ ]</code> 与 <code>/* */</code> 代码折叠；</li>
+<li>语义高亮（类 / 函数 / 方法 / 变量 / 模块 slot）；</li>
+<li>文档打开、增量 <code>contentChanges</code> 和关闭同步。</li>
+</ul>
+<p>进程内宿主（测试、VS Code 扩展）可以直接使用 <code><a class="el" href="classeve_1_1dev_1_1LanguageServer.html" title="In-process EveScript language service used by eve language-server and by unit tests....">eve::dev::LanguageServer</a></code> 的 typed API，不必走 stdio。 VS Code / Cursor 安装仓库内 <code>tools/vscode-eve-debug/</code> 后，打开 <code>.nut</code> 即会启动该语言服务。</p>
+<p>运行时调试：</p>
+<div class="fragment"><div class="line">eve run --debug --dap-port=4711 my-game</div>
+</div><!-- fragment --><p>EveScript 编译器为扩展语法生成 Source Map，断点、停止位置、调用栈和异常会映射回原始 <code>.nut</code> 源码，而不是显示内部状态机位置。打包前可运行：</p>
+<div class="fragment"><div class="line">eve zip my-game</div>
+</div><!-- fragment --><p>打包器会验证脚本模块图，缺失模块、循环依赖或越界 URI 会在生成归档前失败，并在包内写入脚本 模块清单。</p>
+<p>常见诊断处理：</p>
+<ul>
+<li><code>await is only allowed inside async function</code>：给所在函数加 <code>async</code>，或改用 Promise 链；</li>
+<li><code>named arguments require a known function or Binding Contract</code>：改用位置参数，或确认 SDK 绑定契约；</li>
+<li><code>non-exhaustive match</code>：补齐字符串联合选项，或添加最终 <code>else</code>；</li>
+<li><code>outside the allowed choices</code>：使用联合类型或绑定契约列出的字符串；</li>
+<li><code>persist is only allowed at root scope</code>：把声明移到模块顶层；</li>
+<li><code>required module is missing</code>：更换包含该模块的 SDK/profile，或移入 <code>optionalModules</code> 并实现降级；</li>
+<li>模块循环：提取共享定义，保持依赖图有向无环。</li>
+</ul>
+<h2>19. 完整示例</h2>
+<p>下面把模块、类型、nullable、持久状态、单位、match、命名参数和异步流程组合在一起。</p>
+<p><code>scripts/player.nut</code>：</p>
+<div class="fragment"><div class="line">export class PlayerState {</div>
+<div class="line">    @editor(&quot;slider&quot;, min: 0, max: 100, step: 1)</div>
+<div class="line">    health: int = 100</div>
+<div class="line"> </div>
+<div class="line">    @editor(&quot;combo&quot;)</div>
+<div class="line">    mode: &quot;idle&quot; | &quot;run&quot; | &quot;hurt&quot; = &quot;idle&quot;</div>
+<div class="line"> </div>
+<div class="line">    x: float = 100.0</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">export function update_player(</div>
+<div class="line">    player: PlayerState,</div>
+<div class="line">    dt: float,</div>
+<div class="line">    speed: float</div>
+<div class="line">) {</div>
+<div class="line">    if (keyboard.isDown(&quot;right&quot;)) {</div>
+<div class="line">        player.x += speed * dt</div>
+<div class="line">        player.mode = &quot;run&quot;</div>
+<div class="line">    } else {</div>
+<div class="line">        player.mode = &quot;idle&quot;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">export function render_player(player: PlayerState) {</div>
+<div class="line">    match player.mode {</div>
+<div class="line">        &quot;idle&quot; =&gt; gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0)</div>
+<div class="line">        &quot;run&quot; =&gt; gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 0.2, 1.0, 0.5, 1.0)</div>
+<div class="line">        &quot;hurt&quot; =&gt; gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 1.0, 0.2, 0.2, 1.0)</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>main.nut</code>：</p>
+<div class="fragment"><div class="line">import { PlayerState, update_player, render_player } from &quot;./scripts/player.nut&quot;</div>
+<div class="line"> </div>
+<div class="line">persist player: PlayerState = PlayerState()</div>
+<div class="line">local notice: string? = null</div>
+<div class="line"> </div>
+<div class="line">async function show_ready_message() {</div>
+<div class="line">    notice = &quot;Get ready&quot;</div>
+<div class="line">    await asyncSleep(750ms)</div>
+<div class="line">    notice = &quot;Go!&quot;</div>
+<div class="line">    await asyncSleep(500ms)</div>
+<div class="line">    notice = null</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_init &lt;- function() {</div>
+<div class="line">    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0)</div>
+<div class="line">    show_ready_message().then(</div>
+<div class="line">        function(_) {},</div>
+<div class="line">        function(error) { print(&quot;message sequence failed: &quot; + error + &quot;\n&quot;) }</div>
+<div class="line">    )</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_update &lt;- function(dt: float) {</div>
+<div class="line">    update_player(player: player, speed: 180.0, dt: dt)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear()</div>
+<div class="line">    render_player(player)</div>
+<div class="line">    // 文本绘制需要先通过 font 模块创建字体；这里用色条表示异步提示仍在显示。</div>
+<div class="line">    if (notice != null)</div>
+<div class="line">        gfx.drawSolidRect(32.0, 32.0, 180.0, 8.0, 1.0, 0.8, 0.2, 1.0)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>实际项目中的绘制和输入函数请以当前 SDK 的<a class="el" href="MODULES_8md.html">模块使用手册</a>为准。学习顺序建议是： 先掌握 Squirrel 的 table、array、class 和闭包，再使用模块与类型建立代码边界，最后在确有等待流程 时引入 <code>async</code> / <code>await</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

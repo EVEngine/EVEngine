@@ -1,0 +1,541 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::LogicalId类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1LogicalId-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::LogicalId类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Human-readable, scoped identifier in the form <code>namespace:name</code>.  
+ <a href="classeve_1_1LogicalId.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Identity_8h_source.html">Identity.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aff72c958461dfd2955df08a21498a418" id="r_aff72c958461dfd2955df08a21498a418"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#aff72c958461dfd2955df08a21498a418">LogicalId</a> ()=default</td></tr>
+<tr class="memdesc:aff72c958461dfd2955df08a21498a418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty, invalid logical ID.  <br /></td></tr>
+<tr class="separator:aff72c958461dfd2955df08a21498a418"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7ae520145a31b265000d6d930682ad2" id="r_ab7ae520145a31b265000d6d930682ad2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#ab7ae520145a31b265000d6d930682ad2">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:ab7ae520145a31b265000d6d930682ad2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this value contains a valid namespace and name.  <br /></td></tr>
+<tr class="separator:ab7ae520145a31b265000d6d930682ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b62d2e23d9b07e1e81cff084e38738c" id="r_a3b62d2e23d9b07e1e81cff084e38738c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#a3b62d2e23d9b07e1e81cff084e38738c">format</a> () const noexcept</td></tr>
+<tr class="memdesc:a3b62d2e23d9b07e1e81cff084e38738c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the canonical <code>namespace:name</code> representation.  <br /></td></tr>
+<tr class="separator:a3b62d2e23d9b07e1e81cff084e38738c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd80209b1122165a72ca379ec3112e0" id="r_addd80209b1122165a72ca379ec3112e0"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#addd80209b1122165a72ca379ec3112e0">namespaceName</a> () const noexcept</td></tr>
+<tr class="memdesc:addd80209b1122165a72ca379ec3112e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the namespace component as a view into this object.  <br /></td></tr>
+<tr class="separator:addd80209b1122165a72ca379ec3112e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9ce47bb50b176679d7fe28ced33da7" id="r_ace9ce47bb50b176679d7fe28ced33da7"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#ace9ce47bb50b176679d7fe28ced33da7">name</a> () const noexcept</td></tr>
+<tr class="memdesc:ace9ce47bb50b176679d7fe28ced33da7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name component as a view into this object.  <br /></td></tr>
+<tr class="separator:ace9ce47bb50b176679d7fe28ced33da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaac818c20ca1b10a65add9f574b52ee" id="r_acaac818c20ca1b10a65add9f574b52ee"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#acaac818c20ca1b10a65add9f574b52ee">hash</a> () const noexcept</td></tr>
+<tr class="memdesc:acaac818c20ca1b10a65add9f574b52ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a stable non-cryptographic hash for hash tables.  <br /></td></tr>
+<tr class="separator:acaac818c20ca1b10a65add9f574b52ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3d7ec7fe9744fb14a31f90d7759de528" id="r_a3d7ec7fe9744fb14a31f90d7759de528"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#a3d7ec7fe9744fb14a31f90d7759de528">parse</a> (std::string_view <a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:a3d7ec7fe9744fb14a31f90d7759de528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a scoped logical name.  <br /></td></tr>
+<tr class="separator:a3d7ec7fe9744fb14a31f90d7759de528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0845c85926edc2b5f12f82f472ea0c6f" id="r_a0845c85926edc2b5f12f82f472ea0c6f"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#a0845c85926edc2b5f12f82f472ea0c6f">fromParts</a> (std::string_view <a class="el" href="classeve_1_1LogicalId.html#addd80209b1122165a72ca379ec3112e0">namespaceName</a>, std::string_view <a class="el" href="classeve_1_1LogicalId.html#ace9ce47bb50b176679d7fe28ced33da7">name</a>)</td></tr>
+<tr class="memdesc:a0845c85926edc2b5f12f82f472ea0c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a logical ID from separate namespace and name components.  <br /></td></tr>
+<tr class="separator:a0845c85926edc2b5f12f82f472ea0c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a86bb5c4da6b8b7b49a12fed712ff59a6" id="r_a86bb5c4da6b8b7b49a12fed712ff59a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html#a86bb5c4da6b8b7b49a12fed712ff59a6">operator==</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;, const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a86bb5c4da6b8b7b49a12fed712ff59a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Human-readable, scoped identifier in the form <code>namespace:name</code>. </p>
+<p><a class="el" href="classeve_1_1LogicalId.html" title="Human-readable, scoped identifier in the form namespace:name.">LogicalId</a> is not a persistent instance identity. It names a definition, recipe, policy or action and may be reused by many runtime instances. The namespace is canonical lower-case ASCII (<code>[a-z][a-z0-9_.-]*</code>); the name is case-sensitive ASCII (<code>[A-Za-z0-9][A-Za-z0-9_.-]*</code>). This prevents modules from inventing incompatible namespace spellings at a persistence boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00413">413</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aff72c958461dfd2955df08a21498a418" name="aff72c958461dfd2955df08a21498a418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff72c958461dfd2955df08a21498a418">&#9670;&#160;</a></span>LogicalId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::LogicalId::LogicalId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty, invalid logical ID. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Identity_8cpp_source.html#l00048">fromParts()</a> , 以及 <a class="el" href="Identity_8cpp_source.html#l00036">parse()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3b62d2e23d9b07e1e81cff084e38738c" name="a3b62d2e23d9b07e1e81cff084e38738c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b62d2e23d9b07e1e81cff084e38738c">&#9670;&#160;</a></span>format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::LogicalId::format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the canonical <code>namespace:name</code> representation. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00605">eve::tactics::BattleSystem::acceptReaction()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00195">eve::SnapshotMigrationChain::add()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00106">eve::action::ActionNotifyRegistry::dispatch()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00057">eve::action::AbilityRuntime::grant()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00204">eve::SnapshotMigrationChain::migrate()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00216">eve::editor::ActionTimelineTarget::read()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00767">eve::tactics::BattleSystem::roll()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00122">eve::snapshotEnvelopeValue()</a>, <a class="el" href="BattleControl_8cpp_source.html#l00148">eve::rpg::BattleControl::submitGameplay()</a>, <a class="el" href="RTS_8cpp_source.html#l00440">eve::rts::RTS::submitGameplay()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00092">eve::action::ActionNotifyRegistry::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0845c85926edc2b5f12f82f472ea0c6f" name="a0845c85926edc2b5f12f82f472ea0c6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0845c85926edc2b5f12f82f472ea0c6f">&#9670;&#160;</a></span>fromParts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt; eve::LogicalId::fromParts </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>namespaceName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds a logical ID from separate namespace and name components. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">namespaceName</td><td>The stable owner namespace. </td></tr>
+    <tr><td class="paramname">name</td><td>The name within that namespace. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The logical ID, or empty when either component is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Identity_8cpp_source.html">Identity.cpp</a> 第 <a class="el" href="Identity_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1LogicalId.html#aff72c958461dfd2955df08a21498a418">LogicalId()</a>, <a class="el" href="Identity_8cpp_source.html#l00063">name()</a>, <a class="el" href="Identity_8cpp_source.html#l00058">namespaceName()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="RTS_8cpp_source.html#l02926">eve::rts::RTS::castScriptAbility()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00317">eve::vehicle::VehicleDefinitionRuntime::create()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00390">eve::weapon::WeaponDefinitionRuntime::create()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00197">eve::rpg::SkillDefinitionRuntime::create()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00364">eve::weapon::parseWeaponDefinition()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00512">eve::procgen::ArtifactPublisher::restore()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a> , 以及 <a class="el" href="ArtifactPublish_8cpp_source.html#l00475">eve::procgen::ArtifactPublisher::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="acaac818c20ca1b10a65add9f574b52ee" name="acaac818c20ca1b10a65add9f574b52ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaac818c20ca1b10a65add9f574b52ee">&#9670;&#160;</a></span>hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::LogicalId::hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a stable non-cryptographic hash for hash tables. </p>
+<dl class="section return"><dt>返回</dt><dd>A deterministic 64-bit hash of the canonical text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Identity_8cpp_source.html">Identity.cpp</a> 第 <a class="el" href="Identity_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7ae520145a31b265000d6d930682ad2" name="ab7ae520145a31b265000d6d930682ad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ae520145a31b265000d6d930682ad2">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::LogicalId::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this value contains a valid namespace and name. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="common_2Snapshot_8cpp_source.html#l00195">eve::SnapshotMigrationChain::add()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00681">eve::tactics::BattleSystem::addObjective()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="RTS_8cpp_source.html#l02232">eve::rts::RTS::configureScriptAI()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00092">eve::definition::InstanceIdentity::create()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00073">eve::definition::DefinitionHandle::isValid()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00117">eve::definition::InstanceIdentity::isValid()</a>, <a class="el" href="Targeting_8h_source.html#l00093">eve::sensing::ZoneRef::isValid()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTS_8cpp_source.html#l02341">eve::rts::RTS::queueScriptReinforcement()</a>, <a class="el" href="RTS_8cpp_source.html#l02269">eve::rts::RTS::queueScriptUnit()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00767">eve::tactics::BattleSystem::roll()</a>, <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01227">eve::rts::AISystem::step()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">eve::action::ActionTimeline::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ace9ce47bb50b176679d7fe28ced33da7" name="ace9ce47bb50b176679d7fe28ced33da7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9ce47bb50b176679d7fe28ced33da7">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::LogicalId::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the name component as a view into this object. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8cpp_source.html">Identity.cpp</a> 第 <a class="el" href="Identity_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">eve::card::CardDefinitionRuntime::applyTo()</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00357">eve::vehicle::VehicleDefinitionRuntime::applyTo()</a>, <a class="el" href="RTS_8cpp_source.html#l02232">eve::rts::RTS::configureScriptAI()</a>, <a class="el" href="Identity_8cpp_source.html#l00048">fromParts()</a>, <a class="el" href="Identity_8cpp_source.html#l00036">parse()</a>, <a class="el" href="RTS_8cpp_source.html#l02341">eve::rts::RTS::queueScriptReinforcement()</a>, <a class="el" href="RTS_8cpp_source.html#l02269">eve::rts::RTS::queueScriptUnit()</a> , 以及 <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>.</p>
+
+</div>
+</div>
+<a id="addd80209b1122165a72ca379ec3112e0" name="addd80209b1122165a72ca379ec3112e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd80209b1122165a72ca379ec3112e0">&#9670;&#160;</a></span>namespaceName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::LogicalId::namespaceName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the namespace component as a view into this object. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8cpp_source.html">Identity.cpp</a> 第 <a class="el" href="Identity_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Identity_8cpp_source.html#l00048">fromParts()</a> , 以及 <a class="el" href="Identity_8cpp_source.html#l00036">parse()</a>.</p>
+
+</div>
+</div>
+<a id="a3d7ec7fe9744fb14a31f90d7759de528" name="a3d7ec7fe9744fb14a31f90d7759de528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d7ec7fe9744fb14a31f90d7759de528">&#9670;&#160;</a></span>parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt; eve::LogicalId::parse </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses a scoped logical name. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>A name matching <code>[a-z][a-z0-9_.-]*:</code> followed by <code>[A-Za-z0-9][A-Za-z0-9_.-]*</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The logical ID, or empty when the namespace/name grammar is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Identity_8cpp_source.html">Identity.cpp</a> 第 <a class="el" href="Identity_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1LogicalId.html#aff72c958461dfd2955df08a21498a418">LogicalId()</a>, <a class="el" href="Identity_8cpp_source.html#l00063">name()</a>, <a class="el" href="Identity_8cpp_source.html#l00058">namespaceName()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00361">eve::editor::ActionTimelineWidget::addNotifyAtCursor()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00372">eve::editor::ActionTimelineWidget::addStateAtCursor()</a>, <a class="el" href="RTS_8cpp_source.html#l01899">eve::rts::RTS::configureScriptWorld()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00193">eve::tactics::faceActionDefinition()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00293">eve::rts::RTSCommandLog::importText()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00217">eve::tactics::makeFaceRequest()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00207">eve::tactics::makeMoveRequest()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00225">eve::tactics::makeWaitRequest()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00186">eve::tactics::moveActionDefinition()</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00044">eve::DefinitionRef::parse()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00137">eve::parseSnapshotEnvelopeValue()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00128">eve::tactics::TacticsActionExecutor::prepare()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00572">eve::editor::ActionTimelineEditor::selectedItemIds()</a> , 以及 <a class="el" href="TacticsAction_8cpp_source.html#l00200">eve::tactics::waitActionDefinition()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a86bb5c4da6b8b7b49a12fed712ff59a6" name="a86bb5c4da6b8b7b49a12fed712ff59a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86bb5c4da6b8b7b49a12fed712ff59a6">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Identity_8h_source.html">Identity.h</a></li>
+<li>src/engine/common/<a class="el" href="Identity_8cpp_source.html">Identity.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

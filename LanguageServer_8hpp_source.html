@@ -1,0 +1,297 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/LanguageServer.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">LanguageServer.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LanguageServer_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ScriptCompiler_8h.html">common/ScriptCompiler.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="LanguageIndex_8h.html">devtools/LanguageIndex.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="LanguageText_8h.html">devtools/LanguageText.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;iosfwd&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe">Continue</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d">Exit</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a56b2a5c53c272ad54aacc33421e36e84">   22</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve_1_1dev.html#a56b2a5c53c272ad54aacc33421e36e84">operator&lt;&lt;</a>(std::ostream&amp; <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a>, <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe">LspDispatch::Continue</a>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a> &lt;&lt; <span class="stringliteral">&quot;Continue&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d">LspDispatch::Exit</a>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a> &lt;&lt; <span class="stringliteral">&quot;Exit&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a> &lt;&lt; <span class="stringliteral">&quot;LspDispatch(&quot;</span> &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureParameter.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1LanguageSignatureParameter.html">LanguageSignatureParameter</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureParameter.html#abf16faed1a095c51480e7996562e6f68">   34</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureParameter.html#abf16faed1a095c51480e7996562e6f68">label</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureParameter.html#a125f6cc2a675e131537ab036dee00c3d">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureParameter.html#a125f6cc2a675e131537ab036dee00c3d">documentation</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">LanguageSignatureHelp</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a0aadb1d1bc6ae8695b3caf72a9e1d729">   40</a></span>    std::string                              <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a0aadb1d1bc6ae8695b3caf72a9e1d729">label</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aab635364e9941f60f279fb99aef9f87b">   41</a></span>    std::string                              <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aab635364e9941f60f279fb99aef9f87b">documentation</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aa691df1411d032b0228e2ee19a0eaf12">   42</a></span>    std::vector&lt;LanguageSignatureParameter&gt;  <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aa691df1411d032b0228e2ee19a0eaf12">parameters</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a90e05b447683237db170120bdf918a7a">   43</a></span>    <span class="keywordtype">int</span>                                      <a class="code hl_variable" href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a90e05b447683237db170120bdf918a7a">activeParameter</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1LanguageServer.html">   51</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a>(std::string projectRoot);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1LanguageServer.html#aff84e4780cfa68485ddad1476d2d115c">   54</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1LanguageServer.html#aff84e4780cfa68485ddad1476d2d115c">~LanguageServer</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1LanguageServer.html#abc7518c0700af019c3b66022b2f57bac">   56</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1LanguageServer.html#abc7518c0700af019c3b66022b2f57bac">LanguageServer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1LanguageServer.html#a5bdbb9e64b76e6177a300932784e23c6">   57</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1LanguageServer.html#a5bdbb9e64b76e6177a300932784e23c6">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> std::string&amp; projectRoot() const noexcept;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    static <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> fileUriFromPath(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> openDocument(<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> uri, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> changeDocument(<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> uri, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> changeDocument(<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> uri, lsp::Range <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> closeDocument(<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> uri);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;script::ScriptDiagnostic&gt; diagnosticsFor(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri) const;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;script::ScriptCompletion&gt; complete(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::optional&lt;script::ScriptHover&gt;    hover(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::optional&lt;lsp::Location&gt;          <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;lsp::Location&gt;            references(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                     <span class="keywordtype">bool</span> includeDeclaration) const;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::optional&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;lsp::TextEdit&gt;&gt; rename(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                                     <a class="code hl_namespace" href="namespacestd.html">std</a>::string_view newName) const;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;script::ScriptSymbolMetadata&gt; documentSymbols(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri) const;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::optional&lt;<a class="code hl_struct" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">LanguageSignatureHelp</a>&gt;      signatureHelp(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::Position <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;lsp::TextEdit&gt; formatDocument(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view uri, lsp::FormatOptions <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {},</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Range.html">lsp::Range</a>* <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::vector&lt;lsp::FoldingRange&gt; foldingRanges(std::string_view uri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::vector&lt;lsp::SemanticToken&gt; semanticTokens(std::string_view uri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">LspDispatch</a> handleMessage(std::string_view jsonBody, std::ostream&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span> runStdio(std::istream&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, std::ostream&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">struct </span>Impl;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aKernelGen_8cpp_html_a3346fd35f9a7aac6f289cac2435273c6"><div class="ttname"><a href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a></div><div class="ttdeci">std::ostringstream &amp; os</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8cpp_source.html#l00125">KernelGen.cpp:125</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad73a08b362d03aef0cbf46e78c9c0631"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00020">LanguageIndex.cpp:20</a></div></div>
+<div class="ttc" id="aLanguageIndex_8h_html"><div class="ttname"><a href="LanguageIndex_8h.html">LanguageIndex.h</a></div></div>
+<div class="ttc" id="aLanguageText_8h_html"><div class="ttname"><a href="LanguageText_8h.html">LanguageText.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aScriptCompiler_8h_html"><div class="ttname"><a href="ScriptCompiler_8h.html">ScriptCompiler.h</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6628c09c9a9dbab79c7c314df8957796"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a></div><div class="ttdeci">LogicalId definition</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00115">TacticsPersistence.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1LanguageServer_html"><div class="ttname"><a href="classeve_1_1dev_1_1LanguageServer.html">eve::dev::LanguageServer</a></div><div class="ttdoc">In-process EveScript language service used by eve language-server and by unit tests....</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00051">LanguageServer.hpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1LanguageServer_html_a5bdbb9e64b76e6177a300932784e23c6"><div class="ttname"><a href="classeve_1_1dev_1_1LanguageServer.html#a5bdbb9e64b76e6177a300932784e23c6">eve::dev::LanguageServer::operator=</a></div><div class="ttdeci">LanguageServer &amp; operator=(const LanguageServer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1LanguageServer_html_abc7518c0700af019c3b66022b2f57bac"><div class="ttname"><a href="classeve_1_1dev_1_1LanguageServer.html#abc7518c0700af019c3b66022b2f57bac">eve::dev::LanguageServer::LanguageServer</a></div><div class="ttdeci">LanguageServer(const LanguageServer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1LanguageServer_html_aff84e4780cfa68485ddad1476d2d115c"><div class="ttname"><a href="classeve_1_1dev_1_1LanguageServer.html#aff84e4780cfa68485ddad1476d2d115c">eve::dev::LanguageServer::~LanguageServer</a></div><div class="ttdeci">~LanguageServer()</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00012">AgentDevelopmentMcp.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a56b2a5c53c272ad54aacc33421e36e84"><div class="ttname"><a href="namespaceeve_1_1dev.html#a56b2a5c53c272ad54aacc33421e36e84">eve::dev::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, LspDispatch value)</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00022">LanguageServer.hpp:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ab49a3a83703ff21ee2c2d6261a453ac1"><div class="ttname"><a href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1">eve::dev::LspDispatch</a></div><div class="ttdeci">LspDispatch</div><div class="ttdoc">Whether the stdio/JSON-RPC host should keep reading after one dispatch.</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00020">LanguageServer.hpp:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe"><div class="ttname"><a href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1aa0bfb8e59e6c13fc8d990781f77694fe">eve::dev::LspDispatch::Continue</a></div><div class="ttdeci">@ Continue</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d"><div class="ttname"><a href="namespaceeve_1_1dev.html#ab49a3a83703ff21ee2c2d6261a453ac1afef46e5063ce3dc78b8ae64fa474241d">eve::dev::LspDispatch::Exit</a></div><div class="ttdeci">@ Exit</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureHelp_html"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureHelp.html">eve::dev::LanguageSignatureHelp</a></div><div class="ttdoc">Binding-contract signature shown while typing a call.</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00039">LanguageServer.hpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureHelp_html_a0aadb1d1bc6ae8695b3caf72a9e1d729"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a0aadb1d1bc6ae8695b3caf72a9e1d729">eve::dev::LanguageSignatureHelp::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00040">LanguageServer.hpp:40</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureHelp_html_a90e05b447683237db170120bdf918a7a"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureHelp.html#a90e05b447683237db170120bdf918a7a">eve::dev::LanguageSignatureHelp::activeParameter</a></div><div class="ttdeci">int activeParameter</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00043">LanguageServer.hpp:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureHelp_html_aa691df1411d032b0228e2ee19a0eaf12"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aa691df1411d032b0228e2ee19a0eaf12">eve::dev::LanguageSignatureHelp::parameters</a></div><div class="ttdeci">std::vector&lt; LanguageSignatureParameter &gt; parameters</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00042">LanguageServer.hpp:42</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureHelp_html_aab635364e9941f60f279fb99aef9f87b"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureHelp.html#aab635364e9941f60f279fb99aef9f87b">eve::dev::LanguageSignatureHelp::documentation</a></div><div class="ttdeci">std::string documentation</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00041">LanguageServer.hpp:41</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureParameter_html"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureParameter.html">eve::dev::LanguageSignatureParameter</a></div><div class="ttdoc">One parameter in an LSP signature-help result.</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00033">LanguageServer.hpp:33</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureParameter_html_a125f6cc2a675e131537ab036dee00c3d"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureParameter.html#a125f6cc2a675e131537ab036dee00c3d">eve::dev::LanguageSignatureParameter::documentation</a></div><div class="ttdeci">std::string documentation</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00035">LanguageServer.hpp:35</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1LanguageSignatureParameter_html_abf16faed1a095c51480e7996562e6f68"><div class="ttname"><a href="structeve_1_1dev_1_1LanguageSignatureParameter.html#abf16faed1a095c51480e7996562e6f68">eve::dev::LanguageSignatureParameter::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="LanguageServer_8hpp_source.html#l00034">LanguageServer.hpp:34</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Range_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Range.html">eve::dev::lsp::Range</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00020">LanguageIndex.h:20</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingRegistry.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingRegistry.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingRegistry_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Climbing_8h.html">climbing/Climbing.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;T&gt;</a> registryFailure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(code, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), {}, <span class="stringliteral">&quot;climbing&quot;</span>));</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#aad9dbec0673463eecd588cdd95d981ee">   13</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingRuntimeHandleRef&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#aad9dbec0673463eecd588cdd95d981ee">Climbing::newRuntime</a>() {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> Climbing::create()-&gt;runtimes_.emplace(std::make_unique&lt;ClimbingRuntime&gt;());</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#aaf2231656af11da5bb5eff045145b1e2">   17</a></span><a class="code hl_class" href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed&lt;ClimbingRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#aaf2231656af11da5bb5eff045145b1e2">Climbing::resolve</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingRuntimeHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <span class="keyword">module</span> ? module-&gt;runtimes_.resolve(reference) : eve::script::Borrowed&lt;ClimbingRuntime&gt;();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a08b4f97334883be7552c106104702226">   22</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a08b4f97334883be7552c106104702226">Climbing::release</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingRuntimeHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!module)</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;Climbing module is no longer loaded&quot;</span>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                                     <span class="stringliteral">&quot;runtime&quot;</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> <span class="keyword">module</span>-&gt;runtimes_.erase(reference);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a59b28a5dae780f1bcf8fd3d6885bab6b">   30</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a59b28a5dae780f1bcf8fd3d6885bab6b">Climbing::isStale</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingRuntimeHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>.isValid()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> !<span class="keyword">module</span> || module-&gt;runtimes_.isStale(reference);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a67743fe916d6529bdb14594da1e0c165">   36</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingAnchorGraphHandleRef&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a67743fe916d6529bdb14594da1e0c165">Climbing::newAnchorGraph</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                                   <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                                                   <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">physics::PhysicsBodyHandle</a> <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> instance = <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aa978682a2aedeaf8fd0a7f3b802e628b">ClimbingAnchorGraphInstance::bind</a>(std::move(<a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>), <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!instance) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;ClimbingAnchorGraphHandleRef&gt;::failure</a>(instance.status());</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> Climbing::create()-&gt;anchorGraphs_.emplace(</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        std::make_unique&lt;ClimbingAnchorGraphInstance&gt;(std::move(instance).takeValue()));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a6677877b4ee76ae1b6665d9d29a828d3">   45</a></span><a class="code hl_class" href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed&lt;ClimbingAnchorGraphInstance&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a6677877b4ee76ae1b6665d9d29a828d3">Climbing::resolveAnchorGraph</a>(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingAnchorGraphHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="keyword">module</span> ? module-&gt;anchorGraphs_.resolve(reference) : eve::script::Borrowed&lt;ClimbingAnchorGraphInstance&gt;();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a0aabf7fa3cc41349be6972f2cac8b27c">   51</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a0aabf7fa3cc41349be6972f2cac8b27c">Climbing::releaseAnchorGraph</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingAnchorGraphHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (!module)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> registryFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;Climbing module is no longer loaded&quot;</span>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                     <span class="stringliteral">&quot;anchorGraph&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> <span class="keyword">module</span>-&gt;anchorGraphs_.erase(reference);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1Climbing.html#a70a0735d17833fb3d1398723f5cc060f">   59</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a70a0735d17833fb3d1398723f5cc060f">Climbing::isAnchorGraphStale</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">ClimbingAnchorGraphHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>.isValid()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1Climbing.html">Climbing</a>* <span class="keyword">module</span> = ModuleManager::getInstance&lt;Climbing&gt;(&quot;Climbing&quot;);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> !<span class="keyword">module</span> || module-&gt;anchorGraphs_.isStale(reference);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aAuthority_8cpp_html_a7e214a50596aaa2c6748b6e36dda4f63"><div class="ttname"><a href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a></div><div class="ttdeci">AuthorityStoreHandleRef reference</div><div class="ttdef"><b>Definition</b> <a href="Authority_8cpp_source.html#l00024">Authority.cpp:24</a></div></div>
+<div class="ttc" id="aClimbing_8h_html"><div class="ttname"><a href="Climbing_8h.html">Climbing.h</a></div><div class="ttdoc">Deterministic climbing/parkour planning and capsule-constrained execution.</div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aUnityImporter_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8cpp_source.html#l00226">UnityImporter.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; PhysicsBodyHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingAnchorGraphInstance_html_aa978682a2aedeaf8fd0a7f3b802e628b"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aa978682a2aedeaf8fd0a7f3b802e628b">eve::climbing::ClimbingAnchorGraphInstance::bind</a></div><div class="ttdeci">static eve::Result&lt; ClimbingAnchorGraphInstance &gt; bind(ClimbingAnchorGraphDefinition graph, physics::World3D &amp;world, physics::PhysicsBodyHandle body)</div><div class="ttdoc">Validates and binds a graph snapshot to an existing Physics body.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorGraph_8cpp_source.html#l00384">ClimbingAnchorGraph.cpp:384</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html">eve::climbing::Climbing</a></div><div class="ttdoc">Script-facing factory and owner for independent climbing runtimes.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00859">Climbing.h:859</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a08b4f97334883be7552c106104702226"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a08b4f97334883be7552c106104702226">eve::climbing::Climbing::release</a></div><div class="ttdeci">static eve::Result&lt; void &gt; release(ClimbingRuntimeHandleRef reference)</div><div class="ttdoc">Releases a module-owned runtime and invalidates its reference.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00022">ClimbingRegistry.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a0aabf7fa3cc41349be6972f2cac8b27c"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a0aabf7fa3cc41349be6972f2cac8b27c">eve::climbing::Climbing::releaseAnchorGraph</a></div><div class="ttdeci">static eve::Result&lt; void &gt; releaseAnchorGraph(ClimbingAnchorGraphHandleRef reference)</div><div class="ttdoc">Releases a module-owned graph instance and all of its reservations.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00051">ClimbingRegistry.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a59b28a5dae780f1bcf8fd3d6885bab6b"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a59b28a5dae780f1bcf8fd3d6885bab6b">eve::climbing::Climbing::isStale</a></div><div class="ttdeci">static bool isStale(ClimbingRuntimeHandleRef reference) noexcept</div><div class="ttdoc">Reports whether a runtime reference is stale.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00030">ClimbingRegistry.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a6677877b4ee76ae1b6665d9d29a828d3"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a6677877b4ee76ae1b6665d9d29a828d3">eve::climbing::Climbing::resolveAnchorGraph</a></div><div class="ttdeci">static eve::script::Borrowed&lt; ClimbingAnchorGraphInstance &gt; resolveAnchorGraph(ClimbingAnchorGraphHandleRef reference) noexcept</div><div class="ttdoc">Resolves a live graph instance as a synchronous non-owning observation.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00045">ClimbingRegistry.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a67743fe916d6529bdb14594da1e0c165"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a67743fe916d6529bdb14594da1e0c165">eve::climbing::Climbing::newAnchorGraph</a></div><div class="ttdeci">static eve::Result&lt; ClimbingAnchorGraphHandleRef &gt; newAnchorGraph(ClimbingAnchorGraphDefinition graph, physics::World3D &amp;world, physics::PhysicsBodyHandle body)</div><div class="ttdoc">Creates a module-owned graph instance bound to one live Physics body.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00036">ClimbingRegistry.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a70a0735d17833fb3d1398723f5cc060f"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a70a0735d17833fb3d1398723f5cc060f">eve::climbing::Climbing::isAnchorGraphStale</a></div><div class="ttdeci">static bool isAnchorGraphStale(ClimbingAnchorGraphHandleRef reference) noexcept</div><div class="ttdoc">Reports whether a graph instance reference is stale.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00059">ClimbingRegistry.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_aad9dbec0673463eecd588cdd95d981ee"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#aad9dbec0673463eecd588cdd95d981ee">eve::climbing::Climbing::newRuntime</a></div><div class="ttdeci">static eve::Result&lt; ClimbingRuntimeHandleRef &gt; newRuntime()</div><div class="ttdoc">Creates a module-owned runtime and returns its generation-qualified reference.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00013">ClimbingRegistry.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_aaf2231656af11da5bb5eff045145b1e2"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#aaf2231656af11da5bb5eff045145b1e2">eve::climbing::Climbing::resolve</a></div><div class="ttdeci">static eve::script::Borrowed&lt; ClimbingRuntime &gt; resolve(ClimbingRuntimeHandleRef reference) noexcept</div><div class="ttdoc">Resolves a live runtime as a non-owning observation.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00017">ClimbingRegistry.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1Borrowed_html"><div class="ttname"><a href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed</a></div><div class="ttdoc">Non-owning C++ observation with no implicit lifetime extension.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00076">SquirrelOwnership.h:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorGraphDefinition_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">eve::climbing::ClimbingAnchorGraphDefinition</a></div><div class="ttdoc">Versioned graph asset; topology is authoritative while collision remains owned by Physics.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorGraph_8h_source.html#l00072">ClimbingAnchorGraph.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef&lt; ClimbingRuntimeHandleTag &gt;</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

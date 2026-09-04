@@ -1,0 +1,287 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/SkillDefinitionRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SkillDefinitionRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SkillDefinitionRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="DefinitionRuntime_8h.html">common/definitions/DefinitionRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeSnapshot_8h.html">common/definitions/RuntimeSnapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Definitions_8h.html">definitions/Definitions.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Skill_8h.html">rpg/Skill.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillRuntimeState.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillRuntimeState.html#a8f9f551f31052ca34f4430601d2cf250">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillRuntimeState.html#a8f9f551f31052ca34f4430601d2cf250">cooldownRemaining</a> = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillRuntimeState.html#a0b5cd428243bfcb18479fc7606f07ad8">   28</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillRuntimeState.html#a0b5cd428243bfcb18479fc7606f07ad8">learned</a>           = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">   40</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> final {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SkillDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aeecb9c4500e437c71a49896b921250a1">create</a>(</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>&amp; registry, <a class="code hl_class" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SkillDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aeecb9c4500e437c71a49896b921250a1">create</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId, std::string_view skillId,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a03cbaab5c1b0cae847908ccf418fdad4">   59</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a03cbaab5c1b0cae847908ccf418fdad4">SkillDefinitionRuntime</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp;&amp;) noexcept            = default;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a288fde364a31cde1e397b52ae15f8722">   60</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a3fc4210e45797efe9f9c3f21289304fd">   61</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>(const <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp;)                = delete;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aa8e025b4abd86d04304b7916187648ef">   62</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>&amp;)     = delete;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a4d94eb9e884bf24792b9b0d9c36aee15">   63</a></span>    ~<a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>()                                            = default;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::InstanceIdentity&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a68b06e89cba7c331fa4ad07687f683bf">identity</a>() const noexcept;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] const <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#acff00772da9b6bca55ed07bf47949bf9">state</a>() const noexcept;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#acff00772da9b6bca55ed07bf47949bf9">state</a>() noexcept;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::DefinitionHandle <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a4855f7dea0ca83aea7dfec3efe026cab">definitionHandle</a>() const noexcept;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>() const;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#af5109555fb33a54ac333f0a04ff38763">   76</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::ReloadPolicy <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#af5109555fb33a54ac333f0a04ff38763">reloadPolicy</a>() const noexcept { <span class="keywordflow">return</span> policy_; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a1f4b2da28a5aad7f5e91e0df36b1635c">setActive</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a8ee2110086f45c5a36785e553751c64b">isActive</a>() const noexcept;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a9661c9eb48d4adffbf3f4921aab8d46e">applyTo</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor) const;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::ReloadOutcome&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#afb78c6d9b28e885df1c803925e1090c3">reload</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::ReloadPolicy <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b">snapshot</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                                                              const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a13f353ef86c1e25d7a58560160786735">snapshotJson</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                                        const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#abdbe345634ea3c0bdf752b55540ad98b">restore</a>(const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&amp;     <a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b">snapshot</a>,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                                            const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>private:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definitions::DefinitionRegistry&amp;               registry,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                           <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::RuntimeInstance&lt;<a class="code hl_struct" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a>&gt; runtime,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                           <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>::ReloadPolicy                       <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        : registry_(&amp;registry), runtime_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(runtime)), policy_(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {}</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>*               registry_ = <span class="keyword">nullptr</span>;  <span class="comment">// borrowed</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_class" href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance&lt;SkillRuntimeState&gt;</a> runtime_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>                       policy_ = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a03c996f9fcf0e10baeb3e700be0c409a"><div class="ttname"><a href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00036">CardTypes.cpp:36</a></div></div>
+<div class="ttc" id="aDefinitionRuntime_8h_html"><div class="ttname"><a href="DefinitionRuntime_8h.html">DefinitionRuntime.h</a></div><div class="ttdoc">Common identity and hot-reload contract for typed runtime instances.</div></div>
+<div class="ttc" id="aDefinitions_8h_html"><div class="ttname"><a href="Definitions_8h.html">Definitions.h</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aRuntimeSnapshot_8h_html"><div class="ttname"><a href="RuntimeSnapshot_8h.html">RuntimeSnapshot.h</a></div><div class="ttdoc">Shared SnapshotEnvelope codec for typed definition runtime instances.</div></div>
+<div class="ttc" id="aSkill_8h_html"><div class="ttname"><a href="Skill_8h.html">Skill.h</a></div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html"><div class="ttname"><a href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a></div><div class="ttdoc">Stable definition reference backed by LogicalId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00083">ResourceRef.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1definition_1_1RuntimeInstance_html"><div class="ttname"><a href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance</a></div><div class="ttdoc">Owns one strongly typed runtime state and its definition identity.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00163">DefinitionRuntime.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00056">Definitions.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">eve::rpg::SkillDefinitionRuntime</a></div><div class="ttdoc">Typed SkillDefinition-to-runtime adapter.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8h_source.html#l00040">SkillDefinitionRuntime.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a03cbaab5c1b0cae847908ccf418fdad4"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a03cbaab5c1b0cae847908ccf418fdad4">eve::rpg::SkillDefinitionRuntime::SkillDefinitionRuntime</a></div><div class="ttdeci">SkillDefinitionRuntime(SkillDefinitionRuntime &amp;&amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a13f353ef86c1e25d7a58560160786735"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a13f353ef86c1e25d7a58560160786735">eve::rpg::SkillDefinitionRuntime::snapshotJson</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; snapshotJson(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Serialize snapshot() as canonical JSON.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00277">SkillDefinitionRuntime.cpp:277</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a1f4b2da28a5aad7f5e91e0df36b1635c"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a1f4b2da28a5aad7f5e91e0df36b1635c">eve::rpg::SkillDefinitionRuntime::setActive</a></div><div class="ttdeci">void setActive(bool active) noexcept</div><div class="ttdoc">Set the active-cast guard used by RejectWhileActive.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00226">SkillDefinitionRuntime.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a4855f7dea0ca83aea7dfec3efe026cab"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a4855f7dea0ca83aea7dfec3efe026cab">eve::rpg::SkillDefinitionRuntime::definitionHandle</a></div><div class="ttdeci">eve::definition::DefinitionHandle definitionHandle() const noexcept</div><div class="ttdoc">Return the exact generation-qualified definition handle.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00215">SkillDefinitionRuntime.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a68b06e89cba7c331fa4ad07687f683bf"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a68b06e89cba7c331fa4ad07687f683bf">eve::rpg::SkillDefinitionRuntime::identity</a></div><div class="ttdeci">const eve::definition::InstanceIdentity &amp; identity() const noexcept</div><div class="ttdoc">Borrow the common identity, including exact definition generation.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00207">SkillDefinitionRuntime.cpp:207</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a791357058ee7c47915da8d90d81926fa"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">eve::rpg::SkillDefinitionRuntime::definition</a></div><div class="ttdeci">eve::Result&lt; SkillDefinition &gt; definition() const</div><div class="ttdoc">Resolve and parse the current typed definition projection.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00219">SkillDefinitionRuntime.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a8ee2110086f45c5a36785e553751c64b"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a8ee2110086f45c5a36785e553751c64b">eve::rpg::SkillDefinitionRuntime::isActive</a></div><div class="ttdeci">bool isActive() const noexcept</div><div class="ttdoc">Return whether this skill is currently active.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00228">SkillDefinitionRuntime.cpp:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a930b6eda4c7af07ea5cccdb75537263b"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b">eve::rpg::SkillDefinitionRuntime::snapshot</a></div><div class="ttdeci">eve::Result&lt; eve::SnapshotEnvelope &gt; snapshot(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Capture this skill's instance state in a common SnapshotEnvelope.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00268">SkillDefinitionRuntime.cpp:268</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_a9661c9eb48d4adffbf3f4921aab8d46e"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a9661c9eb48d4adffbf3f4921aab8d46e">eve::rpg::SkillDefinitionRuntime::applyTo</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyTo(RPGActor *actor) const</div><div class="ttdoc">Project this skill instance into an RPGActor's Skills component.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00230">SkillDefinitionRuntime.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_abdbe345634ea3c0bdf752b55540ad98b"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#abdbe345634ea3c0bdf752b55540ad98b">eve::rpg::SkillDefinitionRuntime::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const eve::SnapshotEnvelope &amp;snapshot, const eve::SnapshotHashProvider &amp;hashProvider)</div><div class="ttdoc">Verify and restore a same-generation skill snapshot atomically.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00285">SkillDefinitionRuntime.cpp:285</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_acff00772da9b6bca55ed07bf47949bf9"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#acff00772da9b6bca55ed07bf47949bf9">eve::rpg::SkillDefinitionRuntime::state</a></div><div class="ttdeci">const SkillRuntimeState &amp; state() const noexcept</div><div class="ttdoc">Borrow mutable per-instance skill state.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00211">SkillDefinitionRuntime.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_aeecb9c4500e437c71a49896b921250a1"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aeecb9c4500e437c71a49896b921250a1">eve::rpg::SkillDefinitionRuntime::create</a></div><div class="ttdeci">static eve::Result&lt; SkillDefinitionRuntime &gt; create(eve::definitions::DefinitionRegistry &amp;registry, eve::DefinitionRef definition, eve::PersistentId instanceId, eve::definition::ReloadPolicy policy=eve::definition::ReloadPolicy::RebuildInstance)</div><div class="ttdoc">Create a runtime from a generation-qualified common definition.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00178">SkillDefinitionRuntime.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_af5109555fb33a54ac333f0a04ff38763"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#af5109555fb33a54ac333f0a04ff38763">eve::rpg::SkillDefinitionRuntime::reloadPolicy</a></div><div class="ttdeci">eve::definition::ReloadPolicy reloadPolicy() const noexcept</div><div class="ttdoc">Return the configured reload policy.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8h_source.html#l00076">SkillDefinitionRuntime.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillDefinitionRuntime_html_afb78c6d9b28e885df1c803925e1090c3"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#afb78c6d9b28e885df1c803925e1090c3">eve::rpg::SkillDefinitionRuntime::reload</a></div><div class="ttdeci">eve::Result&lt; eve::definition::ReloadOutcome &gt; reload(eve::definition::ReloadPolicy policy)</div><div class="ttdoc">Reload the current registry generation using a typed policy.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8cpp_source.html#l00246">SkillDefinitionRuntime.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a></div><div class="ttdeci">ReloadPolicy</div><div class="ttdoc">Policy used when a live definition is replaced.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00029">DefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></div><div class="ttdeci">@ RebuildInstance</div><div class="ttdoc">Let the consumer atomically construct a new state from the new definition.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1SnapshotEnvelope_html"><div class="ttname"><a href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></div><div class="ttdoc">Stable outer format shared by persistence and cross-process snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00046">Snapshot.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDefinition.html">eve::rpg::SkillDefinition</a></div><div class="ttdef"><b>Definition</b> <a href="Skill_8h_source.html#l00025">Skill.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillRuntimeState_html"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillRuntimeState.html">eve::rpg::SkillRuntimeState</a></div><div class="ttdoc">Mutable state belonging to one learned skill instance.</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8h_source.html#l00026">SkillDefinitionRuntime.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillRuntimeState_html_a0b5cd428243bfcb18479fc7606f07ad8"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillRuntimeState.html#a0b5cd428243bfcb18479fc7606f07ad8">eve::rpg::SkillRuntimeState::learned</a></div><div class="ttdeci">bool learned</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8h_source.html#l00028">SkillDefinitionRuntime.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillRuntimeState_html_a8f9f551f31052ca34f4430601d2cf250"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillRuntimeState.html#a8f9f551f31052ca34f4430601d2cf250">eve::rpg::SkillRuntimeState::cooldownRemaining</a></div><div class="ttdeci">float cooldownRemaining</div><div class="ttdef"><b>Definition</b> <a href="SkillDefinitionRuntime_8h_source.html#l00027">SkillDefinitionRuntime.h:27</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

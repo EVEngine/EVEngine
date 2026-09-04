@@ -1,0 +1,248 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 数学模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">数学模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>数学模块</h1>
+<p><b>脚本入口：</b> <code>eve.Math()</code></p>
+<p>提供向量、矩阵、几何、噪声、随机数、插值和缓动工具。2D/3D 对象的**点选、重叠与射线检测**也放在本模块（轻量几何测试）；带刚体/接触响应的模拟见 <a class="el" href="physics_8md.html">Physics</a>，屏幕坐标换算见 <a class="el" href="graphics_8md.html">Graphics</a> 的 Camera2D/Camera3D。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local math = eve.Math();</div>
+<div class="line">math.setRandomSeed(42);</div>
+<div class="line">local p = math.newVec2(10, 20);</div>
+<div class="line">local n = math.noise2(p.getX(), p.getY());</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Math</code> 是算法与随机状态入口；Vec2/Vec3/Mat4 是值对象；noise、random、ease、Bezier 和几何测试由模块提供。需要确定性的系统应拥有独立且明确 seed 的 Math 状态。</p>
+<h2>目标导向指南</h2>
+<h3>可复现随机地图</h3>
+<p>生成前 <code>setRandomSeed(seed)</code>，所有随机选择使用同一 Math 实例；存档只需记录 seed 和玩家改动。不要用时间 seed 做需要联网同步的逻辑。</p>
+<h3>平滑移动和程序噪声</h3>
+<p>用 lerp/smoothstep/ease 做相机与 UI 插值；<code>noise2()</code> / fractal noise 适合高度图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。</p>
+<h3>2D 点击拾取与重叠</h3>
+<p>鼠标/触摸先经 <code>Camera2D.screenToWorld*</code> 得到世界坐标，再用：</p>
+<ul>
+<li><code>pointInCircle</code> / <code>pointInRect</code> — 点选精灵或按钮</li>
+<li><code>circlesOverlap</code> / <code>rectsOverlap</code> / <code>circleRectOverlap</code> — 无物理的碰撞/触发</li>
+<li><code>raycastCircle2</code> / <code>raycastRect2</code> — 子弹、视线；命中点 = <code>o + t * d</code>，未命中返回 <code>-1</code></li>
+<li><code>segmentsIntersect</code> — 线段相交（弹道、边缘）</li>
+</ul>
+<div class="fragment"><div class="line">local mx = mouse.getX();</div>
+<div class="line">local my = mouse.getY();</div>
+<div class="line">local wx = cam2d.screenToWorldX(mx, my, gfx.getWidth(), gfx.getHeight());</div>
+<div class="line">local wy = cam2d.screenToWorldY(mx, my, gfx.getWidth(), gfx.getHeight());</div>
+<div class="line">if (math.pointInRect(wx, wy, spriteX, spriteY, spriteW, spriteH)) {</div>
+<div class="line">    // picked</div>
+<div class="line">}</div>
+</div><!-- fragment --><h3>3D 射线拾取</h3>
+<p><code>Camera3D.screenToRay</code> 生成世界射线后，用 <code>raycastSphere</code> / <code>raycastBox</code> / <code>raycastPlane</code> 测距；<code>t &gt;= 0</code> 表示命中。多个候选取最小 <code>t</code>。</p>
+<div class="fragment"><div class="line">cam3d.screenToRay(mouse.getX(), mouse.getY(), gfx.getWidth(), gfx.getHeight());</div>
+<div class="line">local ox = cam3d.getScreenRayOriginX();</div>
+<div class="line">local oy = cam3d.getScreenRayOriginY();</div>
+<div class="line">local oz = cam3d.getScreenRayOriginZ();</div>
+<div class="line">local dx = cam3d.getScreenRayDirX();</div>
+<div class="line">local dy = cam3d.getScreenRayDirY();</div>
+<div class="line">local dz = cam3d.getScreenRayDirZ();</div>
+<div class="line">local t = math.raycastSphere(ox, oy, oz, dx, dy, dz, cx, cy, cz, radius);</div>
+<div class="line">if (t &gt;= 0) {</div>
+<div class="line">    local hx = ox + dx * t;</div>
+<div class="line">    local hy = oy + dy * t;</div>
+<div class="line">    local hz = oz + dz * t;</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>常见问题</h2>
+<ul>
+<li>客户端各自用时间 seed，造成联机状态分叉。</li>
+<li>度和弧度混用。</li>
+<li>未归一化方向向量就用于速度或点积判断。</li>
+<li>射线 API 的 <code>t</code> 是参数：<code>hit = origin + t * dir</code>；<code>dir</code> 不必单位化，线段检测时用 <code>dir = B - A</code> 并要求 <code>t ∈ [0,1]</code>。</li>
+<li>把 Math 几何测试当成刚体物理：需要接触事件、摩擦或传感器时用 Physics。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>add()</code>、<code><a class="el" href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle()</a></code>、<code>angle2()</code>、<code>angleBetween2()</code>、<code>approach()</code>、<code>bezierCubic()</code>、<code>bezierCubic2X()</code>、<code>bezierCubic2Y()</code></li>
+<li><code>bezierQuadratic()</code>、<code>bezierQuadratic2X()</code>、<code>bezierQuadratic2Y()</code>、<code>bias()</code>、<code>bilinear()</code>、<code>boxesOverlap()</code>、<code>cartesianAngle()</code></li>
+<li><code>cartesianRadius()</code>、<code>circleRectOverlap()</code>、<code>circlesOverlap()</code>、<code>clamp()</code>、<code>clone()</code>、<code>closestPointOnSegment2X()</code>、<code>closestPointOnSegment2Y()</code>、<code>closestPointOnSegment3X()</code></li>
+<li><code>closestPointOnSegment3Y()</code>、<code>closestPointOnSegment3Z()</code>、<code>cross()</code>、<code>cross2()</code>、<code>degToRad()</code>、<code>distance2()</code>、<code>distance3()</code>、<code>distanceTo()</code></li>
+<li><code>dot()</code>、<code>dot2()</code>、<code>dot3()</code>、<code>ease()</code>、<code>fbm2()</code>、<code>fbm3()</code>、<code>fract()</code>、<code>gain()</code></li>
+<li><code>get()</code>、<code>getName()</code>、<code>getRandomSeed()</code>、<code>getX()</code>、<code>getY()</code>、<code>getZ()</code>、<code>hash1()</code>、<code>hash2()</code></li>
+<li><code>hash3()</code>、<code>identity()</code>、<code>inverseLerp()</code>、<code><a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length()</a></code>、<code>length2()</code>、<code>length3()</code>、<code>lengthSquared()</code>、<code>lerp()</code></li>
+<li><code>lerpAngle()</code>、<code>lerpTo()</code>、<code>multiplied()</code>、<code>multiply()</code>、<code>newMat4()</code>、<code>newMat4RotationZ()</code>、<code>newMat4Scale()</code>、<code>newMat4Translation()</code></li>
+<li><code>newVec2()</code>、<code>newVec3()</code>、<code>noise1()</code>、<code>noise2()</code>、<code>noise3()</code>、<code>normalize()</code>、<code>normalize2X()</code>、<code>normalize2Y()</code></li>
+<li><code>normalize3X()</code>、<code>normalize3Y()</code>、<code>normalize3Z()</code>、<code>normalized()</code>、<code>perlin2()</code>、<code>perlin3()</code>、<code>pingPong()</code>、<code>pointInBox()</code></li>
+<li><code>pointInCircle()</code>、<code>pointInRect()</code>、<code>pointInSphere()</code>、<code>polarX()</code>、<code>polarY()</code>、<code>quantize()</code>、<code>radToDeg()</code>、<code><a class="el" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random()</a></code></li>
+<li><code>randomGaussian()</code>、<code>randomInt()</code>、<code>randomRange()</code>、<code>raycastBox()</code>、<code>raycastCircle2()</code>、<code>raycastPlane()</code>、<code>raycastRect2()</code>、<code>raycastSphere()</code></li>
+<li><code>rectsOverlap()</code>、<code>remap()</code>、<code>ridged2()</code>、<code>ridged3()</code>、<code>rotate2X()</code>、<code>rotate2Y()</code>、<code>rotateX()</code>、<code>rotateY()</code></li>
+<li><code>rotateZ()</code>、<code><a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale()</a></code>、<code>segmentsIntersect()</code>、<code>set()</code>、<code>setRandomSeed()</code>、<code>setRandomSeedFromTime()</code>、<code>setX()</code>、<code>setY()</code></li>
+<li><code>setZ()</code>、<code>sign()</code>、<code>smootherstep()</code>、<code>smoothstep()</code>、<code>snap()</code>、<code>spheresOverlap()</code>、<code><a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step()</a></code>、<code>sub()</code></li>
+<li><code>transformPoint2()</code>、<code>transformVec3()</code>、<code>translate()</code>、<code>turbulence2()</code>、<code>voronoi2()</code>、<code>voronoiEdge2()</code>、<code>warpNoise2()</code>、<code>wrap()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/math/"><code>src/modules/math/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>math</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

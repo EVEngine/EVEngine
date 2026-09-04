@@ -1,0 +1,676 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::WeaponAttributeAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html">WeaponAttributeAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1weapon_1_1WeaponAttributeAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::WeaponAttributeAdapter类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Adapts only Mana/Stamina trigger resources to AttributeProjection.  
+ <a href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a642a1c4b886230db22e109a17c57081f" id="r_a642a1c4b886230db22e109a17c57081f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a642a1c4b886230db22e109a17c57081f">ensure</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon)</td></tr>
+<tr class="memdesc:a642a1c4b886230db22e109a17c57081f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind and seed the selected resource attributes exactly once.  <br /></td></tr>
+<tr class="separator:a642a1c4b886230db22e109a17c57081f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a215ac29189e4fb4fa3eedfc139d75d88" id="r_a215ac29189e4fb4fa3eedfc139d75d88"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a215ac29189e4fb4fa3eedfc139d75d88">read</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon, std::string_view attribute)</td></tr>
+<tr class="memdesc:a215ac29189e4fb4fa3eedfc139d75d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a selected final mana/stamina attribute.  <br /></td></tr>
+<tr class="separator:a215ac29189e4fb4fa3eedfc139d75d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d973ecdcea5de3d14fc2bdcb0247c7d" id="r_a0d973ecdcea5de3d14fc2bdcb0247c7d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a0d973ecdcea5de3d14fc2bdcb0247c7d">setBase</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon, std::string_view attribute, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a0d973ecdcea5de3d14fc2bdcb0247c7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a selected canonical base and refresh <a class="el" href="structeve_1_1weapon_1_1Resource.html" title="运行时触发资源（实体组件）。">Resource</a> compatibility fields.  <br /></td></tr>
+<tr class="separator:a0d973ecdcea5de3d14fc2bdcb0247c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89e63748ff7119f566cf47b1388a6f92" id="r_a89e63748ff7119f566cf47b1388a6f92"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a89e63748ff7119f566cf47b1388a6f92">consumeTriggerResource</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon)</td></tr>
+<tr class="memdesc:a89e63748ff7119f566cf47b1388a6f92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume the current weapon's canonical Mana/Stamina trigger cost.  <br /></td></tr>
+<tr class="separator:a89e63748ff7119f566cf47b1388a6f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a522d26fc4911795db8247e38a09292bb" id="r_a522d26fc4911795db8247e38a09292bb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">eve::attributes::ModifierId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a522d26fc4911795db8247e38a09292bb">addModifier</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon, std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string_view attribute, std::string <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">eve::attributes::AttributeOperation</a> operation, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">eve::attributes::ModifierPriority</a> <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=eve::attributes::priority::runtime)</td></tr>
+<tr class="memdesc:a522d26fc4911795db8247e38a09292bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a modifier using the shared operation/priority/sequence contract.  <br /></td></tr>
+<tr class="separator:a522d26fc4911795db8247e38a09292bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e23db6d910337343b34dc44f4050352" id="r_a0e23db6d910337343b34dc44f4050352"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a0e23db6d910337343b34dc44f4050352">project</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon)</td></tr>
+<tr class="memdesc:a0e23db6d910337343b34dc44f4050352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project canonical Mana/Stamina values into the legacy <a class="el" href="structeve_1_1weapon_1_1Resource.html" title="运行时触发资源（实体组件）。">Resource</a> component.  <br /></td></tr>
+<tr class="separator:a0e23db6d910337343b34dc44f4050352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26543cce1d9565a80ac9e69b3a6b2470" id="r_a26543cce1d9565a80ac9e69b3a6b2470"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a26543cce1d9565a80ac9e69b3a6b2470">snapshot</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon)</td></tr>
+<tr class="memdesc:a26543cce1d9565a80ac9e69b3a6b2470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture selected resource attributes with owner generation and revision.  <br /></td></tr>
+<tr class="separator:a26543cce1d9565a80ac9e69b3a6b2470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa585ca022c066f5661c355a45e8e56a2" id="r_aa585ca022c066f5661c355a45e8e56a2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#aa585ca022c066f5661c355a45e8e56a2">restore</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;weapon, const <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &amp;<a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a26543cce1d9565a80ac9e69b3a6b2470">snapshot</a>, <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> expectedRevision)</td></tr>
+<tr class="memdesc:aa585ca022c066f5661c355a45e8e56a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore selected resource attributes after owner/revision checks.  <br /></td></tr>
+<tr class="separator:aa585ca022c066f5661c355a45e8e56a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a3f7ba980928e3480fd904fedb034574d" id="r_a3f7ba980928e3480fd904fedb034574d"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a3f7ba980928e3480fd904fedb034574d">manaAttribute</a> = &quot;mana&quot;</td></tr>
+<tr class="separator:a3f7ba980928e3480fd904fedb034574d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a631bfaa9c8766570506de688125eb75d" id="r_a631bfaa9c8766570506de688125eb75d"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a631bfaa9c8766570506de688125eb75d">maxManaAttribute</a> = &quot;max_mana&quot;</td></tr>
+<tr class="separator:a631bfaa9c8766570506de688125eb75d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a542211562c14b6b125b3f59410082a91" id="r_a542211562c14b6b125b3f59410082a91"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a542211562c14b6b125b3f59410082a91">staminaAttribute</a> = &quot;stamina&quot;</td></tr>
+<tr class="separator:a542211562c14b6b125b3f59410082a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2a2c4f2bba82a90a181a8fa115e444" id="r_a6b2a2c4f2bba82a90a181a8fa115e444"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponAttributeAdapter.html#a6b2a2c4f2bba82a90a181a8fa115e444">maxStaminaAttribute</a> = &quot;max_stamina&quot;</td></tr>
+<tr class="separator:a6b2a2c4f2bba82a90a181a8fa115e444"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Adapts only Mana/Stamina trigger resources to AttributeProjection. </p>
+<p>Ammo, charges, reload state, cooldown, spread, recoil and attack phase remain weapon-owned state. The legacy <a class="el" href="structeve_1_1weapon_1_1Resource.html" title="运行时触发资源（实体组件）。">Resource</a> fields are refreshed only as a one-way projection after canonical reads/writes. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a> 第 <a class="el" href="WeaponAttributes_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a522d26fc4911795db8247e38a09292bb" name="a522d26fc4911795db8247e38a09292bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a522d26fc4911795db8247e38a09292bb">&#9670;&#160;</a></span>addModifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">eve::attributes::ModifierId</a> &gt; eve::weapon::WeaponAttributeAdapter::addModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">eve::attributes::AttributeOperation</a>&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">eve::attributes::ModifierPriority</a>&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>eve::attributes::priority::runtime</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a modifier using the shared operation/priority/sequence contract. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00122">projected</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a89e63748ff7119f566cf47b1388a6f92" name="a89e63748ff7119f566cf47b1388a6f92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89e63748ff7119f566cf47b1388a6f92">&#9670;&#160;</a></span>consumeTriggerResource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponAttributeAdapter::consumeTriggerResource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Consume the current weapon's canonical Mana/Stamina trigger cost. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="WeaponTypes_8h_source.html#l00265">eve::weapon::Resource::cost</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00266">eve::weapon::Resource::infinite</a>, <a class="el" href="WeaponTypes_8h_source.html#l00261">eve::weapon::Resource::kind</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a642a1c4b886230db22e109a17c57081f" name="a642a1c4b886230db22e109a17c57081f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a642a1c4b886230db22e109a17c57081f">&#9670;&#160;</a></span>ensure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponAttributeAdapter::ensure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind and seed the selected resource attributes exactly once. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponTypes_8h_source.html#l00261">eve::weapon::Resource::kind</a>, <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baa02fcc64668dd1b6a85e60ac9797f2dc7">eve::weapon::Mana</a>, <a class="el" href="WeaponAttributes_8h_source.html#l00026">manaAttribute</a>, <a class="el" href="WeaponTypes_8h_source.html#l00263">eve::weapon::Resource::max</a>, <a class="el" href="WeaponAttributes_8h_source.html#l00027">maxManaAttribute</a>, <a class="el" href="WeaponAttributes_8h_source.html#l00029">maxStaminaAttribute</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve_1_1weapon.html#ad656fcc85dba9f4e72da62a286bfb6baaa712984d490248f6cfa49d59a5b5c8e9">eve::weapon::Stamina</a>, <a class="el" href="WeaponAttributes_8h_source.html#l00028">staminaAttribute</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="WeaponTypes_8h_source.html#l00262">eve::weapon::Resource::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00153">addModifier()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00134">consumeTriggerResource()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00182">restore()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00123">setBase()</a> , 以及 <a class="el" href="WeaponAttributes_8cpp_source.html#l00173">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0e23db6d910337343b34dc44f4050352" name="a0e23db6d910337343b34dc44f4050352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e23db6d910337343b34dc44f4050352">&#9670;&#160;</a></span>project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponAttributeAdapter::project </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Project canonical Mana/Stamina values into the legacy <a class="el" href="structeve_1_1weapon_1_1Resource.html" title="运行时触发资源（实体组件）。">Resource</a> component. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="WeaponTypes_8h_source.html#l00261">eve::weapon::Resource::kind</a>, <a class="el" href="WeaponTypes_8h_source.html#l00263">eve::weapon::Resource::max</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="WeaponTypes_8h_source.html#l00262">eve::weapon::Resource::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00153">addModifier()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00134">consumeTriggerResource()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00112">read()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00182">restore()</a> , 以及 <a class="el" href="WeaponAttributes_8cpp_source.html#l00123">setBase()</a>.</p>
+
+</div>
+</div>
+<a id="a215ac29189e4fb4fa3eedfc139d75d88" name="a215ac29189e4fb4fa3eedfc139d75d88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a215ac29189e4fb4fa3eedfc139d75d88">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; double &gt; eve::weapon::WeaponAttributeAdapter::read </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a selected final mana/stamina attribute. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00122">projected</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa585ca022c066f5661c355a45e8e56a2" name="aa585ca022c066f5661c355a45e8e56a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa585ca022c066f5661c355a45e8e56a2">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponAttributeAdapter::restore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restore selected resource attributes after owner/revision checks. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a> , 以及 <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>.</p>
+
+</div>
+</div>
+<a id="a0d973ecdcea5de3d14fc2bdcb0247c7d" name="a0d973ecdcea5de3d14fc2bdcb0247c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d973ecdcea5de3d14fc2bdcb0247c7d">&#9670;&#160;</a></span>setBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponAttributeAdapter::setBase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set a selected canonical base and refresh <a class="el" href="structeve_1_1weapon_1_1Resource.html" title="运行时触发资源（实体组件）。">Resource</a> compatibility fields. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00093">project()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a26543cce1d9565a80ac9e69b3a6b2470" name="a26543cce1d9565a80ac9e69b3a6b2470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26543cce1d9565a80ac9e69b3a6b2470">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &gt; eve::weapon::WeaponAttributeAdapter::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture selected resource attributes with owner generation and revision. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a> 第 <a class="el" href="WeaponAttributes_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3f7ba980928e3480fd904fedb034574d" name="a3f7ba980928e3480fd904fedb034574d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7ba980928e3480fd904fedb034574d">&#9670;&#160;</a></span>manaAttribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::weapon::WeaponAttributeAdapter::manaAttribute = &quot;mana&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a> 第 <a class="el" href="WeaponAttributes_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>.</p>
+
+</div>
+</div>
+<a id="a631bfaa9c8766570506de688125eb75d" name="a631bfaa9c8766570506de688125eb75d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a631bfaa9c8766570506de688125eb75d">&#9670;&#160;</a></span>maxManaAttribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::weapon::WeaponAttributeAdapter::maxManaAttribute = &quot;max_mana&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a> 第 <a class="el" href="WeaponAttributes_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>.</p>
+
+</div>
+</div>
+<a id="a6b2a2c4f2bba82a90a181a8fa115e444" name="a6b2a2c4f2bba82a90a181a8fa115e444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b2a2c4f2bba82a90a181a8fa115e444">&#9670;&#160;</a></span>maxStaminaAttribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::weapon::WeaponAttributeAdapter::maxStaminaAttribute = &quot;max_stamina&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a> 第 <a class="el" href="WeaponAttributes_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>.</p>
+
+</div>
+</div>
+<a id="a542211562c14b6b125b3f59410082a91" name="a542211562c14b6b125b3f59410082a91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a542211562c14b6b125b3f59410082a91">&#9670;&#160;</a></span>staminaAttribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::weapon::WeaponAttributeAdapter::staminaAttribute = &quot;stamina&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a> 第 <a class="el" href="WeaponAttributes_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAttributes_8cpp_source.html#l00072">ensure()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="WeaponAttributes_8h_source.html">WeaponAttributes.h</a></li>
+<li>src/modules/weapon/<a class="el" href="WeaponAttributes_8cpp_source.html">WeaponAttributes.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

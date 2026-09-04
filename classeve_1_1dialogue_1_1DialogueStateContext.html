@@ -1,0 +1,648 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dialogue::DialogueStateContext类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html">DialogueStateContext</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1dialogue_1_1DialogueStateContext-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dialogue::DialogueStateContext类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dialogue-owned facade for world reads, unified conditions, and mutations.  
+ <a href="classeve_1_1dialogue_1_1DialogueStateContext.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DialogueState_8h_source.html">DialogueState.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6924c6bb68e5c4f2d7162b2daa1f382f" id="r_a6924c6bb68e5c4f2d7162b2daa1f382f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a6924c6bb68e5c4f2d7162b2daa1f382f">DialogueStateContext</a> (std::string <a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#af4159c77f8897926bfe037a133cb3440">subject</a>={})</td></tr>
+<tr class="memdesc:a6924c6bb68e5c4f2d7162b2daa1f382f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a context for one stable world subject.  <br /></td></tr>
+<tr class="separator:a6924c6bb68e5c4f2d7162b2daa1f382f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffa17ee33ed212171feccb0aac9441f" id="r_aeffa17ee33ed212171feccb0aac9441f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#aeffa17ee33ed212171feccb0aac9441f">setSubject</a> (std::string <a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#af4159c77f8897926bfe037a133cb3440">subject</a>)</td></tr>
+<tr class="memdesc:aeffa17ee33ed212171feccb0aac9441f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the subject used for all future condition queries.  <br /></td></tr>
+<tr class="separator:aeffa17ee33ed212171feccb0aac9441f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4159c77f8897926bfe037a133cb3440" id="r_af4159c77f8897926bfe037a133cb3440"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#af4159c77f8897926bfe037a133cb3440">subject</a> () const noexcept</td></tr>
+<tr class="memdesc:af4159c77f8897926bfe037a133cb3440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the currently selected subject id.  <br /></td></tr>
+<tr class="separator:af4159c77f8897926bfe037a133cb3440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb2f4629941a5458f188b6d1db21e59f" id="r_abb2f4629941a5458f188b6d1db21e59f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#abb2f4629941a5458f188b6d1db21e59f">setQueryProvider</a> (<a class="el" href="namespaceeve.html#a9e8174c0fe9fc71cfb41c5041094b7f0">eve::IStateQuery</a> *provider) noexcept</td></tr>
+<tr class="memdesc:abb2f4629941a5458f188b6d1db21e59f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a borrowed query provider for this context's lifetime.  <br /></td></tr>
+<tr class="separator:abb2f4629941a5458f188b6d1db21e59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d9c7869f1a2400855f56df8bdcc291" id="r_a51d9c7869f1a2400855f56df8bdcc291"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a51d9c7869f1a2400855f56df8bdcc291">setMutationProvider</a> (<a class="el" href="namespaceeve.html#ae7ddb3bbbccb0bd931baffd74aa26da7">eve::IStateMutation</a> *provider) noexcept</td></tr>
+<tr class="memdesc:a51d9c7869f1a2400855f56df8bdcc291"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a borrowed mutation provider for this context's lifetime.  <br /></td></tr>
+<tr class="separator:a51d9c7869f1a2400855f56df8bdcc291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ccaef900e741481c1055456f781507" id="r_a99ccaef900e741481c1055456f781507"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a99ccaef900e741481c1055456f781507">setPolicyEvaluator</a> (std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> &gt;(std::string_view, const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;)&gt; evaluator)</td></tr>
+<tr class="memdesc:a99ccaef900e741481c1055456f781507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a read-only policy evaluator used by PolicyCall conditions.  <br /></td></tr>
+<tr class="separator:a99ccaef900e741481c1055456f781507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32a0b60cd0dcbc8e440937d682f471ee" id="r_a32a0b60cd0dcbc8e440937d682f471ee"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a32a0b60cd0dcbc8e440937d682f471ee">value</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a32a0b60cd0dcbc8e440937d682f471ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a canonical world value without creating a local copy in <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a>.  <br /></td></tr>
+<tr class="separator:a32a0b60cd0dcbc8e440937d682f471ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9ce9a62b86bb3b440c924a16273cc59" id="r_ab9ce9a62b86bb3b440c924a16273cc59"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#ab9ce9a62b86bb3b440c924a16273cc59">hasTag</a> (std::string_view tag) const</td></tr>
+<tr class="memdesc:ab9ce9a62b86bb3b440c924a16273cc59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query exact world tag membership.  <br /></td></tr>
+<tr class="separator:ab9ce9a62b86bb3b440c924a16273cc59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5feb179fb4f978b140a97ea74bbd5e8" id="r_ad5feb179fb4f978b140a97ea74bbd5e8"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#ad5feb179fb4f978b140a97ea74bbd5e8">attribute</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:ad5feb179fb4f978b140a97ea74bbd5e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query one attribute or reputation value.  <br /></td></tr>
+<tr class="separator:ad5feb179fb4f978b140a97ea74bbd5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad212d883e67899af3d3bf678891bec1" id="r_aad212d883e67899af3d3bf678891bec1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#aad212d883e67899af3d3bf678891bec1">resource</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:aad212d883e67899af3d3bf678891bec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query one resource value.  <br /></td></tr>
+<tr class="separator:aad212d883e67899af3d3bf678891bec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a88dd802f9c8a9008cd1d782dcd6c9" id="r_aa7a88dd802f9c8a9008cd1d782dcd6c9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#aa7a88dd802f9c8a9008cd1d782dcd6c9">state</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:aa7a88dd802f9c8a9008cd1d782dcd6c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query one persistent state value.  <br /></td></tr>
+<tr class="separator:aa7a88dd802f9c8a9008cd1d782dcd6c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5996f7842316e599a5f6c0a9a6ba889e" id="r_a5996f7842316e599a5f6c0a9a6ba889e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">eve::decision::Condition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a5996f7842316e599a5f6c0a9a6ba889e">compileCondition</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;specification) const</td></tr>
+<tr class="memdesc:a5996f7842316e599a5f6c0a9a6ba889e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile a canonical condition specification to <a class="el" href="classeve_1_1decision_1_1Condition.html" title="Immutable condition AST node.">decision::Condition</a>.  <br /></td></tr>
+<tr class="separator:a5996f7842316e599a5f6c0a9a6ba889e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ee4bbd9fb37c848e30138e46f61782" id="r_aa5ee4bbd9fb37c848e30138e46f61782"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#aa5ee4bbd9fb37c848e30138e46f61782">evaluate</a> (const <a class="el" href="classeve_1_1decision_1_1Condition.html">eve::decision::Condition</a> &amp;condition) const</td></tr>
+<tr class="memdesc:aa5ee4bbd9fb37c848e30138e46f61782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an already compiled shared condition with explanation.  <br /></td></tr>
+<tr class="separator:aa5ee4bbd9fb37c848e30138e46f61782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9418459bc6bd77a4dfbdaaa21dd975c0" id="r_a9418459bc6bd77a4dfbdaaa21dd975c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a9418459bc6bd77a4dfbdaaa21dd975c0">evaluate</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;specification) const</td></tr>
+<tr class="memdesc:a9418459bc6bd77a4dfbdaaa21dd975c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile and evaluate a canonical condition specification.  <br /></td></tr>
+<tr class="separator:a9418459bc6bd77a4dfbdaaa21dd975c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9859e5f36fbb111a796c8ccc3664d552" id="r_a9859e5f36fbb111a796c8ccc3664d552"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#ab38e842d9d79c35b71063ab3c313dac8">eve::MutationReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1DialogueStateContext.html#a9859e5f36fbb111a796c8ccc3664d552">apply</a> (std::span&lt; const <a class="el" href="namespaceeve.html#a93246655f5c13f17d1d74da3e98e4ad1">eve::StateMutation</a> &gt; mutations, const <a class="el" href="namespaceeve.html#a2b01035a575c0888f968644fa8966900">eve::MutationContext</a> &amp;context) const</td></tr>
+<tr class="memdesc:a9859e5f36fbb111a796c8ccc3664d552"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a complete mutation set through one authoritative provider.  <br /></td></tr>
+<tr class="separator:a9859e5f36fbb111a796c8ccc3664d552"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dialogue-owned facade for world reads, unified conditions, and mutations. </p>
+<p><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a> owns only this borrowed boundary and never mirrors world flags, attributes, reputation, or persistent values. Local conversation variables remain in <code><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html" title="Explicit conversation executor whose suspension points are node IDs.">ConversationRunner</a></code> frames. Mutation providers must implement the all-or-nothing contract; persistent providers are expected to use StatePatch's transaction participant internally. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8h_source.html">DialogueState.h</a> 第 <a class="el" href="DialogueState_8h_source.html#l00127">127</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6924c6bb68e5c4f2d7162b2daa1f382f" name="a6924c6bb68e5c4f2d7162b2daa1f382f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6924c6bb68e5c4f2d7162b2daa1f382f">&#9670;&#160;</a></span>DialogueStateContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dialogue::DialogueStateContext::DialogueStateContext </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>subject</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a context for one stable world subject. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9859e5f36fbb111a796c8ccc3664d552" name="a9859e5f36fbb111a796c8ccc3664d552"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9859e5f36fbb111a796c8ccc3664d552">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#ab38e842d9d79c35b71063ab3c313dac8">eve::MutationReceipt</a> &gt; eve::dialogue::DialogueStateContext::apply </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="namespaceeve.html#a93246655f5c13f17d1d74da3e98e4ad1">eve::StateMutation</a> &gt;&#160;</td>
+          <td class="paramname"><em>mutations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#a2b01035a575c0888f968644fa8966900">eve::MutationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a complete mutation set through one authoritative provider. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1state_1_1IStateMutation.html#ac74f504c6f0e91c7a21238eb1439a6c0">eve::state::IStateMutation::apply()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00213">eve::dialogue::DialogueFlow::applyStateMutations()</a>.</p>
+
+</div>
+</div>
+<a id="ad5feb179fb4f978b140a97ea74bbd5e8" name="ad5feb179fb4f978b140a97ea74bbd5e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5feb179fb4f978b140a97ea74bbd5e8">&#9670;&#160;</a></span>attribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::dialogue::DialogueStateContext::attribute </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query one attribute or reputation value. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a5996f7842316e599a5f6c0a9a6ba889e" name="a5996f7842316e599a5f6c0a9a6ba889e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5996f7842316e599a5f6c0a9a6ba889e">&#9670;&#160;</a></span>compileCondition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">eve::decision::Condition</a> &gt; eve::dialogue::DialogueStateContext::compileCondition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>specification</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile a canonical condition specification to <a class="el" href="classeve_1_1decision_1_1Condition.html" title="Immutable condition AST node.">decision::Condition</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00341">evaluate()</a>.</p>
+
+</div>
+</div>
+<a id="aa5ee4bbd9fb37c848e30138e46f61782" name="aa5ee4bbd9fb37c848e30138e46f61782"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5ee4bbd9fb37c848e30138e46f61782">&#9670;&#160;</a></span>evaluate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> eve::dialogue::DialogueStateContext::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1decision_1_1Condition.html">eve::decision::Condition</a> &amp;&#160;</td>
+          <td class="paramname"><em>condition</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate an already compiled shared condition with explanation. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Condition_8cpp_source.html#l00228">eve::decision::Condition::evaluate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a> , 以及 <a class="el" href="DialogueState_8cpp_source.html#l00341">evaluate()</a>.</p>
+
+</div>
+</div>
+<a id="a9418459bc6bd77a4dfbdaaa21dd975c0" name="a9418459bc6bd77a4dfbdaaa21dd975c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9418459bc6bd77a4dfbdaaa21dd975c0">&#9670;&#160;</a></span>evaluate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> eve::dialogue::DialogueStateContext::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>specification</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile and evaluate a canonical condition specification. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialogueState_8cpp_source.html#l00332">compileCondition()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00336">evaluate()</a>, <a class="el" href="Condition_8cpp_source.html#l00137">eve::decision::ConditionResult::failed()</a>, <a class="el" href="namespaceeve_1_1decision.html#aff15ece9a76b8b7509e781dab57faa73a4498a7f08eb4929c885812815341a6ac">eve::decision::InvalidCondition</a> , 以及 <a class="el" href="Diagnostic_8h_source.html#l00137">eve::Diagnostic::message()</a>.</p>
+
+</div>
+</div>
+<a id="ab9ce9a62b86bb3b440c924a16273cc59" name="ab9ce9a62b86bb3b440c924a16273cc59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ce9a62b86bb3b440c924a16273cc59">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; bool &gt; eve::dialogue::DialogueStateContext::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query exact world tag membership. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad212d883e67899af3d3bf678891bec1" name="aad212d883e67899af3d3bf678891bec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad212d883e67899af3d3bf678891bec1">&#9670;&#160;</a></span>resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::dialogue::DialogueStateContext::resource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query one resource value. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a51d9c7869f1a2400855f56df8bdcc291" name="a51d9c7869f1a2400855f56df8bdcc291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d9c7869f1a2400855f56df8bdcc291">&#9670;&#160;</a></span>setMutationProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::DialogueStateContext::setMutationProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#ae7ddb3bbbccb0bd931baffd74aa26da7">eve::IStateMutation</a> *&#160;</td>
+          <td class="paramname"><em>provider</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a borrowed mutation provider for this context's lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8h_source.html">DialogueState.h</a> 第 <a class="el" href="DialogueState_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="a99ccaef900e741481c1055456f781507" name="a99ccaef900e741481c1055456f781507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ccaef900e741481c1055456f781507">&#9670;&#160;</a></span>setPolicyEvaluator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::DialogueStateContext::setPolicyEvaluator </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> &gt;(std::string_view, const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>evaluator</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Install a read-only policy evaluator used by PolicyCall conditions. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8h_source.html">DialogueState.h</a> 第 <a class="el" href="DialogueState_8h_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb2f4629941a5458f188b6d1db21e59f" name="abb2f4629941a5458f188b6d1db21e59f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb2f4629941a5458f188b6d1db21e59f">&#9670;&#160;</a></span>setQueryProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::DialogueStateContext::setQueryProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a9e8174c0fe9fc71cfb41c5041094b7f0">eve::IStateQuery</a> *&#160;</td>
+          <td class="paramname"><em>provider</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a borrowed query provider for this context's lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8h_source.html">DialogueState.h</a> 第 <a class="el" href="DialogueState_8h_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="aeffa17ee33ed212171feccb0aac9441f" name="aeffa17ee33ed212171feccb0aac9441f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeffa17ee33ed212171feccb0aac9441f">&#9670;&#160;</a></span>setSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::DialogueStateContext::setSubject </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the subject used for all future condition queries. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialogueState_8h_source.html#l00135">subject()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="aa7a88dd802f9c8a9008cd1d782dcd6c9" name="aa7a88dd802f9c8a9008cd1d782dcd6c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a88dd802f9c8a9008cd1d782dcd6c9">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::dialogue::DialogueStateContext::state </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query one persistent state value. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="af4159c77f8897926bfe037a133cb3440" name="af4159c77f8897926bfe037a133cb3440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4159c77f8897926bfe037a133cb3440">&#9670;&#160;</a></span>subject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dialogue::DialogueStateContext::subject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the currently selected subject id. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8h_source.html">DialogueState.h</a> 第 <a class="el" href="DialogueState_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00299">setSubject()</a>.</p>
+
+</div>
+</div>
+<a id="a32a0b60cd0dcbc8e440937d682f471ee" name="a32a0b60cd0dcbc8e440937d682f471ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32a0b60cd0dcbc8e440937d682f471ee">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::dialogue::DialogueStateContext::value </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query a canonical world value without creating a local copy in <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a> 第 <a class="el" href="DialogueState_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/dialogue/<a class="el" href="DialogueState_8h_source.html">DialogueState.h</a></li>
+<li>src/modules/dialogue/<a class="el" href="DialogueState_8cpp_source.html">DialogueState.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

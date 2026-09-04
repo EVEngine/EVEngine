@@ -1,0 +1,929 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::mouse::sdl::Mouse类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1mouse.html">mouse</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1mouse_1_1sdl.html">sdl</a></li><li class="navelem"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html">Mouse</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1mouse_1_1sdl_1_1Mouse-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::mouse::sdl::Mouse类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>SDL 鼠标后端实现。  
+ <a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sdl_2Mouse_8h_source.html">Mouse.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::mouse::sdl::Mouse 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1mouse_1_1sdl_1_1Mouse.png" usemap="#eve::mouse::sdl::Mouse_map" alt=""/>
+  <map id="eve::mouse::sdl::Mouse_map" name="eve::mouse::sdl::Mouse_map">
+<area href="classeve_1_1mouse_1_1Mouse.html" title="The Mouse class provides an interface for querying and manipulating the mouse cursor...." alt="eve::mouse::Mouse" shape="rect" coords="0,56,141,80"/>
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,141,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad43178ea183b8b8dde50caca3ae7ab8a" id="r_ad43178ea183b8b8dde50caca3ae7ab8a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad43178ea183b8b8dde50caca3ae7ab8a">Mouse</a> ()</td></tr>
+<tr class="separator:ad43178ea183b8b8dde50caca3ae7ab8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1579d6fe3cf68579aeb138fb94a7b402" id="r_a1579d6fe3cf68579aeb138fb94a7b402"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1579d6fe3cf68579aeb138fb94a7b402">~Mouse</a> ()</td></tr>
+<tr class="separator:a1579d6fe3cf68579aeb138fb94a7b402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a895c853a6d503d4c194333b5b339f" id="r_a51a895c853a6d503d4c194333b5b339f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a51a895c853a6d503d4c194333b5b339f">newCursor</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a> *data, int hotx, int hoty) override</td></tr>
+<tr class="separator:a51a895c853a6d503d4c194333b5b339f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cdaa8276208ff27855618815d583066" id="r_a6cdaa8276208ff27855618815d583066"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a6cdaa8276208ff27855618815d583066">getSystemCursor</a> (std::string cursortype) override</td></tr>
+<tr class="separator:a6cdaa8276208ff27855618815d583066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1325b0922cd06d3e8e8cfc7c537911d" id="r_ad1325b0922cd06d3e8e8cfc7c537911d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad1325b0922cd06d3e8e8cfc7c537911d">setCursor</a> (<a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *<a class="el" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>) override</td></tr>
+<tr class="separator:ad1325b0922cd06d3e8e8cfc7c537911d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bb907c0c5814c15ebeb6b899fa0887b" id="r_a5bb907c0c5814c15ebeb6b899fa0887b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a5bb907c0c5814c15ebeb6b899fa0887b">setCursor</a> () override</td></tr>
+<tr class="separator:a5bb907c0c5814c15ebeb6b899fa0887b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab0f816af7352c32f49fdb860e04cb5f" id="r_aab0f816af7352c32f49fdb860e04cb5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aab0f816af7352c32f49fdb860e04cb5f">getCursor</a> () const override</td></tr>
+<tr class="separator:aab0f816af7352c32f49fdb860e04cb5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c7b394d11b20f2720644b215ba0d4a9" id="r_a0c7b394d11b20f2720644b215ba0d4a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0c7b394d11b20f2720644b215ba0d4a9">isCursorSupported</a> () const override</td></tr>
+<tr class="separator:a0c7b394d11b20f2720644b215ba0d4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a944721a6a5f9b86a150f38f3440090c9" id="r_a944721a6a5f9b86a150f38f3440090c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a944721a6a5f9b86a150f38f3440090c9">getX</a> () const override</td></tr>
+<tr class="separator:a944721a6a5f9b86a150f38f3440090c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fc712a1ece7254c70e15836550120c9" id="r_a1fc712a1ece7254c70e15836550120c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1fc712a1ece7254c70e15836550120c9">getY</a> () const override</td></tr>
+<tr class="separator:a1fc712a1ece7254c70e15836550120c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ae183ea3926fa1a874f94a6507b2f7" id="r_a73ae183ea3926fa1a874f94a6507b2f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a73ae183ea3926fa1a874f94a6507b2f7">getPosition</a> (double &amp;<a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double &amp;<a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const override</td></tr>
+<tr class="separator:a73ae183ea3926fa1a874f94a6507b2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85522765db8bdc73ab1530c95eb58656" id="r_a85522765db8bdc73ab1530c95eb58656"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a85522765db8bdc73ab1530c95eb58656">setX</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) override</td></tr>
+<tr class="separator:a85522765db8bdc73ab1530c95eb58656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3a5b753829a0002e52728960b63e3a6" id="r_ad3a5b753829a0002e52728960b63e3a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad3a5b753829a0002e52728960b63e3a6">setY</a> (double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) override</td></tr>
+<tr class="separator:ad3a5b753829a0002e52728960b63e3a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52409e121fa05af92f87c7e1e02f572f" id="r_a52409e121fa05af92f87c7e1e02f572f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a52409e121fa05af92f87c7e1e02f572f">setPosition</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) override</td></tr>
+<tr class="separator:a52409e121fa05af92f87c7e1e02f572f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ce62623afcb2b73c2423a4f06d50cb" id="r_a05ce62623afcb2b73c2423a4f06d50cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a05ce62623afcb2b73c2423a4f06d50cb">setVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>) override</td></tr>
+<tr class="separator:a05ce62623afcb2b73c2423a4f06d50cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed4fbc72d467ff2808d0a1c5b233eac0" id="r_aed4fbc72d467ff2808d0a1c5b233eac0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aed4fbc72d467ff2808d0a1c5b233eac0">isDown</a> (const std::vector&lt; int &gt; &amp;buttons) const override</td></tr>
+<tr class="separator:aed4fbc72d467ff2808d0a1c5b233eac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88af31663fadef0afd754de928ef8ab0" id="r_a88af31663fadef0afd754de928ef8ab0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a88af31663fadef0afd754de928ef8ab0">isVisible</a> () const override</td></tr>
+<tr class="separator:a88af31663fadef0afd754de928ef8ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a704ad34306829adb16cb1116f2765991" id="r_a704ad34306829adb16cb1116f2765991"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a704ad34306829adb16cb1116f2765991">setGrabbed</a> (bool grab) override</td></tr>
+<tr class="separator:a704ad34306829adb16cb1116f2765991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd94431f01e26c4066a33330bc06852" id="r_a0dd94431f01e26c4066a33330bc06852"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0dd94431f01e26c4066a33330bc06852">isGrabbed</a> () const override</td></tr>
+<tr class="separator:a0dd94431f01e26c4066a33330bc06852"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa82a3ee7502852f95a1ea2ece1c77c47" id="r_aa82a3ee7502852f95a1ea2ece1c77c47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aa82a3ee7502852f95a1ea2ece1c77c47">setRelativeMode</a> (bool relative) override</td></tr>
+<tr class="separator:aa82a3ee7502852f95a1ea2ece1c77c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3cd11f9bcf98de9795520a40cffd83" id="r_a7a3cd11f9bcf98de9795520a40cffd83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a7a3cd11f9bcf98de9795520a40cffd83">getRelativeMode</a> () const override</td></tr>
+<tr class="separator:a7a3cd11f9bcf98de9795520a40cffd83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1mouse_1_1Mouse"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1mouse_1_1Mouse')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1mouse_1_1Mouse.html">eve::mouse::Mouse</a></td></tr>
+<tr class="memitem:a8fb839216de7b665711a0b47d3ec42da inherit pub_methods_classeve_1_1mouse_1_1Mouse" id="r_a8fb839216de7b665711a0b47d3ec42da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1mouse_1_1Mouse.html#a8fb839216de7b665711a0b47d3ec42da">Module_REG</a> (<a class="el" href="classeve_1_1mouse_1_1Mouse.html">Mouse</a>)</td></tr>
+<tr class="separator:a8fb839216de7b665711a0b47d3ec42da inherit pub_methods_classeve_1_1mouse_1_1Mouse"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>SDL 鼠标后端实现。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8h_source.html">Mouse.h</a> 第 <a class="el" href="sdl_2Mouse_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad43178ea183b8b8dde50caca3ae7ab8a" name="ad43178ea183b8b8dde50caca3ae7ab8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad43178ea183b8b8dde50caca3ae7ab8a">&#9670;&#160;</a></span>Mouse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::mouse::sdl::Mouse::Mouse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1579d6fe3cf68579aeb138fb94a7b402" name="a1579d6fe3cf68579aeb138fb94a7b402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1579d6fe3cf68579aeb138fb94a7b402">&#9670;&#160;</a></span>~Mouse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::mouse::sdl::Mouse::~Mouse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a40e76603bca34a8b49c329e2d4d351ba">eve::mouse::Mouse</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00071">setCursor()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aab0f816af7352c32f49fdb860e04cb5f" name="aab0f816af7352c32f49fdb860e04cb5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab0f816af7352c32f49fdb860e04cb5f">&#9670;&#160;</a></span>getCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> * eve::mouse::sdl::Mouse::getCursor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a2e4bb6cd4910a6b7995bbcbf6be63899">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73ae183ea3926fa1a874f94a6507b2f7" name="a73ae183ea3926fa1a874f94a6507b2f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73ae183ea3926fa1a874f94a6507b2f7">&#9670;&#160;</a></span>getPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::getPosition </td>
+          <td>(</td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ad2f165514eb9351a5464d4bf1a88db09">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a7a3cd11f9bcf98de9795520a40cffd83" name="a7a3cd11f9bcf98de9795520a40cffd83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3cd11f9bcf98de9795520a40cffd83">&#9670;&#160;</a></span>getRelativeMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::getRelativeMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a1ccdfe9200d4af8d9769d8866ff666cb">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6cdaa8276208ff27855618815d583066" name="a6cdaa8276208ff27855618815d583066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cdaa8276208ff27855618815d583066">&#9670;&#160;</a></span>getSystemCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> * eve::mouse::sdl::Mouse::getSystemCursor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>cursortype</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ac1d7baacb88467b447124991a2a5ff1a">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>.</p>
+
+</div>
+</div>
+<a id="a944721a6a5f9b86a150f38f3440090c9" name="a944721a6a5f9b86a150f38f3440090c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a944721a6a5f9b86a150f38f3440090c9">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::mouse::sdl::Mouse::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a3a8fa1d9e549bf317a2b29b569f9219d">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00143">setY()</a>.</p>
+
+</div>
+</div>
+<a id="a1fc712a1ece7254c70e15836550120c9" name="a1fc712a1ece7254c70e15836550120c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fc712a1ece7254c70e15836550120c9">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::mouse::sdl::Mouse::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a0e1aa1f08e1f63ef1379de73ac47aba2">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00138">setX()</a>.</p>
+
+</div>
+</div>
+<a id="a0c7b394d11b20f2720644b215ba0d4a9" name="a0c7b394d11b20f2720644b215ba0d4a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c7b394d11b20f2720644b215ba0d4a9">&#9670;&#160;</a></span>isCursorSupported()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::isCursorSupported </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a711d633d2daca7d149657c9e4dfb42df">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed4fbc72d467ff2808d0a1c5b233eac0" name="aed4fbc72d467ff2808d0a1c5b233eac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed4fbc72d467ff2808d0a1c5b233eac0">&#9670;&#160;</a></span>isDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::isDown </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buttons</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a2cb30ec6a15ddd2c4eca0b80303b650d">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0dd94431f01e26c4066a33330bc06852" name="a0dd94431f01e26c4066a33330bc06852"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd94431f01e26c4066a33330bc06852">&#9670;&#160;</a></span>isGrabbed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::isGrabbed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ab1fbd0969d6c8ed0e74978c8858a7749">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a88af31663fadef0afd754de928ef8ab0" name="a88af31663fadef0afd754de928ef8ab0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88af31663fadef0afd754de928ef8ab0">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ae722ca470c30395111455f201db1e06f">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51a895c853a6d503d4c194333b5b339f" name="a51a895c853a6d503d4c194333b5b339f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51a895c853a6d503d4c194333b5b339f">&#9670;&#160;</a></span>newCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> * eve::mouse::sdl::Mouse::newCursor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hotx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hoty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a19a44938b5f09c6b383d04e6fcaa3d4c">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a5bb907c0c5814c15ebeb6b899fa0887b" name="a5bb907c0c5814c15ebeb6b899fa0887b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bb907c0c5814c15ebeb6b899fa0887b">&#9670;&#160;</a></span>setCursor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setCursor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#af7d9f2b11912a393d45c426b0e45027e">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00033">~Mouse()</a>.</p>
+
+</div>
+</div>
+<a id="ad1325b0922cd06d3e8e8cfc7c537911d" name="ad1325b0922cd06d3e8e8cfc7c537911d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1325b0922cd06d3e8e8cfc7c537911d">&#9670;&#160;</a></span>setCursor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setCursor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *&#160;</td>
+          <td class="paramname"><em>cursor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a18ee6e0cb0104112fdeb9d201b44a9a3">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>.</p>
+
+</div>
+</div>
+<a id="a704ad34306829adb16cb1116f2765991" name="a704ad34306829adb16cb1116f2765991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a704ad34306829adb16cb1116f2765991">&#9670;&#160;</a></span>setGrabbed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setGrabbed </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>grab</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ac0d4da47832e15a55747194d1eb543d3">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a52409e121fa05af92f87c7e1e02f572f" name="a52409e121fa05af92f87c7e1e02f572f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52409e121fa05af92f87c7e1e02f572f">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a502af6089d63a20bd65629f353c42493">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00138">setX()</a> , 以及 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00143">setY()</a>.</p>
+
+</div>
+</div>
+<a id="aa82a3ee7502852f95a1ea2ece1c77c47" name="aa82a3ee7502852f95a1ea2ece1c77c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa82a3ee7502852f95a1ea2ece1c77c47">&#9670;&#160;</a></span>setRelativeMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::mouse::sdl::Mouse::setRelativeMode </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>relative</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a9b6db2bec9580c6359d45004a71a5dea">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05ce62623afcb2b73c2423a4f06d50cb" name="a05ce62623afcb2b73c2423a4f06d50cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05ce62623afcb2b73c2423a4f06d50cb">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a9c90d3f959089b8725185b82b3f700f0">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+</div>
+</div>
+<a id="a85522765db8bdc73ab1530c95eb58656" name="a85522765db8bdc73ab1530c95eb58656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85522765db8bdc73ab1530c95eb58656">&#9670;&#160;</a></span>setX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setX </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a9980fadd1f55696be207e69819c7dce6">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00099">getY()</a>, <a class="el" href="sdl_2Mouse_8cpp_source.html#l00120">setPosition()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ad3a5b753829a0002e52728960b63e3a6" name="ad3a5b753829a0002e52728960b63e3a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3a5b753829a0002e52728960b63e3a6">&#9670;&#160;</a></span>setY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::mouse::sdl::Mouse::setY </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a7ad329ef7e8ffc7bd37422c72cf1cbe5">eve::mouse::Mouse</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a> 第 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00088">getX()</a>, <a class="el" href="sdl_2Mouse_8cpp_source.html#l00120">setPosition()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/mouse/sdl/<a class="el" href="sdl_2Mouse_8h_source.html">Mouse.h</a></li>
+<li>src/modules/mouse/sdl/<a class="el" href="sdl_2Mouse_8cpp_source.html">Mouse.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

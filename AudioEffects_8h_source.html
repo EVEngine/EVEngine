@@ -1,0 +1,288 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/audio_editing/AudioEffects.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e054def7dbc521ffca26c2cf90850a73.html">audio_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AudioEffects.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AudioEffects_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AudioTarget_8h.html">audio_editing/AudioTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html">AudioEffectRecord</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a1dce9dc9cc896b2a1ff471c87f3d7b8c">   14</a></span>    StableId <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a1dce9dc9cc896b2a1ff471c87f3d7b8c">id</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#aae95e93e4cf02625930c93a7727cca19">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#aae95e93e4cf02625930c93a7727cca19">type</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a4bc99097a8ac17a53484e2ea13706ccd">   16</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a4bc99097a8ac17a53484e2ea13706ccd">bypass</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a0984ff11325cd6b40e06d3b2fb40424a">   17</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a0984ff11325cd6b40e06d3b2fb40424a">mix</a> = 1.0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#acf79cd531b8e368c3594824753a90484">   18</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#acf79cd531b8e368c3594824753a90484">parameters</a> = <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html">AudioEffectChainTarget</a> final : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                                     <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                                     <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">IDomainOperationTargetStaging</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html">AudioEffectChainTarget</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab21e2da7cd5b6706c2f82e52e4c571ec">   27</a></span>    TargetId <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab21e2da7cd5b6706c2f82e52e4c571ec">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> TargetId(id_); }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab4fa1f76fcf7f58c66f36ff9362e0050">   28</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab4fa1f76fcf7f58c66f36ff9362e0050">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a1c3c9bbe84ac151cc8c9639c5b5a2c05">   29</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a1c3c9bbe84ac151cc8c9639c5b5a2c05">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a30bba07c490810db2a60396079a01917">   30</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a30bba07c490810db2a60396079a01917">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#acd3126aae0571e8fb162fc798ca63805">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a7b71a957d076c2490b9a55c43c35b356">queryCapability</a>(<span class="keyword">const</span> CapabilityId&amp; <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ac5ddaef5642756874f5067238318f543">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::unique_ptr&lt;IDomainOperationTarget&gt; <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#acb25538bc536aec541e9ae223c50f11a">cloneDomainState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a7f421bb83a3110b9a41f4bc3a251addd">commitDomainState</a>(std::unique_ptr&lt;IDomainOperationTarget&gt; candidate) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::vector&lt;AudioEffectRecord&gt; <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a94306951fbdfffd37597d3995438d283">effects</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a40d6f696ab5e6d1fa70461d7f9f56276">makeSet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioEffectRecord.html">AudioEffectRecord</a>&amp; effect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#aa48cd5a769d46cb12d9dc7dbb6047885">makeDelete</a>(<span class="keyword">const</span> StableId&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#addd236b7e59a76f55d59ff43fdf88225">makeReorder</a>(<span class="keyword">const</span> std::vector&lt;StableId&gt;&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a89f6ea0e8bf52c05ffe9b9bf1dfd0292">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a1303802fd807d90f31ae1b89d6219f81">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#aca326e53e81ddc89ca80636073ec159b">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a04fab7c8f2f6eacd89b899e3cb809bb3">makeAssignToBus</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioMixerTarget.html">AudioMixerTarget</a>&amp; mixer,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                   <span class="keyword">const</span> ObjectId&amp; bus) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string id_; <a class="code hl_typedef" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> revision_ = 1; <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> dirty_;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::map&lt;StableId, AudioEffectRecord&gt; effects_;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::vector&lt;StableId&gt; order_;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html">   61</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html">IAudioEffectChainSink</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a17efa102d8c321160097d6b28de19886">   63</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a17efa102d8c321160097d6b28de19886">~IAudioEffectChainSink</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a5f8607cf97f53b18503b7feead1a0379">   64</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a5f8607cf97f53b18503b7feead1a0379">publish</a>(<span class="keyword">const</span> std::string&amp; chain, Revision <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                       <span class="keyword">const</span> std::vector&lt;AudioEffectRecord&gt;&amp; effects) = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioEffectChainPublisher.html">   69</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioEffectChainPublisher.html">AudioEffectChainPublisher</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioEffectChainPublisher.html#ab5bbedf429abfecc30024f6960f4e250">publish</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html">AudioEffectChainTarget</a>&amp; chain,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                               <a class="code hl_typedef" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> expectedRevision,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                               <a class="code hl_class" href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html">IAudioEffectChainSink</a>&amp; sink) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::audio_editing</span></div>
+<div class="ttc" id="aAudioTarget_8h_html"><div class="ttname"><a href="AudioTarget_8h.html">AudioTarget.h</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainPublisher_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainPublisher.html">eve::audio_editing::AudioEffectChainPublisher</a></div><div class="ttdoc">Rejects invalid/stale chains before runtime publication.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00069">AudioEffects.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainPublisher_html_ab5bbedf429abfecc30024f6960f4e250"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainPublisher.html#ab5bbedf429abfecc30024f6960f4e250">eve::audio_editing::AudioEffectChainPublisher::publish</a></div><div class="ttdeci">EditorResult&lt; void &gt; publish(const AudioEffectChainTarget &amp;chain, Revision expectedRevision, IAudioEffectChainSink &amp;sink) const</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00239">AudioEffects.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html">eve::audio_editing::AudioEffectChainTarget</a></div><div class="ttdoc">Revisioned reversible serial effect chain independent of an audio backend.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00022">AudioEffects.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a04fab7c8f2f6eacd89b899e3cb809bb3"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a04fab7c8f2f6eacd89b899e3cb809bb3">eve::audio_editing::AudioEffectChainTarget::makeAssignToBus</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeAssignToBus(const AudioMixerTarget &amp;mixer, const ObjectId &amp;bus) const</div><div class="ttdoc">Plan assigning this chain snapshot to an existing mixer bus.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00224">AudioEffects.cpp:224</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a1303802fd807d90f31ae1b89d6219f81"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a1303802fd807d90f31ae1b89d6219f81">eve::audio_editing::AudioEffectChainTarget::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdoc">Capture deterministic schema-version-one effect chain.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00191">AudioEffects.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a1c3c9bbe84ac151cc8c9639c5b5a2c05"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a1c3c9bbe84ac151cc8c9639c5b5a2c05">eve::audio_editing::AudioEffectChainTarget::dirtyRegion</a></div><div class="ttdeci">EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00029">AudioEffects.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a30bba07c490810db2a60396079a01917"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a30bba07c490810db2a60396079a01917">eve::audio_editing::AudioEffectChainTarget::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00030">AudioEffects.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a40d6f696ab5e6d1fa70461d7f9f56276"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a40d6f696ab5e6d1fa70461d7f9f56276">eve::audio_editing::AudioEffectChainTarget::makeSet</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSet(const AudioEffectRecord &amp;effect) const</div><div class="ttdoc">Plan effect creation or replacement.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00146">AudioEffects.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a7b71a957d076c2490b9a55c43c35b356"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a7b71a957d076c2490b9a55c43c35b356">eve::audio_editing::AudioEffectChainTarget::queryCapability</a></div><div class="ttdeci">void * queryCapability(const CapabilityId &amp;capability) override</div><div class="ttdoc">Query an optional target capability.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00097">AudioEffects.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a7f421bb83a3110b9a41f4bc3a251addd"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a7f421bb83a3110b9a41f4bc3a251addd">eve::audio_editing::AudioEffectChainTarget::commitDomainState</a></div><div class="ttdeci">EditorResult&lt; void &gt; commitDomainState(std::unique_ptr&lt; IDomainOperationTarget &gt; candidate) override</div><div class="ttdoc">Atomically publish a validated candidate state.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00133">AudioEffects.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a89f6ea0e8bf52c05ffe9b9bf1dfd0292"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a89f6ea0e8bf52c05ffe9b9bf1dfd0292">eve::audio_editing::AudioEffectChainTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Report invalid parameter ranges and unsafe chain budgets.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00176">AudioEffects.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_a94306951fbdfffd37597d3995438d283"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#a94306951fbdfffd37597d3995438d283">eve::audio_editing::AudioEffectChainTarget::effects</a></div><div class="ttdeci">std::vector&lt; AudioEffectRecord &gt; effects() const</div><div class="ttdoc">Enumerate effect records in processing order.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00141">AudioEffects.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_aa48cd5a769d46cb12d9dc7dbb6047885"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#aa48cd5a769d46cb12d9dc7dbb6047885">eve::audio_editing::AudioEffectChainTarget::makeDelete</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeDelete(const StableId &amp;id) const</div><div class="ttdoc">Plan effect removal.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00155">AudioEffects.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_ab21e2da7cd5b6706c2f82e52e4c571ec"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab21e2da7cd5b6706c2f82e52e4c571ec">eve::audio_editing::AudioEffectChainTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00027">AudioEffects.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_ab4fa1f76fcf7f58c66f36ff9362e0050"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ab4fa1f76fcf7f58c66f36ff9362e0050">eve::audio_editing::AudioEffectChainTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00028">AudioEffects.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_ac5ddaef5642756874f5067238318f543"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#ac5ddaef5642756874f5067238318f543">eve::audio_editing::AudioEffectChainTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00101">AudioEffects.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_aca326e53e81ddc89ca80636073ec159b"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#aca326e53e81ddc89ca80636073ec159b">eve::audio_editing::AudioEffectChainTarget::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;snapshot)</div><div class="ttdoc">Atomically load a validated effect chain.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00196">AudioEffects.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_acb25538bc536aec541e9ae223c50f11a"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#acb25538bc536aec541e9ae223c50f11a">eve::audio_editing::AudioEffectChainTarget::cloneDomainState</a></div><div class="ttdeci">std::unique_ptr&lt; IDomainOperationTarget &gt; cloneDomainState() const override</div><div class="ttdoc">Clone the complete target state into an owning detached candidate.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00130">AudioEffects.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_acd3126aae0571e8fb162fc798ca63805"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#acd3126aae0571e8fb162fc798ca63805">eve::audio_editing::AudioEffectChainTarget::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00094">AudioEffects.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioEffectChainTarget_html_addd236b7e59a76f55d59ff43fdf88225"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioEffectChainTarget.html#addd236b7e59a76f55d59ff43fdf88225">eve::audio_editing::AudioEffectChainTarget::makeReorder</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeReorder(const std::vector&lt; StableId &gt; &amp;order) const</div><div class="ttdoc">Plan complete processing-order replacement.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8cpp_source.html#l00163">AudioEffects.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioMixerTarget_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioMixerTarget.html">eve::audio_editing::AudioMixerTarget</a></div><div class="ttdoc">Serializable mixer-bus hierarchy, including master bus.</div><div class="ttdef"><b>Definition</b> <a href="AudioTarget_8h_source.html#l00123">AudioTarget.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioEffectChainSink_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html">eve::audio_editing::IAudioEffectChainSink</a></div><div class="ttdoc">Runtime backend boundary for atomic effect-chain publication.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00061">AudioEffects.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioEffectChainSink_html_a17efa102d8c321160097d6b28de19886"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a17efa102d8c321160097d6b28de19886">eve::audio_editing::IAudioEffectChainSink::~IAudioEffectChainSink</a></div><div class="ttdeci">virtual ~IAudioEffectChainSink()=default</div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1IAudioEffectChainSink_html_a5f8607cf97f53b18503b7feead1a0379"><div class="ttname"><a href="classeve_1_1audio__editing_1_1IAudioEffectChainSink.html#a5f8607cf97f53b18503b7feead1a0379">eve::audio_editing::IAudioEffectChainSink::publish</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; publish(const std::string &amp;chain, Revision revision, const std::vector&lt; AudioEffectRecord &gt; &amp;effects)=0</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTargetStaging_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></div><div class="ttdoc">Optional candidate/publish capability for atomic domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00025">EditingTargetOperations.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html_a1e541660312c789b59e0a247f6e614ac"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">eve::editing::IEditableTarget::capability</a></div><div class="ttdeci">eve::OptionalRef&lt; C &gt; capability()</div><div class="ttdoc">Query a capability through its interface-owned stable identity.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00068">EditableTarget.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AudioEditingCommands_8cpp_source.html#l00007">AudioEditingCommands.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_html_acbdd173177eb4f86203c023106f67a84"><div class="ttname"><a href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a></div><div class="ttdeci">detail::StrongUint64&lt; detail::RevisionTag &gt; Revision</div><div class="ttdoc">Monotonic content/state revision used for optimistic-concurrency checks.</div><div class="ttdef"><b>Definition</b> <a href="Revision_8h_source.html#l00012">Revision.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html">eve::audio_editing::AudioEffectRecord</a></div><div class="ttdoc">Stable effect instance with normalized dry/wet mix and typed parameters.</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00013">AudioEffects.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html_a0984ff11325cd6b40e06d3b2fb40424a"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a0984ff11325cd6b40e06d3b2fb40424a">eve::audio_editing::AudioEffectRecord::mix</a></div><div class="ttdeci">double mix</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00017">AudioEffects.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html_a1dce9dc9cc896b2a1ff471c87f3d7b8c"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a1dce9dc9cc896b2a1ff471c87f3d7b8c">eve::audio_editing::AudioEffectRecord::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00014">AudioEffects.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html_a4bc99097a8ac17a53484e2ea13706ccd"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#a4bc99097a8ac17a53484e2ea13706ccd">eve::audio_editing::AudioEffectRecord::bypass</a></div><div class="ttdeci">bool bypass</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00016">AudioEffects.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html_aae95e93e4cf02625930c93a7727cca19"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#aae95e93e4cf02625930c93a7727cca19">eve::audio_editing::AudioEffectRecord::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00015">AudioEffects.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioEffectRecord_html_acf79cd531b8e368c3594824753a90484"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioEffectRecord.html#acf79cd531b8e368c3594824753a90484">eve::audio_editing::AudioEffectRecord::parameters</a></div><div class="ttdeci">EditorValue parameters</div><div class="ttdef"><b>Definition</b> <a href="AudioEffects_8h_source.html#l00018">AudioEffects.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

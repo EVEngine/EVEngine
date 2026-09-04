@@ -1,0 +1,914 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::SkillDefinitionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1SkillDefinitionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::SkillDefinitionRuntime类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Typed SkillDefinition-to-runtime adapter.  
+ <a href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkillDefinitionRuntime_8h_source.html">SkillDefinitionRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a03cbaab5c1b0cae847908ccf418fdad4" id="r_a03cbaab5c1b0cae847908ccf418fdad4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a03cbaab5c1b0cae847908ccf418fdad4">SkillDefinitionRuntime</a> (<a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a03cbaab5c1b0cae847908ccf418fdad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a288fde364a31cde1e397b52ae15f8722" id="r_a288fde364a31cde1e397b52ae15f8722"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a288fde364a31cde1e397b52ae15f8722">operator=</a> (<a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a288fde364a31cde1e397b52ae15f8722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc4210e45797efe9f9c3f21289304fd" id="r_a3fc4210e45797efe9f9c3f21289304fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a3fc4210e45797efe9f9c3f21289304fd">SkillDefinitionRuntime</a> (const <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a3fc4210e45797efe9f9c3f21289304fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8e025b4abd86d04304b7916187648ef" id="r_aa8e025b4abd86d04304b7916187648ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aa8e025b4abd86d04304b7916187648ef">operator=</a> (const <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:aa8e025b4abd86d04304b7916187648ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d94eb9e884bf24792b9b0d9c36aee15" id="r_a4d94eb9e884bf24792b9b0d9c36aee15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a4d94eb9e884bf24792b9b0d9c36aee15">~SkillDefinitionRuntime</a> ()=default</td></tr>
+<tr class="separator:a4d94eb9e884bf24792b9b0d9c36aee15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68b06e89cba7c331fa4ad07687f683bf" id="r_a68b06e89cba7c331fa4ad07687f683bf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a68b06e89cba7c331fa4ad07687f683bf">identity</a> () const noexcept</td></tr>
+<tr class="memdesc:a68b06e89cba7c331fa4ad07687f683bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the common identity, including exact definition generation.  <br /></td></tr>
+<tr class="separator:a68b06e89cba7c331fa4ad07687f683bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acff00772da9b6bca55ed07bf47949bf9" id="r_acff00772da9b6bca55ed07bf47949bf9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#acff00772da9b6bca55ed07bf47949bf9">state</a> () const noexcept</td></tr>
+<tr class="memdesc:acff00772da9b6bca55ed07bf47949bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow mutable per-instance skill state.  <br /></td></tr>
+<tr class="separator:acff00772da9b6bca55ed07bf47949bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462a704bf36a242fb139f1725816064e" id="r_a462a704bf36a242fb139f1725816064e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a462a704bf36a242fb139f1725816064e">state</a> () noexcept</td></tr>
+<tr class="memdesc:a462a704bf36a242fb139f1725816064e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutate per-instance state on the owner thread.  <br /></td></tr>
+<tr class="separator:a462a704bf36a242fb139f1725816064e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4855f7dea0ca83aea7dfec3efe026cab" id="r_a4855f7dea0ca83aea7dfec3efe026cab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a4855f7dea0ca83aea7dfec3efe026cab">definitionHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:a4855f7dea0ca83aea7dfec3efe026cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the exact generation-qualified definition handle.  <br /></td></tr>
+<tr class="separator:a4855f7dea0ca83aea7dfec3efe026cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a791357058ee7c47915da8d90d81926fa" id="r_a791357058ee7c47915da8d90d81926fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a> () const</td></tr>
+<tr class="memdesc:a791357058ee7c47915da8d90d81926fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve and parse the current typed definition projection.  <br /></td></tr>
+<tr class="separator:a791357058ee7c47915da8d90d81926fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5109555fb33a54ac333f0a04ff38763" id="r_af5109555fb33a54ac333f0a04ff38763"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#af5109555fb33a54ac333f0a04ff38763">reloadPolicy</a> () const noexcept</td></tr>
+<tr class="memdesc:af5109555fb33a54ac333f0a04ff38763"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the configured reload policy.  <br /></td></tr>
+<tr class="separator:af5109555fb33a54ac333f0a04ff38763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f4b2da28a5aad7f5e91e0df36b1635c" id="r_a1f4b2da28a5aad7f5e91e0df36b1635c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a1f4b2da28a5aad7f5e91e0df36b1635c">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) noexcept</td></tr>
+<tr class="memdesc:a1f4b2da28a5aad7f5e91e0df36b1635c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the active-cast guard used by RejectWhileActive.  <br /></td></tr>
+<tr class="separator:a1f4b2da28a5aad7f5e91e0df36b1635c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee2110086f45c5a36785e553751c64b" id="r_a8ee2110086f45c5a36785e553751c64b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a8ee2110086f45c5a36785e553751c64b">isActive</a> () const noexcept</td></tr>
+<tr class="memdesc:a8ee2110086f45c5a36785e553751c64b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether this skill is currently active.  <br /></td></tr>
+<tr class="separator:a8ee2110086f45c5a36785e553751c64b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9661c9eb48d4adffbf3f4921aab8d46e" id="r_a9661c9eb48d4adffbf3f4921aab8d46e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a9661c9eb48d4adffbf3f4921aab8d46e">applyTo</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor) const</td></tr>
+<tr class="memdesc:a9661c9eb48d4adffbf3f4921aab8d46e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project this skill instance into an <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a>'s Skills component.  <br /></td></tr>
+<tr class="separator:a9661c9eb48d4adffbf3f4921aab8d46e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb78c6d9b28e885df1c803925e1090c3" id="r_afb78c6d9b28e885df1c803925e1090c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#afb78c6d9b28e885df1c803925e1090c3">reload</a> (<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:afb78c6d9b28e885df1c803925e1090c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reload the current registry generation using a typed policy.  <br /></td></tr>
+<tr class="separator:afb78c6d9b28e885df1c803925e1090c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a930b6eda4c7af07ea5cccdb75537263b" id="r_a930b6eda4c7af07ea5cccdb75537263b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b">snapshot</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a930b6eda4c7af07ea5cccdb75537263b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture this skill's instance state in a common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>.  <br /></td></tr>
+<tr class="separator:a930b6eda4c7af07ea5cccdb75537263b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13f353ef86c1e25d7a58560160786735" id="r_a13f353ef86c1e25d7a58560160786735"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a13f353ef86c1e25d7a58560160786735">snapshotJson</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a13f353ef86c1e25d7a58560160786735"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b" title="Capture this skill&#39;s instance state in a common SnapshotEnvelope.">snapshot()</a> as canonical JSON.  <br /></td></tr>
+<tr class="separator:a13f353ef86c1e25d7a58560160786735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdbe345634ea3c0bdf752b55540ad98b" id="r_abdbe345634ea3c0bdf752b55540ad98b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#abdbe345634ea3c0bdf752b55540ad98b">restore</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:abdbe345634ea3c0bdf752b55540ad98b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify and restore a same-generation skill snapshot atomically.  <br /></td></tr>
+<tr class="separator:abdbe345634ea3c0bdf752b55540ad98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aeecb9c4500e437c71a49896b921250a1" id="r_aeecb9c4500e437c71a49896b921250a1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aeecb9c4500e437c71a49896b921250a1">create</a> (<a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;registry, <a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a791357058ee7c47915da8d90d81926fa">definition</a>, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>)</td></tr>
+<tr class="memdesc:aeecb9c4500e437c71a49896b921250a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a runtime from a generation-qualified common definition.  <br /></td></tr>
+<tr class="separator:aeecb9c4500e437c71a49896b921250a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee04a56b4667ccd90f9d1cbae87e127b" id="r_aee04a56b4667ccd90f9d1cbae87e127b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#aee04a56b4667ccd90f9d1cbae87e127b">create</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, std::string_view skillId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>)</td></tr>
+<tr class="memdesc:aee04a56b4667ccd90f9d1cbae87e127b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create from the canonical legacy <a class="el" href="classeve_1_1rpg_1_1SkillRegistry.html">SkillRegistry</a> facade.  <br /></td></tr>
+<tr class="separator:aee04a56b4667ccd90f9d1cbae87e127b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Typed SkillDefinition-to-runtime adapter. </p>
+<p>The registry is borrowed and must outlive this object. All methods are synchronous and owner-thread affine. <code>RebuildInstance</code> is the default policy: it adopts the new typed definition while retaining a valid cooldown/learned state. <code>RejectWhileActive</code> uses the adapter active flag; callers set it while a cast session owns the skill. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8h_source.html">SkillDefinitionRuntime.h</a> 第 <a class="el" href="SkillDefinitionRuntime_8h_source.html#l00040">40</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a03cbaab5c1b0cae847908ccf418fdad4" name="a03cbaab5c1b0cae847908ccf418fdad4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03cbaab5c1b0cae847908ccf418fdad4">&#9670;&#160;</a></span>SkillDefinitionRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::SkillDefinitionRuntime::SkillDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3fc4210e45797efe9f9c3f21289304fd" name="a3fc4210e45797efe9f9c3f21289304fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc4210e45797efe9f9c3f21289304fd">&#9670;&#160;</a></span>SkillDefinitionRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::SkillDefinitionRuntime::SkillDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d94eb9e884bf24792b9b0d9c36aee15" name="a4d94eb9e884bf24792b9b0d9c36aee15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d94eb9e884bf24792b9b0d9c36aee15">&#9670;&#160;</a></span>~SkillDefinitionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::SkillDefinitionRuntime::~SkillDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9661c9eb48d4adffbf3f4921aab8d46e" name="a9661c9eb48d4adffbf3f4921aab8d46e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9661c9eb48d4adffbf3f4921aab8d46e">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::SkillDefinitionRuntime::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project this skill instance into an <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a>'s Skills component. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">actor</td><td>Borrowed ECS actor; no pointer is retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or InvalidArgument; projection is committed as one component swap. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillDefinitionRuntime_8h_source.html#l00027">eve::rpg::SkillRuntimeState::cooldownRemaining</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">definition()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00207">identity()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00211">state()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aeecb9c4500e437c71a49896b921250a1" name="aeecb9c4500e437c71a49896b921250a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeecb9c4500e437c71a49896b921250a1">&#9670;&#160;</a></span>create() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &gt; eve::rpg::SkillDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a runtime from a generation-qualified common definition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Borrowed registry containing a <code>rpg.skill:&lt;name&gt;</code> entry. </td></tr>
+    <tr><td class="paramname">definition</td><td>Logical skill definition reference. </td></tr>
+    <tr><td class="paramname">instanceId</td><td>Non-nil persistent identity of this learned skill. </td></tr>
+    <tr><td class="paramname">policy</td><td>Reload policy used by subsequent reload calls. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A typed adapter or a structured resolution/validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00199">eve::definition::RuntimeInstance&lt; State &gt;::create()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">definition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="Definitions_8cpp_source.html#l00328">eve::definitions::DefinitionRegistry::resolveHandle()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00197">create()</a>.</p>
+
+</div>
+</div>
+<a id="aee04a56b4667ccd90f9d1cbae87e127b" name="aee04a56b4667ccd90f9d1cbae87e127b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee04a56b4667ccd90f9d1cbae87e127b">&#9670;&#160;</a></span>create() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &gt; eve::rpg::SkillDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create from the canonical legacy <a class="el" href="classeve_1_1rpg_1_1SkillRegistry.html">SkillRegistry</a> facade. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00178">create()</a>, <a class="el" href="Skill_8cpp_source.html#l00070">eve::rpg::SkillRegistry::definitionRegistry()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00050">eve::DefinitionRef::fromId()</a>, <a class="el" href="Identity_8cpp_source.html#l00048">eve::LogicalId::fromParts()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a> , 以及 <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>.</p>
+
+</div>
+</div>
+<a id="a791357058ee7c47915da8d90d81926fa" name="a791357058ee7c47915da8d90d81926fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a791357058ee7c47915da8d90d81926fa">&#9670;&#160;</a></span>definition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &gt; eve::rpg::SkillDefinitionRuntime::definition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve and parse the current typed definition projection. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00215">definitionHandle()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00328">eve::definitions::DefinitionRegistry::resolveHandle()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00230">applyTo()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00178">create()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00246">reload()</a> , 以及 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00285">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a4855f7dea0ca83aea7dfec3efe026cab" name="a4855f7dea0ca83aea7dfec3efe026cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4855f7dea0ca83aea7dfec3efe026cab">&#9670;&#160;</a></span>definitionHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a> eve::rpg::SkillDefinitionRuntime::definitionHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the exact generation-qualified definition handle. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">definition()</a> , 以及 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00285">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a68b06e89cba7c331fa4ad07687f683bf" name="a68b06e89cba7c331fa4ad07687f683bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68b06e89cba7c331fa4ad07687f683bf">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp; eve::rpg::SkillDefinitionRuntime::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the common identity, including exact definition generation. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00230">applyTo()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00246">reload()</a> , 以及 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00285">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a8ee2110086f45c5a36785e553751c64b" name="a8ee2110086f45c5a36785e553751c64b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ee2110086f45c5a36785e553751c64b">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::SkillDefinitionRuntime::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether this skill is currently active. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8e025b4abd86d04304b7916187648ef" name="aa8e025b4abd86d04304b7916187648ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8e025b4abd86d04304b7916187648ef">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp; eve::rpg::SkillDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a288fde364a31cde1e397b52ae15f8722" name="a288fde364a31cde1e397b52ae15f8722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a288fde364a31cde1e397b52ae15f8722">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp; eve::rpg::SkillDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html">SkillDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb78c6d9b28e885df1c803925e1090c3" name="afb78c6d9b28e885df1c803925e1090c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb78c6d9b28e885df1c803925e1090c3">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt; eve::rpg::SkillDefinitionRuntime::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reload the current registry generation using a typed policy. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillDefinitionRuntime_8h_source.html#l00027">eve::rpg::SkillRuntimeState::cooldownRemaining</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">definition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00207">identity()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="Definitions_8cpp_source.html#l00328">eve::definitions::DefinitionRegistry::resolveHandle()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af5109555fb33a54ac333f0a04ff38763" name="af5109555fb33a54ac333f0a04ff38763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5109555fb33a54ac333f0a04ff38763">&#9670;&#160;</a></span>reloadPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> eve::rpg::SkillDefinitionRuntime::reloadPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the configured reload policy. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8h_source.html">SkillDefinitionRuntime.h</a> 第 <a class="el" href="SkillDefinitionRuntime_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdbe345634ea3c0bdf752b55540ad98b" name="abdbe345634ea3c0bdf752b55540ad98b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdbe345634ea3c0bdf752b55540ad98b">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::SkillDefinitionRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify and restore a same-generation skill snapshot atomically. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or schema/hash/definition/stale/decode failure; state remains unchanged on every failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00219">definition()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00215">definitionHandle()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00207">identity()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00117">eve::definition::restoreRuntimeInstance()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a1f4b2da28a5aad7f5e91e0df36b1635c" name="a1f4b2da28a5aad7f5e91e0df36b1635c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f4b2da28a5aad7f5e91e0df36b1635c">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::SkillDefinitionRuntime::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the active-cast guard used by RejectWhileActive. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>.</p>
+
+</div>
+</div>
+<a id="a930b6eda4c7af07ea5cccdb75537263b" name="a930b6eda4c7af07ea5cccdb75537263b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a930b6eda4c7af07ea5cccdb75537263b">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::rpg::SkillDefinitionRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture this skill's instance state in a common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">revision</td><td>Domain revision associated with the capture. </td></tr>
+    <tr><td class="paramname">tick</td><td>Deterministic simulation tick associated with the capture. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit content digest provider. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A sealed snapshot or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00083">eve::definition::snapshotRuntimeInstance()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00277">snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a13f353ef86c1e25d7a58560160786735" name="a13f353ef86c1e25d7a58560160786735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13f353ef86c1e25d7a58560160786735">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::SkillDefinitionRuntime::snapshotJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize <a class="el" href="classeve_1_1rpg_1_1SkillDefinitionRuntime.html#a930b6eda4c7af07ea5cccdb75537263b" title="Capture this skill&#39;s instance state in a common SnapshotEnvelope.">snapshot()</a> as canonical JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00268">snapshot()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="acff00772da9b6bca55ed07bf47949bf9" name="acff00772da9b6bca55ed07bf47949bf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acff00772da9b6bca55ed07bf47949bf9">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a> &amp; eve::rpg::SkillDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow mutable per-instance skill state. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00230">applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a462a704bf36a242fb139f1725816064e" name="a462a704bf36a242fb139f1725816064e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a462a704bf36a242fb139f1725816064e">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rpg_1_1SkillRuntimeState.html">SkillRuntimeState</a> &amp; eve::rpg::SkillDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutate per-instance state on the owner thread. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a> 第 <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="SkillDefinitionRuntime_8h_source.html">SkillDefinitionRuntime.h</a></li>
+<li>src/modules/rpg/<a class="el" href="SkillDefinitionRuntime_8cpp_source.html">SkillDefinitionRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

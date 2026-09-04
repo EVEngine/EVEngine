@@ -1,0 +1,520 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::attributes::AttributeModifier结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1attributes.html">attributes</a></li><li class="navelem"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">AttributeModifier</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1attributes_1_1AttributeModifier-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::attributes::AttributeModifier结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One canonical runtime modifier applied to one named attribute.  
+ <a href="structeve_1_1attributes_1_1AttributeModifier.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad53560ee2db0cfc71ff7fdd5c284edd0" id="r_ad53560ee2db0cfc71ff7fdd5c284edd0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#ad53560ee2db0cfc71ff7fdd5c284edd0">AttributeModifier</a> ()=default</td></tr>
+<tr class="separator:ad53560ee2db0cfc71ff7fdd5c284edd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8af77df9bee9fa22ea621b7da05718bb" id="r_a8af77df9bee9fa22ea621b7da05718bb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a8af77df9bee9fa22ea621b7da05718bb">AttributeModifier</a> (<a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a> modifierId, <a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">AttributeId</a> attributeId, <a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a> <a class="el" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a> operationValue, double modifierValue, <a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a> priorityValue=0, <a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">ModifierSequence</a> sequenceValue=0, std::string <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>={})</td></tr>
+<tr class="memdesc:a8af77df9bee9fa22ea621b7da05718bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a canonical modifier with an explicit operation.  <br /></td></tr>
+<tr class="separator:a8af77df9bee9fa22ea621b7da05718bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa90f28cbcb24206b1b03e14dd0be8a3" id="r_afa90f28cbcb24206b1b03e14dd0be8a3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#afa90f28cbcb24206b1b03e14dd0be8a3">AttributeModifier</a> (<a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a> modifierId, <a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a> <a class="el" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>, std::string_view operationName, double modifierValue, <a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a> priorityValue=0)</td></tr>
+<tr class="memdesc:afa90f28cbcb24206b1b03e14dd0be8a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the former per-attribute RPG test shape.  <br /></td></tr>
+<tr class="separator:afa90f28cbcb24206b1b03e14dd0be8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7eb6079e424baff1392aa2cfff94a274" id="r_a7eb6079e424baff1392aa2cfff94a274"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a7eb6079e424baff1392aa2cfff94a274">id</a></td></tr>
+<tr class="separator:a7eb6079e424baff1392aa2cfff94a274"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ecc2597ca6408b773407f1343548162" id="r_a6ecc2597ca6408b773407f1343548162"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">AttributeId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a6ecc2597ca6408b773407f1343548162">attribute</a></td></tr>
+<tr class="separator:a6ecc2597ca6408b773407f1343548162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f18d4c7ee6ae9ba6e43c93c46263ed6" id="r_a8f18d4c7ee6ae9ba6e43c93c46263ed6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a8f18d4c7ee6ae9ba6e43c93c46263ed6">source</a></td></tr>
+<tr class="separator:a8f18d4c7ee6ae9ba6e43c93c46263ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27cefcd1addab4fe9cfb86dcdf7fb503" id="r_a27cefcd1addab4fe9cfb86dcdf7fb503"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a27cefcd1addab4fe9cfb86dcdf7fb503">operation</a> = <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">AttributeOperation::Add</a></td></tr>
+<tr class="separator:a27cefcd1addab4fe9cfb86dcdf7fb503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a6e169d49c93d6e492bc5853bdb405c" id="r_a0a6e169d49c93d6e492bc5853bdb405c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a0a6e169d49c93d6e492bc5853bdb405c">value</a> = 0.0</td></tr>
+<tr class="separator:a0a6e169d49c93d6e492bc5853bdb405c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a300ff947c551910caa30802cb3ef13f0" id="r_a300ff947c551910caa30802cb3ef13f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a300ff947c551910caa30802cb3ef13f0">priority</a> = 0</td></tr>
+<tr class="separator:a300ff947c551910caa30802cb3ef13f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56152bc61d31cce9b534f48a5d101cb8" id="r_a56152bc61d31cce9b534f48a5d101cb8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">ModifierSequence</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a56152bc61d31cce9b534f48a5d101cb8">sequence</a> = 0</td></tr>
+<tr class="separator:a56152bc61d31cce9b534f48a5d101cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d42e9bdb964933d699df8ecf83c3e04" id="r_a5d42e9bdb964933d699df8ecf83c3e04"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html#a5d42e9bdb964933d699df8ecf83c3e04">policyId</a></td></tr>
+<tr class="separator:a5d42e9bdb964933d699df8ecf83c3e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One canonical runtime modifier applied to one named attribute. </p>
+<p><code>id</code>, <code>attribute</code>, and <code>source</code> are stable domain strings. <code>sequence</code> is assigned by <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">AttributeSet</a> and breaks equal-priority ties. For Custom, <code>policyId</code> names a registered <a class="el" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html" title="Registry for explicitly named custom attribute policies.">AttributeOperationRegistry</a> policy. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00092">92</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad53560ee2db0cfc71ff7fdd5c284edd0" name="ad53560ee2db0cfc71ff7fdd5c284edd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad53560ee2db0cfc71ff7fdd5c284edd0">&#9670;&#160;</a></span>AttributeModifier() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::attributes::AttributeModifier::AttributeModifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8af77df9bee9fa22ea621b7da05718bb" name="a8af77df9bee9fa22ea621b7da05718bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af77df9bee9fa22ea621b7da05718bb">&#9670;&#160;</a></span>AttributeModifier() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::attributes::AttributeModifier::AttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a>&#160;</td>
+          <td class="paramname"><em>modifierId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">AttributeId</a>&#160;</td>
+          <td class="paramname"><em>attributeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a>&#160;</td>
+          <td class="paramname"><em>sourceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a>&#160;</td>
+          <td class="paramname"><em>operationValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>modifierValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a>&#160;</td>
+          <td class="paramname"><em>priorityValue</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">ModifierSequence</a>&#160;</td>
+          <td class="paramname"><em>sequenceValue</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>policy</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a canonical modifier with an explicit operation. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa90f28cbcb24206b1b03e14dd0be8a3" name="afa90f28cbcb24206b1b03e14dd0be8a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa90f28cbcb24206b1b03e14dd0be8a3">&#9670;&#160;</a></span>AttributeModifier() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::attributes::AttributeModifier::AttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a>&#160;</td>
+          <td class="paramname"><em>modifierId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a>&#160;</td>
+          <td class="paramname"><em>sourceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operationName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>modifierValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a>&#160;</td>
+          <td class="paramname"><em>priorityValue</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct the former per-attribute RPG test shape. </p>
+<dl class="section remark"><dt>备注</dt><dd>The attribute is intentionally empty and must be supplied before inserting into an <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">AttributeSet</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8cpp_source.html">AttributeSet.cpp</a> 第 <a class="el" href="AttributeSet_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">eve::attributes::Add</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e">eve::attributes::AdditivePercent</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508">eve::attributes::ClampMax</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04">eve::attributes::ClampMin</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af">eve::attributes::Custom</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605">eve::attributes::MultiplicativePercent</a>, <a class="el" href="AttributeSet_8h_source.html#l00096">operation</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849">eve::attributes::Override</a>, <a class="el" href="AttributeSet_8h_source.html#l00100">policyId</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="AttributeSet_8h_source.html#l00097">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6ecc2597ca6408b773407f1343548162" name="a6ecc2597ca6408b773407f1343548162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ecc2597ca6408b773407f1343548162">&#9670;&#160;</a></span>attribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">AttributeId</a> eve::attributes::AttributeModifier::attribute</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a> , 以及 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a7eb6079e424baff1392aa2cfff94a274" name="a7eb6079e424baff1392aa2cfff94a274"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb6079e424baff1392aa2cfff94a274">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a> eve::attributes::AttributeModifier::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a27cefcd1addab4fe9cfb86dcdf7fb503" name="a27cefcd1addab4fe9cfb86dcdf7fb503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27cefcd1addab4fe9cfb86dcdf7fb503">&#9670;&#160;</a></span>operation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a> eve::attributes::AttributeModifier::operation = <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">AttributeOperation::Add</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a> , 以及 <a class="el" href="AttributeSet_8cpp_source.html#l00076">AttributeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a5d42e9bdb964933d699df8ecf83c3e04" name="a5d42e9bdb964933d699df8ecf83c3e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d42e9bdb964933d699df8ecf83c3e04">&#9670;&#160;</a></span>policyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::attributes::AttributeModifier::policyId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a> , 以及 <a class="el" href="AttributeSet_8cpp_source.html#l00076">AttributeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a300ff947c551910caa30802cb3ef13f0" name="a300ff947c551910caa30802cb3ef13f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a300ff947c551910caa30802cb3ef13f0">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a> eve::attributes::AttributeModifier::priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a56152bc61d31cce9b534f48a5d101cb8" name="a56152bc61d31cce9b534f48a5d101cb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56152bc61d31cce9b534f48a5d101cb8">&#9670;&#160;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">ModifierSequence</a> eve::attributes::AttributeModifier::sequence = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a8f18d4c7ee6ae9ba6e43c93c46263ed6" name="a8f18d4c7ee6ae9ba6e43c93c46263ed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f18d4c7ee6ae9ba6e43c93c46263ed6">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a> eve::attributes::AttributeModifier::source</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a0a6e169d49c93d6e492bc5853bdb405c" name="a0a6e169d49c93d6e492bc5853bdb405c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a6e169d49c93d6e492bc5853bdb405c">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::attributes::AttributeModifier::value = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a> , 以及 <a class="el" href="AttributeSet_8cpp_source.html#l00076">AttributeModifier()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/attributes/<a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a></li>
+<li>src/modules/attributes/<a class="el" href="AttributeSet_8cpp_source.html">AttributeSet.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

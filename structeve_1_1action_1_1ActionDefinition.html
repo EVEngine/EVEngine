@@ -1,0 +1,455 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action::ActionDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li><li class="navelem"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1action_1_1ActionDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::action::ActionDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable-by-convention definition of one action kind.  
+ <a href="structeve_1_1action_1_1ActionDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Action_8h_source.html">Action.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac96a108b2e0d3efd691ca150b03e61f1" id="r_ac96a108b2e0d3efd691ca150b03e61f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#ac96a108b2e0d3efd691ca150b03e61f1">validate</a> () const</td></tr>
+<tr class="memdesc:ac96a108b2e0d3efd691ca150b03e61f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate definition invariants without changing the definition.  <br /></td></tr>
+<tr class="separator:ac96a108b2e0d3efd691ca150b03e61f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad4363867bfd55605489dfe288130697f" id="r_ad4363867bfd55605489dfe288130697f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#ad4363867bfd55605489dfe288130697f">id</a></td></tr>
+<tr class="memdesc:ad4363867bfd55605489dfe288130697f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scoped logical definition identity, not a runtime execution id.  <br /></td></tr>
+<tr class="separator:ad4363867bfd55605489dfe288130697f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bcb48b669e2118cfaaa645f1dfe486c" id="r_a6bcb48b669e2118cfaaa645f1dfe486c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1action_1_1ActionTiming.html">ActionTiming</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a6bcb48b669e2118cfaaa645f1dfe486c">timing</a></td></tr>
+<tr class="memdesc:a6bcb48b669e2118cfaaa645f1dfe486c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timed phase policy in simulation durations.  <br /></td></tr>
+<tr class="separator:a6bcb48b669e2118cfaaa645f1dfe486c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a275500822413acaf2c158ee3b63b0d1a" id="r_a275500822413acaf2c158ee3b63b0d1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a275500822413acaf2c158ee3b63b0d1a">condition</a></td></tr>
+<tr class="memdesc:a275500822413acaf2c158ee3b63b0d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Side-effect-free precondition tree.  <br /></td></tr>
+<tr class="separator:a275500822413acaf2c158ee3b63b0d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08578aea559104ec67bb03644c593e36" id="r_a08578aea559104ec67bb03644c593e36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577">TargetingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a08578aea559104ec67bb03644c593e36">targetingMode</a> = <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">TargetingMode::None</a></td></tr>
+<tr class="memdesc:a08578aea559104ec67bb03644c593e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target acquisition policy for this action.  <br /></td></tr>
+<tr class="separator:a08578aea559104ec67bb03644c593e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3b2492d3be3f383e01d2c8535c86a4" id="r_afd3b2492d3be3f383e01d2c8535c86a4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1sensing_1_1TargetingSpec.html">sensing::TargetingSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#afd3b2492d3be3f383e01d2c8535c86a4">targetingSpec</a></td></tr>
+<tr class="memdesc:afd3b2492d3be3f383e01d2c8535c86a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraints used when targetingMode is Query.  <br /></td></tr>
+<tr class="separator:afd3b2492d3be3f383e01d2c8535c86a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a642a54d53e29bae646c7ec03ddf0b895" id="r_a642a54d53e29bae646c7ec03ddf0b895"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a642a54d53e29bae646c7ec03ddf0b895">cost</a></td></tr>
+<tr class="memdesc:a642a54d53e29bae646c7ec03ddf0b895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional canonical cost reserved and committed by the pipeline.  <br /></td></tr>
+<tr class="separator:a642a54d53e29bae646c7ec03ddf0b895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a194fbbaa5ae9feff19104a7bf89f3df1" id="r_a194fbbaa5ae9feff19104a7bf89f3df1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a194fbbaa5ae9feff19104a7bf89f3df1">effectIds</a></td></tr>
+<tr class="memdesc:a194fbbaa5ae9feff19104a7bf89f3df1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable effect-definition ids interpreted by the active executor.  <br /></td></tr>
+<tr class="separator:a194fbbaa5ae9feff19104a7bf89f3df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a077c81f6ac092cc5ef38651a4c0ba745" id="r_a077c81f6ac092cc5ef38651a4c0ba745"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a077c81f6ac092cc5ef38651a4c0ba745">activeExecutionRequired</a> = false</td></tr>
+<tr class="memdesc:a077c81f6ac092cc5ef38651a4c0ba745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Active must call the injected executor even with no effect ids.  <br /></td></tr>
+<tr class="separator:a077c81f6ac092cc5ef38651a4c0ba745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ceebb19c763226a76061081fbcd899" id="r_ae2ceebb19c763226a76061081fbcd899"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#ae2ceebb19c763226a76061081fbcd899">metadata</a></td></tr>
+<tr class="memdesc:ae2ceebb19c763226a76061081fbcd899"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic extension data owned by this definition.  <br /></td></tr>
+<tr class="separator:ae2ceebb19c763226a76061081fbcd899"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbe7982264761eea62efec30bb1cf50" id="r_a2bbe7982264761eea62efec30bb1cf50"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html#a2bbe7982264761eea62efec30bb1cf50">timeline</a></td></tr>
+<tr class="memdesc:a2bbe7982264761eea62efec30bb1cf50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional versioned choreography authored by the action editor.  <br /></td></tr>
+<tr class="separator:a2bbe7982264761eea62efec30bb1cf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable-by-convention definition of one action kind. </p>
+<p>The definition owns condition and metadata values. A cost is the canonical common <code>CostSpec</code>; effectIds are references resolved by the injected active executor. No RPG, RTS, Weapon or Card type is included here. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00088">88</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac96a108b2e0d3efd691ca150b03e61f1" name="ac96a108b2e0d3efd691ca150b03e61f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac96a108b2e0d3efd691ca150b03e61f1">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::action::ActionDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate definition invariants without changing the definition. </p>
+<dl class="section return"><dt>返回</dt><dd>Success or a structured rejection diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Action_8h_source.html#l00076">eve::action::ActionTiming::active</a>, <a class="el" href="Action_8h_source.html#l00094">condition</a>, <a class="el" href="Action_8h_source.html#l00100">cost</a>, <a class="el" href="Action_8h_source.html#l00102">effectIds</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f">eve::action::Explicit</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Condition_8cpp_source.html#l00207">eve::decision::Condition::isValid()</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">eve::action::None</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a66c1b4c7f3dc385b68a9fa903ccd016d">eve::action::Query</a>, <a class="el" href="Action_8h_source.html#l00078">eve::action::ActionTiming::recover</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Action_8h_source.html#l00096">targetingMode</a>, <a class="el" href="Action_8h_source.html#l00098">targetingSpec</a>, <a class="el" href="Action_8h_source.html#l00108">timeline</a>, <a class="el" href="Action_8h_source.html#l00092">timing</a>, <a class="el" href="Time_8cpp_source.html#l00030">eve::Duration::tryAdd()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="Action_8h_source.html#l00074">eve::action::ActionTiming::windup</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00033">eve::action::AbilityDefinition::validate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a077c81f6ac092cc5ef38651a4c0ba745" name="a077c81f6ac092cc5ef38651a4c0ba745"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a077c81f6ac092cc5ef38651a4c0ba745">&#9670;&#160;</a></span>activeExecutionRequired</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::action::ActionDefinition::activeExecutionRequired = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether Active must call the injected executor even with no effect ids. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>.</p>
+
+</div>
+</div>
+<a id="a275500822413acaf2c158ee3b63b0d1a" name="a275500822413acaf2c158ee3b63b0d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a275500822413acaf2c158ee3b63b0d1a">&#9670;&#160;</a></span>condition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a> eve::action::ActionDefinition::condition</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Side-effect-free precondition tree. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a642a54d53e29bae646c7ec03ddf0b895" name="a642a54d53e29bae646c7ec03ddf0b895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a642a54d53e29bae646c7ec03ddf0b895">&#9670;&#160;</a></span>cost</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a>&gt; eve::action::ActionDefinition::cost</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional canonical cost reserved and committed by the pipeline. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a194fbbaa5ae9feff19104a7bf89f3df1" name="a194fbbaa5ae9feff19104a7bf89f3df1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a194fbbaa5ae9feff19104a7bf89f3df1">&#9670;&#160;</a></span>effectIds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::action::ActionDefinition::effectIds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable effect-definition ids interpreted by the active executor. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad4363867bfd55605489dfe288130697f" name="ad4363867bfd55605489dfe288130697f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4363867bfd55605489dfe288130697f">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::action::ActionDefinition::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scoped logical definition identity, not a runtime execution id. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>.</p>
+
+</div>
+</div>
+<a id="ae2ceebb19c763226a76061081fbcd899" name="ae2ceebb19c763226a76061081fbcd899"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ceebb19c763226a76061081fbcd899">&#9670;&#160;</a></span>metadata</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> eve::action::ActionDefinition::metadata</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deterministic extension data owned by this definition. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a08578aea559104ec67bb03644c593e36" name="a08578aea559104ec67bb03644c593e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08578aea559104ec67bb03644c593e36">&#9670;&#160;</a></span>targetingMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577">TargetingMode</a> eve::action::ActionDefinition::targetingMode = <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">TargetingMode::None</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Target acquisition policy for this action. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="afd3b2492d3be3f383e01d2c8535c86a4" name="afd3b2492d3be3f383e01d2c8535c86a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd3b2492d3be3f383e01d2c8535c86a4">&#9670;&#160;</a></span>targetingSpec</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1sensing_1_1TargetingSpec.html">sensing::TargetingSpec</a>&gt; eve::action::ActionDefinition::targetingSpec</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constraints used when targetingMode is Query. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a2bbe7982264761eea62efec30bb1cf50" name="a2bbe7982264761eea62efec30bb1cf50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbe7982264761eea62efec30bb1cf50">&#9670;&#160;</a></span>timeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a>&gt; eve::action::ActionDefinition::timeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional versioned choreography authored by the action editor. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a6bcb48b669e2118cfaaa645f1dfe486c" name="a6bcb48b669e2118cfaaa645f1dfe486c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bcb48b669e2118cfaaa645f1dfe486c">&#9670;&#160;</a></span>timing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1action_1_1ActionTiming.html">ActionTiming</a> eve::action::ActionDefinition::timing</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Timed phase policy in simulation durations. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/action/<a class="el" href="Action_8h_source.html">Action.h</a></li>
+<li>src/modules/action/<a class="el" href="Action_8cpp_source.html">Action.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingAnchorAuthoring.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingAnchorAuthoring.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingAnchorAuthoring_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ClimbingAnchorGraph_8h.html">climbing/ClimbingAnchorGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html">ClimbingAnchorBakeSettings</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#aeb6d3f840702193177484e2a257f58f1">   18</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#aeb6d3f840702193177484e2a257f58f1">handSpacing</a> = 0.42f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ae1b25edef09c3b068ec643dacc0e072d">   19</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ae1b25edef09c3b068ec643dacc0e072d">hangingFeetDrop</a> = 1.45f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#a71b50bc02ed2089a63df106219963eae">   20</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#a71b50bc02ed2089a63df106219963eae">ladderMountOffset</a> = 0.45f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ac9734a9c8c40470345e63405aa3ac363">   21</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ac9734a9c8c40470345e63405aa3ac363">occupancySlots</a> = 1;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html">ClimbingLedgeBakeSource</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aeb23dedf4fe8706a99431d5663033afb">   26</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aeb23dedf4fe8706a99431d5663033afb">id</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ab5b1202f777476dbf63105f9fe33243f">   27</a></span>    std::vector&lt;Vec3&gt;        <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ab5b1202f777476dbf63105f9fe33243f">points</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a2a3e0a9c8b12951c4bc28045e2614951">   28</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a2a3e0a9c8b12951c4bc28045e2614951">localNormal</a>{0.f, 0.f, -1.f};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ad9a14b601b4e4ea0cef0578b2d02ddcb">   30</a></span>    std::vector&lt;Vec3&gt;        <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ad9a14b601b4e4ea0cef0578b2d02ddcb">localNormals</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a02102012ba9e54a0aff055c5963d86c5">   31</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a02102012ba9e54a0aff055c5963d86c5">closed</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aebe05db8dccd3aa81be7b29e7b5cb0c6">   32</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aebe05db8dccd3aa81be7b29e7b5cb0c6">tags</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html">ClimbingLadderBakeSource</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a6f9939809dd01d654601e84d22d96b1d">   37</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a6f9939809dd01d654601e84d22d96b1d">id</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a4fd1c71283ea0d6b4f763bf37be5911a">   38</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a4fd1c71283ea0d6b4f763bf37be5911a">bottomCenter</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a123976a5249fd69e7b5c43ce55bf2f3d">   39</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a123976a5249fd69e7b5c43ce55bf2f3d">localUp</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a41b23e9cf025e6ceb31b2bb661bc97e9">   40</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a41b23e9cf025e6ceb31b2bb661bc97e9">localNormal</a>{0.f, 0.f, -1.f};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ae8a80d1548afbac19bc895afada3e7a6">   41</a></span>    <span class="keywordtype">float</span>                    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ae8a80d1548afbac19bc895afada3e7a6">rungSpacing</a> = 0.3f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ac133c0cc29bbdf1dc1aff51b2b8c1e5e">   42</a></span>    <span class="keywordtype">float</span>                    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ac133c0cc29bbdf1dc1aff51b2b8c1e5e">width</a> = 0.5f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ab7c508d4cc279258fb689a871ef5cb49">   43</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ab7c508d4cc279258fb689a871ef5cb49">rungCount</a> = 6;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a8dd9f193fc52453b1999b7a8c3f95633">   44</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a8dd9f193fc52453b1999b7a8c3f95633">tags</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html">   48</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html">ClimbingAnchorBakeRequest</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a6f88d087ff2c56273923c89a71110c19">   50</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a6f88d087ff2c56273923c89a71110c19">SchemaId</a> = <span class="stringliteral">&quot;evengine.climbing-anchor-bake-request&quot;</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a2644ad34183603d48b7987f0533e479a">   52</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::int64_t <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SchemaVersion</a> = 1;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ac995954923c271e4dea8e9ef2e82f4a8">   54</a></span>    std::string                       <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ac995954923c271e4dea8e9ef2e82f4a8">graphId</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ab17e1cba86bf1b050d75100ed27e071f">   55</a></span>    std::string                       <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ab17e1cba86bf1b050d75100ed27e071f">sourceGeometryContentId</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a477ec9bc1b8197e9eb7d4532dca6f1ef">   56</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html">ClimbingAnchorBakeSettings</a>        <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a477ec9bc1b8197e9eb7d4532dca6f1ef">settings</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a0204ce19d9005850ba9da4fbafe9c55d">   57</a></span>    std::vector&lt;ClimbingLedgeBakeSource&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a0204ce19d9005850ba9da4fbafe9c55d">ledges</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a82f68a251ccb36c8bc0b8b0352836230">   58</a></span>    std::vector&lt;ClimbingLadderBakeSource&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a82f68a251ccb36c8bc0b8b0352836230">ladders</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="namespaceeve_1_1climbing.html#a363ca3337d95d5617be7707157ffafbc">encodeClimbingAnchorBakeRequest</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html">ClimbingAnchorBakeRequest</a>&amp; request);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingAnchorBakeRequest&gt;</a> <a class="code hl_function" href="namespaceeve_1_1climbing.html#ae28640611e9b044bd3d56497deccac98">decodeClimbingAnchorBakeRequest</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="};">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html">   67</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html">ClimbingAnchorBakeResult</a> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a42ff07fc20b89a3354e0445599c66b35">   68</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a42ff07fc20b89a3354e0445599c66b35">graph</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a5a2bdf2d8b38e899062376948389fd61">   69</a></span>    std::uint32_t                  <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a5a2bdf2d8b38e899062376948389fd61">ledgeNodeCount</a> = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a0e33884f0fd740d37086650b1941a3f3">   70</a></span>    std::uint32_t                  <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a0e33884f0fd740d37086650b1941a3f3">ladderNodeCount</a> = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html">ClimbingAnchorOverlayNode</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#abea71f7022c2b3537369f3475685133c">   75</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#abea71f7022c2b3537369f3475685133c">id</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0666b1723c9085e4d23eaec41eece1ca">   76</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085">ClimbingAnchorKind</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0666b1723c9085e4d23eaec41eece1ca">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085aaa99e89e2e262b33252a871edb07bc80">ClimbingAnchorKind::Ledge</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ab7cb25938a4927ce68fcf57bdce368fd">   77</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ab7cb25938a4927ce68fcf57bdce368fd">position</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a14336b49683f2e2c3999020a4a9a39cb">   78</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a14336b49683f2e2c3999020a4a9a39cb">normal</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a6e7ea3d90b10d1381200fbe3fdfd8cf6">   79</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a6e7ea3d90b10d1381200fbe3fdfd8cf6">tangent</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0143ea74bec6c8398866fde03a88c81d">   80</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0143ea74bec6c8398866fde03a88c81d">leftHandSocket</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ae00b5889a0969bec8dcce63b2c55931f">   81</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ae00b5889a0969bec8dcce63b2c55931f">rightHandSocket</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a81648ed11a3914e48b084df7d5230d6c">   82</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>               <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a81648ed11a3914e48b084df7d5230d6c">feetSocket</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a68db0efd73bedb8746cbc26d6898f941">   83</a></span>    std::uint32_t      <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a68db0efd73bedb8746cbc26d6898f941">occupancySlots</a> = 0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>};</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="};">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html">   87</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html">ClimbingAnchorOverlayEdge</a> {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a8cc91d5b826064c5180d8587ce30ac7d">   88</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a8cc91d5b826064c5180d8587ce30ac7d">from</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#ac52ef48f51174e0b772244f48110ee57">   89</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#ac52ef48f51174e0b772244f48110ee57">to</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a9b9cbc750bf5213d3f4dc1e40afef29a">   90</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">ClimbingAnchorEdgeKind</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a9b9cbc750bf5213d3f4dc1e40afef29a">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a4cc8eb1b9e400f47ba44901992e04f58">ClimbingAnchorEdgeKind::Shimmy</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a474bf6fa3bdd38cd695e7dfe8f492fef">   91</a></span>    <span class="keywordtype">bool</span>                   <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a474bf6fa3bdd38cd695e7dfe8f492fef">bidirectional</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>};</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="};">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html">   95</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html">ClimbingAnchorAuthoringOverlay</a> {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ae92aa02b2b4efdd546362b5884d0cc6d">   96</a></span>    std::string                            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ae92aa02b2b4efdd546362b5884d0cc6d">graphId</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ad232c065172fd500680776ed693b62be">   97</a></span>    std::string                            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ad232c065172fd500680776ed693b62be">buildSettingsHash</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#aa020b4d81096d3f03908078811c8b0d9">   98</a></span>    std::vector&lt;ClimbingAnchorOverlayNode&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#aa020b4d81096d3f03908078811c8b0d9">nodes</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#a08e811a685fe85533e9def1baf5bbf5f">   99</a></span>    std::vector&lt;ClimbingAnchorOverlayEdge&gt; <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#a08e811a685fe85533e9def1baf5bbf5f">edges</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingAnchorBakeResult&gt;</a> <a class="code hl_function" href="namespaceeve_1_1climbing.html#af5235dbc08cee985c427ced6576b11de">bakeClimbingAnchorGraph</a>(</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html">ClimbingAnchorBakeRequest</a>&amp; request);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingAnchorAuthoringOverlay&gt;</a> <a class="code hl_function" href="namespaceeve_1_1climbing.html#a059cb532d0ee98d1938d5ad28290bafe">inspectClimbingAnchorGraphAuthoring</a>(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aClimbingAnchorGraph_8h_html"><div class="ttname"><a href="ClimbingAnchorGraph_8h.html">ClimbingAnchorGraph.h</a></div><div class="ttdoc">Versioned body-local climbing topology, dynamic resolution, and deterministic occupancy.</div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SchemaVersionTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a059cb532d0ee98d1938d5ad28290bafe"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a059cb532d0ee98d1938d5ad28290bafe">eve::climbing::inspectClimbingAnchorGraphAuthoring</a></div><div class="ttdeci">eve::Result&lt; ClimbingAnchorAuthoringOverlay &gt; inspectClimbingAnchorGraphAuthoring(const ClimbingAnchorGraphDefinition &amp;graph)</div><div class="ttdoc">Builds a validated owning snapshot for an editor or debug-draw adapter.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8cpp_source.html#l00508">ClimbingAnchorAuthoring.cpp:508</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a2fc9253074969249a1158e7fdfcf75d8"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">eve::climbing::ClimbingAnchorEdgeKind</a></div><div class="ttdeci">ClimbingAnchorEdgeKind</div><div class="ttdoc">Allowed authored transition between two explicit anchors.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorGraph_8h_source.html#l00032">ClimbingAnchorGraph.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a2fc9253074969249a1158e7fdfcf75d8a4cc8eb1b9e400f47ba44901992e04f58"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a4cc8eb1b9e400f47ba44901992e04f58">eve::climbing::ClimbingAnchorEdgeKind::Shimmy</a></div><div class="ttdeci">@ Shimmy</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a363ca3337d95d5617be7707157ffafbc"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a363ca3337d95d5617be7707157ffafbc">eve::climbing::encodeClimbingAnchorBakeRequest</a></div><div class="ttdeci">eve::Result&lt; eve::Value &gt; encodeClimbingAnchorBakeRequest(const ClimbingAnchorBakeRequest &amp;request)</div><div class="ttdoc">Encodes an owning bake request for editor/script transport.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8cpp_source.html#l00248">ClimbingAnchorAuthoring.cpp:248</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a428a0a7cfcc51ee54b15c14add4e7085"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085">eve::climbing::ClimbingAnchorKind</a></div><div class="ttdeci">ClimbingAnchorKind</div><div class="ttdoc">Authored semantic of one explicit climbing anchor.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorGraph_8h_source.html#l00029">ClimbingAnchorGraph.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a428a0a7cfcc51ee54b15c14add4e7085aaa99e89e2e262b33252a871edb07bc80"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085aaa99e89e2e262b33252a871edb07bc80">eve::climbing::ClimbingAnchorKind::Ledge</a></div><div class="ttdeci">@ Ledge</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_ae28640611e9b044bd3d56497deccac98"><div class="ttname"><a href="namespaceeve_1_1climbing.html#ae28640611e9b044bd3d56497deccac98">eve::climbing::decodeClimbingAnchorBakeRequest</a></div><div class="ttdeci">eve::Result&lt; ClimbingAnchorBakeRequest &gt; decodeClimbingAnchorBakeRequest(const eve::Value &amp;value)</div><div class="ttdoc">Decodes all known bake request fields without publishing a graph.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8cpp_source.html#l00289">ClimbingAnchorAuthoring.cpp:289</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_af5235dbc08cee985c427ced6576b11de"><div class="ttname"><a href="namespaceeve_1_1climbing.html#af5235dbc08cee985c427ced6576b11de">eve::climbing::bakeClimbingAnchorGraph</a></div><div class="ttdeci">eve::Result&lt; ClimbingAnchorBakeResult &gt; bakeClimbingAnchorGraph(const ClimbingAnchorBakeRequest &amp;request)</div><div class="ttdoc">Bakes deterministic ledge and ladder topology from owning semantic geometry samples.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8cpp_source.html#l00352">ClimbingAnchorAuthoring.cpp:352</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html">eve::climbing::ClimbingAnchorAuthoringOverlay</a></div><div class="ttdoc">Bounded owning editor snapshot; consumers may render it without retaining graph pointers.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00095">ClimbingAnchorAuthoring.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay_html_a08e811a685fe85533e9def1baf5bbf5f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#a08e811a685fe85533e9def1baf5bbf5f">eve::climbing::ClimbingAnchorAuthoringOverlay::edges</a></div><div class="ttdeci">std::vector&lt; ClimbingAnchorOverlayEdge &gt; edges</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00099">ClimbingAnchorAuthoring.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay_html_aa020b4d81096d3f03908078811c8b0d9"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#aa020b4d81096d3f03908078811c8b0d9">eve::climbing::ClimbingAnchorAuthoringOverlay::nodes</a></div><div class="ttdeci">std::vector&lt; ClimbingAnchorOverlayNode &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00098">ClimbingAnchorAuthoring.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay_html_ad232c065172fd500680776ed693b62be"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ad232c065172fd500680776ed693b62be">eve::climbing::ClimbingAnchorAuthoringOverlay::buildSettingsHash</a></div><div class="ttdeci">std::string buildSettingsHash</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00097">ClimbingAnchorAuthoring.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay_html_ae92aa02b2b4efdd546362b5884d0cc6d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorAuthoringOverlay.html#ae92aa02b2b4efdd546362b5884d0cc6d">eve::climbing::ClimbingAnchorAuthoringOverlay::graphId</a></div><div class="ttdeci">std::string graphId</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00096">ClimbingAnchorAuthoring.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html">eve::climbing::ClimbingAnchorBakeRequest</a></div><div class="ttdoc">Complete owning input transaction for deterministic anchor-graph baking.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00048">ClimbingAnchorAuthoring.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_a0204ce19d9005850ba9da4fbafe9c55d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a0204ce19d9005850ba9da4fbafe9c55d">eve::climbing::ClimbingAnchorBakeRequest::ledges</a></div><div class="ttdeci">std::vector&lt; ClimbingLedgeBakeSource &gt; ledges</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00057">ClimbingAnchorAuthoring.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_a477ec9bc1b8197e9eb7d4532dca6f1ef"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a477ec9bc1b8197e9eb7d4532dca6f1ef">eve::climbing::ClimbingAnchorBakeRequest::settings</a></div><div class="ttdeci">ClimbingAnchorBakeSettings settings</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00056">ClimbingAnchorAuthoring.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_a6f88d087ff2c56273923c89a71110c19"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a6f88d087ff2c56273923c89a71110c19">eve::climbing::ClimbingAnchorBakeRequest::SchemaId</a></div><div class="ttdeci">static constexpr std::string_view SchemaId</div><div class="ttdoc">Canonical schema id for editor-to-baker transactions.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00050">ClimbingAnchorAuthoring.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_a82f68a251ccb36c8bc0b8b0352836230"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#a82f68a251ccb36c8bc0b8b0352836230">eve::climbing::ClimbingAnchorBakeRequest::ladders</a></div><div class="ttdeci">std::vector&lt; ClimbingLadderBakeSource &gt; ladders</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00058">ClimbingAnchorAuthoring.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_ab17e1cba86bf1b050d75100ed27e071f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ab17e1cba86bf1b050d75100ed27e071f">eve::climbing::ClimbingAnchorBakeRequest::sourceGeometryContentId</a></div><div class="ttdeci">std::string sourceGeometryContentId</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00055">ClimbingAnchorAuthoring.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeRequest_html_ac995954923c271e4dea8e9ef2e82f4a8"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeRequest.html#ac995954923c271e4dea8e9ef2e82f4a8">eve::climbing::ClimbingAnchorBakeRequest::graphId</a></div><div class="ttdeci">std::string graphId</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00054">ClimbingAnchorAuthoring.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeResult_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html">eve::climbing::ClimbingAnchorBakeResult</a></div><div class="ttdoc">Measured bake result used by tools and build telemetry.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00067">ClimbingAnchorAuthoring.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeResult_html_a0e33884f0fd740d37086650b1941a3f3"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a0e33884f0fd740d37086650b1941a3f3">eve::climbing::ClimbingAnchorBakeResult::ladderNodeCount</a></div><div class="ttdeci">std::uint32_t ladderNodeCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00070">ClimbingAnchorAuthoring.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeResult_html_a42ff07fc20b89a3354e0445599c66b35"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a42ff07fc20b89a3354e0445599c66b35">eve::climbing::ClimbingAnchorBakeResult::graph</a></div><div class="ttdeci">ClimbingAnchorGraphDefinition graph</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00068">ClimbingAnchorAuthoring.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeResult_html_a5a2bdf2d8b38e899062376948389fd61"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeResult.html#a5a2bdf2d8b38e899062376948389fd61">eve::climbing::ClimbingAnchorBakeResult::ledgeNodeCount</a></div><div class="ttdeci">std::uint32_t ledgeNodeCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00069">ClimbingAnchorAuthoring.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeSettings_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html">eve::climbing::ClimbingAnchorBakeSettings</a></div><div class="ttdoc">Settings whose canonical values participate in the baked graph build hash.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00017">ClimbingAnchorAuthoring.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeSettings_html_a71b50bc02ed2089a63df106219963eae"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#a71b50bc02ed2089a63df106219963eae">eve::climbing::ClimbingAnchorBakeSettings::ladderMountOffset</a></div><div class="ttdeci">float ladderMountOffset</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00020">ClimbingAnchorAuthoring.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeSettings_html_ac9734a9c8c40470345e63405aa3ac363"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ac9734a9c8c40470345e63405aa3ac363">eve::climbing::ClimbingAnchorBakeSettings::occupancySlots</a></div><div class="ttdeci">std::uint32_t occupancySlots</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00021">ClimbingAnchorAuthoring.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeSettings_html_ae1b25edef09c3b068ec643dacc0e072d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#ae1b25edef09c3b068ec643dacc0e072d">eve::climbing::ClimbingAnchorBakeSettings::hangingFeetDrop</a></div><div class="ttdeci">float hangingFeetDrop</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00019">ClimbingAnchorAuthoring.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorBakeSettings_html_aeb6d3f840702193177484e2a257f58f1"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorBakeSettings.html#aeb6d3f840702193177484e2a257f58f1">eve::climbing::ClimbingAnchorBakeSettings::handSpacing</a></div><div class="ttdeci">float handSpacing</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00018">ClimbingAnchorAuthoring.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorGraphDefinition_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">eve::climbing::ClimbingAnchorGraphDefinition</a></div><div class="ttdoc">Versioned graph asset; topology is authoritative while collision remains owned by Physics.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorGraph_8h_source.html#l00072">ClimbingAnchorGraph.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayEdge_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html">eve::climbing::ClimbingAnchorOverlayEdge</a></div><div class="ttdoc">One renderer-neutral directed edge primitive in a body-local editor overlay.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00087">ClimbingAnchorAuthoring.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayEdge_html_a474bf6fa3bdd38cd695e7dfe8f492fef"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a474bf6fa3bdd38cd695e7dfe8f492fef">eve::climbing::ClimbingAnchorOverlayEdge::bidirectional</a></div><div class="ttdeci">bool bidirectional</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00091">ClimbingAnchorAuthoring.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayEdge_html_a8cc91d5b826064c5180d8587ce30ac7d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a8cc91d5b826064c5180d8587ce30ac7d">eve::climbing::ClimbingAnchorOverlayEdge::from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00088">ClimbingAnchorAuthoring.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayEdge_html_a9b9cbc750bf5213d3f4dc1e40afef29a"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#a9b9cbc750bf5213d3f4dc1e40afef29a">eve::climbing::ClimbingAnchorOverlayEdge::kind</a></div><div class="ttdeci">ClimbingAnchorEdgeKind kind</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00090">ClimbingAnchorAuthoring.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayEdge_html_ac52ef48f51174e0b772244f48110ee57"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayEdge.html#ac52ef48f51174e0b772244f48110ee57">eve::climbing::ClimbingAnchorOverlayEdge::to</a></div><div class="ttdeci">std::string to</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00089">ClimbingAnchorAuthoring.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html">eve::climbing::ClimbingAnchorOverlayNode</a></div><div class="ttdoc">One renderer-neutral node primitive in a body-local editor overlay.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00074">ClimbingAnchorAuthoring.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a0143ea74bec6c8398866fde03a88c81d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0143ea74bec6c8398866fde03a88c81d">eve::climbing::ClimbingAnchorOverlayNode::leftHandSocket</a></div><div class="ttdeci">Vec3 leftHandSocket</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00080">ClimbingAnchorAuthoring.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a0666b1723c9085e4d23eaec41eece1ca"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a0666b1723c9085e4d23eaec41eece1ca">eve::climbing::ClimbingAnchorOverlayNode::kind</a></div><div class="ttdeci">ClimbingAnchorKind kind</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00076">ClimbingAnchorAuthoring.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a14336b49683f2e2c3999020a4a9a39cb"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a14336b49683f2e2c3999020a4a9a39cb">eve::climbing::ClimbingAnchorOverlayNode::normal</a></div><div class="ttdeci">Vec3 normal</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00078">ClimbingAnchorAuthoring.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a68db0efd73bedb8746cbc26d6898f941"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a68db0efd73bedb8746cbc26d6898f941">eve::climbing::ClimbingAnchorOverlayNode::occupancySlots</a></div><div class="ttdeci">std::uint32_t occupancySlots</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00083">ClimbingAnchorAuthoring.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a6e7ea3d90b10d1381200fbe3fdfd8cf6"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a6e7ea3d90b10d1381200fbe3fdfd8cf6">eve::climbing::ClimbingAnchorOverlayNode::tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00079">ClimbingAnchorAuthoring.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_a81648ed11a3914e48b084df7d5230d6c"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#a81648ed11a3914e48b084df7d5230d6c">eve::climbing::ClimbingAnchorOverlayNode::feetSocket</a></div><div class="ttdeci">Vec3 feetSocket</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00082">ClimbingAnchorAuthoring.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_ab7cb25938a4927ce68fcf57bdce368fd"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ab7cb25938a4927ce68fcf57bdce368fd">eve::climbing::ClimbingAnchorOverlayNode::position</a></div><div class="ttdeci">Vec3 position</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00077">ClimbingAnchorAuthoring.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_abea71f7022c2b3537369f3475685133c"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#abea71f7022c2b3537369f3475685133c">eve::climbing::ClimbingAnchorOverlayNode::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00075">ClimbingAnchorAuthoring.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingAnchorOverlayNode_html_ae00b5889a0969bec8dcce63b2c55931f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingAnchorOverlayNode.html#ae00b5889a0969bec8dcce63b2c55931f">eve::climbing::ClimbingAnchorOverlayNode::rightHandSocket</a></div><div class="ttdeci">Vec3 rightHandSocket</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00081">ClimbingAnchorAuthoring.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html">eve::climbing::ClimbingLadderBakeSource</a></div><div class="ttdoc">Body-local ladder description supplied by an editor geometry extractor.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00036">ClimbingAnchorAuthoring.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_a123976a5249fd69e7b5c43ce55bf2f3d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a123976a5249fd69e7b5c43ce55bf2f3d">eve::climbing::ClimbingLadderBakeSource::localUp</a></div><div class="ttdeci">Vec3 localUp</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00039">ClimbingAnchorAuthoring.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_a41b23e9cf025e6ceb31b2bb661bc97e9"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a41b23e9cf025e6ceb31b2bb661bc97e9">eve::climbing::ClimbingLadderBakeSource::localNormal</a></div><div class="ttdeci">Vec3 localNormal</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00040">ClimbingAnchorAuthoring.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_a4fd1c71283ea0d6b4f763bf37be5911a"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a4fd1c71283ea0d6b4f763bf37be5911a">eve::climbing::ClimbingLadderBakeSource::bottomCenter</a></div><div class="ttdeci">Vec3 bottomCenter</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00038">ClimbingAnchorAuthoring.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_a6f9939809dd01d654601e84d22d96b1d"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a6f9939809dd01d654601e84d22d96b1d">eve::climbing::ClimbingLadderBakeSource::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00037">ClimbingAnchorAuthoring.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_a8dd9f193fc52453b1999b7a8c3f95633"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#a8dd9f193fc52453b1999b7a8c3f95633">eve::climbing::ClimbingLadderBakeSource::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00044">ClimbingAnchorAuthoring.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_ab7c508d4cc279258fb689a871ef5cb49"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ab7c508d4cc279258fb689a871ef5cb49">eve::climbing::ClimbingLadderBakeSource::rungCount</a></div><div class="ttdeci">std::uint32_t rungCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00043">ClimbingAnchorAuthoring.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_ac133c0cc29bbdf1dc1aff51b2b8c1e5e"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ac133c0cc29bbdf1dc1aff51b2b8c1e5e">eve::climbing::ClimbingLadderBakeSource::width</a></div><div class="ttdeci">float width</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00042">ClimbingAnchorAuthoring.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLadderBakeSource_html_ae8a80d1548afbac19bc895afada3e7a6"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLadderBakeSource.html#ae8a80d1548afbac19bc895afada3e7a6">eve::climbing::ClimbingLadderBakeSource::rungSpacing</a></div><div class="ttdeci">float rungSpacing</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00041">ClimbingAnchorAuthoring.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html">eve::climbing::ClimbingLedgeBakeSource</a></div><div class="ttdoc">Ordered body-local ledge samples supplied by an editor geometry extractor.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00025">ClimbingAnchorAuthoring.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_a02102012ba9e54a0aff055c5963d86c5"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a02102012ba9e54a0aff055c5963d86c5">eve::climbing::ClimbingLedgeBakeSource::closed</a></div><div class="ttdeci">bool closed</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00031">ClimbingAnchorAuthoring.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_a2a3e0a9c8b12951c4bc28045e2614951"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#a2a3e0a9c8b12951c4bc28045e2614951">eve::climbing::ClimbingLedgeBakeSource::localNormal</a></div><div class="ttdeci">Vec3 localNormal</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00028">ClimbingAnchorAuthoring.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_ab5b1202f777476dbf63105f9fe33243f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ab5b1202f777476dbf63105f9fe33243f">eve::climbing::ClimbingLedgeBakeSource::points</a></div><div class="ttdeci">std::vector&lt; Vec3 &gt; points</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00027">ClimbingAnchorAuthoring.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_ad9a14b601b4e4ea0cef0578b2d02ddcb"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#ad9a14b601b4e4ea0cef0578b2d02ddcb">eve::climbing::ClimbingLedgeBakeSource::localNormals</a></div><div class="ttdeci">std::vector&lt; Vec3 &gt; localNormals</div><div class="ttdoc">Optional per-point wall normals; empty uses localNormal for every sample.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00030">ClimbingAnchorAuthoring.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_aeb23dedf4fe8706a99431d5663033afb"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aeb23dedf4fe8706a99431d5663033afb">eve::climbing::ClimbingLedgeBakeSource::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00026">ClimbingAnchorAuthoring.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingLedgeBakeSource_html_aebe05db8dccd3aa81be7b29e7b5cb0c6"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingLedgeBakeSource.html#aebe05db8dccd3aa81be7b29e7b5cb0c6">eve::climbing::ClimbingLedgeBakeSource::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="ClimbingAnchorAuthoring_8h_source.html#l00032">ClimbingAnchorAuthoring.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1Vec3_html"><div class="ttname"><a href="structeve_1_1climbing_1_1Vec3.html">eve::climbing::Vec3</a></div><div class="ttdoc">Small owning world-space vector used at climbing module boundaries.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingPrimitives_8h_source.html#l00017">ClimbingPrimitives.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

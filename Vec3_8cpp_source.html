@@ -1,0 +1,270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/math/Vec3.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5bf8b96587dddaf66420fe733a1c7110.html">math</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Vec3.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Vec3_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Vec3_8h.html">math/Vec3.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1math.html">eve::math</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a981f4ed88b5769f73db8b62f379dd923">    9</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a981f4ed88b5769f73db8b62f379dd923">Vec3::normalize</a>() {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordtype">float</span> len = <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a4b24affb6a36343fe01271be302fbe91">length</a>();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">if</span> (len &gt; 0.f) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        x_ /= len;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        y_ /= len;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        z_ /= len;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    }</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a04d131918168aafc3946267aca2fc949">   18</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a04d131918168aafc3946267aca2fc949">Vec3::normalized</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">auto</span> *<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_, y_, z_);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>-&gt;normalize();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a6b2db9fadbf6a840189c56b23f4ecc33">   24</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a6b2db9fadbf6a840189c56b23f4ecc33">Vec3::dot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.dot: other is null&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> x_ * other-&gt;x_ + y_ * other-&gt;y_ + z_ * other-&gt;z_;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a2c3dea03c204c276c2c31fa0283f7c27">   29</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a2c3dea03c204c276c2c31fa0283f7c27">Vec3::cross</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.cross: other is null&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(y_ * other-&gt;z_ - z_ * other-&gt;y_, z_ * other-&gt;x_ - x_ * other-&gt;z_,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                    x_ * other-&gt;y_ - y_ * other-&gt;x_);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a77427246fb3592b5cb4e50cb54e46d7b">   35</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a77427246fb3592b5cb4e50cb54e46d7b">Vec3::distanceTo</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.distanceTo: other is null&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">float</span> dx = x_ - other-&gt;x_;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> dy = y_ - other-&gt;y_;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">float</span> dz = z_ - other-&gt;z_;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> std::sqrt(dx * dx + dy * dy + dz * dz);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a51d46d2065e169613b2b23fc0f13ebfe">   43</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a51d46d2065e169613b2b23fc0f13ebfe">Vec3::add</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.add: other is null&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_ + other-&gt;x_, y_ + other-&gt;y_, z_ + other-&gt;z_);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a35c9b902b340302f9ed7f3719e394dc6">   48</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a35c9b902b340302f9ed7f3719e394dc6">Vec3::sub</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.sub: other is null&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_ - other-&gt;x_, y_ - other-&gt;y_, z_ - other-&gt;z_);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a4b8d0763ee1ded28740d70b821970068">   53</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a4b8d0763ee1ded28740d70b821970068">Vec3::scale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_ * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, y_ * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, z_ * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>); }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a49d7371801ef2e0b868da76b0d9356c1">   55</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a49d7371801ef2e0b868da76b0d9356c1">Vec3::lerpTo</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!other) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Vec3.lerpTo: other is null&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_ + (other-&gt;x_ - x_) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, y_ + (other-&gt;y_ - y_) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                    z_ + (other-&gt;z_ - z_) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1math_1_1Vec3.html#a2d6fe8c2ca596cadd937a51f90a4ff28">   61</a></span><a class="code hl_class" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a2d6fe8c2ca596cadd937a51f90a4ff28">Vec3::clone</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_function" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a>(x_, y_, z_); }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}  <span class="comment">// namespace eve::math</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aVec3_8h_html"><div class="ttname"><a href="Vec3_8h.html">Vec3.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html">eve::math::Vec3</a></div><div class="ttdoc">3D float vector (script-facing math module value).</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8h_source.html#l00008">Vec3.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a028fbccc4424e7404faa0a05bf4026dc"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">eve::math::Vec3::Vec3</a></div><div class="ttdeci">Vec3()=default</div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a04d131918168aafc3946267aca2fc949"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a04d131918168aafc3946267aca2fc949">eve::math::Vec3::normalized</a></div><div class="ttdeci">Vec3 * normalized() const</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00018">Vec3.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a2c3dea03c204c276c2c31fa0283f7c27"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a2c3dea03c204c276c2c31fa0283f7c27">eve::math::Vec3::cross</a></div><div class="ttdeci">Vec3 * cross(const Vec3 *other) const</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00029">Vec3.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a2d6fe8c2ca596cadd937a51f90a4ff28"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a2d6fe8c2ca596cadd937a51f90a4ff28">eve::math::Vec3::clone</a></div><div class="ttdeci">Vec3 * clone() const</div><div class="ttdoc">Copies this vector.</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00061">Vec3.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a35c9b902b340302f9ed7f3719e394dc6"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a35c9b902b340302f9ed7f3719e394dc6">eve::math::Vec3::sub</a></div><div class="ttdeci">Vec3 * sub(const Vec3 *other) const</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00048">Vec3.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a49d7371801ef2e0b868da76b0d9356c1"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a49d7371801ef2e0b868da76b0d9356c1">eve::math::Vec3::lerpTo</a></div><div class="ttdeci">Vec3 * lerpTo(const Vec3 *other, float t) const</div><div class="ttdoc">Linear interpolation to other at t in [0,1].</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00055">Vec3.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a4b24affb6a36343fe01271be302fbe91"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a4b24affb6a36343fe01271be302fbe91">eve::math::Vec3::length</a></div><div class="ttdeci">float length() const</div><div class="ttdoc">Magnitude (and squared magnitude).</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8h_source.html#l00029">Vec3.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a4b8d0763ee1ded28740d70b821970068"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a4b8d0763ee1ded28740d70b821970068">eve::math::Vec3::scale</a></div><div class="ttdeci">Vec3 * scale(float s) const</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00053">Vec3.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a51d46d2065e169613b2b23fc0f13ebfe"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a51d46d2065e169613b2b23fc0f13ebfe">eve::math::Vec3::add</a></div><div class="ttdeci">Vec3 * add(const Vec3 *other) const</div><div class="ttdoc">Arithmetic helpers returning new (caller-owned) vectors.</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00043">Vec3.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a6b2db9fadbf6a840189c56b23f4ecc33"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a6b2db9fadbf6a840189c56b23f4ecc33">eve::math::Vec3::dot</a></div><div class="ttdeci">float dot(const Vec3 *other) const</div><div class="ttdoc">Dot/cross product and distance.</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00024">Vec3.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a77427246fb3592b5cb4e50cb54e46d7b"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a77427246fb3592b5cb4e50cb54e46d7b">eve::math::Vec3::distanceTo</a></div><div class="ttdeci">float distanceTo(const Vec3 *other) const</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00035">Vec3.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1math_1_1Vec3_html_a981f4ed88b5769f73db8b62f379dd923"><div class="ttname"><a href="classeve_1_1math_1_1Vec3.html#a981f4ed88b5769f73db8b62f379dd923">eve::math::Vec3::normalize</a></div><div class="ttdeci">void normalize()</div><div class="ttdoc">Normalizes in place / returns a normalized copy.</div><div class="ttdef"><b>Definition</b> <a href="Vec3_8cpp_source.html#l00009">Vec3.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1math_html"><div class="ttname"><a href="namespaceeve_1_1math.html">eve::math</a></div><div class="ttdef"><b>Definition</b> <a href="Mat4_8cpp_source.html#l00010">Mat4.cpp:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/network_editing/NetworkTelemetry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5e5c846381df26df9c4f217cad1d60e1.html">network_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">NetworkTelemetry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="NetworkTelemetry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;deque&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network.html">eve::network</a> { <span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256">Network</a>; }</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network__editing.html">eve::network_editing</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1network__editing.html#a1df2ed9249618d41a20c127c4a46c8c2">    9</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1network__editing.html#a3c39f79889e07ba2c810ef9987ebddaf">   10</a></span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;<span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>=<a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;T&gt;</a>; <span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1network__editing.html#a633aed235808fa338f837bbf048d843d">   11</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html">NetworkTelemetrySample</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#acf7d4fda4ccb296ae7ff43f269e9a56b">   14</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a1d7628163236658a899b485eb9d94353">revision</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a6c2a365248fdfeeac51e839b4ac3ac7e">sentBytes</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#aeeaa496f21442fe7fa7fa8d08bb394a4">receivedBytes</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#acf7d4fda4ccb296ae7ff43f269e9a56b">completions</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a9ab24eb31c57d57bd5562b2173adb7cb">errors</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a49ac943c26123091b0853d5b57bbbed3">connections</a>=0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ad963d2116a9d54e5dd21b164273fac1c">   15</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ab233c79efc625e524674b85376f65a07">watchedTcp</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a2736ae84f46651b9f1817c1097ac039d">watchedUdp</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ad963d2116a9d54e5dd21b164273fac1c">channels</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac17c7512a59d9d5ca4e3a3d5bd74f0da">queuedTcpBytes</a>=0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac1560d95c8a87f6f627f0b3990358f19">   16</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac46cb86c5c772915bf06d4cbb3ff0bbf">timeSeconds</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a39d0a522980880d1f1fb59df24aa295a">sendBytesPerSecond</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a681e5cc6d158bc91ca528f4934640f5e">receiveBytesPerSecond</a>=0,<a class="code hl_variable" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac1560d95c8a87f6f627f0b3990358f19">errorRate</a>=0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html">NetworkTelemetryModel</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html">NetworkTelemetryModel</a>(std::size_t <a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>=300);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#adb66349db58ca0a97e6833d0d7b71739">ingest</a>(<a class="code hl_struct" href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html">NetworkTelemetrySample</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#aaea76d0262dd16e5d70cba518f2089e8">   23</a></span>    <span class="keyword">const</span> std::deque&lt;NetworkTelemetrySample&gt;&amp; <a class="code hl_function" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#aaea76d0262dd16e5d70cba518f2089e8">samples</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> samples_; }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#a149c37ca49859dd1f8f8513a0547610f">diagnostics</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#aa61c1fd4ddd2b4de043b51a125f11514">clear</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::size_t capacity_;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::deque&lt;NetworkTelemetrySample&gt; samples_;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1network__editing_1_1NetworkTelemetryCollector.html">   31</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1network__editing_1_1NetworkTelemetryCollector.html">NetworkTelemetryCollector</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1network__editing_1_1NetworkTelemetryCollector.html#a7ba72e6e37cf7d76d015ac04fe3c2e03">collect</a>(<a class="code hl_class" href="classeve_1_1network_1_1Network.html">network::Network</a>*,<span class="keywordtype">double</span>,<a class="code hl_class" href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html">NetworkTelemetryModel</a>&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>} <span class="comment">// namespace eve::network_editing</span></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_ac6929dd676d28e30e74a1624a9324cc7"><div class="ttname"><a href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a></div><div class="ttdeci">std::uint32_t capacity</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00036">GraphicsParticles.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html"><div class="ttname"><a href="classeve_1_1network_1_1Network.html">eve::network::Network</a></div><div class="ttdoc">Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00033">Network.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryCollector_html"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryCollector.html">eve::network_editing::NetworkTelemetryCollector</a></div><div class="ttdoc">Optional bridge collecting a copied snapshot from the Network module.</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00031">NetworkTelemetry.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryCollector_html_a7ba72e6e37cf7d76d015ac04fe3c2e03"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryCollector.html#a7ba72e6e37cf7d76d015ac04fe3c2e03">eve::network_editing::NetworkTelemetryCollector::collect</a></div><div class="ttdeci">EditorResult&lt; void &gt; collect(network::Network *, double, NetworkTelemetryModel &amp;) const</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetryRuntime_8cpp_source.html#l00007">NetworkTelemetryRuntime.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryModel_html"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html">eve::network_editing::NetworkTelemetryModel</a></div><div class="ttdoc">UI-independent bounded history and network health diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00019">NetworkTelemetry.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryModel_html_a149c37ca49859dd1f8f8513a0547610f"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#a149c37ca49859dd1f8f8513a0547610f">eve::network_editing::NetworkTelemetryModel::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics() const</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8cpp_source.html#l00010">NetworkTelemetry.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryModel_html_aa61c1fd4ddd2b4de043b51a125f11514"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#aa61c1fd4ddd2b4de043b51a125f11514">eve::network_editing::NetworkTelemetryModel::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8cpp_source.html#l00011">NetworkTelemetry.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryModel_html_aaea76d0262dd16e5d70cba518f2089e8"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#aaea76d0262dd16e5d70cba518f2089e8">eve::network_editing::NetworkTelemetryModel::samples</a></div><div class="ttdeci">const std::deque&lt; NetworkTelemetrySample &gt; &amp; samples() const</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00023">NetworkTelemetry.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1network__editing_1_1NetworkTelemetryModel_html_adb66349db58ca0a97e6833d0d7b71739"><div class="ttname"><a href="classeve_1_1network__editing_1_1NetworkTelemetryModel.html#adb66349db58ca0a97e6833d0d7b71739">eve::network_editing::NetworkTelemetryModel::ingest</a></div><div class="ttdeci">EditorResult&lt; void &gt; ingest(NetworkTelemetrySample)</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8cpp_source.html#l00009">NetworkTelemetry.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2aeec89088ee408b80387155272b113256">eve::editing::ActionOrigin::Network</a></div><div class="ttdeci">@ Network</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network__editing_html"><div class="ttname"><a href="namespaceeve_1_1network__editing.html">eve::network_editing</a></div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8cpp_source.html#l00005">NetworkTelemetry.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html"><div class="ttname"><a href="namespaceeve_1_1network.html">eve::network</a></div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8cpp_source.html#l00012">Channel.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html">eve::network_editing::NetworkTelemetrySample</a></div><div class="ttdoc">One copied network telemetry sample; safe after the runtime module changes.</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00013">NetworkTelemetry.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a1d7628163236658a899b485eb9d94353"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a1d7628163236658a899b485eb9d94353">eve::network_editing::NetworkTelemetrySample::revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a2736ae84f46651b9f1817c1097ac039d"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a2736ae84f46651b9f1817c1097ac039d">eve::network_editing::NetworkTelemetrySample::watchedUdp</a></div><div class="ttdeci">std::size_t watchedUdp</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00015">NetworkTelemetry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a39d0a522980880d1f1fb59df24aa295a"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a39d0a522980880d1f1fb59df24aa295a">eve::network_editing::NetworkTelemetrySample::sendBytesPerSecond</a></div><div class="ttdeci">double sendBytesPerSecond</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00016">NetworkTelemetry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a49ac943c26123091b0853d5b57bbbed3"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a49ac943c26123091b0853d5b57bbbed3">eve::network_editing::NetworkTelemetrySample::connections</a></div><div class="ttdeci">std::uint64_t connections</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a681e5cc6d158bc91ca528f4934640f5e"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a681e5cc6d158bc91ca528f4934640f5e">eve::network_editing::NetworkTelemetrySample::receiveBytesPerSecond</a></div><div class="ttdeci">double receiveBytesPerSecond</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00016">NetworkTelemetry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a6c2a365248fdfeeac51e839b4ac3ac7e"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a6c2a365248fdfeeac51e839b4ac3ac7e">eve::network_editing::NetworkTelemetrySample::sentBytes</a></div><div class="ttdeci">std::uint64_t sentBytes</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_a9ab24eb31c57d57bd5562b2173adb7cb"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#a9ab24eb31c57d57bd5562b2173adb7cb">eve::network_editing::NetworkTelemetrySample::errors</a></div><div class="ttdeci">std::uint64_t errors</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_ab233c79efc625e524674b85376f65a07"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ab233c79efc625e524674b85376f65a07">eve::network_editing::NetworkTelemetrySample::watchedTcp</a></div><div class="ttdeci">std::size_t watchedTcp</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00015">NetworkTelemetry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_ac1560d95c8a87f6f627f0b3990358f19"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac1560d95c8a87f6f627f0b3990358f19">eve::network_editing::NetworkTelemetrySample::errorRate</a></div><div class="ttdeci">double errorRate</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00016">NetworkTelemetry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_ac17c7512a59d9d5ca4e3a3d5bd74f0da"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac17c7512a59d9d5ca4e3a3d5bd74f0da">eve::network_editing::NetworkTelemetrySample::queuedTcpBytes</a></div><div class="ttdeci">std::size_t queuedTcpBytes</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00015">NetworkTelemetry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_ac46cb86c5c772915bf06d4cbb3ff0bbf"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ac46cb86c5c772915bf06d4cbb3ff0bbf">eve::network_editing::NetworkTelemetrySample::timeSeconds</a></div><div class="ttdeci">double timeSeconds</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00016">NetworkTelemetry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_acf7d4fda4ccb296ae7ff43f269e9a56b"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#acf7d4fda4ccb296ae7ff43f269e9a56b">eve::network_editing::NetworkTelemetrySample::completions</a></div><div class="ttdeci">std::uint64_t completions</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_ad963d2116a9d54e5dd21b164273fac1c"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#ad963d2116a9d54e5dd21b164273fac1c">eve::network_editing::NetworkTelemetrySample::channels</a></div><div class="ttdeci">std::size_t channels</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00015">NetworkTelemetry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1network__editing_1_1NetworkTelemetrySample_html_aeeaa496f21442fe7fa7fa8d08bb394a4"><div class="ttname"><a href="structeve_1_1network__editing_1_1NetworkTelemetrySample.html#aeeaa496f21442fe7fa7fa8d08bb394a4">eve::network_editing::NetworkTelemetrySample::receivedBytes</a></div><div class="ttdeci">std::uint64_t receivedBytes</div><div class="ttdef"><b>Definition</b> <a href="NetworkTelemetry_8h_source.html#l00014">NetworkTelemetry.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/Stylize.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Stylize.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Stylize_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="MeshEffect_8h.html">stylize/MeshEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MeshEffectRenderer_8h.html">stylize/MeshEffectRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="MeshVfxAsset_8h.html">stylize/MeshVfxAsset.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="SkillMeshEffect_8h.html">stylize/SkillMeshEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="StyleChain_8h.html">stylize/StyleChain.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="StylePass_8h.html">stylize/StylePass.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="TrailEffect_8h.html">stylize/TrailEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}  <span class="comment">// namespace eve::image</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>StyleInstance;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>StyleRecipe;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1Stylize.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1Stylize.html">Stylize</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1Stylize.html#aabc37b707e2c86ef9f14185e7a13bd13">   51</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#aabc37b707e2c86ef9f14185e7a13bd13">Module_REG</a>(<a class="code hl_class" href="classeve_1_1stylize_1_1Stylize.html">Stylize</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1Stylize.html#a2b7d299d07da6c6113d1ba4d1358780c">   52</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a2b7d299d07da6c6113d1ba4d1358780c">Stylize</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1Stylize.html#a8c7087ca6b8d3bedfd192ca819efbd5b">   53</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a8c7087ca6b8d3bedfd192ca819efbd5b">~Stylize</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a222b78856bf0691521ba97b552a08863">getStyleCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::string <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#ac7726260c8b01c1b412ee94edb18837f">getStyleId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a21b3aebcfa6675226a43e2d7497cd7bc">hasStyle</a>(<span class="keyword">const</span> std::string &amp;style) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a8a78818eea03fbd8c4d5882162c34525">hasMeshStyle</a>(<span class="keyword">const</span> std::string &amp;style) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#ab2fe2d57006d9516aad9cd5359f22323">supports</a>(<span class="keyword">const</span> std::string &amp;style, <span class="keyword">const</span> std::string &amp;feature) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a264feb492c13af2ab9b7145c452e7ed0">getStyleParamCount</a>(<span class="keyword">const</span> std::string &amp;style) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::string <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#ad389e1d3e9eed7ccc125109500a2708e">getStyleParamName</a>(<span class="keyword">const</span> std::string &amp;style, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a6ea3545655bddf35d755cd422b7bfdbe">newInstance</a>(<span class="keyword">const</span> std::string &amp;style);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StyleRecipe.html">StyleRecipe</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#aefb79bfada0eaf079e9e10002bf663bb">newRecipe</a>();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] std::unique_ptr&lt;MeshEffectInstance&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a1b049b925cdbae8dc7cba3d844f76a64">createMeshEffect</a>(<span class="keyword">const</span> std::string&amp; style);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] std::unique_ptr&lt;TrailEmitter&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#aaa3e15b273a5efe8d6394bf25e952ddc">createTrailEmitter</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] std::unique_ptr&lt;MeshEffectRenderer&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a59b715b5eb64f2483741aa107fec7041">createMeshEffectRenderer</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; gfx);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] std::unique_ptr&lt;SkillMeshEffect&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#aaebe28e5fd0cbe42dc7184908826a28f">createSkillMeshEffect</a>(<a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">SkillMeshEffectKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;MeshVfxAssetInstance&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a0f96d6de6c8e5a58c6de0ba6a7331173">createMeshVfxAssetInstance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxAsset.html">MeshVfxAsset</a>&amp; asset);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a37bc50ab7147111f16e1a6527b3efc0c">newPass</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <span class="keyword">const</span> std::string &amp;style);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a3dcff7f2a5816718270e6725d6a639df">newPassFromShader</a>(<span class="keyword">const</span> std::string &amp;styleId, <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_class" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#afc4de6f0ac963e490d0a1f70f997dd92">newChain</a>();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a492a72455d96ca4c9a448a3707e6a6ba">newPostShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <span class="keyword">const</span> std::string &amp;style);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#a54cfc54a8137d4e9adb4e4b795e3aa89">newMeshShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <span class="keyword">const</span> std::string &amp;style);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_function" href="classeve_1_1stylize_1_1Stylize.html#adb3af4da1c0584db318d6c49c43d7ccf">processImage</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *src, <span class="keyword">const</span> std::string &amp;style);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aMeshEffectRenderer_8h_html"><div class="ttname"><a href="MeshEffectRenderer_8h.html">MeshEffectRenderer.h</a></div></div>
+<div class="ttc" id="aMeshEffect_8h_html"><div class="ttname"><a href="MeshEffect_8h.html">MeshEffect.h</a></div></div>
+<div class="ttc" id="aMeshVfxAsset_8h_html"><div class="ttname"><a href="MeshVfxAsset_8h.html">MeshVfxAsset.h</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aSkillMeshEffect_8h_html"><div class="ttname"><a href="SkillMeshEffect_8h.html">SkillMeshEffect.h</a></div></div>
+<div class="ttc" id="aStyleChain_8h_html"><div class="ttname"><a href="StyleChain_8h.html">StyleChain.h</a></div></div>
+<div class="ttc" id="aStylePass_8h_html"><div class="ttname"><a href="StylePass_8h.html">StylePass.h</a></div></div>
+<div class="ttc" id="aTrailEffect_8h_html"><div class="ttname"><a href="TrailEffect_8h.html">TrailEffect.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00033">ImageData.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleChain_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleChain.html">eve::stylize::StyleChain</a></div><div class="ttdoc">Ordered multi-pass stylize pipeline (extension point).</div><div class="ttdef"><b>Definition</b> <a href="StyleChain_8h_source.html#l00027">StyleChain.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleInstance_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleInstance.html">eve::stylize::StyleInstance</a></div><div class="ttdoc">Mutable parameter instance of an immutable built-in style definition.</div><div class="ttdef"><b>Definition</b> <a href="StyleInstance_8h_source.html#l00022">StyleInstance.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StylePass_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StylePass.html">eve::stylize::StylePass</a></div><div class="ttdoc">One stylized post-process pass bound to a style id (built-in or custom label). Draws a full-quad of t...</div><div class="ttdef"><b>Definition</b> <a href="StylePass_8h_source.html#l00024">StylePass.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1StyleRecipe_html"><div class="ttname"><a href="classeve_1_1stylize_1_1StyleRecipe.html">eve::stylize::StyleRecipe</a></div><div class="ttdoc">Compilable recipe of style instances sharing one pipeline stage.</div><div class="ttdef"><b>Definition</b> <a href="StyleRecipe_8h_source.html#l00024">StyleRecipe.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html">eve::stylize::Stylize</a></div><div class="ttdoc">Stylized / NPR rendering module — stable public surface for future expansion.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8h_source.html#l00049">Stylize.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a0f96d6de6c8e5a58c6de0ba6a7331173"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a0f96d6de6c8e5a58c6de0ba6a7331173">eve::stylize::Stylize::createMeshVfxAssetInstance</a></div><div class="ttdeci">eve::Result&lt; std::unique_ptr&lt; MeshVfxAssetInstance &gt; &gt; createMeshVfxAssetInstance(const MeshVfxAsset &amp;asset)</div><div class="ttdoc">Instantiate all runtime layers, reporting incompatible authored style parameters.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00095">Stylize.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a1b049b925cdbae8dc7cba3d844f76a64"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a1b049b925cdbae8dc7cba3d844f76a64">eve::stylize::Stylize::createMeshEffect</a></div><div class="ttdeci">std::unique_ptr&lt; MeshEffectInstance &gt; createMeshEffect(const std::string &amp;style)</div><div class="ttdoc">Create an owned runtime mesh effect for a registered mesh style.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00079">Stylize.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a21b3aebcfa6675226a43e2d7497cd7bc"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a21b3aebcfa6675226a43e2d7497cd7bc">eve::stylize::Stylize::hasStyle</a></div><div class="ttdeci">bool hasStyle(const std::string &amp;style) const</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00028">Stylize.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a222b78856bf0691521ba97b552a08863"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a222b78856bf0691521ba97b552a08863">eve::stylize::Stylize::getStyleCount</a></div><div class="ttdeci">int getStyleCount() const</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00024">Stylize.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a264feb492c13af2ab9b7145c452e7ed0"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a264feb492c13af2ab9b7145c452e7ed0">eve::stylize::Stylize::getStyleParamCount</a></div><div class="ttdeci">int getStyleParamCount(const std::string &amp;style) const</div><div class="ttdoc">Introspect built-in post param names (empty for unknown / custom-only ids).</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00038">Stylize.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a2b7d299d07da6c6113d1ba4d1358780c"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a2b7d299d07da6c6113d1ba4d1358780c">eve::stylize::Stylize::Stylize</a></div><div class="ttdeci">Stylize()=default</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a37bc50ab7147111f16e1a6527b3efc0c"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a37bc50ab7147111f16e1a6527b3efc0c">eve::stylize::Stylize::newPass</a></div><div class="ttdeci">StylePass * newPass(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdoc">Post-process StylePass (shader owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00046">Stylize.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a3dcff7f2a5816718270e6725d6a639df"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a3dcff7f2a5816718270e6725d6a639df">eve::stylize::Stylize::newPassFromShader</a></div><div class="ttdeci">StylePass * newPassFromShader(const std::string &amp;styleId, graphics::Shader *shader)</div><div class="ttdoc">Wrap an already-created post Shader (custom SPIR-V / future registered styles). styleId is a label on...</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00051">Stylize.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a492a72455d96ca4c9a448a3707e6a6ba"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a492a72455d96ca4c9a448a3707e6a6ba">eve::stylize::Stylize::newPostShader</a></div><div class="ttdeci">graphics::Shader * newPostShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdoc">Raw post Shader with defaults (owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00058">Stylize.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a54cfc54a8137d4e9adb4e4b795e3aa89"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a54cfc54a8137d4e9adb4e4b795e3aa89">eve::stylize::Stylize::newMeshShader</a></div><div class="ttdeci">graphics::Shader * newMeshShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdoc">Mesh3D Shader for cartoon/ink (owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00062">Stylize.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a59b715b5eb64f2483741aa107fec7041"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a59b715b5eb64f2483741aa107fec7041">eve::stylize::Stylize::createMeshEffectRenderer</a></div><div class="ttdeci">std::unique_ptr&lt; MeshEffectRenderer &gt; createMeshEffectRenderer(graphics::Graphics &amp;gfx)</div><div class="ttdoc">Create a render-thread adapter bound to one Graphics owner.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00087">Stylize.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a6ea3545655bddf35d755cd422b7bfdbe"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a6ea3545655bddf35d755cd422b7bfdbe">eve::stylize::Stylize::newInstance</a></div><div class="ttdeci">StyleInstance * newInstance(const std::string &amp;style)</div><div class="ttdoc">Create a mutable parameter instance of an immutable style definition.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00073">Stylize.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a8a78818eea03fbd8c4d5882162c34525"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a8a78818eea03fbd8c4d5882162c34525">eve::stylize::Stylize::hasMeshStyle</a></div><div class="ttdeci">bool hasMeshStyle(const std::string &amp;style) const</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00030">Stylize.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_a8c7087ca6b8d3bedfd192ca819efbd5b"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#a8c7087ca6b8d3bedfd192ca819efbd5b">eve::stylize::Stylize::~Stylize</a></div><div class="ttdeci">~Stylize() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_aaa3e15b273a5efe8d6394bf25e952ddc"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#aaa3e15b273a5efe8d6394bf25e952ddc">eve::stylize::Stylize::createTrailEmitter</a></div><div class="ttdeci">std::unique_ptr&lt; TrailEmitter &gt; createTrailEmitter()</div><div class="ttdoc">Create an owned CPU weapon-trail sampler with default settings.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00083">Stylize.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_aabc37b707e2c86ef9f14185e7a13bd13"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#aabc37b707e2c86ef9f14185e7a13bd13">eve::stylize::Stylize::Module_REG</a></div><div class="ttdeci">Module_REG(Stylize)</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_aaebe28e5fd0cbe42dc7184908826a28f"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#aaebe28e5fd0cbe42dc7184908826a28f">eve::stylize::Stylize::createSkillMeshEffect</a></div><div class="ttdeci">std::unique_ptr&lt; SkillMeshEffect &gt; createSkillMeshEffect(SkillMeshEffectKind kind)</div><div class="ttdoc">Create an owning runtime for a built-in gameplay mesh VFX recipe.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00091">Stylize.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_ab2fe2d57006d9516aad9cd5359f22323"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#ab2fe2d57006d9516aad9cd5359f22323">eve::stylize::Stylize::supports</a></div><div class="ttdeci">bool supports(const std::string &amp;style, const std::string &amp;feature) const</div><div class="ttdoc">Feature query. Known features: &quot;post&quot; — StylePass / newPostShader &quot;mesh&quot; — newMeshShader &quot;cpu&quot; — proc...</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00034">Stylize.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_ac7726260c8b01c1b412ee94edb18837f"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#ac7726260c8b01c1b412ee94edb18837f">eve::stylize::Stylize::getStyleId</a></div><div class="ttdeci">std::string getStyleId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00026">Stylize.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_ad389e1d3e9eed7ccc125109500a2708e"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#ad389e1d3e9eed7ccc125109500a2708e">eve::stylize::Stylize::getStyleParamName</a></div><div class="ttdeci">std::string getStyleParamName(const std::string &amp;style, int index) const</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00042">Stylize.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_adb3af4da1c0584db318d6c49c43d7ccf"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#adb3af4da1c0584db318d6c49c43d7ccf">eve::stylize::Stylize::processImage</a></div><div class="ttdeci">image::ImageData * processImage(image::ImageData *src, const std::string &amp;style)</div><div class="ttdoc">CPU fallback stylization for ImageData (RGBA8). Caller owns returned ImageData*.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00066">Stylize.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_aefb79bfada0eaf079e9e10002bf663bb"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#aefb79bfada0eaf079e9e10002bf663bb">eve::stylize::Stylize::newRecipe</a></div><div class="ttdeci">StyleRecipe * newRecipe()</div><div class="ttdoc">Create an empty compilable multi-style recipe.</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00077">Stylize.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1Stylize_html_afc4de6f0ac963e490d0a1f70f997dd92"><div class="ttname"><a href="classeve_1_1stylize_1_1Stylize.html#afc4de6f0ac963e490d0a1f70f997dd92">eve::stylize::Stylize::newChain</a></div><div class="ttdeci">StyleChain * newChain()</div><div class="ttdef"><b>Definition</b> <a href="Stylize_8cpp_source.html#l00056">Stylize.cpp:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00023">AvatarInstance.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ac25b7ae73b1f937a9db3f1c47e147171"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">eve::stylize::SkillMeshEffectKind</a></div><div class="ttdeci">SkillMeshEffectKind</div><div class="ttdoc">Built-in gameplay-oriented mesh VFX compositions.</div><div class="ttdef"><b>Definition</b> <a href="SkillMeshEffect_8h_source.html#l00013">SkillMeshEffect.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxAsset_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxAsset.html">eve::stylize::MeshVfxAsset</a></div><div class="ttdoc">Versioned, backend-neutral description of a real-time mesh effect.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxAsset_8h_source.html#l00071">MeshVfxAsset.h:71</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

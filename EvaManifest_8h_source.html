@@ -1,0 +1,286 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/EvaManifest.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EvaManifest.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EvaManifest_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceRef_8h.html">common/ResourceRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="SchemaVersion_8h.html">common/SchemaVersion.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset.html">eve::asset</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">RuntimeRequired</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">RuntimeOptional</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">Build</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">Editor</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">Source</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">Platform</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>[[nodiscard]] std::string_view <a class="code hl_function" href="namespaceeve_1_1asset.html#a5632706977133703460ffcf072b8537c">evaDependencyKindName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvaAssetEntry.html">EvaAssetEntry</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#a71a6095580a3ea7e64579d4a0d785214">   33</a></span>    <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>                 <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#a71a6095580a3ea7e64579d4a0d785214">asset</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#a6755294a55a0ec1d00c1fd67f25d500a">   34</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#a6755294a55a0ec1d00c1fd67f25d500a">type</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#abe2df7b74e3572142935eac816932efe">   35</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SchemaVersion</a>            <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#abe2df7b74e3572142935eac816932efe">schemaVersion</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#a24bab6eacef67abec5b9f7c890cbfa5b">   36</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#a24bab6eacef67abec5b9f7c890cbfa5b">definition</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#a7c42b06c671bf201c894601bab70a665">   37</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#a7c42b06c671bf201c894601bab70a665">contentHash</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaAssetEntry.html#a0a032cdb7c7b78faba5d172de81248ae">   38</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1asset_1_1EvaAssetEntry.html#a0a032cdb7c7b78faba5d172de81248ae">tags</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvaDependency.html">EvaDependency</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#a5083b08ca52c794651cbf5886e317e49">   43</a></span>    <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>           <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#a5083b08ca52c794651cbf5886e317e49">from</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#a0d04720908faf5901fcae6682836b936">   44</a></span>    <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>           <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#a0d04720908faf5901fcae6682836b936">to</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#ae143dafa23408df04210536148507f2d">   45</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a>  <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#ae143dafa23408df04210536148507f2d">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">EvaDependencyKind::RuntimeRequired</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#aa30b4b9884b240042b7267f002427495">   46</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#aa30b4b9884b240042b7267f002427495">path</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#a182c8553082be869e8f50aa919fc36c2">   47</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>      <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#a182c8553082be869e8f50aa919fc36c2">predicate</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#afc968a361c11efca37164ff9f0c45f02">   48</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#afc968a361c11efca37164ff9f0c45f02">expectedType</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaDependency.html#a0f3b5b44d21a0860f4b072ab47917049">   50</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>      <a class="code hl_variable" href="structeve_1_1asset_1_1EvaDependency.html#a0f3b5b44d21a0860f4b072ab47917049">fallback</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html">   60</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#a76e49d5d3cd503d9e10633cd097c31c8">   61</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a76e49d5d3cd503d9e10633cd097c31c8">kSchema</a> = <span class="stringliteral">&quot;eve.asset-archive&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#abf8732ba5083d76a24d288f73ba2bb53">   62</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint64_t    <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#abf8732ba5083d76a24d288f73ba2bb53">kVersion</a> = 1;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">   64</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>                   <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">packageId</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">   65</a></span>    std::string                    <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">packageName</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">   66</a></span>    std::string                    <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">packageVersion</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">   67</a></span>    std::vector&lt;EvaAssetEntry&gt;     <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">assets</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">   68</a></span>    std::vector&lt;EvaDependency&gt;     <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">dependencies</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#afe0d55fcf3652322c5d37cb8c8d0fb93">   69</a></span>    std::map&lt;std::string, AssetRef&gt; <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#afe0d55fcf3652322c5d37cb8c8d0fb93">entrypoints</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#af75c43a2311058a4d439018eeda91489">   70</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>                  <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#af75c43a2311058a4d439018eeda91489">provenance</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvaManifest.html#aedbaae9354c07a2b7236bf0ac367cced">   71</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>                  <a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#aedbaae9354c07a2b7236bf0ac367cced">extensions</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvaManifest&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset.html#ac1e4de965b559c08fc2582a109f5a8ab">parseEvaManifest</a>(std::string_view json);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset.html#a9e51de284e1aa0a7a5825f4771facc1c">serializeEvaManifest</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a>&amp; manifest);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::asset</span></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aResourceRef_8h_html"><div class="ttname"><a href="ResourceRef_8h.html">ResourceRef.h</a></div><div class="ttdoc">Strong asset, definition, object and generic resource references.</div></div>
+<div class="ttc" id="aSchemaVersion_8h_html"><div class="ttname"><a href="SchemaVersion_8h.html">SchemaVersion.h</a></div><div class="ttdoc">Persistent data-contract version identity.</div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00051">ResourceRef.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SchemaVersionTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html"><div class="ttname"><a href="namespaceeve_1_1asset.html">eve::asset</a></div><div class="ttdef"><b>Definition</b> <a href="AssetCooker_8cpp_source.html#l00015">AssetCooker.cpp:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a5632706977133703460ffcf072b8537c"><div class="ttname"><a href="namespaceeve_1_1asset.html#a5632706977133703460ffcf072b8537c">eve::asset::evaDependencyKindName</a></div><div class="ttdeci">std::string_view evaDependencyKindName(EvaDependencyKind kind) noexcept</div><div class="ttdoc">Return the stable manifest spelling for a dependency role.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8cpp_source.html#l00126">EvaManifest.cpp:126</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e51de284e1aa0a7a5825f4771facc1c"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e51de284e1aa0a7a5825f4771facc1c">eve::asset::serializeEvaManifest</a></div><div class="ttdeci">Result&lt; std::string &gt; serializeEvaManifest(const EvaManifest &amp;manifest)</div><div class="ttdoc">Serialize a validated manifest as deterministic compact JSON.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8cpp_source.html#l00313">EvaManifest.cpp:313</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">eve::asset::EvaDependencyKind</a></div><div class="ttdeci">EvaDependencyKind</div><div class="ttdoc">Dependency role recorded by a source asset archive.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00019">EvaManifest.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">eve::asset::EvaDependencyKind::Editor</a></div><div class="ttdeci">@ Editor</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">eve::asset::EvaDependencyKind::Platform</a></div><div class="ttdeci">@ Platform</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">eve::asset::EvaDependencyKind::RuntimeOptional</a></div><div class="ttdeci">@ RuntimeOptional</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">eve::asset::EvaDependencyKind::Build</a></div><div class="ttdeci">@ Build</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">eve::asset::EvaDependencyKind::Source</a></div><div class="ttdeci">@ Source</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">eve::asset::EvaDependencyKind::RuntimeRequired</a></div><div class="ttdeci">@ RuntimeRequired</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_ac1e4de965b559c08fc2582a109f5a8ab"><div class="ttname"><a href="namespaceeve_1_1asset.html#ac1e4de965b559c08fc2582a109f5a8ab">eve::asset::parseEvaManifest</a></div><div class="ttdeci">Result&lt; EvaManifest &gt; parseEvaManifest(std::string_view json)</div><div class="ttdoc">Parse and validate canonical .eva manifest JSON.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8cpp_source.html#l00138">EvaManifest.cpp:138</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html">eve::asset::EvaAssetEntry</a></div><div class="ttdoc">One typed asset definition in an .eva archive.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00032">EvaManifest.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_a0a032cdb7c7b78faba5d172de81248ae"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#a0a032cdb7c7b78faba5d172de81248ae">eve::asset::EvaAssetEntry::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00038">EvaManifest.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_a24bab6eacef67abec5b9f7c890cbfa5b"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#a24bab6eacef67abec5b9f7c890cbfa5b">eve::asset::EvaAssetEntry::definition</a></div><div class="ttdeci">std::string definition</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00036">EvaManifest.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_a6755294a55a0ec1d00c1fd67f25d500a"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#a6755294a55a0ec1d00c1fd67f25d500a">eve::asset::EvaAssetEntry::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00034">EvaManifest.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_a71a6095580a3ea7e64579d4a0d785214"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#a71a6095580a3ea7e64579d4a0d785214">eve::asset::EvaAssetEntry::asset</a></div><div class="ttdeci">AssetRef asset</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00033">EvaManifest.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_a7c42b06c671bf201c894601bab70a665"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#a7c42b06c671bf201c894601bab70a665">eve::asset::EvaAssetEntry::contentHash</a></div><div class="ttdeci">std::string contentHash</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00037">EvaManifest.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html_abe2df7b74e3572142935eac816932efe"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html#abe2df7b74e3572142935eac816932efe">eve::asset::EvaAssetEntry::schemaVersion</a></div><div class="ttdeci">SchemaVersion schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00035">EvaManifest.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html">eve::asset::EvaDependency</a></div><div class="ttdoc">One directed dependency between stable asset identities.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00042">EvaManifest.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_a0d04720908faf5901fcae6682836b936"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#a0d04720908faf5901fcae6682836b936">eve::asset::EvaDependency::to</a></div><div class="ttdeci">AssetRef to</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00044">EvaManifest.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_a0f3b5b44d21a0860f4b072ab47917049"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#a0f3b5b44d21a0860f4b072ab47917049">eve::asset::EvaDependency::fallback</a></div><div class="ttdeci">Value::Object fallback</div><div class="ttdoc">Required observable behavior when a runtime-optional target is unavailable.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00050">EvaManifest.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_a182c8553082be869e8f50aa919fc36c2"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#a182c8553082be869e8f50aa919fc36c2">eve::asset::EvaDependency::predicate</a></div><div class="ttdeci">Value::Object predicate</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00047">EvaManifest.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_a5083b08ca52c794651cbf5886e317e49"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#a5083b08ca52c794651cbf5886e317e49">eve::asset::EvaDependency::from</a></div><div class="ttdeci">AssetRef from</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00043">EvaManifest.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_aa30b4b9884b240042b7267f002427495"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#aa30b4b9884b240042b7267f002427495">eve::asset::EvaDependency::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00046">EvaManifest.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_ae143dafa23408df04210536148507f2d"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#ae143dafa23408df04210536148507f2d">eve::asset::EvaDependency::kind</a></div><div class="ttdeci">EvaDependencyKind kind</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00045">EvaManifest.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html_afc968a361c11efca37164ff9f0c45f02"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html#afc968a361c11efca37164ff9f0c45f02">eve::asset::EvaDependency::expectedType</a></div><div class="ttdeci">std::string expectedType</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00048">EvaManifest.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html">eve::asset::EvaManifest</a></div><div class="ttdoc">Validated, owning .eva manifest.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00060">EvaManifest.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a0e410c0a44fdce85a0e2fb5980dc7385"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">eve::asset::EvaManifest::assets</a></div><div class="ttdeci">std::vector&lt; EvaAssetEntry &gt; assets</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00067">EvaManifest.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a1066c923fc9010062e028239f4b7c8fa"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">eve::asset::EvaManifest::dependencies</a></div><div class="ttdeci">std::vector&lt; EvaDependency &gt; dependencies</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00068">EvaManifest.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a76e49d5d3cd503d9e10633cd097c31c8"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a76e49d5d3cd503d9e10633cd097c31c8">eve::asset::EvaManifest::kSchema</a></div><div class="ttdeci">static constexpr std::string_view kSchema</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00061">EvaManifest.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a8224a435201db35464ea6a87b8354129"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">eve::asset::EvaManifest::packageId</a></div><div class="ttdeci">PersistentId packageId</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00064">EvaManifest.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_aaed321f4f5ce625f4ab58611e66f6df5"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">eve::asset::EvaManifest::packageVersion</a></div><div class="ttdeci">std::string packageVersion</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00066">EvaManifest.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_abf8732ba5083d76a24d288f73ba2bb53"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#abf8732ba5083d76a24d288f73ba2bb53">eve::asset::EvaManifest::kVersion</a></div><div class="ttdeci">static constexpr std::uint64_t kVersion</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00062">EvaManifest.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_ad4a7844e8cda3b7b2f0585a06dc09a7d"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">eve::asset::EvaManifest::packageName</a></div><div class="ttdeci">std::string packageName</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00065">EvaManifest.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_aedbaae9354c07a2b7236bf0ac367cced"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#aedbaae9354c07a2b7236bf0ac367cced">eve::asset::EvaManifest::extensions</a></div><div class="ttdeci">Value::Object extensions</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00071">EvaManifest.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_af75c43a2311058a4d439018eeda91489"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#af75c43a2311058a4d439018eeda91489">eve::asset::EvaManifest::provenance</a></div><div class="ttdeci">Value::Object provenance</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00070">EvaManifest.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_afe0d55fcf3652322c5d37cb8c8d0fb93"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#afe0d55fcf3652322c5d37cb8c8d0fb93">eve::asset::EvaManifest::entrypoints</a></div><div class="ttdeci">std::map&lt; std::string, AssetRef &gt; entrypoints</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00069">EvaManifest.h:69</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1549 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::script 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script.html">script</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::script 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1script_1_1detail" id="r_namespaceeve_1_1script_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1BindingContract.html">BindingContract</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete script-facing contract for a native function or method.  <a href="structeve_1_1script_1_1BindingContract.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registry consumed by compiler checks and tooling protocol adapters.  <a href="classeve_1_1script_1_1BindingContractRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1BindingParameterContract.html">BindingParameterContract</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One native binding parameter visible to EveScript tools and named arguments.  <a href="structeve_1_1script_1_1BindingParameterContract.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1Borrowed.html">Borrowed</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-owning C++ observation with no implicit lifetime extension.  <a href="classeve_1_1script_1_1Borrowed.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1BorrowedSquirrelObject.html">BorrowedSquirrelObject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1script_1_1Borrowed.html" title="Non-owning C++ observation with no implicit lifetime extension.">Borrowed</a> view of a rooted Squirrel object for one synchronous call.  <a href="classeve_1_1script_1_1BorrowedSquirrelObject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1IScriptModuleProvider.html">IScriptModuleProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pluggable script source backend for directories, archives, plugins, or memory.  <a href="classeve_1_1script_1_1IScriptModuleProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1OwnedSquirrelObject.html">OwnedSquirrelObject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A rooted Squirrel reference owned by the C++ holder.  <a href="classeve_1_1script_1_1OwnedSquirrelObject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">RuntimeHandleRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle plus owner-lifetime epoch for a non-ECS registry object.  <a href="structeve_1_1script_1_1RuntimeHandleRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">RuntimeObjectRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slot/generation registry whose objects are exclusively unique-owned.  <a href="classeve_1_1script_1_1RuntimeObjectRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptCompiler.html">ScriptCompiler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified <a class="el" href="classeve_1_1Runtime.html">Runtime</a> compiler facade for metadata, diagnostics, and module preparation.  <a href="classeve_1_1script_1_1ScriptCompiler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptCompletion.html">ScriptCompletion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tool-neutral completion item suitable for LSP, MCP, and editor adapters.  <a href="structeve_1_1script_1_1ScriptCompletion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">ScriptDiagnostic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable structured diagnostic shared by <a class="el" href="classeve_1_1Runtime.html">Runtime</a>, LSP, MCP, and editor tools.  <a href="structeve_1_1script_1_1ScriptDiagnostic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured snapshot of a script error: message, throw site and stack.  <a href="structeve_1_1script_1_1ScriptErrorContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One call-stack frame captured while the script error is still live.  <a href="structeve_1_1script_1_1ScriptFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptHover.html">ScriptHover</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tool-neutral hover result for one script or binding symbol.  <a href="structeve_1_1script_1_1ScriptHover.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptMetadata.html">ScriptMetadata</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metadata retained for one compiled EveScript source unit.  <a href="structeve_1_1script_1_1ScriptMetadata.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical module request emitted by an EveScript import declaration.  <a href="structeve_1_1script_1_1ScriptModuleRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owns providers, the static dependency graph, compiled closures, and module instances.  <a href="classeve_1_1script_1_1ScriptModuleResolver.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptModuleSource.html">ScriptModuleSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UTF-8 source and stable identity returned by a module provider.  <a href="structeve_1_1script_1_1ScriptModuleSource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptPropertyMetadata.html">ScriptPropertyMetadata</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspector-facing metadata for one annotated script property.  <a href="structeve_1_1script_1_1ScriptPropertyMetadata.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptSourceMap.html">ScriptSourceMap</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source map for a compiled script.  <a href="structeve_1_1script_1_1ScriptSourceMap.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptSourceMapEntry.html">ScriptSourceMapEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One generated-to-original mapping segment. Native syntax uses identity mappings.  <a href="structeve_1_1script_1_1ScriptSourceMapEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptSourcePosition.html">ScriptSourcePosition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original EveScript source position. Lines and columns are one-based.  <a href="structeve_1_1script_1_1ScriptSourcePosition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptSymbolMetadata.html">ScriptSymbolMetadata</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erased source-level symbol retained for tooling.  <a href="structeve_1_1script_1_1ScriptSymbolMetadata.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limits and provenance used by the Squirrel ↔ <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> adapter.  <a href="structeve_1_1script_1_1SquirrelValueOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aa5c647604a0387e9fdaa5a7e247d1793" id="r_aa5c647604a0387e9fdaa5a7e247d1793"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aa5c647604a0387e9fdaa5a7e247d1793"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aa5c647604a0387e9fdaa5a7e247d1793">Owned</a> = std::unique_ptr&lt; T &gt;</td></tr>
+<tr class="memdesc:aa5c647604a0387e9fdaa5a7e247d1793"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ owning storage used by an object factory.  <br /></td></tr>
+<tr class="separator:aa5c647604a0387e9fdaa5a7e247d1793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b921076983059865118bd92144d5550" id="r_a0b921076983059865118bd92144d5550"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a0b921076983059865118bd92144d5550">ScriptValue</a> = <a class="el" href="classeve_1_1Value.html">eve::Value</a></td></tr>
+<tr class="memdesc:a0b921076983059865118bd92144d5550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical detached script value; it never aliases a VM object.  <br /></td></tr>
+<tr class="separator:a0b921076983059865118bd92144d5550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a9c8636baedd3d9b12d8c3964874cf91c" id="r_a9c8636baedd3d9b12d8c3964874cf91c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91c">ScriptDiagnosticSeverity</a> { <a class="el" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91ca4059b0251f66a18cb56f544728796875">Info</a>
+, <a class="el" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91ca0eaadb4fcb48a0a0ed7bc9868be9fbaa">Warning</a>
+, <a class="el" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd">Error</a>
+ }</td></tr>
+<tr class="memdesc:a9c8636baedd3d9b12d8c3964874cf91c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Severity of a structured EveScript compiler diagnostic.  <a href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91c">更多...</a><br /></td></tr>
+<tr class="separator:a9c8636baedd3d9b12d8c3964874cf91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07bca28a0c401cbc2310a45c6f7ee8cb" id="r_a07bca28a0c401cbc2310a45c6f7ee8cb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cb">ScriptUnit</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba8f19a8c7566af54ea8981029730e5465">Seconds</a>
+, <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba38f246763036ccaeba7db6d563c4d821">Milliseconds</a>
+, <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba682f5298cdcce11e567b7f833843d3be">Radians</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba9ef125630442bb42e2e367e0cf70d892">Degrees</a>
+, <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cbac3d2f5d37334dc978fd8b17fc77408a1">Pixels</a>
+, <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cba80b4a3eed88aed8a1c7d8a4418b7f469">Meters</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a07bca28a0c401cbc2310a45c6f7ee8cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit attached to a binding parameter or return value.  <a href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cb">更多...</a><br /></td></tr>
+<tr class="separator:a07bca28a0c401cbc2310a45c6f7ee8cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d25965ef955921758b7d857beb61323" id="r_a6d25965ef955921758b7d857beb61323"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">ScriptModuleStatus</a> { <a class="el" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca">NotHandled</a>
+, <a class="el" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9">Found</a>
+, <a class="el" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323a902b0d55fddef6f8d651fe1035b7d4bd">Error</a>
+ }</td></tr>
+<tr class="memdesc:a6d25965ef955921758b7d857beb61323"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result of asking a provider to resolve or load a script module.  <a href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">更多...</a><br /></td></tr>
+<tr class="separator:a6d25965ef955921758b7d857beb61323"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b5a79eb10066ab6a0f3be2752124275" id="r_a4b5a79eb10066ab6a0f3be2752124275"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275">ObjectSemantic</a> { <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c">Value</a>
+, <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a60848c692f8ddb0363e500da44563bae">Owned</a>
+, <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a0508624b46fa4785138cf2fdff6d7039">Borrowed</a>
+ }</td></tr>
+<tr class="memdesc:a4b5a79eb10066ab6a0f3be2752124275"><td class="mdescLeft">&#160;</td><td class="mdescRight">The only three meanings a script-facing object may have.  <a href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275">更多...</a><br /></td></tr>
+<tr class="separator:a4b5a79eb10066ab6a0f3be2752124275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aaa374fba58b59d0ff79c69a819b80aad" id="r_aaa374fba58b59d0ff79c69a819b80aad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aaa374fba58b59d0ff79c69a819b80aad">registerEngineBindingContracts</a> (<a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:aaa374fba58b59d0ff79c69a819b80aad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the build-generated contracts for every SimpleSquirrel binding.  <br /></td></tr>
+<tr class="separator:aaa374fba58b59d0ff79c69a819b80aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4516336dad9ff1bf639224b132dbe40" id="r_af4516336dad9ff1bf639224b132dbe40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#af4516336dad9ff1bf639224b132dbe40">captureScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:af4516336dad9ff1bf639224b132dbe40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the pending runtime error from inside the Squirrel error handler.  <br /></td></tr>
+<tr class="separator:af4516336dad9ff1bf639224b132dbe40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8739bb9996f823d27176f428ebf6a780" id="r_a8739bb9996f823d27176f428ebf6a780"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a8739bb9996f823d27176f428ebf6a780">captureCompileError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a8739bb9996f823d27176f428ebf6a780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the last compilation error recorded by the VM.  <br /></td></tr>
+<tr class="separator:a8739bb9996f823d27176f428ebf6a780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e0dbba701b6a06f8976321656d1ae20" id="r_a6e0dbba701b6a06f8976321656d1ae20"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a6e0dbba701b6a06f8976321656d1ae20">parseCompileError</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, std::string *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, int *<a class="el" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, int *column, std::string *message)</td></tr>
+<tr class="memdesc:a6e0dbba701b6a06f8976321656d1ae20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the ssq compile message "Compile error at source:line:column msg".  <br /></td></tr>
+<tr class="separator:a6e0dbba701b6a06f8976321656d1ae20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab411be247b49af0635c475f833c1dea6" id="r_ab411be247b49af0635c475f833c1dea6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#ab411be247b49af0635c475f833c1dea6">sourceLineText</a> (const std::string &amp;sourceText, int <a class="el" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>)</td></tr>
+<tr class="memdesc:ab411be247b49af0635c475f833c1dea6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts one 1-based line from script source text.  <br /></td></tr>
+<tr class="separator:ab411be247b49af0635c475f833c1dea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85e135fa8c3150b8b4b5edb55b1a192b" id="r_a85e135fa8c3150b8b4b5edb55b1a192b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a85e135fa8c3150b8b4b5edb55b1a192b">formatStackTrace</a> (const std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a> &gt; &amp;frames)</td></tr>
+<tr class="memdesc:a85e135fa8c3150b8b4b5edb55b1a192b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats just the call-stack portion of a context.  <br /></td></tr>
+<tr class="separator:a85e135fa8c3150b8b4b5edb55b1a192b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b28e5c5a2007a4101192399cdca32b" id="r_aa0b28e5c5a2007a4101192399cdca32b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aa0b28e5c5a2007a4101192399cdca32b">formatScriptError</a> (const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> &amp;ctx)</td></tr>
+<tr class="memdesc:aa0b28e5c5a2007a4101192399cdca32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats a context into a human-readable multi-line report.  <br /></td></tr>
+<tr class="separator:aa0b28e5c5a2007a4101192399cdca32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e3512388ca2ea62b7192fca394f049" id="r_ae3e3512388ca2ea62b7192fca394f049"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#ae3e3512388ca2ea62b7192fca394f049">setLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> ctx)</td></tr>
+<tr class="memdesc:ae3e3512388ca2ea62b7192fca394f049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the last error for a VM (thread-local, synchronous consumers).  <br /></td></tr>
+<tr class="separator:ae3e3512388ca2ea62b7192fca394f049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adacef053fceccd6b9d6b1bcf1ecc8e6a" id="r_adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#adacef053fceccd6b9d6b1bcf1ecc8e6a">takeLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumes and clears the last recorded error for a VM.  <br /></td></tr>
+<tr class="separator:adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ecd7ae71c077d8bca20c54b9e5c5887" id="r_a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a3ecd7ae71c077d8bca20c54b9e5c5887">peekLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Peeks at the last recorded error for a VM without clearing it.  <br /></td></tr>
+<tr class="separator:a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0177a458528b1489b47218ba2388ef68" id="r_a0177a458528b1489b47218ba2388ef68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a0177a458528b1489b47218ba2388ef68">clearLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a0177a458528b1489b47218ba2388ef68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops any recorded error for a VM.  <br /></td></tr>
+<tr class="separator:a0177a458528b1489b47218ba2388ef68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0409ef6800fb3a1f11aa4c439db1d828" id="r_a0409ef6800fb3a1f11aa4c439db1d828"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a0409ef6800fb3a1f11aa4c439db1d828">valueFromSquirrel</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, SQInteger <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a0409ef6800fb3a1f11aa4c439db1d828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert one Squirrel value into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree.  <br /></td></tr>
+<tr class="separator:a0409ef6800fb3a1f11aa4c439db1d828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab3e5c9ffbc12aeb6d6e345992bdd48" id="r_a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a4ab3e5c9ffbc12aeb6d6e345992bdd48">valueFromSquirrel</a> (const ssq::Object &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a rooted Squirrel object into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree.  <br /></td></tr>
+<tr class="separator:a4ab3e5c9ffbc12aeb6d6e345992bdd48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a2718be6d14b5b3b7d8d9098d9e753" id="r_a29a2718be6d14b5b3b7d8d9098d9e753"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a29a2718be6d14b5b3b7d8d9098d9e753">pushValue</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a29a2718be6d14b5b3b7d8d9098d9e753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a canonical <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> into the active Squirrel VM.  <br /></td></tr>
+<tr class="separator:a29a2718be6d14b5b3b7d8d9098d9e753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa313dd05578d039f2898acc6af7ae9f" id="r_afa313dd05578d039f2898acc6af7ae9f"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#afa313dd05578d039f2898acc6af7ae9f">projectDiagnostic</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> &amp;diagnostic)</td></tr>
+<tr class="memdesc:afa313dd05578d039f2898acc6af7ae9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one <a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a> using the common script table schema.  <br /></td></tr>
+<tr class="separator:afa313dd05578d039f2898acc6af7ae9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921c318b270412cbb5d71e8085ab7537" id="r_a921c318b270412cbb5d71e8085ab7537"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a921c318b270412cbb5d71e8085ab7537">projectStatus</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>)</td></tr>
+<tr class="memdesc:a921c318b270412cbb5d71e8085ab7537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> using the common script table schema.  <br /></td></tr>
+<tr class="separator:a921c318b270412cbb5d71e8085ab7537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a568ea2eb2d061d37ec7dbe79d8797d77" id="r_a568ea2eb2d061d37ec7dbe79d8797d77"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a568ea2eb2d061d37ec7dbe79d8797d77">projectStatusResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, bool <a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>, bool hasValue, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>={})</td></tr>
+<tr class="memdesc:a568ea2eb2d061d37ec7dbe79d8797d77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project an already-consumed native status and optional <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload.  <br /></td></tr>
+<tr class="separator:a568ea2eb2d061d37ec7dbe79d8797d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4df5edc4f47ca3cc0e7e160d4a3b7c" id="r_aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">projectResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&amp;result)</td></tr>
+<tr class="memdesc:aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume and project a void native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> using the common schema.  <br /></td></tr>
+<tr class="separator:aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abda141283fd327e274ae32d3c7946495" id="r_abda141283fd327e274ae32d3c7946495"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#abda141283fd327e274ae32d3c7946495">ignoreResult</a> (const ssq::Object &amp;result, const std::string &amp;reason)</td></tr>
+<tr class="memdesc:abda141283fd327e274ae32d3c7946495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a projected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> table as intentionally ignored by script.  <br /></td></tr>
+<tr class="separator:abda141283fd327e274ae32d3c7946495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a986f169a30607834af11eaad0cefe60c" id="r_a986f169a30607834af11eaad0cefe60c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a986f169a30607834af11eaad0cefe60c">exposeResultBindings</a> (ssq::Table &amp;eveTable)</td></tr>
+<tr class="memdesc:a986f169a30607834af11eaad0cefe60c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the common script helpers under <code>eve.result</code>.  <br /></td></tr>
+<tr class="separator:a986f169a30607834af11eaad0cefe60c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa607a194053e67b98d4f511318ac112" id="r_afa607a194053e67b98d4f511318ac112"><td class="memTemplParams" colspan="2">template&lt;class T , class Projector &gt; </td></tr>
+<tr class="memitem:afa607a194053e67b98d4f511318ac112"><td class="memTemplItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#afa607a194053e67b98d4f511318ac112">projectResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt; &amp;&amp;result, Projector &amp;&amp;projector)</td></tr>
+<tr class="memdesc:afa607a194053e67b98d4f511318ac112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume and project a value-bearing native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>.  <br /></td></tr>
+<tr class="separator:afa607a194053e67b98d4f511318ac112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafce833a42072d18c82485f6a802e556" id="r_aafce833a42072d18c82485f6a802e556"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aafce833a42072d18c82485f6a802e556">objectSemanticName</a> (<a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275">ObjectSemantic</a> <a class="el" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>) noexcept</td></tr>
+<tr class="memdesc:aafce833a42072d18c82485f6a802e556"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable name used by diagnostics and documentation.  <br /></td></tr>
+<tr class="separator:aafce833a42072d18c82485f6a802e556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a6103e6fdbd240e7a9420df3fe8eb2" id="r_a64a6103e6fdbd240e7a9420df3fe8eb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1BorrowedSquirrelObject.html">BorrowedSquirrelObject</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a64a6103e6fdbd240e7a9420df3fe8eb2">borrowSquirrelObject</a> (const ssq::Object &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>) noexcept</td></tr>
+<tr class="memdesc:a64a6103e6fdbd240e7a9420df3fe8eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a one-call <a class="el" href="classeve_1_1script_1_1Borrowed.html" title="Non-owning C++ observation with no implicit lifetime extension.">Borrowed</a> view without retaining a VM reference.  <br /></td></tr>
+<tr class="separator:a64a6103e6fdbd240e7a9420df3fe8eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c74972321b36da5d39d12f8a7ee9c4f" id="r_a1c74972321b36da5d39d12f8a7ee9c4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1script_1_1OwnedSquirrelObject.html">OwnedSquirrelObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a1c74972321b36da5d39d12f8a7ee9c4f">ownSquirrelObject</a> (<a class="el" href="classeve_1_1script_1_1BorrowedSquirrelObject.html">BorrowedSquirrelObject</a> borrowed)</td></tr>
+<tr class="memdesc:a1c74972321b36da5d39d12f8a7ee9c4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Promotes a borrowed VM object to an explicit rooted owner.  <br /></td></tr>
+<tr class="separator:a1c74972321b36da5d39d12f8a7ee9c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8c1e86164a37718d037e4ebda9bdb79" id="r_ad8c1e86164a37718d037e4ebda9bdb79"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ad8c1e86164a37718d037e4ebda9bdb79"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; ssq::Object &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#ad8c1e86164a37718d037e4ebda9bdb79">makeOwnedSquirrelInstance</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="namespaceeve_1_1script.html#aa5c647604a0387e9fdaa5a7e247d1793">Owned</a>&lt; T &gt; <a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>)</td></tr>
+<tr class="memdesc:ad8c1e86164a37718d037e4ebda9bdb79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a Squirrel instance that owns a C++ wrapper through a release hook.  <br /></td></tr>
+<tr class="separator:ad8c1e86164a37718d037e4ebda9bdb79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="aa5c647604a0387e9fdaa5a7e247d1793" name="aa5c647604a0387e9fdaa5a7e247d1793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5c647604a0387e9fdaa5a7e247d1793">&#9670;&#160;</a></span>Owned</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1script.html#aa5c647604a0387e9fdaa5a7e247d1793">eve::script::Owned</a> = typedef std::unique_ptr&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>C++ owning storage used by an object factory. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> whose destruction belongs to this owner. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Prefer this alias over a raw owning pointer. Ownership transfer is explicit through move construction or <code>std::move</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b921076983059865118bd92144d5550" name="a0b921076983059865118bd92144d5550"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b921076983059865118bd92144d5550">&#9670;&#160;</a></span>ScriptValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1script.html#a0b921076983059865118bd92144d5550">eve::script::ScriptValue</a> = typedef <a class="el" href="classeve_1_1Value.html">eve::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical detached script value; it never aliases a VM object. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a4b5a79eb10066ab6a0f3be2752124275" name="a4b5a79eb10066ab6a0f3be2752124275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b5a79eb10066ab6a0f3be2752124275">&#9670;&#160;</a></span>ObjectSemantic</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275">eve::script::ObjectSemantic</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The only three meanings a script-facing object may have. </p>
+<p><code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a></code> is a detached canonical <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code> tree. <code>Owned</code> is rooted or otherwise responsible for destruction. <code><a class="el" href="classeve_1_1script_1_1Borrowed.html" title="Non-owning C++ observation with no implicit lifetime extension.">Borrowed</a></code> is an observation whose lifetime is bounded by its owner and which must never be retained across a mutation, frame, task, callback, restore, or module unload. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c" name="a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c"></a>Value&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4b5a79eb10066ab6a0f3be2752124275a60848c692f8ddb0363e500da44563bae" name="a4b5a79eb10066ab6a0f3be2752124275a60848c692f8ddb0363e500da44563bae"></a>Owned&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4b5a79eb10066ab6a0f3be2752124275a0508624b46fa4785138cf2fdff6d7039" name="a4b5a79eb10066ab6a0f3be2752124275a0508624b46fa4785138cf2fdff6d7039"></a>Borrowed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c8636baedd3d9b12d8c3964874cf91c" name="a9c8636baedd3d9b12d8c3964874cf91c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c8636baedd3d9b12d8c3964874cf91c">&#9670;&#160;</a></span>ScriptDiagnosticSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91c">eve::script::ScriptDiagnosticSeverity</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Severity of a structured EveScript compiler diagnostic. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9c8636baedd3d9b12d8c3964874cf91ca4059b0251f66a18cb56f544728796875" name="a9c8636baedd3d9b12d8c3964874cf91ca4059b0251f66a18cb56f544728796875"></a>Info&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9c8636baedd3d9b12d8c3964874cf91ca0eaadb4fcb48a0a0ed7bc9868be9fbaa" name="a9c8636baedd3d9b12d8c3964874cf91ca0eaadb4fcb48a0a0ed7bc9868be9fbaa"></a>Warning&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd" name="a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8h_source.html">ScriptCompiler.h</a> 第 <a class="el" href="ScriptCompiler_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6d25965ef955921758b7d857beb61323" name="a6d25965ef955921758b7d857beb61323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d25965ef955921758b7d857beb61323">&#9670;&#160;</a></span>ScriptModuleStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">eve::script::ScriptModuleStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of asking a provider to resolve or load a script module. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca" name="a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca"></a>NotHandled&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9" name="a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9"></a>Found&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6d25965ef955921758b7d857beb61323a902b0d55fddef6f8d651fe1035b7d4bd" name="a6d25965ef955921758b7d857beb61323a902b0d55fddef6f8d651fe1035b7d4bd"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8h_source.html">ScriptModule.h</a> 第 <a class="el" href="ScriptModule_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07bca28a0c401cbc2310a45c6f7ee8cb" name="a07bca28a0c401cbc2310a45c6f7ee8cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07bca28a0c401cbc2310a45c6f7ee8cb">&#9670;&#160;</a></span>ScriptUnit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1script.html#a07bca28a0c401cbc2310a45c6f7ee8cb">eve::script::ScriptUnit</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unit attached to a binding parameter or return value. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba6adf97f83acf6453d4a6a4b1070f3754" name="a07bca28a0c401cbc2310a45c6f7ee8cba6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba8f19a8c7566af54ea8981029730e5465" name="a07bca28a0c401cbc2310a45c6f7ee8cba8f19a8c7566af54ea8981029730e5465"></a>Seconds&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba38f246763036ccaeba7db6d563c4d821" name="a07bca28a0c401cbc2310a45c6f7ee8cba38f246763036ccaeba7db6d563c4d821"></a>Milliseconds&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba682f5298cdcce11e567b7f833843d3be" name="a07bca28a0c401cbc2310a45c6f7ee8cba682f5298cdcce11e567b7f833843d3be"></a>Radians&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba9ef125630442bb42e2e367e0cf70d892" name="a07bca28a0c401cbc2310a45c6f7ee8cba9ef125630442bb42e2e367e0cf70d892"></a>Degrees&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cbac3d2f5d37334dc978fd8b17fc77408a1" name="a07bca28a0c401cbc2310a45c6f7ee8cbac3d2f5d37334dc978fd8b17fc77408a1"></a>Pixels&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07bca28a0c401cbc2310a45c6f7ee8cba80b4a3eed88aed8a1c7d8a4418b7f469" name="a07bca28a0c401cbc2310a45c6f7ee8cba80b4a3eed88aed8a1c7d8a4418b7f469"></a>Meters&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ScriptCompiler_8h_source.html">ScriptCompiler.h</a> 第 <a class="el" href="ScriptCompiler_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a64a6103e6fdbd240e7a9420df3fe8eb2" name="a64a6103e6fdbd240e7a9420df3fe8eb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a6103e6fdbd240e7a9420df3fe8eb2">&#9670;&#160;</a></span>borrowSquirrelObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1BorrowedSquirrelObject.html">BorrowedSquirrelObject</a> eve::script::borrowSquirrelObject </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a one-call <a class="el" href="classeve_1_1script_1_1Borrowed.html" title="Non-owning C++ observation with no implicit lifetime extension.">Borrowed</a> view without retaining a VM reference. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectRegistry_8cpp_source.html#l00058">eve::ui::ObjectRegistry::registerObject()</a>.</p>
+
+</div>
+</div>
+<a id="a8739bb9996f823d27176f428ebf6a780" name="a8739bb9996f823d27176f428ebf6a780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8739bb9996f823d27176f428ebf6a780">&#9670;&#160;</a></span>captureCompileError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::captureCompileError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the last compilation error recorded by the VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose compile just failed (ssq's compiler handler stores it). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Context with message, source, line and column. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00030">eve::script::ScriptErrorContext::column</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8cpp_source.html#l00120">parseCompileError()</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00218">eve::dev::ConsolePanel::eval()</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l01093">eve::dev::Debugger::evaluate()</a>.</p>
+
+</div>
+</div>
+<a id="af4516336dad9ff1bf639224b132dbe40" name="af4516336dad9ff1bf639224b132dbe40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4516336dad9ff1bf639224b132dbe40">&#9670;&#160;</a></span>captureScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::captureScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the pending runtime error from inside the Squirrel error handler. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose error handler is executing (error value at stack slot 2). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Context with the message and the still-live call stack. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00015">eve::script::ScriptFrame::function</a>, <a class="el" href="ScriptError_8h_source.html#l00028">eve::script::ScriptErrorContext::function</a>, <a class="el" href="ScriptError_8h_source.html#l00016">eve::script::ScriptFrame::line</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8h_source.html#l00014">eve::script::ScriptFrame::source</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a>, <a class="el" href="ScriptError_8h_source.html#l00032">eve::script::ScriptErrorContext::stack</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a0177a458528b1489b47218ba2388ef68" name="a0177a458528b1489b47218ba2388ef68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0177a458528b1489b47218ba2388ef68">&#9670;&#160;</a></span>clearLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::clearLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drops any recorded error for a VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose pending error should be forgotten. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00438">eve::Runtime::shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="a986f169a30607834af11eaad0cefe60c" name="a986f169a30607834af11eaad0cefe60c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a986f169a30607834af11eaad0cefe60c">&#9670;&#160;</a></span>exposeResultBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::exposeResultBindings </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>eveTable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expose the common script helpers under <code>eve.result</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eveTable</td><td>Shared engine root table created by <a class="el" href="classeve_1_1ModuleManager.html">ModuleManager</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>This is idempotent for the initial root-table exposure and must be called once by the common composition root. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00474">474</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00444">ignoreResult()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00264">eve::ModuleManager::exposeVM()</a>.</p>
+
+</div>
+</div>
+<a id="aa0b28e5c5a2007a4101192399cdca32b" name="aa0b28e5c5a2007a4101192399cdca32b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b28e5c5a2007a4101192399cdca32b">&#9670;&#160;</a></span>formatScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::formatScriptError </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Formats a context into a human-readable multi-line report. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Context to format. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>"source:line (function): message" plus optional hint and stack. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8cpp_source.html#l00175">formatStackTrace()</a>, <a class="el" href="ScriptError_8h_source.html#l00028">eve::script::ScriptErrorContext::function</a>, <a class="el" href="ScriptError_8h_source.html#l00031">eve::script::ScriptErrorContext::hint</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a> , 以及 <a class="el" href="ScriptError_8h_source.html#l00032">eve::script::ScriptErrorContext::stack</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConsolePanel_8cpp_source.html#l00218">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l01093">eve::dev::Debugger::evaluate()</a>, <a class="el" href="Runtime_8cpp_source.html#l00529">eve::Runtime::execute()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00304">eve::ScriptException::ScriptException()</a>.</p>
+
+</div>
+</div>
+<a id="a85e135fa8c3150b8b4b5edb55b1a192b" name="a85e135fa8c3150b8b4b5edb55b1a192b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85e135fa8c3150b8b4b5edb55b1a192b">&#9670;&#160;</a></span>formatStackTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::formatStackTrace </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>frames</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Formats just the call-stack portion of a context. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frames</td><td>Frames to render, innermost first. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>One "source:line in function" line per frame, newline separated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptError_8cpp_source.html#l00189">formatScriptError()</a>.</p>
+
+</div>
+</div>
+<a id="abda141283fd327e274ae32d3c7946495" name="abda141283fd327e274ae32d3c7946495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda141283fd327e274ae32d3c7946495">&#9670;&#160;</a></span>ignoreResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::ignoreResult </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark a projected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> table as intentionally ignored by script. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Projected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> table/object returned by a checked binding. </td></tr>
+    <tr><td class="paramname">reason</td><td>Non-empty reason retained in <code>ignoreReason</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the table was marked; false for a non-table or empty reason. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00474">exposeResultBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ad8c1e86164a37718d037e4ebda9bdb79" name="ad8c1e86164a37718d037e4ebda9bdb79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8c1e86164a37718d037e4ebda9bdb79">&#9670;&#160;</a></span>makeOwnedSquirrelInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; ssq::Object &gt; eve::script::makeOwnedSquirrelInstance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1script.html#aa5c647604a0387e9fdaa5a7e247d1793">Owned</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>object</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a Squirrel instance that owns a C++ wrapper through a release hook. </p>
+<p>The class for <code>T*</code> must have been registered in this VM with <code>ssq::Table::addClass&lt;T&gt;()</code>. The returned <code>ssq::Object</code> is itself a rooted owner and can safely cross the current native call into script storage. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="aafce833a42072d18c82485f6a802e556" name="aafce833a42072d18c82485f6a802e556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafce833a42072d18c82485f6a802e556">&#9670;&#160;</a></span>objectSemanticName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::script::objectSemanticName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275">ObjectSemantic</a>&#160;</td>
+          <td class="paramname"><em>semantic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the stable name used by diagnostics and documentation. </p>
+<dl class="section return"><dt>返回</dt><dd>A non-null borrowed pointer to immutable static text. @ownership <a class="el" href="classeve_1_1script_1_1Borrowed.html" title="Non-owning C++ observation with no implicit lifetime extension.">Borrowed</a> from program-static storage; callers must not free or modify the returned text. @nullable No. @lifetime Static for the process lifetime. @thread Thread-safe and side-effect free. @reentrancy Does not access the VM or invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a0508624b46fa4785138cf2fdff6d7039">Borrowed</a>, <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a60848c692f8ddb0363e500da44563bae">Owned</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a> , 以及 <a class="el" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c">Value</a>.</p>
+
+</div>
+</div>
+<a id="a1c74972321b36da5d39d12f8a7ee9c4f" name="a1c74972321b36da5d39d12f8a7ee9c4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c74972321b36da5d39d12f8a7ee9c4f">&#9670;&#160;</a></span>ownSquirrelObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1script_1_1OwnedSquirrelObject.html">OwnedSquirrelObject</a> &gt; eve::script::ownSquirrelObject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1BorrowedSquirrelObject.html">BorrowedSquirrelObject</a>&#160;</td>
+          <td class="paramname"><em>borrowed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Promotes a borrowed VM object to an explicit rooted owner. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">borrowed</td><td><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> valid for the duration of this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A move-only owner, or a structured invalid-argument failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelOwnership_8h_source.html">SquirrelOwnership.h</a> 第 <a class="el" href="SquirrelOwnership_8h_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00134">eve::script::BorrowedSquirrelObject::get()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00136">eve::script::BorrowedSquirrelObject::isBound()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectRegistry_8cpp_source.html#l00058">eve::ui::ObjectRegistry::registerObject()</a>.</p>
+
+</div>
+</div>
+<a id="a6e0dbba701b6a06f8976321656d1ae20" name="a6e0dbba701b6a06f8976321656d1ae20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e0dbba701b6a06f8976321656d1ae20">&#9670;&#160;</a></span>parseCompileError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::parseCompileError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses the ssq compile message "Compile error at source:line:column msg". </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>Message produced by ssq::CompileException::what(). </td></tr>
+    <tr><td class="paramname">source</td><td>Receives the source name (may be nullptr). </td></tr>
+    <tr><td class="paramname">line</td><td>Receives the 1-based line (may be nullptr). </td></tr>
+    <tr><td class="paramname">column</td><td>Receives the 1-based column (may be nullptr). </td></tr>
+    <tr><td class="paramname">message</td><td>Receives the raw compiler description (may be nullptr). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the message matched the expected layout. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptError_8cpp_source.html#l00103">captureCompileError()</a>.</p>
+
+</div>
+</div>
+<a id="a3ecd7ae71c077d8bca20c54b9e5c5887" name="a3ecd7ae71c077d8bca20c54b9e5c5887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ecd7ae71c077d8bca20c54b9e5c5887">&#9670;&#160;</a></span>peekLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> * eve::script::peekLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Peeks at the last recorded error for a VM without clearing it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Pointer to the stored context, or nullptr when none is pending. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="afa313dd05578d039f2898acc6af7ae9f" name="afa313dd05578d039f2898acc6af7ae9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa313dd05578d039f2898acc6af7ae9f">&#9670;&#160;</a></span>projectDiagnostic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::script::projectDiagnostic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> &amp;&#160;</td>
+          <td class="paramname"><em>diagnostic</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project one <a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a> using the common script table schema. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">386</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00133">eve::Diagnostic::code()</a>, <a class="el" href="Diagnostic_8h_source.html#l00141">eve::Diagnostic::details()</a>, <a class="el" href="Diagnostic_8h_source.html#l00166">eve::diagnosticCodeName()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Diagnostic_8h_source.html#l00137">eve::Diagnostic::message()</a>, <a class="el" href="Diagnostic_8h_source.html#l00139">eve::Diagnostic::path()</a>, <a class="el" href="Diagnostic_8h_source.html#l00135">eve::Diagnostic::severity()</a>, <a class="el" href="Diagnostic_8h_source.html#l00143">eve::Diagnostic::source()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00407">projectStatus()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00419">projectStatusResult()</a>.</p>
+
+</div>
+</div>
+<a id="afa607a194053e67b98d4f511318ac112" name="afa607a194053e67b98d4f511318ac112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa607a194053e67b98d4f511318ac112">&#9670;&#160;</a></span>projectResult() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T , class Projector &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::script::projectResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Projector &amp;&amp;&#160;</td>
+          <td class="paramname"><em>projector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consume and project a value-bearing native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> payload type. </td></tr>
+    <tr><td class="paramname">Projector</td><td>Pure projection from the native payload to <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>Active Squirrel VM. </td></tr>
+    <tr><td class="paramname">result</td><td>Checked <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> returned by a domain API. </td></tr>
+    <tr><td class="paramname">projector</td><td>Domain-specific, non-throwing data projection. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A common <code>{ok, code, status, diagnostics, value, ...}</code> table. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Calling this helper observes the <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> on both success and failure. It therefore never relies on a domain <code>lastError</code> slot. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8h_source.html">SquirrelBinding.h</a> 第 <a class="el" href="SquirrelBinding_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00419">projectStatusResult()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="aaf4df5edc4f47ca3cc0e7e160d4a3b7c" name="aaf4df5edc4f47ca3cc0e7e160d4a3b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">&#9670;&#160;</a></span>projectResult() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::script::projectResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consume and project a void native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> using the common schema. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00419">projectStatusResult()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a921c318b270412cbb5d71e8085ab7537" name="a921c318b270412cbb5d71e8085ab7537"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921c318b270412cbb5d71e8085ab7537">&#9670;&#160;</a></span>projectStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::script::projectStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project one <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> using the common script table schema. </p>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">projectDiagnostic()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Status_8h_source.html#l00045">eve::statusCodeName()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00419">projectStatusResult()</a>.</p>
+
+</div>
+</div>
+<a id="a568ea2eb2d061d37ec7dbe79d8797d77" name="a568ea2eb2d061d37ec7dbe79d8797d77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a568ea2eb2d061d37ec7dbe79d8797d77">&#9670;&#160;</a></span>projectStatusResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::script::projectStatusResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Status.html">Status</a> &amp;&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ok</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project an already-consumed native status and optional <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>Active Squirrel VM. </td></tr>
+    <tr><td class="paramname">status</td><td>Native status copied from the checked <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </td></tr>
+    <tr><td class="paramname">ok</td><td>Whether the native operation completed successfully. </td></tr>
+    <tr><td class="paramname">hasValue</td><td>Whether the native <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> had a payload. </td></tr>
+    <tr><td class="paramname">value</td><td>Payload to expose when <code>hasValue</code> is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A table with the stable <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> projection schema. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">projectDiagnostic()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00407">projectStatus()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Status_8h_source.html#l00045">eve::statusCodeName()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="AnimationClipEditorScriptBindings_8cpp_source.html#l00057">eve::animation_editor::exposeAnimationClipEditorScriptBindings()</a>, <a class="el" href="AudioSourceEditorScriptBindings_8cpp_source.html#l00066">eve::audio_editor::exposeAudioSourceEditorScriptBindings()</a>, <a class="el" href="AvatarDocumentEditorScriptBindings_8cpp_source.html#l00057">eve::avatar_editor::exposeAvatarDocumentEditorScriptBindings()</a>, <a class="el" href="BiomeRulesEditorScriptBindings_8cpp_source.html#l00057">eve::biome_editor::exposeBiomeRulesEditorScriptBindings()</a>, <a class="el" href="SquirrelBinding_8h_source.html#l00103">projectResult()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00438">projectResult()</a>.</p>
+
+</div>
+</div>
+<a id="a29a2718be6d14b5b3b7d8d9098d9e753" name="a29a2718be6d14b5b3b7d8d9098d9e753"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a2718be6d14b5b3b7d8d9098d9e753">&#9670;&#160;</a></span>pushValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::script::pushValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push a canonical <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> into the active Squirrel VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>Active Squirrel VM. </td></tr>
+    <tr><td class="paramname">value</td><td>Owning value to project recursively. </td></tr>
+    <tr><td class="paramname">options</td><td>Recursion, element-count and diagnostic-source policy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success with exactly one value pushed, or a diagnostic; on failure the VM stack is restored to its original height. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00018">elements</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="SquirrelBinding_8h_source.html#l00038">eve::script::SquirrelValueOptions::source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="aaa374fba58b59d0ff79c69a819b80aad" name="aaa374fba58b59d0ff79c69a819b80aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa374fba58b59d0ff79c69a819b80aad">&#9670;&#160;</a></span>registerEngineBindingContracts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::registerEngineBindingContracts </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1BindingContractRegistry.html">BindingContractRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers the build-generated contracts for every SimpleSquirrel binding. </p>
+
+</div>
+</div>
+<a id="ae3e3512388ca2ea62b7192fca394f049" name="ae3e3512388ca2ea62b7192fca394f049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3e3512388ca2ea62b7192fca394f049">&#9670;&#160;</a></span>setLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::setLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records the last error for a VM (thread-local, synchronous consumers). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+    <tr><td class="paramname">ctx</td><td>Context to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="ab411be247b49af0635c475f833c1dea6" name="ab411be247b49af0635c475f833c1dea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab411be247b49af0635c475f833c1dea6">&#9670;&#160;</a></span>sourceLineText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::sourceLineText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sourceText</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts one 1-based line from script source text. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceText</td><td>Full script source. </td></tr>
+    <tr><td class="paramname">line</td><td>1-based line number. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The line without trailing newline, or empty when out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="adacef053fceccd6b9d6b1bcf1ecc8e6a" name="adacef053fceccd6b9d6b1bcf1ecc8e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adacef053fceccd6b9d6b1bcf1ecc8e6a">&#9670;&#160;</a></span>takeLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::takeLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consumes and clears the last recorded error for a VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The stored context, or an empty context when none is pending. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00610">eve::Runtime::createInstance()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00218">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l01093">eve::dev::Debugger::evaluate()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00529">eve::Runtime::execute()</a>.</p>
+
+</div>
+</div>
+<a id="a4ab3e5c9ffbc12aeb6d6e345992bdd48" name="a4ab3e5c9ffbc12aeb6d6e345992bdd48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ab3e5c9ffbc12aeb6d6e345992bdd48">&#9670;&#160;</a></span>valueFromSquirrel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::script::valueFromSquirrel </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a rooted Squirrel object into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>Rooted object whose VM owns the referenced value. </td></tr>
+    <tr><td class="paramname">options</td><td>Recursion, element-count and diagnostic-source policy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>, or a path-aware conversion diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="SquirrelBinding_8h_source.html#l00038">eve::script::SquirrelValueOptions::source</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">valueFromSquirrel()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a0409ef6800fb3a1f11aa4c439db1d828" name="a0409ef6800fb3a1f11aa4c439db1d828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0409ef6800fb3a1f11aa4c439db1d828">&#9670;&#160;</a></span>valueFromSquirrel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::script::valueFromSquirrel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SQInteger&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert one Squirrel value into the canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>Active Squirrel VM; it must remain valid for the call. </td></tr>
+    <tr><td class="paramname">index</td><td>Stack index of the value; both positive and negative indices are accepted. </td></tr>
+    <tr><td class="paramname">options</td><td>Recursion, element-count and diagnostic-source policy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>, or a path-aware conversion diagnostic. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The VM stack is restored to its original height before returning. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SquirrelBinding_8cpp_source.html">SquirrelBinding.cpp</a> 第 <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="SquirrelBinding_8h_source.html#l00038">eve::script::SquirrelValueOptions::source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00356">valueFromSquirrel()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

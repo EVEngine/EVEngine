@@ -1,0 +1,1037 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1AdapterDone.html">AdapterDone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance + adapter resolved.  <a href="structeve_1_1graphics_1_1webgpu_1_1AdapterDone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluent builder for wgpu::BindGroupLayout.  <a href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Capabilities.html">Capabilities</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only snapshot of WebGPU adapter/device limits and surface capabilities, queried once after device creation.  <a href="classeve_1_1graphics_1_1webgpu_1_1Capabilities.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1DeviceDone.html">DeviceDone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance + adapter + device + queue + capability snapshot.  <a href="structeve_1_1graphics_1_1webgpu_1_1DeviceDone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuMesh.html">GpuMesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex/index buffers for one mesh.  <a href="structeve_1_1graphics_1_1webgpu_1_1GpuMesh.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html">GpuShader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL sources so custom shaders can be re-pipelined for offscreen targets.  <a href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuTexture.html">GpuTexture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> resources backed by a wgpu texture + view + sampler + bind groups.  <a href="structeve_1_1graphics_1_1webgpu_1_1GpuTexture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html">Graphics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1InitFlow.html">InitFlow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed, blocking WebGPU initialization flow.  <a href="classeve_1_1graphics_1_1webgpu_1_1InitFlow.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1InstanceDone.html">InstanceDone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance created, no adapter yet.  <a href="structeve_1_1graphics_1_1webgpu_1_1InstanceDone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html">Mesh3DClusteredUBO</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clustered-forward mesh UBO (matches the Vulkan <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html" title="Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and the WGSL clustered Frame block)...">Mesh3DClusteredUBO</a> and the WGSL clustered Frame block).  <a href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DUBO.html">Mesh3DUBO</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL <code>Frame</code> block and the legacy Vulkan <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DUBO.html" title="Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL Frame block and the legacy V...">Mesh3DUBO</a> (so custom shader prefixes stay compatible). See <a class="el" href="wgsl__shaders_8h.html">wgsl_shaders.h</a>.  <a href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DUBO.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1MeshVertex.html">MeshVertex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1OffscreenCanvas.html">OffscreenCanvas</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offscreen render target (RGBA8Unorm color, optional Depth32Float). 2D batches are flushed into the canvas texture by <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a0eac94bcc40867955ba116d126804efe" title="Flush accumulated 2D batches into an offscreen canvas target.">Graphics::flush2DToCanvas</a>.  <a href="classeve_1_1graphics_1_1webgpu_1_1OffscreenCanvas.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluent builder for wgpu::RenderPipeline.  <a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluent builder for wgpu::Sampler.  <a href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1SkinPassUBO.html">SkinPassUBO</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a83b5cfa58c0b4b872a47e335b9dd374f" id="r_a83b5cfa58c0b4b872a47e335b9dd374f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a83b5cfa58c0b4b872a47e335b9dd374f">fillMeshAttributes</a> (WGPUVertexAttribute(&amp;attrs)[5])</td></tr>
+<tr class="separator:a83b5cfa58c0b4b872a47e335b9dd374f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23b4e26d36ca9e4d7226a70f4b619981" id="r_a23b4e26d36ca9e4d7226a70f4b619981"><td class="memItemLeft" align="right" valign="top">WGPUStringView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a23b4e26d36ca9e4d7226a70f4b619981">sv</a> (const char *<a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>)</td></tr>
+<tr class="memdesc:a23b4e26d36ca9e4d7226a70f4b619981"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a WGPUStringView from a C string (null-safe, length auto-computed).  <br /></td></tr>
+<tr class="separator:a23b4e26d36ca9e4d7226a70f4b619981"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec94bc46f369fd9a3c392fe28173d6b6" id="r_aec94bc46f369fd9a3c392fe28173d6b6"><td class="memItemLeft" align="right" valign="top">WGPUStringView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#aec94bc46f369fd9a3c392fe28173d6b6">sv</a> (const std::string &amp;<a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>)</td></tr>
+<tr class="memdesc:aec94bc46f369fd9a3c392fe28173d6b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a WGPUStringView from a std::string.  <br /></td></tr>
+<tr class="separator:aec94bc46f369fd9a3c392fe28173d6b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a00d32c957756fd22233ad7c793e3ae98" id="r_a00d32c957756fd22233ad7c793e3ae98"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a00d32c957756fd22233ad7c793e3ae98">kColorVertWgsl</a></td></tr>
+<tr class="separator:a00d32c957756fd22233ad7c793e3ae98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11aeb3bcf6a2a85c9e46ee27f9b6418c" id="r_a11aeb3bcf6a2a85c9e46ee27f9b6418c"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a11aeb3bcf6a2a85c9e46ee27f9b6418c">kColorFragWgsl</a></td></tr>
+<tr class="separator:a11aeb3bcf6a2a85c9e46ee27f9b6418c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a127401ec0f6d34dc65c3eabe21fe2b73" id="r_a127401ec0f6d34dc65c3eabe21fe2b73"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a127401ec0f6d34dc65c3eabe21fe2b73">kTexturedVertWgsl</a></td></tr>
+<tr class="separator:a127401ec0f6d34dc65c3eabe21fe2b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4571c8b38858df93ff81c48524cb73" id="r_a7b4571c8b38858df93ff81c48524cb73"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a7b4571c8b38858df93ff81c48524cb73">kTexturedFragWgsl</a></td></tr>
+<tr class="separator:a7b4571c8b38858df93ff81c48524cb73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae71bd33b7432fe847f405e070b8c20e3" id="r_ae71bd33b7432fe847f405e070b8c20e3"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ae71bd33b7432fe847f405e070b8c20e3">kCustom2DFragWgsl</a></td></tr>
+<tr class="separator:ae71bd33b7432fe847f405e070b8c20e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a755712cf814ac8db84ce421ddc50ad2f" id="r_a755712cf814ac8db84ce421ddc50ad2f"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a755712cf814ac8db84ce421ddc50ad2f">kLit2DVertWgsl</a></td></tr>
+<tr class="separator:a755712cf814ac8db84ce421ddc50ad2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ab5fc4e11a9db34663a4d156bc0727a" id="r_a8ab5fc4e11a9db34663a4d156bc0727a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a8ab5fc4e11a9db34663a4d156bc0727a">kLit2DFragWgsl</a></td></tr>
+<tr class="separator:a8ab5fc4e11a9db34663a4d156bc0727a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a522526bc40c4bf7f9e31e4302bd62ae1" id="r_a522526bc40c4bf7f9e31e4302bd62ae1"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a522526bc40c4bf7f9e31e4302bd62ae1">kMesh3DVertWgsl</a></td></tr>
+<tr class="separator:a522526bc40c4bf7f9e31e4302bd62ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06fe79f1b763c6b2d794aee036590ecd" id="r_a06fe79f1b763c6b2d794aee036590ecd"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a06fe79f1b763c6b2d794aee036590ecd">kMesh3DFragWgsl</a></td></tr>
+<tr class="separator:a06fe79f1b763c6b2d794aee036590ecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0fac5178b487f47f895ccd6c4bbbffb" id="r_ac0fac5178b487f47f895ccd6c4bbbffb"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac0fac5178b487f47f895ccd6c4bbbffb">kMesh3DClusteredVertWgsl</a></td></tr>
+<tr class="separator:ac0fac5178b487f47f895ccd6c4bbbffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac55692718f374cc75664f14202225a40" id="r_ac55692718f374cc75664f14202225a40"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac55692718f374cc75664f14202225a40">kMesh3DClusteredFragWgsl</a></td></tr>
+<tr class="separator:ac55692718f374cc75664f14202225a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f15449e4bbd2d6c6982e55df8431a1" id="r_a75f15449e4bbd2d6c6982e55df8431a1"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a75f15449e4bbd2d6c6982e55df8431a1">kMesh3DShadowVertWgsl</a></td></tr>
+<tr class="separator:a75f15449e4bbd2d6c6982e55df8431a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a749c9e99adc0d8f5679df6ef90b658e9" id="r_a749c9e99adc0d8f5679df6ef90b658e9"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a749c9e99adc0d8f5679df6ef90b658e9">kMesh3DShadowAlphaVertWgsl</a></td></tr>
+<tr class="separator:a749c9e99adc0d8f5679df6ef90b658e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab261f3e406c9b32251d2c0f73cd4b7bf" id="r_ab261f3e406c9b32251d2c0f73cd4b7bf"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ab261f3e406c9b32251d2c0f73cd4b7bf">kMesh3DShadowAlphaFragWgsl</a></td></tr>
+<tr class="separator:ab261f3e406c9b32251d2c0f73cd4b7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9e79277b09d1371619a5e9293bbbfef" id="r_ac9e79277b09d1371619a5e9293bbbfef"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac9e79277b09d1371619a5e9293bbbfef">kMesh3DGbufferVertWgsl</a></td></tr>
+<tr class="separator:ac9e79277b09d1371619a5e9293bbbfef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67132fd2d5476a81e3b5d8732ac8e959" id="r_a67132fd2d5476a81e3b5d8732ac8e959"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a67132fd2d5476a81e3b5d8732ac8e959">kMesh3DGbufferFragWgsl</a></td></tr>
+<tr class="separator:a67132fd2d5476a81e3b5d8732ac8e959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac25cd940c03f20d3f96c8c1b8fbd4dd2" id="r_ac25cd940c03f20d3f96c8c1b8fbd4dd2"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac25cd940c03f20d3f96c8c1b8fbd4dd2">kMesh3DGbufferAlphaFragWgsl</a></td></tr>
+<tr class="separator:ac25cd940c03f20d3f96c8c1b8fbd4dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a092f0a2a3783926f7b7bb97002e42172" id="r_a092f0a2a3783926f7b7bb97002e42172"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a092f0a2a3783926f7b7bb97002e42172">kDecalVertWgsl</a></td></tr>
+<tr class="separator:a092f0a2a3783926f7b7bb97002e42172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a004ba966d9ff8a9add86b1a5373981f5" id="r_a004ba966d9ff8a9add86b1a5373981f5"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a004ba966d9ff8a9add86b1a5373981f5">kDecalFragWgsl</a></td></tr>
+<tr class="separator:a004ba966d9ff8a9add86b1a5373981f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ae9b37088241dc206b13af0457e979" id="r_a77ae9b37088241dc206b13af0457e979"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a77ae9b37088241dc206b13af0457e979">kSSAOFragWgsl</a></td></tr>
+<tr class="separator:a77ae9b37088241dc206b13af0457e979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa13a69631d27a1a082cfee2d9d9f768d" id="r_aa13a69631d27a1a082cfee2d9d9f768d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#aa13a69631d27a1a082cfee2d9d9f768d">kVoxelRectVertWgsl</a></td></tr>
+<tr class="separator:aa13a69631d27a1a082cfee2d9d9f768d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7c25c22cb9b47ced5dbe50b9d3ae249" id="r_ab7c25c22cb9b47ced5dbe50b9d3ae249"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ab7c25c22cb9b47ced5dbe50b9d3ae249">kVoxelRectFragWgsl</a></td></tr>
+<tr class="separator:ab7c25c22cb9b47ced5dbe50b9d3ae249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a83b5cfa58c0b4b872a47e335b9dd374f" name="a83b5cfa58c0b4b872a47e335b9dd374f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83b5cfa58c0b4b872a47e335b9dd374f">&#9670;&#160;</a></span>fillMeshAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::webgpu::fillMeshAttributes </td>
+          <td>(</td>
+          <td class="paramtype">WGPUVertexAttribute(&amp;)&#160;</td>
+          <td class="paramname"><em>attrs</em>[5]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8cpp_source.html">Graphics.cpp</a> 第 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02952">2952</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23b4e26d36ca9e4d7226a70f4b619981" name="a23b4e26d36ca9e4d7226a70f4b619981"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23b4e26d36ca9e4d7226a70f4b619981">&#9670;&#160;</a></span>sv() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUStringView eve::graphics::webgpu::sv </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a WGPUStringView from a C string (null-safe, length auto-computed). </p>
+
+<p class="definition">在文件 <a class="el" href="wgpu__types_8h_source.html">wgpu_types.h</a> 第 <a class="el" href="wgpu__types_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05753">eve::graphics::webgpu::Graphics::beginFrameReadback()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l04029">eve::graphics::webgpu::Graphics::drawVoxelFaceInstances()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02046">eve::graphics::webgpu::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l00139">eve::graphics::webgpu::Graphics::initWithWindow()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01853">eve::graphics::webgpu::Graphics::newCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01933">eve::graphics::webgpu::Graphics::newHDRCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02692">eve::graphics::webgpu::Graphics::newMeshFromArrays()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01740">eve::graphics::webgpu::Graphics::newTexture()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05002">eve::graphics::webgpu::Graphics::present()</a>, <a class="el" href="InitFlow_8cpp_source.html#l00076">eve::graphics::webgpu::InitFlow::requestDevice()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02877">eve::graphics::webgpu::Graphics::updateMeshVertices()</a>.</p>
+
+</div>
+</div>
+<a id="aec94bc46f369fd9a3c392fe28173d6b6" name="aec94bc46f369fd9a3c392fe28173d6b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec94bc46f369fd9a3c392fe28173d6b6">&#9670;&#160;</a></span>sv() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUStringView eve::graphics::webgpu::sv </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a WGPUStringView from a std::string. </p>
+
+<p class="definition">在文件 <a class="el" href="wgpu__types_8h_source.html">wgpu_types.h</a> 第 <a class="el" href="wgpu__types_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a11aeb3bcf6a2a85c9e46ee27f9b6418c" name="a11aeb3bcf6a2a85c9e46ee27f9b6418c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11aeb3bcf6a2a85c9e46ee27f9b6418c">&#9670;&#160;</a></span>kColorFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kColorFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@fragment</span></div>
+<div class="line"><span class="stringliteral">fn fs_main(in: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral">    return in.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a00d32c957756fd22233ad7c793e3ae98" name="a00d32c957756fd22233ad7c793e3ae98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00d32c957756fd22233ad7c793e3ae98">&#9670;&#160;</a></span>kColorVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kColorVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct VSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) pos: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">struct VSOut {</span></div>
+<div class="line"><span class="stringliteral">    @builtin(position) pos: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@vertex</span></div>
+<div class="line"><span class="stringliteral">fn vs_main(in: VSIn) -&gt; VSOut {</span></div>
+<div class="line"><span class="stringliteral">    var out: VSOut;</span></div>
+<div class="line"><span class="stringliteral">    out.pos = vec4f(in.pos, 0.0, 1.0);</span></div>
+<div class="line"><span class="stringliteral">    out.color = in.color;</span></div>
+<div class="line"><span class="stringliteral">    return out;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae71bd33b7432fe847f405e070b8c20e3" name="ae71bd33b7432fe847f405e070b8c20e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae71bd33b7432fe847f405e070b8c20e3">&#9670;&#160;</a></span>kCustom2DFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kCustom2DFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">struct Externals {</span></div>
+<div class="line"><span class="stringliteral">    data: array&lt;f32, 32&gt;,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0) var mainTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var mainSamp: sampler;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(4) var&lt;uniform&gt; u: Externals;</span></div>
+<div class="line"><span class="stringliteral">@fragment</span></div>
+<div class="line"><span class="stringliteral">fn fs_main(in: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral">    return textureSample(mainTex, mainSamp, in.uv) * in.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a004ba966d9ff8a9add86b1a5373981f5" name="a004ba966d9ff8a9add86b1a5373981f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a004ba966d9ff8a9add86b1a5373981f5">&#9670;&#160;</a></span>kDecalFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kDecalFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01299">1299</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a092f0a2a3783926f7b7bb97002e42172" name="a092f0a2a3783926f7b7bb97002e42172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a092f0a2a3783926f7b7bb97002e42172">&#9670;&#160;</a></span>kDecalVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kDecalVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@vertex</span></div>
+<div class="line"><span class="stringliteral">fn vs_main(@builtin(vertex_index) vertexIndex: u32) -&gt; @builtin(position) vec4f {</span></div>
+<div class="line"><span class="stringliteral">    let positions = array&lt;vec2f, 3&gt;(</span></div>
+<div class="line"><span class="stringliteral">        vec2f(-1.0, -1.0), vec2f(3.0, -1.0), vec2f(-1.0, 3.0));</span></div>
+<div class="line"><span class="stringliteral">    return vec4f(positions[vertexIndex], 0.0, 1.0);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01290">1290</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ab5fc4e11a9db34663a4d156bc0727a" name="a8ab5fc4e11a9db34663a4d156bc0727a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ab5fc4e11a9db34663a4d156bc0727a">&#9670;&#160;</a></span>kLit2DFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kLit2DFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a755712cf814ac8db84ce421ddc50ad2f" name="a755712cf814ac8db84ce421ddc50ad2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a755712cf814ac8db84ce421ddc50ad2f">&#9670;&#160;</a></span>kLit2DVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kLit2DVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct VSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) pos: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(2) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">struct VSOut {</span></div>
+<div class="line"><span class="stringliteral">    @builtin(position) pos: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(2) ndc: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@vertex</span></div>
+<div class="line"><span class="stringliteral">fn vs_main(in: VSIn) -&gt; VSOut {</span></div>
+<div class="line"><span class="stringliteral">    var out: VSOut;</span></div>
+<div class="line"><span class="stringliteral">    out.pos = vec4f(in.pos, 0.0, 1.0);</span></div>
+<div class="line"><span class="stringliteral">    out.color = in.color;</span></div>
+<div class="line"><span class="stringliteral">    out.uv = in.uv;</span></div>
+<div class="line"><span class="stringliteral">    out.ndc = in.pos;</span></div>
+<div class="line"><span class="stringliteral">    return out;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac55692718f374cc75664f14202225a40" name="ac55692718f374cc75664f14202225a40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac55692718f374cc75664f14202225a40">&#9670;&#160;</a></span>kMesh3DClusteredFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DClusteredFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00764">764</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac0fac5178b487f47f895ccd6c4bbbffb" name="ac0fac5178b487f47f895ccd6c4bbbffb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0fac5178b487f47f895ccd6c4bbbffb">&#9670;&#160;</a></span>kMesh3DClusteredVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DClusteredVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00698">698</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06fe79f1b763c6b2d794aee036590ecd" name="a06fe79f1b763c6b2d794aee036590ecd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fe79f1b763c6b2d794aee036590ecd">&#9670;&#160;</a></span>kMesh3DFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00255">255</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac25cd940c03f20d3f96c8c1b8fbd4dd2" name="ac25cd940c03f20d3f96c8c1b8fbd4dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac25cd940c03f20d3f96c8c1b8fbd4dd2">&#9670;&#160;</a></span>kMesh3DGbufferAlphaFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DGbufferAlphaFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01245">1245</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67132fd2d5476a81e3b5d8732ac8e959" name="a67132fd2d5476a81e3b5d8732ac8e959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67132fd2d5476a81e3b5d8732ac8e959">&#9670;&#160;</a></span>kMesh3DGbufferFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DGbufferFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01202">1202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9e79277b09d1371619a5e9293bbbfef" name="ac9e79277b09d1371619a5e9293bbbfef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9e79277b09d1371619a5e9293bbbfef">&#9670;&#160;</a></span>kMesh3DGbufferVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DGbufferVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01146">1146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab261f3e406c9b32251d2c0f73cd4b7bf" name="ab261f3e406c9b32251d2c0f73cd4b7bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab261f3e406c9b32251d2c0f73cd4b7bf">&#9670;&#160;</a></span>kMesh3DShadowAlphaFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DShadowAlphaFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(1) var albedoTexture: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var albedoSampler: sampler;</span></div>
+<div class="line"><span class="stringliteral">@fragment</span></div>
+<div class="line"><span class="stringliteral">fn fs_main(@location(0) uv: vec2f) {</span></div>
+<div class="line"><span class="stringliteral">    if (textureSample(albedoTexture, albedoSampler, uv).a &lt; 0.05) { discard; }</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01136">1136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a749c9e99adc0d8f5679df6ef90b658e9" name="a749c9e99adc0d8f5679df6ef90b658e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a749c9e99adc0d8f5679df6ef90b658e9">&#9670;&#160;</a></span>kMesh3DShadowAlphaVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DShadowAlphaVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01098">1098</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75f15449e4bbd2d6c6982e55df8431a1" name="a75f15449e4bbd2d6c6982e55df8431a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f15449e4bbd2d6c6982e55df8431a1">&#9670;&#160;</a></span>kMesh3DShadowVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DShadowVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01066">1066</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a522526bc40c4bf7f9e31e4302bd62ae1" name="a522526bc40c4bf7f9e31e4302bd62ae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a522526bc40c4bf7f9e31e4302bd62ae1">&#9670;&#160;</a></span>kMesh3DVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kMesh3DVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06130">eve::graphics::webgpu::Graphics::newHairShaderFromWgsl()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06021">eve::graphics::webgpu::Graphics::newMeshShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a77ae9b37088241dc206b13af0457e979" name="a77ae9b37088241dc206b13af0457e979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ae9b37088241dc206b13af0457e979">&#9670;&#160;</a></span>kSSAOFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kSSAOFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01366">1366</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b4571c8b38858df93ff81c48524cb73" name="a7b4571c8b38858df93ff81c48524cb73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4571c8b38858df93ff81c48524cb73">&#9670;&#160;</a></span>kTexturedFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kTexturedFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(0) var mainTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var mainSamp: sampler;</span></div>
+<div class="line"><span class="stringliteral">@fragment</span></div>
+<div class="line"><span class="stringliteral">fn fs_main(in: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral">    return textureSample(mainTex, mainSamp, in.uv) * in.color;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a127401ec0f6d34dc65c3eabe21fe2b73" name="a127401ec0f6d34dc65c3eabe21fe2b73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a127401ec0f6d34dc65c3eabe21fe2b73">&#9670;&#160;</a></span>kTexturedVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kTexturedVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct VSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) pos: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(2) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">struct VSOut {</span></div>
+<div class="line"><span class="stringliteral">    @builtin(position) pos: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(0) color: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@vertex</span></div>
+<div class="line"><span class="stringliteral">fn vs_main(in: VSIn) -&gt; VSOut {</span></div>
+<div class="line"><span class="stringliteral">    var out: VSOut;</span></div>
+<div class="line"><span class="stringliteral">    out.pos = vec4f(in.pos, 0.0, 1.0);</span></div>
+<div class="line"><span class="stringliteral">    out.color = in.color;</span></div>
+<div class="line"><span class="stringliteral">    out.uv = in.uv;</span></div>
+<div class="line"><span class="stringliteral">    return out;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06062">eve::graphics::webgpu::Graphics::newShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="ab7c25c22cb9b47ced5dbe50b9d3ae249" name="ab7c25c22cb9b47ced5dbe50b9d3ae249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7c25c22cb9b47ced5dbe50b9d3ae249">&#9670;&#160;</a></span>kVoxelRectFragWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kVoxelRectFragWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><span class="stringliteral">struct FSIn {</span></div>
+<div class="line"><span class="stringliteral">    @location(0) uv: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(1) tint: vec4f,</span></div>
+<div class="line"><span class="stringliteral">    @location(2) vAO: f32,</span></div>
+<div class="line"><span class="stringliteral">    @location(3) @interpolate(flat) atlasBase: vec2f,</span></div>
+<div class="line"><span class="stringliteral">    @location(4) @interpolate(flat) tileScale: f32,</span></div>
+<div class="line"><span class="stringliteral">};</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(1) var atlas: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><span class="stringliteral">@group(0) @binding(2) var atlasSamp: sampler;</span></div>
+<div class="line"><span class="stringliteral">@fragment</span></div>
+<div class="line"><span class="stringliteral">fn fs_main(in: FSIn) -&gt; @location(0) vec4f {</span></div>
+<div class="line"><span class="stringliteral">    // Vertex ambient occlusion (0..1): darkens corners near other voxels.</span></div>
+<div class="line"><span class="stringliteral">    let aoShade = 0.35 + 0.65 * in.vAO;</span></div>
+<div class="line"><span class="stringliteral">    let atlasUV = (in.atlasBase + fract(in.uv)) * in.tileScale;</span></div>
+<div class="line"><span class="stringliteral">    let dx = dpdx(in.uv) * in.tileScale;</span></div>
+<div class="line"><span class="stringliteral">    let dy = dpdy(in.uv) * in.tileScale;</span></div>
+<div class="line"><span class="stringliteral">    return textureSampleGrad(atlas, atlasSamp, atlasUV, dx, dy) * in.tint * aoShade;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)wgsl&quot;</span></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01496">1496</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa13a69631d27a1a082cfee2d9d9f768d" name="aa13a69631d27a1a082cfee2d9d9f768d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa13a69631d27a1a082cfee2d9d9f768d">&#9670;&#160;</a></span>kVoxelRectVertWgsl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::graphics::webgpu::kVoxelRectVertWgsl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="wgsl__shaders_8h_source.html">wgsl_shaders.h</a> 第 <a class="el" href="wgsl__shaders_8h_source.html#l01431">1431</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

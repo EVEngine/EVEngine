@@ -1,0 +1,231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/FluidSdf.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FluidSdf.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FluidSdf_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1MeshSdf.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1MeshSdf.html#a1d135f615d004fc5a2ead9c5021dcf84">   23</a></span>    glm::vec3 <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a1d135f615d004fc5a2ead9c5021dcf84">origin</a>{0.f};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1MeshSdf.html#a115eaeacac878302b8e5cd283bbf9248">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a115eaeacac878302b8e5cd283bbf9248">cellSize</a> = 1.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">   27</a></span>    glm::ivec3 <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">dims</a>{0};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1MeshSdf.html#a4c1aeeaa2ab8e0a5081a8b24e47c08f1">   29</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a4c1aeeaa2ab8e0a5081a8b24e47c08f1">distances</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#aa36daf808c5cde5d997730d53fc748f3">voxelCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#ae2d3ac65c91c6b497de2280ac08b0073">inBounds</a>(<span class="keyword">const</span> glm::ivec3&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#aae2c3aa065667c71e39d7eb486afac0d">sample</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    glm::vec3 <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#a1a3bc6c91ec88d89063199404c11b523">gradient</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#a56b51547b4a72550b801c79d9280aded">makeSphere</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keyword">const</span> glm::ivec3&amp; <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">dims</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#ab0a625310d34a4d76f51fed5f94273a0">makePlane</a>(<span class="keywordtype">float</span> planeY, <span class="keyword">const</span> glm::ivec3&amp; <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">dims</a>, <span class="keywordtype">float</span> halfExtent);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a> <a class="code hl_function" href="classeve_1_1fluids_1_1MeshSdf.html#ae03545dc6c6fc6a98471532ff63d81bd">makeFromTriangles</a>(<span class="keyword">const</span> std::vector&lt;glm::vec3&gt;&amp; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>, <span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                     <span class="keyword">const</span> glm::ivec3&amp; <a class="code hl_variable" href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">dims</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_ae8299b6e2cd3285a9280125dae748b26"><div class="ttname"><a href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00055">CaveMesh.cpp:55</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00028">EvpackGraphicsLoader.cpp:28</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html">eve::fluids::MeshSdf</a></div><div class="ttdoc">Uniform signed-distance voxel field over a box.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00020">FluidSdf.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a05f1176adc865fce0b5bc4d591c93e5f"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a05f1176adc865fce0b5bc4d591c93e5f">eve::fluids::MeshSdf::dims</a></div><div class="ttdeci">glm::ivec3 dims</div><div class="ttdoc">Voxel resolution along each axis.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00027">FluidSdf.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a115eaeacac878302b8e5cd283bbf9248"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a115eaeacac878302b8e5cd283bbf9248">eve::fluids::MeshSdf::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdoc">World-space size of one voxel.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00025">FluidSdf.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a1a3bc6c91ec88d89063199404c11b523"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a1a3bc6c91ec88d89063199404c11b523">eve::fluids::MeshSdf::gradient</a></div><div class="ttdeci">glm::vec3 gradient(const glm::vec3 &amp;p) const</div><div class="ttdoc">Central-difference gradient (outward normal) at p.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00116">FluidSdf.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a1d135f615d004fc5a2ead9c5021dcf84"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a1d135f615d004fc5a2ead9c5021dcf84">eve::fluids::MeshSdf::origin</a></div><div class="ttdeci">glm::vec3 origin</div><div class="ttdoc">World-space position of voxel (0,0,0).</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00023">FluidSdf.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a4c1aeeaa2ab8e0a5081a8b24e47c08f1"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a4c1aeeaa2ab8e0a5081a8b24e47c08f1">eve::fluids::MeshSdf::distances</a></div><div class="ttdeci">std::vector&lt; float &gt; distances</div><div class="ttdoc">Signed distances, dims.x * dims.y * dims.z floats.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00029">FluidSdf.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_a56b51547b4a72550b801c79d9280aded"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#a56b51547b4a72550b801c79d9280aded">eve::fluids::MeshSdf::makeSphere</a></div><div class="ttdeci">static MeshSdf makeSphere(const glm::vec3 &amp;center, float radius, const glm::ivec3 &amp;dims)</div><div class="ttdoc">Bake an analytic sphere into the field.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00124">FluidSdf.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_aa36daf808c5cde5d997730d53fc748f3"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#aa36daf808c5cde5d997730d53fc748f3">eve::fluids::MeshSdf::voxelCount</a></div><div class="ttdeci">int voxelCount() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00083">FluidSdf.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_aae2c3aa065667c71e39d7eb486afac0d"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#aae2c3aa065667c71e39d7eb486afac0d">eve::fluids::MeshSdf::sample</a></div><div class="ttdeci">float sample(const glm::vec3 &amp;p) const</div><div class="ttdoc">Trilinearly interpolated signed distance at p.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00091">FluidSdf.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_ab0a625310d34a4d76f51fed5f94273a0"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#ab0a625310d34a4d76f51fed5f94273a0">eve::fluids::MeshSdf::makePlane</a></div><div class="ttdeci">static MeshSdf makePlane(float planeY, const glm::ivec3 &amp;dims, float halfExtent)</div><div class="ttdoc">Bake a horizontal plane y = planeY into the field.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00143">FluidSdf.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_ae03545dc6c6fc6a98471532ff63d81bd"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#ae03545dc6c6fc6a98471532ff63d81bd">eve::fluids::MeshSdf::makeFromTriangles</a></div><div class="ttdeci">static MeshSdf makeFromTriangles(const std::vector&lt; glm::vec3 &gt; &amp;positions, const std::vector&lt; uint32_t &gt; &amp;indices, const glm::ivec3 &amp;dims)</div><div class="ttdoc">Voxelize a closed triangle mesh.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00160">FluidSdf.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html_ae2d3ac65c91c6b497de2280ac08b0073"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html#ae2d3ac65c91c6b497de2280ac08b0073">eve::fluids::MeshSdf::inBounds</a></div><div class="ttdeci">bool inBounds(const glm::ivec3 &amp;c) const</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8cpp_source.html#l00087">FluidSdf.cpp:87</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidGpuKernels_8h_source.html#l00036">FluidGpuKernels.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

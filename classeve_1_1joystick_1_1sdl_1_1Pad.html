@@ -1,0 +1,1245 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::joystick::sdl::Pad类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1joystick.html">joystick</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1joystick_1_1sdl.html">sdl</a></li><li class="navelem"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html">Pad</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1joystick_1_1sdl_1_1Pad-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::joystick::sdl::Pad类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>SDL 手柄/摇杆后端实现（含 GameController 与振动）。  
+ <a href="classeve_1_1joystick_1_1sdl_1_1Pad.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sdl_2Pad_8h_source.html">Pad.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::joystick::sdl::Pad 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1joystick_1_1sdl_1_1Pad.png" usemap="#eve::joystick::sdl::Pad_map" alt=""/>
+  <map id="eve::joystick::sdl::Pad_map" name="eve::joystick::sdl::Pad_map">
+<area href="classeve_1_1joystick_1_1Pad.html" title="One connected (or previously connected) joystick / gamepad device. Gamepad axis/button names follow S..." alt="eve::joystick::Pad" shape="rect" coords="0,0,131,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a72e39ed6eec539a5e0eafb7c91cfc796" id="r_a72e39ed6eec539a5e0eafb7c91cfc796"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a72e39ed6eec539a5e0eafb7c91cfc796">Pad</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a72e39ed6eec539a5e0eafb7c91cfc796"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae604cd3ae9f4071062530bc0e3748258" id="r_ae604cd3ae9f4071062530bc0e3748258"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ae604cd3ae9f4071062530bc0e3748258">Pad</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int joyindex)</td></tr>
+<tr class="separator:ae604cd3ae9f4071062530bc0e3748258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d8f9ea6ee999c451332d5208720a785" id="r_a1d8f9ea6ee999c451332d5208720a785"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a1d8f9ea6ee999c451332d5208720a785">~Pad</a> () override</td></tr>
+<tr class="separator:a1d8f9ea6ee999c451332d5208720a785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfa3b69dd6d1a44cd6a65ca4581106a7" id="r_abfa3b69dd6d1a44cd6a65ca4581106a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#abfa3b69dd6d1a44cd6a65ca4581106a7">open</a> (int deviceindex) override</td></tr>
+<tr class="separator:abfa3b69dd6d1a44cd6a65ca4581106a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12e45522019574db3217c1e5dcb1f3ee" id="r_a12e45522019574db3217c1e5dcb1f3ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a12e45522019574db3217c1e5dcb1f3ee">close</a> () override</td></tr>
+<tr class="separator:a12e45522019574db3217c1e5dcb1f3ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55848b77ef9f5a12ebeefe3cc517e818" id="r_a55848b77ef9f5a12ebeefe3cc517e818"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a55848b77ef9f5a12ebeefe3cc517e818">isConnected</a> () const override</td></tr>
+<tr class="separator:a55848b77ef9f5a12ebeefe3cc517e818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98197af9d50a3052aa6b3f580c524e1c" id="r_a98197af9d50a3052aa6b3f580c524e1c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a98197af9d50a3052aa6b3f580c524e1c">getName</a> () const override</td></tr>
+<tr class="separator:a98197af9d50a3052aa6b3f580c524e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64b3e6f656f4bc00fdc4f06be677aa25" id="r_a64b3e6f656f4bc00fdc4f06be677aa25"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a64b3e6f656f4bc00fdc4f06be677aa25">getAxisCount</a> () const override</td></tr>
+<tr class="separator:a64b3e6f656f4bc00fdc4f06be677aa25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0c60a27a852efe2950e7e0fa37187a6" id="r_ac0c60a27a852efe2950e7e0fa37187a6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ac0c60a27a852efe2950e7e0fa37187a6">getButtonCount</a> () const override</td></tr>
+<tr class="separator:ac0c60a27a852efe2950e7e0fa37187a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab244f5299095802c2974c5c480aedcf8" id="r_ab244f5299095802c2974c5c480aedcf8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ab244f5299095802c2974c5c480aedcf8">getHatCount</a> () const override</td></tr>
+<tr class="separator:ab244f5299095802c2974c5c480aedcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5cc71ffae09363ee1e77b0fe27b8641" id="r_af5cc71ffae09363ee1e77b0fe27b8641"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#af5cc71ffae09363ee1e77b0fe27b8641">getAxis</a> (int axisindex) const override</td></tr>
+<tr class="separator:af5cc71ffae09363ee1e77b0fe27b8641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cdd20c43fc1e4298ae763d3452301fc" id="r_a5cdd20c43fc1e4298ae763d3452301fc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a5cdd20c43fc1e4298ae763d3452301fc">getAxes</a> () const override</td></tr>
+<tr class="separator:a5cdd20c43fc1e4298ae763d3452301fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4704d8b573359f08ba259cf8a76bee6" id="r_ac4704d8b573359f08ba259cf8a76bee6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ac4704d8b573359f08ba259cf8a76bee6">getHat</a> (int hatindex) const override</td></tr>
+<tr class="separator:ac4704d8b573359f08ba259cf8a76bee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5947835f0d8ca9be94b163f44e66c06" id="r_ae5947835f0d8ca9be94b163f44e66c06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ae5947835f0d8ca9be94b163f44e66c06">isDown</a> (int button) const override</td></tr>
+<tr class="separator:ae5947835f0d8ca9be94b163f44e66c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa31093fb476c4b70bbd79bcaa1219b1d" id="r_aa31093fb476c4b70bbd79bcaa1219b1d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#aa31093fb476c4b70bbd79bcaa1219b1d">isDown</a> (const std::vector&lt; int &gt; &amp;buttons) const override</td></tr>
+<tr class="separator:aa31093fb476c4b70bbd79bcaa1219b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac913731f6489940e6937cb4d122f2eb1" id="r_ac913731f6489940e6937cb4d122f2eb1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ac913731f6489940e6937cb4d122f2eb1">openGamepad</a> (int deviceindex) override</td></tr>
+<tr class="separator:ac913731f6489940e6937cb4d122f2eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bff4de890fbc94059fc8e66fc273926" id="r_a3bff4de890fbc94059fc8e66fc273926"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a3bff4de890fbc94059fc8e66fc273926">isGamepad</a> () const override</td></tr>
+<tr class="separator:a3bff4de890fbc94059fc8e66fc273926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4461e66ae84f64aa0211e8c10481b178" id="r_a4461e66ae84f64aa0211e8c10481b178"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a4461e66ae84f64aa0211e8c10481b178">getGamepadAxis</a> (const std::string &amp;axis) const override</td></tr>
+<tr class="separator:a4461e66ae84f64aa0211e8c10481b178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b38b55672e2d1bac21fc02b9690e44" id="r_a59b38b55672e2d1bac21fc02b9690e44"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a59b38b55672e2d1bac21fc02b9690e44">isGamepadDown</a> (const std::string &amp;button) const override</td></tr>
+<tr class="separator:a59b38b55672e2d1bac21fc02b9690e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a943605ca64d2d65ad329bcbb82c5c53f" id="r_a943605ca64d2d65ad329bcbb82c5c53f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a943605ca64d2d65ad329bcbb82c5c53f">isGamepadDown</a> (const std::vector&lt; std::string &gt; &amp;buttons) const override</td></tr>
+<tr class="separator:a943605ca64d2d65ad329bcbb82c5c53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d73ad03c327db446babe73846e61f89" id="r_a7d73ad03c327db446babe73846e61f89"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a7d73ad03c327db446babe73846e61f89">getGamepadMappingString</a> () const override</td></tr>
+<tr class="separator:a7d73ad03c327db446babe73846e61f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae447789e246ffc2f4e6a39dbf4f317c1" id="r_ae447789e246ffc2f4e6a39dbf4f317c1"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ae447789e246ffc2f4e6a39dbf4f317c1">getHandle</a> () const override</td></tr>
+<tr class="separator:ae447789e246ffc2f4e6a39dbf4f317c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade51dbebcb1f9c3bc2cad6db32065f49" id="r_ade51dbebcb1f9c3bc2cad6db32065f49"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ade51dbebcb1f9c3bc2cad6db32065f49">getGUID</a> () const override</td></tr>
+<tr class="separator:ade51dbebcb1f9c3bc2cad6db32065f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5a862c8104dd65697a226bfaee672e0" id="r_ac5a862c8104dd65697a226bfaee672e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ac5a862c8104dd65697a226bfaee672e0">getInstanceID</a> () const override</td></tr>
+<tr class="separator:ac5a862c8104dd65697a226bfaee672e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14f97098383b69748d0bbe755f6b7f48" id="r_a14f97098383b69748d0bbe755f6b7f48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a14f97098383b69748d0bbe755f6b7f48">getID</a> () const override</td></tr>
+<tr class="separator:a14f97098383b69748d0bbe755f6b7f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad44221af24a37779560d0a6173d49db8" id="r_ad44221af24a37779560d0a6173d49db8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ad44221af24a37779560d0a6173d49db8">getDeviceInfo</a> (int &amp;vendorID, int &amp;productID, int &amp;productVersion) const override</td></tr>
+<tr class="separator:ad44221af24a37779560d0a6173d49db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a478fa88d9d7cf321c7b68c0a2f02152b" id="r_a478fa88d9d7cf321c7b68c0a2f02152b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a478fa88d9d7cf321c7b68c0a2f02152b">isVibrationSupported</a> () override</td></tr>
+<tr class="separator:a478fa88d9d7cf321c7b68c0a2f02152b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf79f8ba9c2e1b1b470d29b07427019a" id="r_acf79f8ba9c2e1b1b470d29b07427019a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#acf79f8ba9c2e1b1b470d29b07427019a">setVibration</a> (float <a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, float <a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>=-1.0f) override</td></tr>
+<tr class="separator:acf79f8ba9c2e1b1b470d29b07427019a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80899eaa9c30b7a8ddb8b0b4bd8259f1" id="r_a80899eaa9c30b7a8ddb8b0b4bd8259f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a80899eaa9c30b7a8ddb8b0b4bd8259f1">setVibration</a> () override</td></tr>
+<tr class="separator:a80899eaa9c30b7a8ddb8b0b4bd8259f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200159e5e57c547597b7a9174f865b96" id="r_a200159e5e57c547597b7a9174f865b96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a200159e5e57c547597b7a9174f865b96">getVibration</a> (float &amp;<a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, float &amp;<a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) override</td></tr>
+<tr class="separator:a200159e5e57c547597b7a9174f865b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>SDL 手柄/摇杆后端实现（含 GameController 与振动）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Pad_8h_source.html">Pad.h</a> 第 <a class="el" href="sdl_2Pad_8h_source.html#l00013">13</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a72e39ed6eec539a5e0eafb7c91cfc796" name="a72e39ed6eec539a5e0eafb7c91cfc796"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72e39ed6eec539a5e0eafb7c91cfc796">&#9670;&#160;</a></span>Pad() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::joystick::sdl::Pad::Pad </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae604cd3ae9f4071062530bc0e3748258" name="ae604cd3ae9f4071062530bc0e3748258"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae604cd3ae9f4071062530bc0e3748258">&#9670;&#160;</a></span>Pad() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::joystick::sdl::Pad::Pad </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>joyindex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00043">open()</a>.</p>
+
+</div>
+</div>
+<a id="a1d8f9ea6ee999c451332d5208720a785" name="a1d8f9ea6ee999c451332d5208720a785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d8f9ea6ee999c451332d5208720a785">&#9670;&#160;</a></span>~Pad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::joystick::sdl::Pad::~Pad </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1joystick_1_1Pad.html#adb57afb32567600810f258a777a27f7d">eve::joystick::Pad</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00065">close()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a12e45522019574db3217c1e5dcb1f3ee" name="a12e45522019574db3217c1e5dcb1f3ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12e45522019574db3217c1e5dcb1f3ee">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::joystick::sdl::Pad::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#acae90403204186087011d18fd8509600">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00043">open()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00039">~Pad()</a>.</p>
+
+</div>
+</div>
+<a id="a5cdd20c43fc1e4298ae763d3452301fc" name="a5cdd20c43fc1e4298ae763d3452301fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cdd20c43fc1e4298ae763d3452301fc">&#9670;&#160;</a></span>getAxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::joystick::sdl::Pad::getAxes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#aa3957536efbd5d81812091e6302b9fcb">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joystick_8cpp_source.html#l00014">eve::joystick::clampAxis()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Pad_8cpp_source.html#l00085">getAxisCount()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+</div>
+</div>
+<a id="af5cc71ffae09363ee1e77b0fe27b8641" name="af5cc71ffae09363ee1e77b0fe27b8641"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5cc71ffae09363ee1e77b0fe27b8641">&#9670;&#160;</a></span>getAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::joystick::sdl::Pad::getAxis </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axisindex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a268bf03ffd072875794f09e778a3878f">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joystick_8cpp_source.html#l00014">eve::joystick::clampAxis()</a>, <a class="el" href="Pad_8cpp_source.html#l00085">getAxisCount()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+</div>
+</div>
+<a id="a64b3e6f656f4bc00fdc4f06be677aa25" name="a64b3e6f656f4bc00fdc4f06be677aa25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64b3e6f656f4bc00fdc4f06be677aa25">&#9670;&#160;</a></span>getAxisCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::joystick::sdl::Pad::getAxisCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a28a9f41b7ca395764b4c743167af0c81">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00102">getAxes()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00097">getAxis()</a>.</p>
+
+</div>
+</div>
+<a id="ac0c60a27a852efe2950e7e0fa37187a6" name="ac0c60a27a852efe2950e7e0fa37187a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0c60a27a852efe2950e7e0fa37187a6">&#9670;&#160;</a></span>getButtonCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::joystick::sdl::Pad::getButtonCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a281e5c7bc44ba1ee5003263381438f86">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00121">isDown()</a>.</p>
+
+</div>
+</div>
+<a id="ad44221af24a37779560d0a6173d49db8" name="ad44221af24a37779560d0a6173d49db8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad44221af24a37779560d0a6173d49db8">&#9670;&#160;</a></span>getDeviceInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::joystick::sdl::Pad::getDeviceInfo </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>vendorID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>productID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>productVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#abbd97c3da71efba7315d252cfc0e95de">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4461e66ae84f64aa0211e8c10481b178" name="a4461e66ae84f64aa0211e8c10481b178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4461e66ae84f64aa0211e8c10481b178">&#9670;&#160;</a></span>getGamepadAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::joystick::sdl::Pad::getGamepadAxis </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>axis</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a463ffd734a9ec8923fb6137c2a1f9eee">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joystick_8cpp_source.html#l00014">eve::joystick::clampAxis()</a>, <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>, <a class="el" href="Pad_8cpp_source.html#l00143">isGamepad()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a7d73ad03c327db446babe73846e61f89" name="a7d73ad03c327db446babe73846e61f89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d73ad03c327db446babe73846e61f89">&#9670;&#160;</a></span>getGamepadMappingString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::joystick::sdl::Pad::getGamepadMappingString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a0c9bff12251b58a92e9914f442975603">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade51dbebcb1f9c3bc2cad6db32065f49" name="ade51dbebcb1f9c3bc2cad6db32065f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade51dbebcb1f9c3bc2cad6db32065f49">&#9670;&#160;</a></span>getGUID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::joystick::sdl::Pad::getGUID </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a504ce9cc5a3c63e135224aafaf24253f">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae447789e246ffc2f4e6a39dbf4f317c1" name="ae447789e246ffc2f4e6a39dbf4f317c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae447789e246ffc2f4e6a39dbf4f317c1">&#9670;&#160;</a></span>getHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::joystick::sdl::Pad::getHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a40d8b3b6fc41f383d9b5dcbf9748ae4e">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4704d8b573359f08ba259cf8a76bee6" name="ac4704d8b573359f08ba259cf8a76bee6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4704d8b573359f08ba259cf8a76bee6">&#9670;&#160;</a></span>getHat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::joystick::sdl::Pad::getHat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hatindex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a4aa6ed9033a92d73ae76c03c0d362b7a">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00093">getHatCount()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+</div>
+</div>
+<a id="ab244f5299095802c2974c5c480aedcf8" name="ab244f5299095802c2974c5c480aedcf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab244f5299095802c2974c5c480aedcf8">&#9670;&#160;</a></span>getHatCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::joystick::sdl::Pad::getHatCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#aa0e91fd1de948a941abe78e978288164">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00112">getHat()</a>.</p>
+
+</div>
+</div>
+<a id="a14f97098383b69748d0bbe755f6b7f48" name="a14f97098383b69748d0bbe755f6b7f48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14f97098383b69748d0bbe755f6b7f48">&#9670;&#160;</a></span>getID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::joystick::sdl::Pad::getID </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a99f0157d4f12c074695e0d6c76c90f7b">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5a862c8104dd65697a226bfaee672e0" name="ac5a862c8104dd65697a226bfaee672e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a862c8104dd65697a226bfaee672e0">&#9670;&#160;</a></span>getInstanceID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::joystick::sdl::Pad::getInstanceID </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#afb40952c3a951d86d80b85323c16f924">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98197af9d50a3052aa6b3f580c524e1c" name="a98197af9d50a3052aa6b3f580c524e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98197af9d50a3052aa6b3f580c524e1c">&#9670;&#160;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::joystick::sdl::Pad::getName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#ad6d6049cc7800a6bbe2e41c8a035b436">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a200159e5e57c547597b7a9174f865b96" name="a200159e5e57c547597b7a9174f865b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200159e5e57c547597b7a9174f865b96">&#9670;&#160;</a></span>getVibration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::joystick::sdl::Pad::getVibration </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#ae243720a35d99ee6eeae07bbb6d7f3ea">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="Pad_8cpp_source.html#l00010">SDL_TICKS_PASSED</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00314">setVibration()</a>.</p>
+
+</div>
+</div>
+<a id="a55848b77ef9f5a12ebeefe3cc517e818" name="a55848b77ef9f5a12ebeefe3cc517e818"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55848b77ef9f5a12ebeefe3cc517e818">&#9670;&#160;</a></span>isConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#afa468c7973d7990b50ca1e034201ea74">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00102">getAxes()</a>, <a class="el" href="Pad_8cpp_source.html#l00097">getAxis()</a>, <a class="el" href="Pad_8cpp_source.html#l00085">getAxisCount()</a>, <a class="el" href="Pad_8cpp_source.html#l00089">getButtonCount()</a>, <a class="el" href="Pad_8cpp_source.html#l00147">getGamepadAxis()</a>, <a class="el" href="Pad_8cpp_source.html#l00112">getHat()</a>, <a class="el" href="Pad_8cpp_source.html#l00093">getHatCount()</a>, <a class="el" href="Pad_8cpp_source.html#l00121">isDown()</a>, <a class="el" href="Pad_8cpp_source.html#l00159">isGamepadDown()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00043">open()</a>.</p>
+
+</div>
+</div>
+<a id="aa31093fb476c4b70bbd79bcaa1219b1d" name="aa31093fb476c4b70bbd79bcaa1219b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa31093fb476c4b70bbd79bcaa1219b1d">&#9670;&#160;</a></span>isDown() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isDown </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buttons</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a82c77ae4690657cea834e414ebb13785">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00089">getButtonCount()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>.</p>
+
+</div>
+</div>
+<a id="ae5947835f0d8ca9be94b163f44e66c06" name="ae5947835f0d8ca9be94b163f44e66c06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5947835f0d8ca9be94b163f44e66c06">&#9670;&#160;</a></span>isDown() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isDown </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>button</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a0b668804528580fdf1967016287a4fde">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00117">isDown()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00117">isDown()</a>.</p>
+
+</div>
+</div>
+<a id="a3bff4de890fbc94059fc8e66fc273926" name="a3bff4de890fbc94059fc8e66fc273926"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bff4de890fbc94059fc8e66fc273926">&#9670;&#160;</a></span>isGamepad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isGamepad </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#af1c4fb49a2a71b2f46695371a97ad140">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00147">getGamepadAxis()</a>, <a class="el" href="Pad_8cpp_source.html#l00159">isGamepadDown()</a>, <a class="el" href="Pad_8cpp_source.html#l00231">isVibrationSupported()</a>, <a class="el" href="Pad_8cpp_source.html#l00131">openGamepad()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00253">setVibration()</a>.</p>
+
+</div>
+</div>
+<a id="a59b38b55672e2d1bac21fc02b9690e44" name="a59b38b55672e2d1bac21fc02b9690e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b38b55672e2d1bac21fc02b9690e44">&#9670;&#160;</a></span>isGamepadDown() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isGamepadDown </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>button</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a1b7dd0a62cc4270d46bb6828ef42364c">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00155">isGamepadDown()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00155">isGamepadDown()</a>.</p>
+
+</div>
+</div>
+<a id="a943605ca64d2d65ad329bcbb82c5c53f" name="a943605ca64d2d65ad329bcbb82c5c53f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943605ca64d2d65ad329bcbb82c5c53f">&#9670;&#160;</a></span>isGamepadDown() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isGamepadDown </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buttons</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a05d015556c3bdb3013c4c21084382a08">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a>, <a class="el" href="Pad_8cpp_source.html#l00143">isGamepad()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a478fa88d9d7cf321c7b68c0a2f02152b" name="a478fa88d9d7cf321c7b68c0a2f02152b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a478fa88d9d7cf321c7b68c0a2f02152b">&#9670;&#160;</a></span>isVibrationSupported()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::isVibrationSupported </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a1c4e68373723411e481e7a8702bd8403">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00143">isGamepad()</a>.</p>
+
+</div>
+</div>
+<a id="abfa3b69dd6d1a44cd6a65ca4581106a7" name="abfa3b69dd6d1a44cd6a65ca4581106a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfa3b69dd6d1a44cd6a65ca4581106a7">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::open </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deviceindex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a5d7b9d51b7c1bf678dc98cdb55aede87">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00065">close()</a>, <a class="el" href="Pad_8cpp_source.html#l00077">isConnected()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00131">openGamepad()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00035">Pad()</a>.</p>
+
+</div>
+</div>
+<a id="ac913731f6489940e6937cb4d122f2eb1" name="ac913731f6489940e6937cb4d122f2eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac913731f6489940e6937cb4d122f2eb1">&#9670;&#160;</a></span>openGamepad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::openGamepad </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deviceindex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a843aebd8ef5917b7f548993ce63ee38c">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pad_8cpp_source.html#l00143">isGamepad()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00043">open()</a>.</p>
+
+</div>
+</div>
+<a id="a80899eaa9c30b7a8ddb8b0b4bd8259f1" name="a80899eaa9c30b7a8ddb8b0b4bd8259f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80899eaa9c30b7a8ddb8b0b4bd8259f1">&#9670;&#160;</a></span>setVibration() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::setVibration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a535cad2b3abc320505a0f5094a2f294e">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pad_8cpp_source.html#l00322">getVibration()</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00253">setVibration()</a>.</p>
+
+</div>
+</div>
+<a id="acf79f8ba9c2e1b1b470d29b07427019a" name="acf79f8ba9c2e1b1b470d29b07427019a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf79f8ba9c2e1b1b470d29b07427019a">&#9670;&#160;</a></span>setVibration() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::joystick::sdl::Pad::setVibration </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>right</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration</em> = <code>-1.0f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1joystick_1_1Pad.html#a337fbebeb0af91c1b745606cef850073">eve::joystick::Pad</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Pad_8cpp_source.html">Pad.cpp</a> 第 <a class="el" href="Pad_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="Pad_8cpp_source.html#l00143">isGamepad()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="Pad_8cpp_source.html#l00314">setVibration()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/joystick/sdl/<a class="el" href="sdl_2Pad_8h_source.html">Pad.h</a></li>
+<li>src/modules/joystick/sdl/<a class="el" href="Pad_8cpp_source.html">Pad.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

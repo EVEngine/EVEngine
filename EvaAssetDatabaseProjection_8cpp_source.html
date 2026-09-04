@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EvaAssetDatabaseProjection.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EvaAssetDatabaseProjection.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EvaAssetDatabaseProjection_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EvaAssetDatabaseProjection_8h.html">editor/EvaAssetDatabaseProjection.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><a class="code hl_enumeration" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330">DependencyKind</a> projectionKind(<a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">asset::EvaDependencyKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">asset::EvaDependencyKind::RuntimeRequired</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330a3656183169810334a96b91129dc9d881">DependencyKind::Hard</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">asset::EvaDependencyKind::RuntimeOptional</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330a682160fc6ad12f783f70608a9b46b9b9">DependencyKind::Soft</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">asset::EvaDependencyKind::Build</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330ac74c1f42f141c011ca6bd8b1114fc3d0">DependencyKind::Build</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">asset::EvaDependencyKind::Editor</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330adcce482edd4952b5db985648edea26a0">DependencyKind::EditorOnly</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">asset::EvaDependencyKind::Source</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330af31bbdd1b3e85bccd652680e16935819">DependencyKind::Source</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">asset::EvaDependencyKind::Platform</a>: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330ac74c1f42f141c011ca6bd8b1114fc3d0">DependencyKind::Build</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    }</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330a3656183169810334a96b91129dc9d881">DependencyKind::Hard</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><a class="code hl_typedef" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a> guid(<span class="keyword">const</span> AssetRef&amp; asset) { <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a>(asset.id().format()); }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#adc8156b7bdb6f69430ace0a6f4a94094">   24</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;std::vector&lt;AssetRecord&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1editor.html#adc8156b7bdb6f69430ace0a6f4a94094">publishEvaAssetProjection</a>(</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_class" href="classeve_1_1editor_1_1MemoryAssetDatabase.html">MemoryAssetDatabase</a>&amp; database, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvaManifest.html">asset::EvaManifest</a>&amp; manifest, std::string archiveUri,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::string importerId) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (archiveUri.empty() || importerId.empty())</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;std::vector&lt;AssetRecord&gt;&gt;(</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            EditorStatus::Rejected, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.asset.eva-projection.invalid-source&quot;</span>),</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="stringliteral">&quot;Eva projection requires an archive URI and importer identity&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::vector&lt;AssetPublication&gt; publications;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    publications.reserve(manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">assets</a>.size());</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvaAssetEntry.html">asset::EvaAssetEntry</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> : manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">assets</a>) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_struct" href="structeve_1_1editor_1_1AssetPublication.html">AssetPublication</a> publication;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#aa5779b247d1204861b7695699b408145">guid</a>            = guid(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.asset);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a6cdca51a9ddc1608763e617ac322dc01">logicalUri</a>      = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.asset.format();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#ae291bd18b214341bdffed1f02f0e67bf">typeId</a>          = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.type;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#aaa659801d6e0e09c77c87abed4c0c6e5">schemaVersion</a>   = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.schemaVersion.value());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#ad7cf17b66a96788d96b025f955a0a83b">sourceUri</a>       = archiveUri + <span class="stringliteral">&quot;#&quot;</span> + <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.definition;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a4ad6c2790864e0500c9a360723312b9a">sourceHash</a>      = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.contentHash;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a7b1d0e59ab83a23e805e93d1199f05f3">importerId</a>      = importerId;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a171eb168ccdc5aad24d437787b15b543">importerVersion</a> = 1;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a793174d706769ce2d684694d08d33969">tags</a>            = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.tags;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">record</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetRecord.html#a5380a39c83b1d0dc07ffbd76847d6432">metadata</a> = <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            {<span class="stringliteral">&quot;packageId&quot;</span>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>(manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">packageId</a>.<a class="code hl_function" href="classeve_1_1detail_1_1Id128.html#a01bf434ebd585bb785eb5dfa53af33fc">format</a>())},</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            {<span class="stringliteral">&quot;packageName&quot;</span>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>(manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">packageName</a>)},</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            {<span class="stringliteral">&quot;packageVersion&quot;</span>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>(manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">packageVersion</a>)},</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            {<span class="stringliteral">&quot;definition&quot;</span>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.definition)},</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        };</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvaDependency.html">asset::EvaDependency</a>&amp; sourceDependency : manifest.<a class="code hl_variable" href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">dependencies</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">if</span> (sourceDependency.from != <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>.asset) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#a93a4d00e0d3ffcfeefa1c1120722ddf3">dependencies</a>.push_back(</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                {guid(sourceDependency.from), guid(sourceDependency.to), projectionKind(sourceDependency.kind),</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                 <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a241db4084a0ec8f332caa11a3ae26baf">PropertyPath</a>(sourceDependency.path.empty() ? <span class="stringliteral">&quot;dependency&quot;</span> : sourceDependency.path)});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        std::sort(publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#a93a4d00e0d3ffcfeefa1c1120722ddf3">dependencies</a>.begin(), publication.<a class="code hl_variable" href="structeve_1_1editor_1_1AssetPublication.html#a93a4d00e0d3ffcfeefa1c1120722ddf3">dependencies</a>.end(),</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                  [](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                      if (left.to != right.to) return left.to &lt; right.to;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                      return left.sourceProperty &lt; right.sourceProperty;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                  });</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        publications.push_back(std::move(publication));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> database.<a class="code hl_function" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a913983a068df9a4b5ea329b2b514e23b">publishBatch</a>(std::move(publications));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEvaAssetDatabaseProjection_8h_html"><div class="ttname"><a href="EvaAssetDatabaseProjection_8h.html">EvaAssetDatabaseProjection.h</a></div><div class="ttdoc">Editor-side atomic projection of canonical .eva manifests.</div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a7d10b0c779bad3aabf067d52035f7052"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a></div><div class="ttdeci">float left</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00014">WorldAnchorProjection.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html_a01bf434ebd585bb785eb5dfa53af33fc"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html#a01bf434ebd585bb785eb5dfa53af33fc">eve::detail::Id128::format</a></div><div class="ttdeci">std::string format() const</div><div class="ttdoc">Formats the ID in lower-case canonical UUID text.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00122">Identity.h:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MemoryAssetDatabase_html"><div class="ttname"><a href="classeve_1_1editor_1_1MemoryAssetDatabase.html">eve::editor::MemoryAssetDatabase</a></div><div class="ttdoc">Thread-neutral in-memory asset index used by editor hosts and tests.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00068">EditorAssetDatabase.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MemoryAssetDatabase_html_a913983a068df9a4b5ea329b2b514e23b"><div class="ttname"><a href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a913983a068df9a4b5ea329b2b514e23b">eve::editor::MemoryAssetDatabase::publishBatch</a></div><div class="ttdeci">EditorResult&lt; std::vector&lt; AssetRecord &gt; &gt; publishBatch(std::vector&lt; AssetPublication &gt; publications)</div><div class="ttdoc">Validate and atomically publish an entire package projection as one index generation.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8cpp_source.html#l00049">EditorAssetDatabase.cpp:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">eve::asset::EvaDependencyKind</a></div><div class="ttdeci">EvaDependencyKind</div><div class="ttdoc">Dependency role recorded by a source asset archive.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00019">EvaManifest.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">eve::asset::EvaDependencyKind::Editor</a></div><div class="ttdeci">@ Editor</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">eve::asset::EvaDependencyKind::Platform</a></div><div class="ttdeci">@ Platform</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">eve::asset::EvaDependencyKind::RuntimeOptional</a></div><div class="ttdeci">@ RuntimeOptional</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">eve::asset::EvaDependencyKind::Build</a></div><div class="ttdeci">@ Build</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">eve::asset::EvaDependencyKind::Source</a></div><div class="ttdeci">@ Source</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed"><div class="ttname"><a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">eve::asset::EvaDependencyKind::RuntimeRequired</a></div><div class="ttdeci">@ RuntimeRequired</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330">eve::editor::DependencyKind</a></div><div class="ttdeci">DependencyKind</div><div class="ttdoc">Semantic relationship used for dependency closure and deletion planning.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00033">EditorAssetDatabase.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330a3656183169810334a96b91129dc9d881"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330a3656183169810334a96b91129dc9d881">eve::editor::DependencyKind::Hard</a></div><div class="ttdeci">@ Hard</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330a682160fc6ad12f783f70608a9b46b9b9"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330a682160fc6ad12f783f70608a9b46b9b9">eve::editor::DependencyKind::Soft</a></div><div class="ttdeci">@ Soft</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330ac74c1f42f141c011ca6bd8b1114fc3d0"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330ac74c1f42f141c011ca6bd8b1114fc3d0">eve::editor::DependencyKind::Build</a></div><div class="ttdeci">@ Build</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330adcce482edd4952b5db985648edea26a0"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330adcce482edd4952b5db985648edea26a0">eve::editor::DependencyKind::EditorOnly</a></div><div class="ttdeci">@ EditorOnly</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1524229aacec65901880d543bcbfe330af31bbdd1b3e85bccd652680e16935819"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1524229aacec65901880d543bcbfe330af31bbdd1b3e85bccd652680e16935819">eve::editor::DependencyKind::Source</a></div><div class="ttdeci">@ Source</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a171c3d5c5551198b7c835a25378f6dbd"><div class="ttname"><a href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">eve::editor::EditorValue</a></div><div class="ttdeci">eve::editing::Value EditorValue</div><div class="ttdoc">Compatibility alias for the UI-independent authoring value tree.</div><div class="ttdef"><b>Definition</b> <a href="EditorValue_8h_source.html#l00008">EditorValue.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a241db4084a0ec8f332caa11a3ae26baf"><div class="ttname"><a href="namespaceeve_1_1editor.html#a241db4084a0ec8f332caa11a3ae26baf">eve::editor::PropertyPath</a></div><div class="ttdeci">eve::editing::PropertyPath PropertyPath</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00037">EditorIds.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acc02156a7f46022e25968c48ad92852b"><div class="ttname"><a href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">eve::editor::AssetGuid</a></div><div class="ttdeci">eve::editing::AssetGuid AssetGuid</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00039">EditorIds.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_adc8156b7bdb6f69430ace0a6f4a94094"><div class="ttname"><a href="namespaceeve_1_1editor.html#adc8156b7bdb6f69430ace0a6f4a94094">eve::editor::publishEvaAssetProjection</a></div><div class="ttdeci">EditorResult&lt; std::vector&lt; AssetRecord &gt; &gt; publishEvaAssetProjection(MemoryAssetDatabase &amp;database, const asset::EvaManifest &amp;manifest, std::string archiveUri, std::string importerId)</div><div class="ttdoc">Project every asset and dependency in one validated .eva manifest as one database generation.</div><div class="ttdef"><b>Definition</b> <a href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">EvaAssetDatabaseProjection.cpp:24</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaAssetEntry_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaAssetEntry.html">eve::asset::EvaAssetEntry</a></div><div class="ttdoc">One typed asset definition in an .eva archive.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00032">EvaManifest.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaDependency_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaDependency.html">eve::asset::EvaDependency</a></div><div class="ttdoc">One directed dependency between stable asset identities.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00042">EvaManifest.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html">eve::asset::EvaManifest</a></div><div class="ttdoc">Validated, owning .eva manifest.</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00060">EvaManifest.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a0e410c0a44fdce85a0e2fb5980dc7385"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">eve::asset::EvaManifest::assets</a></div><div class="ttdeci">std::vector&lt; EvaAssetEntry &gt; assets</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00067">EvaManifest.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a1066c923fc9010062e028239f4b7c8fa"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">eve::asset::EvaManifest::dependencies</a></div><div class="ttdeci">std::vector&lt; EvaDependency &gt; dependencies</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00068">EvaManifest.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_a8224a435201db35464ea6a87b8354129"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">eve::asset::EvaManifest::packageId</a></div><div class="ttdeci">PersistentId packageId</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00064">EvaManifest.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_aaed321f4f5ce625f4ab58611e66f6df5"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">eve::asset::EvaManifest::packageVersion</a></div><div class="ttdeci">std::string packageVersion</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00066">EvaManifest.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvaManifest_html_ad4a7844e8cda3b7b2f0585a06dc09a7d"><div class="ttname"><a href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">eve::asset::EvaManifest::packageName</a></div><div class="ttdeci">std::string packageName</div><div class="ttdef"><b>Definition</b> <a href="EvaManifest_8h_source.html#l00065">EvaManifest.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetDependency_html"><div class="ttname"><a href="structeve_1_1editor_1_1AssetDependency.html">eve::editor::AssetDependency</a></div><div class="ttdoc">Directed dependency between two stable asset identities.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00036">EditorAssetDatabase.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetPublication_html"><div class="ttname"><a href="structeve_1_1editor_1_1AssetPublication.html">eve::editor::AssetPublication</a></div><div class="ttdoc">One owning record/dependency unit staged for an atomic index generation.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00044">EditorAssetDatabase.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetPublication_html_a93a4d00e0d3ffcfeefa1c1120722ddf3"><div class="ttname"><a href="structeve_1_1editor_1_1AssetPublication.html#a93a4d00e0d3ffcfeefa1c1120722ddf3">eve::editor::AssetPublication::dependencies</a></div><div class="ttdeci">std::vector&lt; AssetDependency &gt; dependencies</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00046">EditorAssetDatabase.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetPublication_html_af2a0b1b25f50272653c2a8c6186affbc"><div class="ttname"><a href="structeve_1_1editor_1_1AssetPublication.html#af2a0b1b25f50272653c2a8c6186affbc">eve::editor::AssetPublication::record</a></div><div class="ttdeci">AssetRecord record</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00045">EditorAssetDatabase.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a171eb168ccdc5aad24d437787b15b543"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a171eb168ccdc5aad24d437787b15b543">eve::editor::AssetRecord::importerVersion</a></div><div class="ttdeci">std::uint32_t importerVersion</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00024">EditorAssetDatabase.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a4ad6c2790864e0500c9a360723312b9a"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a4ad6c2790864e0500c9a360723312b9a">eve::editor::AssetRecord::sourceHash</a></div><div class="ttdeci">std::string sourceHash</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00022">EditorAssetDatabase.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a5380a39c83b1d0dc07ffbd76847d6432"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a5380a39c83b1d0dc07ffbd76847d6432">eve::editor::AssetRecord::metadata</a></div><div class="ttdeci">EditorValue metadata</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00028">EditorAssetDatabase.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a6cdca51a9ddc1608763e617ac322dc01"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a6cdca51a9ddc1608763e617ac322dc01">eve::editor::AssetRecord::logicalUri</a></div><div class="ttdeci">std::string logicalUri</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00018">EditorAssetDatabase.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a793174d706769ce2d684694d08d33969"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a793174d706769ce2d684694d08d33969">eve::editor::AssetRecord::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00026">EditorAssetDatabase.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_a7b1d0e59ab83a23e805e93d1199f05f3"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#a7b1d0e59ab83a23e805e93d1199f05f3">eve::editor::AssetRecord::importerId</a></div><div class="ttdeci">std::string importerId</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00023">EditorAssetDatabase.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_aa5779b247d1204861b7695699b408145"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#aa5779b247d1204861b7695699b408145">eve::editor::AssetRecord::guid</a></div><div class="ttdeci">AssetGuid guid</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00017">EditorAssetDatabase.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_aaa659801d6e0e09c77c87abed4c0c6e5"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#aaa659801d6e0e09c77c87abed4c0c6e5">eve::editor::AssetRecord::schemaVersion</a></div><div class="ttdeci">std::uint32_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00020">EditorAssetDatabase.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_ad7cf17b66a96788d96b025f955a0a83b"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#ad7cf17b66a96788d96b025f955a0a83b">eve::editor::AssetRecord::sourceUri</a></div><div class="ttdeci">std::string sourceUri</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00021">EditorAssetDatabase.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AssetRecord_html_ae291bd18b214341bdffed1f02f0e67bf"><div class="ttname"><a href="structeve_1_1editor_1_1AssetRecord.html#ae291bd18b214341bdffed1f02f0e67bf">eve::editor::AssetRecord::typeId</a></div><div class="ttdeci">std::string typeId</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8h_source.html#l00019">EditorAssetDatabase.h:19</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

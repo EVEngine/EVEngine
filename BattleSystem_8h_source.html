@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/BattleSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BattleSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BattleSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDamageSpec.html">SkillDamageSpec</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html#ab893e02493a0c74a02e301614d51b736">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillDamageSpec.html#ab893e02493a0c74a02e301614d51b736">damageType</a> = <span class="stringliteral">&quot;hp&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a6080a3fa61276c1ce3470bb2a74e545a">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a6080a3fa61276c1ce3470bb2a74e545a">formula</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html#af6fd5e0512eee06c78584382c95fd361">   28</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillDamageSpec.html#af6fd5e0512eee06c78584382c95fd361">element</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a0d92538d0cb7671afafbed4d1ba968d5">   29</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a0d92538d0cb7671afafbed4d1ba968d5">critChance</a> = 0.0;  </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a5b1334d7a59f615ac5fdd70ec48d5b37">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1SkillDamageSpec.html#a5b1334d7a59f615ac5fdd70ec48d5b37">hitChance</a> = 100;      </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1DamageResult.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1DamageResult.html">DamageResult</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1DamageResult.html#a0016f0535f0f0359f948149fdc1b6dfc">   35</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1DamageResult.html#a0016f0535f0f0359f948149fdc1b6dfc">amount</a> = 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1DamageResult.html#a13b20dd31bb72a9fa84b2f477b837a30">   36</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1DamageResult.html#a13b20dd31bb72a9fa84b2f477b837a30">crit</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1DamageResult.html#aa2b8eccffdbe69c835cd542f47ebdab6">   37</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1DamageResult.html#aa2b8eccffdbe69c835cd542f47ebdab6">hit</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1DamageResult.html#af1ecb9ed41f07d882c3b685ddedf35fc">   38</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1DamageResult.html#af1ecb9ed41f07d882c3b685ddedf35fc">elementRate</a> = 1.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1BattleSystem.html">   45</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1BattleSystem.html">BattleSystem</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a90bfbb329e67b55596ad5c53047a3b6c">registerSkillDamageChecked</a>(<span class="keyword">const</span> std::string &amp;skillId,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDamageSpec.html">SkillDamageSpec</a> &amp;spec);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a851f1a5eae6d9a15cf0f0b569881439b">registerSkillDamage</a>(<span class="keyword">const</span> std::string &amp;skillId, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDamageSpec.html">SkillDamageSpec</a> &amp;spec);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDamageSpec.html">SkillDamageSpec</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#ae054ae33695ef6b9f4737abaaaa1d9e8">findSkillDamage</a>(<span class="keyword">const</span> std::string &amp;skillId);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a0e86c7eaf8a078ec8566465da0c0da5b">clearSkillDamage</a>();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a37dab2913643be0537e5b33bb9582581">evaluateFormula</a>(<span class="keyword">const</span> std::string &amp;formula, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *attacker, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;double&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a300e5b53767e795fe1bb5fd6a79e9329">evaluateFormulaChecked</a>(<span class="keyword">const</span> std::string &amp;formula,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                                                     <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *attacker, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1DamageResult.html">DamageResult</a> <a class="code hl_function" href="classeve_1_1rpg_1_1BattleSystem.html#a0d752f3882711b5de76e2add6b5f02a3">resolveHit</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *attacker, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                   <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1SkillDamageSpec.html">SkillDamageSpec</a> &amp;spec, <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html">eve::rpg::BattleSystem</a></div><div class="ttdoc">战斗数值：公式求值 + 技能伤害注册 + 结算。 @thread 纯计算，可在任意线程执行。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00045">BattleSystem.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a0d752f3882711b5de76e2add6b5f02a3"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a0d752f3882711b5de76e2add6b5f02a3">eve::rpg::BattleSystem::resolveHit</a></div><div class="ttdeci">static DamageResult resolveHit(RPGActor *attacker, RPGActor *target, const SkillDamageSpec &amp;spec, unsigned seed)</div><div class="ttdoc">结算一次命中：命中判定、公式、元素耐性、暴击。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00210">BattleSystem.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a0e86c7eaf8a078ec8566465da0c0da5b"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a0e86c7eaf8a078ec8566465da0c0da5b">eve::rpg::BattleSystem::clearSkillDamage</a></div><div class="ttdeci">static void clearSkillDamage()</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00051">BattleSystem.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a300e5b53767e795fe1bb5fd6a79e9329"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a300e5b53767e795fe1bb5fd6a79e9329">eve::rpg::BattleSystem::evaluateFormulaChecked</a></div><div class="ttdeci">static eve::Result&lt; double &gt; evaluateFormulaChecked(const std::string &amp;formula, RPGActor *attacker, RPGActor *target)</div><div class="ttdoc">Strictly parse and evaluate a damage formula.</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00205">BattleSystem.cpp:205</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a37dab2913643be0537e5b33bb9582581"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a37dab2913643be0537e5b33bb9582581">eve::rpg::BattleSystem::evaluateFormula</a></div><div class="ttdeci">static double evaluateFormula(const std::string &amp;formula, RPGActor *attacker, RPGActor *target)</div><div class="ttdoc">求值伤害公式。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00200">BattleSystem.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a851f1a5eae6d9a15cf0f0b569881439b"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a851f1a5eae6d9a15cf0f0b569881439b">eve::rpg::BattleSystem::registerSkillDamage</a></div><div class="ttdeci">static void registerSkillDamage(const std::string &amp;skillId, const SkillDamageSpec &amp;spec)</div><div class="ttdoc">Compatibility facade; invalid definitions are ignored.</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00041">BattleSystem.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_a90bfbb329e67b55596ad5c53047a3b6c"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#a90bfbb329e67b55596ad5c53047a3b6c">eve::rpg::BattleSystem::registerSkillDamageChecked</a></div><div class="ttdeci">static eve::Result&lt; void &gt; registerSkillDamageChecked(const std::string &amp;skillId, const SkillDamageSpec &amp;spec)</div><div class="ttdoc">Validate and publish one skill damage definition atomically.</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00028">BattleSystem.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleSystem_html_ae054ae33695ef6b9f4737abaaaa1d9e8"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleSystem.html#ae054ae33695ef6b9f4737abaaaa1d9e8">eve::rpg::BattleSystem::findSkillDamage</a></div><div class="ttdeci">static const SkillDamageSpec * findSkillDamage(const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00045">BattleSystem.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1DamageResult_html"><div class="ttname"><a href="structeve_1_1rpg_1_1DamageResult.html">eve::rpg::DamageResult</a></div><div class="ttdoc">一次命中结算结果。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00034">BattleSystem.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1DamageResult_html_a0016f0535f0f0359f948149fdc1b6dfc"><div class="ttname"><a href="structeve_1_1rpg_1_1DamageResult.html#a0016f0535f0f0359f948149fdc1b6dfc">eve::rpg::DamageResult::amount</a></div><div class="ttdeci">double amount</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00035">BattleSystem.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1DamageResult_html_a13b20dd31bb72a9fa84b2f477b837a30"><div class="ttname"><a href="structeve_1_1rpg_1_1DamageResult.html#a13b20dd31bb72a9fa84b2f477b837a30">eve::rpg::DamageResult::crit</a></div><div class="ttdeci">bool crit</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00036">BattleSystem.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1DamageResult_html_aa2b8eccffdbe69c835cd542f47ebdab6"><div class="ttname"><a href="structeve_1_1rpg_1_1DamageResult.html#aa2b8eccffdbe69c835cd542f47ebdab6">eve::rpg::DamageResult::hit</a></div><div class="ttdeci">bool hit</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00037">BattleSystem.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1DamageResult_html_af1ecb9ed41f07d882c3b685ddedf35fc"><div class="ttname"><a href="structeve_1_1rpg_1_1DamageResult.html#af1ecb9ed41f07d882c3b685ddedf35fc">eve::rpg::DamageResult::elementRate</a></div><div class="ttdeci">double elementRate</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00038">BattleSystem.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html">eve::rpg::SkillDamageSpec</a></div><div class="ttdoc">一次技能命中的伤害规格。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00022">BattleSystem.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html_a0d92538d0cb7671afafbed4d1ba968d5"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html#a0d92538d0cb7671afafbed4d1ba968d5">eve::rpg::SkillDamageSpec::critChance</a></div><div class="ttdeci">double critChance</div><div class="ttdoc">追加到攻击方 critRate 的暴击率</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00029">BattleSystem.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html_a5b1334d7a59f615ac5fdd70ec48d5b37"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html#a5b1334d7a59f615ac5fdd70ec48d5b37">eve::rpg::SkillDamageSpec::hitChance</a></div><div class="ttdeci">int hitChance</div><div class="ttdoc">命中率（百分比）</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00030">BattleSystem.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html_a6080a3fa61276c1ce3470bb2a74e545a"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html#a6080a3fa61276c1ce3470bb2a74e545a">eve::rpg::SkillDamageSpec::formula</a></div><div class="ttdeci">std::string formula</div><div class="ttdoc">公式字符串，如 &quot;a.atk * 4 - b.def * 2&quot;；空则对 hp 用默认物理公式。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00026">BattleSystem.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html_ab893e02493a0c74a02e301614d51b736"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html#ab893e02493a0c74a02e301614d51b736">eve::rpg::SkillDamageSpec::damageType</a></div><div class="ttdeci">std::string damageType</div><div class="ttdoc">&quot;hp&quot; | &quot;hpHeal&quot; | &quot;mp&quot; | &quot;mpHeal&quot;。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00024">BattleSystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1SkillDamageSpec_html_af6fd5e0512eee06c78584382c95fd361"><div class="ttname"><a href="structeve_1_1rpg_1_1SkillDamageSpec.html#af6fd5e0512eee06c78584382c95fd361">eve::rpg::SkillDamageSpec::element</a></div><div class="ttdeci">std::string element</div><div class="ttdoc">元素（&quot;&quot; = 无）；伤害乘目标对应元素耐性。</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8h_source.html#l00028">BattleSystem.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/daynight/DayNight.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c7d1310fe7baa0b72dc8234f0da80989.html">daynight</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DayNight.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DayNight_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Light3D;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>ReflectionProbeCapture;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Volumetric;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1daynight.html">eve::daynight</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1daynight_1_1DayNight.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1daynight_1_1DayNight.html#a62e9df834ae5aad412aa8419a11350de">   43</a></span>    <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a62e9df834ae5aad412aa8419a11350de">Module_REG</a>(<a class="code hl_class" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a38e0506e4f728d91bb96e45e4d31a752">DayNight</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a9c1161f516b7a2f306a7d219b66b958c">~DayNight</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a4df5641d851f4ab34a929cb77c21ebb2">init</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#afbf0474ae1f64c97ad6e6fafe46b834a">update</a>(<span class="keywordtype">float</span> dt, <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// ---- clock ----</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#adb2713cd8b6eb60f947e9809e66c0bfa">setTimeOfDay</a>(<span class="keywordtype">float</span> hours);   <span class="comment">// 0..24</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a55f19c686e979c1b91eee65066defb45">getTimeOfDay</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#aade679f226ae41358f1f2ba1a46e94e1">setSpeed</a>(<span class="keywordtype">float</span> hoursPerRealHour);   <span class="comment">// default 1.0</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a0ba18c6a7fde971466068a45317a420c">getSpeed</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a4035cf82a32ffbd41583bb31e2ec8e91">setPaused</a>(<span class="keywordtype">bool</span> paused);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a14b2087301947bdf6fffd71e848a002a">isPaused</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a38c1d6e753ea6fd4f806bce83c9d68af">isNight</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// ---- sun ----</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#ab2098bfe0abffd9c7d9cf78867e98eca">getSunElevation</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a71e5c3aa059004764bee883412956ffc">getSunAzimuth</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#ac5ebddcc45549545b6dcc4054de0ffb1">getSunDirX</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a24afd498ce79079edf4761296e545e03">getSunDirY</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a3f526434daeb02862f437394049898bc">getSunDirZ</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a5534037c919536060035f37db031f669">getSunIntensity</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a145ddaee947bc61d29625d8603ca673d">getSunR</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a18f338924f3eb6f46e07a4ac624125b0">getSunG</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a8528147218f54e64029b2f1a2c9ff634">getSunB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="comment">// ---- atmosphere ----</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a8b4ffd99a0abe272b630f92fe271fc44">setTurbidity</a>(<span class="keywordtype">float</span> turbidity);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#aa82fe4d40ac9997cb4e6d7fe025717f4">getTurbidity</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#aa98e6dfe4901a069954e66625bb70a2f">setSkyExposure</a>(<span class="keywordtype">float</span> exposure);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a7866e0176340c8f667c22eb43047b6c6">getSkyExposure</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#abc84436637091f2e162b277ccd7dc851">setMieStrength</a>(<span class="keywordtype">float</span> strength);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a84ca5ef929ebe653ae7a05d695bf4197">getMieStrength</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// ---- sky / ambient (sampled by the scene) ----</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a24cc1cc0e976108d04fd4f5689a822b2">getSkyR</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a2bafc79a0f240b755d4a6d5ed9784398">getSkyG</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a389af79c20e2e07ae1143c8dac574035">getSkyB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a5f135c90218aa94b8903dc575c4242b9">getAmbientR</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a997ceb1e681c8d4dcd19effaf4078f1a">getAmbientG</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a6348601d243ce99083de1c55cea24083">getAmbientB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#ac4ff4ada1484faabc2b731fbbd5f54a7">getAmbientBrightness</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a2a93a6e0ab69e6f44d9ab8d611c66073">applyAtmosphere</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a> *fog) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a1fc3c67e3782b61700a4efda3a839422">applyReflectionProbeSky</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">graphics::ReflectionProbeCapture</a> *probe) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// ---- weather coupling ----</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#aa037b4f3fbfcc03fb3ae624bb7bf3b1d">setWeatherInfluence</a>(<span class="keywordtype">float</span> cloudiness, <span class="keywordtype">float</span> lightningFlash);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#ad9bdc50f9f7e390795bb1dff6bcfc0e3">getWeatherCloudiness</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a0f3a43b528b7d72edda16ce45351aa80">getWeatherFlash</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="comment">// ---- skybox ----</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a419997913ef7c5144b55bb5ea7dd0ce9">setSkyboxEnabled</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a7e9ad2b8ed3b44a986217940a06bfdd1">isSkyboxEnabled</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="comment">// ---- night lighting ----</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#abaf293021775b777a2f802522accb896">setNightLight</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a5f394a311fd934be44603517b2177018">isNightLight</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classeve_1_1daynight_1_1DayNight.html#aa2f9218a6284f6090311b10bb54f8963">  135</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span> <a class="code hl_variable" href="classeve_1_1daynight_1_1DayNight.html#aa2f9218a6284f6090311b10bb54f8963">kNamedLights</a>[];</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1daynight_1_1DayNight.html#a51029307965d67e280476ebbb3a72b56">  136</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeve_1_1daynight_1_1DayNight.html#a51029307965d67e280476ebbb3a72b56">kNamedLightCount</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a7fa53733888d33442d7930e8311ed412">setFirePosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a813b7777b6e44c3862b7ea5ad365d119">addFirefly</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a429e7bdef790da7cf63d5311095a3642">clearFireflies</a>();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1daynight_1_1DayNight.html#a177bedd623f1c00c3cf0b8d7e6d72dca">getFireflyCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_struct" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html">Impl</a> *impl_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>};</div>
+</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}  <span class="comment">// namespace eve::daynight</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html">eve::daynight::DayNight</a></div><div class="ttdoc">DayNight module — a time-of-day cycle that drives the sun, sky and light.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8h_source.html#l00041">DayNight.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a0ba18c6a7fde971466068a45317a420c"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a0ba18c6a7fde971466068a45317a420c">eve::daynight::DayNight::getSpeed</a></div><div class="ttdeci">float getSpeed() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00258">DayNight.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a0f3a43b528b7d72edda16ce45351aa80"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a0f3a43b528b7d72edda16ce45351aa80">eve::daynight::DayNight::getWeatherFlash</a></div><div class="ttdeci">float getWeatherFlash() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00337">DayNight.cpp:337</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a145ddaee947bc61d29625d8603ca673d"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a145ddaee947bc61d29625d8603ca673d">eve::daynight::DayNight::getSunR</a></div><div class="ttdeci">float getSunR() const</div><div class="ttdoc">Atmosphere-attenuated direct sunlight red channel, including intensity.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00270">DayNight.cpp:270</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a14b2087301947bdf6fffd71e848a002a"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a14b2087301947bdf6fffd71e848a002a">eve::daynight::DayNight::isPaused</a></div><div class="ttdeci">bool isPaused() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00260">DayNight.cpp:260</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a177bedd623f1c00c3cf0b8d7e6d72dca"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a177bedd623f1c00c3cf0b8d7e6d72dca">eve::daynight::DayNight::getFireflyCount</a></div><div class="ttdeci">int getFireflyCount() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00456">DayNight.cpp:456</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a18f338924f3eb6f46e07a4ac624125b0"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a18f338924f3eb6f46e07a4ac624125b0">eve::daynight::DayNight::getSunG</a></div><div class="ttdeci">float getSunG() const</div><div class="ttdoc">Atmosphere-attenuated direct sunlight green channel, including intensity.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00274">DayNight.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a1fc3c67e3782b61700a4efda3a839422"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a1fc3c67e3782b61700a4efda3a839422">eve::daynight::DayNight::applyReflectionProbeSky</a></div><div class="ttdeci">void applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) const</div><div class="ttdoc">Synchronize linear directional sky radiance and sky IBL to a reflection probe.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00362">DayNight.cpp:362</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a24afd498ce79079edf4761296e545e03"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a24afd498ce79079edf4761296e545e03">eve::daynight::DayNight::getSunDirY</a></div><div class="ttdeci">float getSunDirY() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00267">DayNight.cpp:267</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a24cc1cc0e976108d04fd4f5689a822b2"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a24cc1cc0e976108d04fd4f5689a822b2">eve::daynight::DayNight::getSkyR</a></div><div class="ttdeci">float getSkyR() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00299">DayNight.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a2a93a6e0ab69e6f44d9ab8d611c66073"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a2a93a6e0ab69e6f44d9ab8d611c66073">eve::daynight::DayNight::applyAtmosphere</a></div><div class="ttdeci">void applyAtmosphere(graphics::Volumetric *fog) const</div><div class="ttdoc">Synchronize sun direction and atmosphere-derived fog lighting.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00351">DayNight.cpp:351</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a2bafc79a0f240b755d4a6d5ed9784398"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a2bafc79a0f240b755d4a6d5ed9784398">eve::daynight::DayNight::getSkyG</a></div><div class="ttdeci">float getSkyG() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00307">DayNight.cpp:307</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a389af79c20e2e07ae1143c8dac574035"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a389af79c20e2e07ae1143c8dac574035">eve::daynight::DayNight::getSkyB</a></div><div class="ttdeci">float getSkyB() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00315">DayNight.cpp:315</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a38c1d6e753ea6fd4f806bce83c9d68af"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a38c1d6e753ea6fd4f806bce83c9d68af">eve::daynight::DayNight::isNight</a></div><div class="ttdeci">bool isNight() const</div><div class="ttdoc">True when the sun is below the horizon (night).</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00262">DayNight.cpp:262</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a38e0506e4f728d91bb96e45e4d31a752"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a38e0506e4f728d91bb96e45e4d31a752">eve::daynight::DayNight::DayNight</a></div><div class="ttdeci">DayNight()</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00243">DayNight.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a3f526434daeb02862f437394049898bc"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a3f526434daeb02862f437394049898bc">eve::daynight::DayNight::getSunDirZ</a></div><div class="ttdeci">float getSunDirZ() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00268">DayNight.cpp:268</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a4035cf82a32ffbd41583bb31e2ec8e91"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a4035cf82a32ffbd41583bb31e2ec8e91">eve::daynight::DayNight::setPaused</a></div><div class="ttdeci">void setPaused(bool paused)</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00259">DayNight.cpp:259</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a419997913ef7c5144b55bb5ea7dd0ce9"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a419997913ef7c5144b55bb5ea7dd0ce9">eve::daynight::DayNight::setSkyboxEnabled</a></div><div class="ttdeci">void setSkyboxEnabled(bool enabled)</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00403">DayNight.cpp:403</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a429e7bdef790da7cf63d5311095a3642"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a429e7bdef790da7cf63d5311095a3642">eve::daynight::DayNight::clearFireflies</a></div><div class="ttdeci">void clearFireflies()</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00452">DayNight.cpp:452</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a4df5641d851f4ab34a929cb77c21ebb2"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a4df5641d851f4ab34a929cb77c21ebb2">eve::daynight::DayNight::init</a></div><div class="ttdeci">void init(graphics::Graphics *gfx)</div><div class="ttdoc">Idempotent; builds lights / sky cubemap on first call.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00462">DayNight.cpp:462</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a51029307965d67e280476ebbb3a72b56"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a51029307965d67e280476ebbb3a72b56">eve::daynight::DayNight::kNamedLightCount</a></div><div class="ttdeci">static const int kNamedLightCount</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8h_source.html#l00136">DayNight.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a5534037c919536060035f37db031f669"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a5534037c919536060035f37db031f669">eve::daynight::DayNight::getSunIntensity</a></div><div class="ttdeci">float getSunIntensity() const</div><div class="ttdoc">0..1 sun energy; ramps to 0 below the horizon.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00269">DayNight.cpp:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a55f19c686e979c1b91eee65066defb45"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a55f19c686e979c1b91eee65066defb45">eve::daynight::DayNight::getTimeOfDay</a></div><div class="ttdeci">float getTimeOfDay() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00255">DayNight.cpp:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a5f135c90218aa94b8903dc575c4242b9"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a5f135c90218aa94b8903dc575c4242b9">eve::daynight::DayNight::getAmbientR</a></div><div class="ttdeci">float getAmbientR() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00338">DayNight.cpp:338</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a5f394a311fd934be44603517b2177018"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a5f394a311fd934be44603517b2177018">eve::daynight::DayNight::isNightLight</a></div><div class="ttdeci">bool isNightLight(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00421">DayNight.cpp:421</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a62e9df834ae5aad412aa8419a11350de"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a62e9df834ae5aad412aa8419a11350de">eve::daynight::DayNight::Module_REG</a></div><div class="ttdeci">Module_REG(DayNight)</div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a6348601d243ce99083de1c55cea24083"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a6348601d243ce99083de1c55cea24083">eve::daynight::DayNight::getAmbientB</a></div><div class="ttdeci">float getAmbientB() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00346">DayNight.cpp:346</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a71e5c3aa059004764bee883412956ffc"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a71e5c3aa059004764bee883412956ffc">eve::daynight::DayNight::getSunAzimuth</a></div><div class="ttdeci">float getSunAzimuth() const</div><div class="ttdoc">Solar azimuth in degrees, measured clockwise from +Z.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00265">DayNight.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a7866e0176340c8f667c22eb43047b6c6"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a7866e0176340c8f667c22eb43047b6c6">eve::daynight::DayNight::getSkyExposure</a></div><div class="ttdeci">float getSkyExposure() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00291">DayNight.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a7e9ad2b8ed3b44a986217940a06bfdd1"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a7e9ad2b8ed3b44a986217940a06bfdd1">eve::daynight::DayNight::isSkyboxEnabled</a></div><div class="ttdeci">bool isSkyboxEnabled() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00407">DayNight.cpp:407</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a7fa53733888d33442d7930e8311ed412"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a7fa53733888d33442d7930e8311ed412">eve::daynight::DayNight::setFirePosition</a></div><div class="ttdeci">void setFirePosition(float x, float y, float z)</div><div class="ttdoc">Position of the campfire point light (fire system).</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00428">DayNight.cpp:428</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a813b7777b6e44c3862b7ea5ad365d119"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a813b7777b6e44c3862b7ea5ad365d119">eve::daynight::DayNight::addFirefly</a></div><div class="ttdeci">void addFirefly(float x, float y, float z)</div><div class="ttdoc">Add one firefly anchor (world space); up to kMaxFireflies.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00437">DayNight.cpp:437</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a84ca5ef929ebe653ae7a05d695bf4197"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a84ca5ef929ebe653ae7a05d695bf4197">eve::daynight::DayNight::getMieStrength</a></div><div class="ttdeci">float getMieStrength() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00296">DayNight.cpp:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a8528147218f54e64029b2f1a2c9ff634"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a8528147218f54e64029b2f1a2c9ff634">eve::daynight::DayNight::getSunB</a></div><div class="ttdeci">float getSunB() const</div><div class="ttdoc">Atmosphere-attenuated direct sunlight blue channel, including intensity.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00278">DayNight.cpp:278</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a8b4ffd99a0abe272b630f92fe271fc44"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a8b4ffd99a0abe272b630f92fe271fc44">eve::daynight::DayNight::setTurbidity</a></div><div class="ttdeci">void setTurbidity(float turbidity)</div><div class="ttdoc">Set aerosol turbidity. 1.5 is very clear; 10 is hazy.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00282">DayNight.cpp:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a997ceb1e681c8d4dcd19effaf4078f1a"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a997ceb1e681c8d4dcd19effaf4078f1a">eve::daynight::DayNight::getAmbientG</a></div><div class="ttdeci">float getAmbientG() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00342">DayNight.cpp:342</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_a9c1161f516b7a2f306a7d219b66b958c"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#a9c1161f516b7a2f306a7d219b66b958c">eve::daynight::DayNight::~DayNight</a></div><div class="ttdeci">~DayNight() override</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00244">DayNight.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_aa037b4f3fbfcc03fb3ae624bb7bf3b1d"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#aa037b4f3fbfcc03fb3ae624bb7bf3b1d">eve::daynight::DayNight::setWeatherInfluence</a></div><div class="ttdeci">void setWeatherInfluence(float cloudiness, float lightningFlash)</div><div class="ttdoc">Apply cloud cover and lightning exposure to the unified sky/lighting model.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00329">DayNight.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_aa2f9218a6284f6090311b10bb54f8963"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#aa2f9218a6284f6090311b10bb54f8963">eve::daynight::DayNight::kNamedLights</a></div><div class="ttdeci">static const char *const kNamedLights[]</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8h_source.html#l00135">DayNight.h:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_aa82fe4d40ac9997cb4e6d7fe025717f4"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#aa82fe4d40ac9997cb4e6d7fe025717f4">eve::daynight::DayNight::getTurbidity</a></div><div class="ttdeci">float getTurbidity() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00286">DayNight.cpp:286</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_aa98e6dfe4901a069954e66625bb70a2f"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#aa98e6dfe4901a069954e66625bb70a2f">eve::daynight::DayNight::setSkyExposure</a></div><div class="ttdeci">void setSkyExposure(float exposure)</div><div class="ttdoc">Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00287">DayNight.cpp:287</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_aade679f226ae41358f1f2ba1a46e94e1"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#aade679f226ae41358f1f2ba1a46e94e1">eve::daynight::DayNight::setSpeed</a></div><div class="ttdeci">void setSpeed(float hoursPerRealHour)</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00257">DayNight.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_ab2098bfe0abffd9c7d9cf78867e98eca"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#ab2098bfe0abffd9c7d9cf78867e98eca">eve::daynight::DayNight::getSunElevation</a></div><div class="ttdeci">float getSunElevation() const</div><div class="ttdoc">Solar elevation in degrees (max at local noon, ~70°).</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00264">DayNight.cpp:264</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_abaf293021775b777a2f802522accb896"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#abaf293021775b777a2f802522accb896">eve::daynight::DayNight::setNightLight</a></div><div class="ttdeci">void setNightLight(const std::string &amp;name, bool enabled)</div><div class="ttdoc">Enable a named light system: &quot;moonlight&quot;|&quot;starlight&quot;|&quot;fire&quot;|&quot;fireflies&quot;.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00413">DayNight.cpp:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_abc84436637091f2e162b277ccd7dc851"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#abc84436637091f2e162b277ccd7dc851">eve::daynight::DayNight::setMieStrength</a></div><div class="ttdeci">void setMieStrength(float strength)</div><div class="ttdoc">Relative Mie aerosol density; controls horizon haze and solar halo.</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00292">DayNight.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_ac4ff4ada1484faabc2b731fbbd5f54a7"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#ac4ff4ada1484faabc2b731fbbd5f54a7">eve::daynight::DayNight::getAmbientBrightness</a></div><div class="ttdeci">float getAmbientBrightness() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00323">DayNight.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_ac5ebddcc45549545b6dcc4054de0ffb1"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#ac5ebddcc45549545b6dcc4054de0ffb1">eve::daynight::DayNight::getSunDirX</a></div><div class="ttdeci">float getSunDirX() const</div><div class="ttdoc">World-space direction pointing AT the sun (normalized).</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00266">DayNight.cpp:266</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_ad9bdc50f9f7e390795bb1dff6bcfc0e3"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#ad9bdc50f9f7e390795bb1dff6bcfc0e3">eve::daynight::DayNight::getWeatherCloudiness</a></div><div class="ttdeci">float getWeatherCloudiness() const</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00336">DayNight.cpp:336</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_adb2713cd8b6eb60f947e9809e66c0bfa"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#adb2713cd8b6eb60f947e9809e66c0bfa">eve::daynight::DayNight::setTimeOfDay</a></div><div class="ttdeci">void setTimeOfDay(float hours)</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00250">DayNight.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1daynight_1_1DayNight_html_afbf0474ae1f64c97ad6e6fafe46b834a"><div class="ttname"><a href="classeve_1_1daynight_1_1DayNight.html#afbf0474ae1f64c97ad6e6fafe46b834a">eve::daynight::DayNight::update</a></div><div class="ttdeci">void update(float dt, graphics::Graphics *gfx)</div><div class="ttdoc">Advance the clock and push sun/sky/light state; before gfx.render3D().</div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00492">DayNight.cpp:492</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></div><div class="ttdoc">Incremental six-face HDR scene capture for a runtime reflection probe.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8h_source.html#l00024">ReflectionProbeCapture.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Volumetric_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Volumetric.html">eve::graphics::Volumetric</a></div><div class="ttdoc">Volumetric light + fog.</div><div class="ttdef"><b>Definition</b> <a href="Volumetric_8h_source.html#l00031">Volumetric.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1daynight_html"><div class="ttname"><a href="namespaceeve_1_1daynight.html">eve::daynight</a></div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00017">DayNight.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1daynight_1_1DayNight_1_1Impl_html"><div class="ttname"><a href="structeve_1_1daynight_1_1DayNight_1_1Impl.html">eve::daynight::DayNight::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="DayNight_8cpp_source.html#l00199">DayNight.cpp:199</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1model3d.html">model3d</a></li><li class="navelem"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::model3d::ModelData 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Resource.html#af6f203aedd01f44f5b20a3c0fceaa6b6">addDependency</a>(eve::ref&lt; Resource &gt; resource)</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#afcb92bd4e90acbc45bf8b4da88fbb198">adopt</a>(eve::Resource &amp;replacement) override</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a6014ec13b83c4422ab261d78a15b669f">applyVertexNormals</a>(int meshIndex, std::string_view kind)</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a5d5577603a03176f9bc8b1d699a0e3d4">applyVertexNormalsFrom</a>(int meshIndex, std::string_view kind, float originX, float originY, float originZ)</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ac33b306de7b2968bc302dda1bad166f2">bakeNormalMap</a>(int meshIndex, int width, int height, int uvChannel=0, std::string_view space=&quot;tangent&quot;) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#ac6dfcee2f601ec2d9284249ea528881e">dependencies</a></td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a019505178c5fa438faf49e0e63beb1f9">empty</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a9af44eacd6c13734ff8a3659aeac88ed">getAnimationCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#aca9e29d13c85f0b814d2145c028a35d9">getAnimationName</a>(int animIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#aa338f8686bba731179b50279a59ff8fd">getBitangent</a>(int meshIndex, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a65814757cf04ef55ce29a23e25263f64">getBoneCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#af5656dadc851de0e666e3b1da2bb3829">getBoneName</a>(int meshIndex, int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a66a0f16e43bfffd1309c97c63f471fc1">getBoneWeightCount</a>(int meshIndex, int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ac2c36f8891aa8111d1cbdb620866848e">getBoneWeightValue</a>(int meshIndex, int boneIndex, int weightIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#acefe251382d3ce645bd0007c73d77fa2">getBoneWeightVertex</a>(int meshIndex, int boneIndex, int weightIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#aeeb69b4dd82da6ee5687beef79752c5c">getDependencies</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a05644e2428b31304f0db0b12d6955a7c">getEmbeddedTextureCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a59a60d6a2857e09ac8c983ba1251e268">getEmbeddedTextureHeight</a>(int idx) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ad1edbbe3481fecbf01a33c2d931464eb">getEmbeddedTextureImageData</a>(int idx) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#afd19fd8f3e88eb000deb0dc13babcf45">getEmbeddedTextureName</a>(int idx) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a956b9b00aff7608a839607d3abc6ca11">getEmbeddedTextureWidth</a>(int idx) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a4213baf07025117a06f552ac544acc07">getFaceCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#aeeff3a7cc994310ebf41ababe0b22bb9">getFaceVertexIndex</a>(int meshIndex, int triangleIndex, int corner) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a88a5afe81540a4ee90bbf9a5b21aecb7">getInverseBindMatrixElement</a>(int meshIndex, int boneIndex, int elementIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a12dfa90ae90b74734bb680056c62f16c">getMaterialAlphaCutoff</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a3110093838ea89be59b9e1ee47d0bf58">getMaterialAlphaMode</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ab8623914e7f2e6d0f84140c790b0ad81">getMaterialBaseColorA</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a1c0402019eecc04854123c29fa26ab24">getMaterialBaseColorB</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a260abdf12f5d1e182121c43caaa4d417">getMaterialBaseColorG</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a19f540bb3e3e037e8336ee33251fbfea">getMaterialBaseColorR</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ad9292899e800da2de4fecc14d46f85f9">getMaterialCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ad99fa43da14ee252613791cfdd4ce317">getMaterialIndex</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a1a23bb559285f710210295ec136b8794">getMaterialMetallicFactor</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a88ac5ce0373d3ec9c8e2d47322a20647">getMaterialName</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a698091540d72324ebcd53932311c4b69">getMaterialOpacity</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ae0a2cc41dac83a2046d29665eff425ca">getMaterialRoughnessFactor</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#adad7d27e7fa798dabbe91b97722291d2">getMaterialTextureEmbeddedIndex</a>(int matIndex, const std::string &amp;type, int slot=0) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a7c79c2063ccab369fd252a90cfea7ef1">getMaterialTexturePath</a>(int matIndex, const std::string &amp;type, int slot=0) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a7df187001c5bbc86dc6074b7922f6d2a">getMaterialTextureSlotCount</a>(int matIndex, const std::string &amp;type) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a95ae0a5edcf3588b59b678af1d0c5074">getMaterialTwoSided</a>(int matIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#aee8f2dca9d0921ad1b1f6029a8750f4c">getMesh</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a0600e9c623a072029f79407576228ed3">getMeshCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#afe715aaa433c1ff82fae953b60900c4f">getMorphTargetCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ac647b56a1e3b9db18da6ff1300016b56">getMorphTargetName</a>(int meshIndex, int morphIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#abdcc64b6090136d61d0a57c9f268ed1e">getScene</a>() const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a93cd0231be5b181030a5b8af25bfda63">getTangent</a>(int meshIndex, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a697a64e1e72dcdf5f1cc12f6f9726c78">getTexCoord</a>(int meshIndex, int channel, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a9f88323ee2c1c9f82d20e6b1c54f3281">getTexCoordChannelCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Object.html#af940d294ff10b6d828c1f52f8139937f">getUpdate</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#abdb89e5f7295e7e7560bc05103680432">getUri</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a597533b7dd2bf5c33439229aa7e19273">getVertexColor</a>(int meshIndex, int channel, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#acdd0993a3013e6cfd2a74399f5fbc397">getVertexColorChannelCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#af73fe52d9b263e4ecef8cd711916f60e">getVertexCount</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#aa3afff51ab936493c115420a19fd9825">getVertexNormal</a>(int meshIndex, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a2e4bff46e5e5a8b1717f491c11d88908">getVertexPosition</a>(int meshIndex, int vertexIndex, int component) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ae4bdec0a3f52e4cd696ff54757794b77">hasBones</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a4977bd6e5163fdb7b573aaca991f9655">hasNormals</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a9df9d96d9596e988613f0ad81da0f0c9">hasTangents</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#abeda95eb09fd3aeb83c7963b74a03aa1">hasTexCoordChannel</a>(int meshIndex, int channel) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ace7c760a4a3d28990f3835e80fade6cb">hasTexCoords</a>(int meshIndex) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a31d23a797d3d5ebf215f7d54b7c6dc6b">hasVertexColorChannel</a>(int meshIndex, int channel) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">isDirty</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#ad564c58c30d4f3ac487c856fc1e6fe43">mapSurfacePointToUv</a>(int meshIndex, int triangleIndex, float localX, float localY, float localZ, int channel=0) const</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#af2cb768d6dcd9a1c1f9f679a98a231ef">ModelData</a>(medialoader::ModelScene scene, std::string uri=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Object.html#a513f705d32a37006f25d79b57cae7563">Object</a>()</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Object.html#aeddd56fdaabe8ddb3cb5ed1fc2857db0">ref</a>()</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Object.html#a9246cea7724ecf33485f595e1f2d20d9">ref_count</a></td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#aeeeec005a7224dadf0cc9da955709a4f">Resource</a>(std::string uri)</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Object.html#a074c5f36236cc17f5c110f17be72b2b1">setUpdate</a>(Object *replacement)</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#a2f63ca3139fd056072173c848947d962">setUri</a>(std::string value)</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a70a7317b7badcd5dafc170fb72e23999">setVertexNormal</a>(int meshIndex, int vertexIndex, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Object.html#ab4b9ac0bd673dc2582e13122cb7827d7">unref</a>()</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Object.html#a16b86af9dc497833e85daeddf7887d79">update</a></td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a></td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html#a4e26c21e616e8ec10ea201aa45b43073">~ModelData</a>() override</td><td class="entry"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Object.html#a50dcf4681be0179bbd04e911b33115cd">~Object</a>()</td><td class="entry"><a class="el" href="classeve_1_1Object.html">eve::Object</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Resource.html#adafa47210aae55b174c8186b2e4c8908">~Resource</a>()</td><td class="entry"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
