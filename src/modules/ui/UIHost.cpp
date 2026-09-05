@@ -19,6 +19,7 @@ bool focusableType(NodeType type) {
         case NodeType::Viewport:
         case NodeType::SearchField:
         case NodeType::Switch:
+        case NodeType::ColorPalette:
         case NodeType::MenuItem: return true;
         default: return false;
     }
@@ -66,6 +67,19 @@ eve::OptionalRef<UIHost> UIHost::resolve(UIHostHandle handle) noexcept {
 void UIHost::setName(const std::string &name) { meta()->name = name; }
 
 const std::string &UIHost::getName() { return meta()->name; }
+
+void UIHost::setThemeOverride(const Theme &theme) {
+    meta()->hasThemeOverride = true;
+    meta()->themeOverride = theme;
+}
+
+void UIHost::clearThemeOverride() { meta()->hasThemeOverride = false; }
+
+bool UIHost::hasThemeOverride() { return meta()->hasThemeOverride; }
+
+const Theme *UIHost::themeOverride() {
+    return meta()->hasThemeOverride ? &meta()->themeOverride : nullptr;
+}
 
 void UIHost::setWorldAnchor(float x, float y, float z) {
     auto anchor = worldAnchor();

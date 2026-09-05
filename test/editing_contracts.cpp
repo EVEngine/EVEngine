@@ -43,9 +43,11 @@
 #include "editor/EditorTarget.h"
 #include "editor/EditorTaskService.h"
 #include "ui_editor/EditorUiDocumentTarget.h"
+#include "ui_editor/EditorUiThemeTarget.h"
 #include "editor/EditorValue.h"
 #include "virtualgeometry_editor/EditorVirtualGeometryTarget.h"
 #include "editor/EditorVolumeTarget.h"
+#include "voxel_editor/EditorVoxelCatalogTarget.h"
 #include "voxel_editor/EditorVoxelPaletteTarget.h"
 #include "physics_editing/PhysicsColliderAsset.h"
 #include "physics_editing/PhysicsTarget.h"
@@ -79,6 +81,7 @@
 #include "lighting_editing/LightingTarget.h"
 #include "virtualgeometry_editing/VirtualGeometryTarget.h"
 #include "voxel_editing/VoxelPaletteTarget.h"
+#include "voxel_editing/VoxelCatalog.h"
 #include "voxel_editing/VoxelWorldTarget.h"
 #include "network_editing/NetworkTelemetry.h"
 #include "profiler_editing/ProfilerModel.h"
@@ -152,6 +155,7 @@ static_assert(std::is_same_v<eve::editor::ParticleGraphDomain, eve::particles_ed
 static_assert(std::is_same_v<eve::editor::TextureRecipeTarget,
                              eve::procgen_editing::TextureRecipeTarget>);
 static_assert(std::is_same_v<eve::editor::UiDocumentTarget, eve::ui_editing::UiDocumentTarget>);
+static_assert(std::is_same_v<eve::editor::UiThemeCatalogTarget, eve::ui_editing::UiThemeCatalogTarget>);
 static_assert(std::is_same_v<eve::editor::InputMapTarget, eve::input_editing::InputMapTarget>);
 static_assert(std::is_same_v<eve::editor::Hd2dDocumentTarget, eve::hd2d_editing::Hd2dDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::HouseGenDocumentTarget,
@@ -163,6 +167,8 @@ static_assert(std::is_same_v<eve::editor::Light3DDocumentTarget,
 static_assert(std::is_same_v<eve::editor::VirtualGeometryDocumentTarget,
                              eve::virtualgeometry_editing::VirtualGeometryDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::VoxelPaletteTarget, eve::voxel_editing::VoxelPaletteTarget>);
+static_assert(std::is_same_v<eve::editor::VoxelCatalogTarget, eve::voxel_editing::VoxelCatalogTarget>);
+static_assert(std::is_same_v<eve::editor::VoxelModelValue, eve::voxel_editing::VoxelModelValue>);
 static_assert(!std::is_copy_constructible_v<eve::editing::Result<int>>);
 static_assert(!std::is_copy_constructible_v<eve::editing::Result<void>>);
 

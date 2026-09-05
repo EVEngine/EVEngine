@@ -434,6 +434,10 @@ PointSet 和 SpatialData 被视为项目/关卡提供的外部资源槽，不内
 `setNodePoints` / `setNodeSpatial` 重新绑定。这样同一图资产可以用于不同 Cell、地形或
 关卡输入，也不会把大型运行时点缓存重复写入资产文件。
 
+启用 `procgen_editor` 时，`ProcgenScriptEditor` 托管封装的 Squirrel 生成器模块
+（schema + `generate(params, ctx)`）。参数事务与 PointSet 预览拷贝在原生侧；
+脚本在 `update` 里重建并 `publishPreview`。示例见 `examples/procgen-script-editor`。
+
 editor 与 procgen 同时启用时提供 `PcgPointGraphDomain`（domain id `procgen.point`）。
 它使用运行时 operation schema 自动创建通用 `GraphNodeRecord` 的 typed pins 和默认
 properties，经现有 `GraphDocument` 编辑、revision 和 persistence 流程后编译成上述

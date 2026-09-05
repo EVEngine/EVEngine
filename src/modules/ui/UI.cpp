@@ -625,6 +625,11 @@ void UI::addSlider(const std::string &label, float value, float minV, float maxV
     currentParent().children.push_back(slider(label, value, minV, maxV, id));
 }
 
+void UI::addColorPalette(const std::string &label, float r, float g, float b, float a,
+                         const std::string &id) {
+    currentParent().children.push_back(colorPalette(label, r, g, b, a, id));
+}
+
 void UI::addProgress(float fraction, const std::string &id, const std::string &overlay) {
     currentParent().children.push_back(progress(fraction, id, overlay));
 }
@@ -938,6 +943,10 @@ void UI::setValueText(const std::string &id, const std::string &value) {
     if (auto host = resolveSelected()) host->get().setValueTextById(id, value);
 }
 
+void UI::setColor(const std::string &id, float r, float g, float b, float a) {
+    setImageTint(id, r, g, b, a);
+}
+
 void UI::setImageTint(const std::string &id, float r, float g, float b, float a) {
     auto host = resolveSelected();
     if (!host) return;
@@ -1006,6 +1015,34 @@ std::string UI::getValueText(const std::string &id) const {
     if (!host) return {};
     if (auto n = host->get().findById(id)) return n->get().valueText;
     return {};
+}
+
+float UI::getColorR(const std::string &id) const {
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().tintR;
+    return 0.f;
+}
+
+float UI::getColorG(const std::string &id) const {
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().tintG;
+    return 0.f;
+}
+
+float UI::getColorB(const std::string &id) const {
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().tintB;
+    return 0.f;
+}
+
+float UI::getColorA(const std::string &id) const {
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().tintA;
+    return 0.f;
 }
 
 bool UI::getChecked(const std::string &id) const {
@@ -1434,6 +1471,7 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Badge: return "badge";
     case NodeType::Card: return "card";
     case NodeType::NinePatchPanel: return "ninePatchPanel";
+    case NodeType::ColorPalette: return "colorPalette";
     case NodeType::SectionHeader: return "sectionHeader";
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
@@ -1471,6 +1509,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "badge") return NodeType::Badge;
     if (s == "card") return NodeType::Card;
     if (s == "ninePatchPanel") return NodeType::NinePatchPanel;
+    if (s == "colorPalette" || s == "color-palette" || s == "color") return NodeType::ColorPalette;
     if (s == "sectionHeader") return NodeType::SectionHeader;
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
@@ -1568,7 +1607,8 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (n.justifyContent != FlexJustify::Start) o.set("justifyContent", int(n.justifyContent));
     if (n.gap >= 0.f) o.set("gap", n.gap);
     if (n.flexGrow != 0.f) o.set("flexGrow", n.flexGrow);
-    if (n.tintR != 1.f || n.tintG != 1.f || n.tintB != 1.f || n.tintA != 1.f)
+    if (n.type == NodeType::ColorPalette || n.tintR != 1.f || n.tintG != 1.f || n.tintB != 1.f ||
+        n.tintA != 1.f)
         o.set("tint", Poco::Dynamic::Array({n.tintR, n.tintG, n.tintB, n.tintA}));
     if (n.borderL != 0.f || n.borderT != 0.f || n.borderR != 0.f || n.borderB != 0.f)
         o.set("border", Poco::Dynamic::Array({n.borderL, n.borderT, n.borderR, n.borderB}));
@@ -2012,6 +2052,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("separator", &UI::addSeparator);
     cls.addFunc("checkbox", &UI::addCheckbox);
     cls.addFunc("slider", &UI::addSlider);
+    cls.addFunc("colorPalette", &UI::addColorPalette);
     cls.addFunc("progress", &UI::addProgress);
     cls.addFunc("image", &UI::addImage);
     cls.addFunc("ninePatch", &UI::addNinePatch);
@@ -2057,6 +2098,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setChecked", &UI::setChecked);
     cls.addFunc("setValue", &UI::setValue);
     cls.addFunc("setValueText", &UI::setValueText);
+    cls.addFunc("setColor", &UI::setColor);
     cls.addFunc("setImageTint", &UI::setImageTint);
     cls.addFunc("setImageUv", &UI::setImageUv);
     cls.addFunc("setImageNinePatch", &UI::setImageNinePatch);
@@ -2067,6 +2109,10 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("unregisterTexture", &UI::unregisterTexture);
     cls.addFunc("getValue", &UI::getValue);
     cls.addFunc("getValueText", &UI::getValueText);
+    cls.addFunc("getColorR", &UI::getColorR);
+    cls.addFunc("getColorG", &UI::getColorG);
+    cls.addFunc("getColorB", &UI::getColorB);
+    cls.addFunc("getColorA", &UI::getColorA);
     cls.addFunc("getChecked", &UI::getChecked);
     cls.addFunc("requestFocus", &UI::requestFocus);
     cls.addFunc("moveFocus", &UI::moveFocus);

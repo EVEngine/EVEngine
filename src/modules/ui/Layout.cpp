@@ -260,6 +260,26 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredW = 120.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
+    case NodeType::ColorPalette: {
+        const float swatch = ImGui::GetFrameHeight();
+        const float gap = 4.f;
+        const int cols = 8;
+        int count = 0;
+        if (!n.valueText.empty()) {
+            for (size_t i = 0; i < n.valueText.size();) {
+                size_t end = n.valueText.find_first_of(";\n", i);
+                if (end == std::string::npos) end = n.valueText.size();
+                if (end > i) ++count;
+                i = end + 1;
+            }
+        }
+        if (count <= 0) count = 16;
+        const int rows = (count + cols - 1) / cols;
+        n.measuredW = n.sizeX > 0.f ? n.sizeX : 220.f;
+        n.measuredH = ImGui::GetFrameHeight() + style.ItemSpacing.y +
+                      float(rows) * swatch + float(std::max(0, rows - 1)) * gap;
+        break;
+    }
     case NodeType::Progress:
         n.measuredW = 100.f;
         n.measuredH = ImGui::GetFrameHeight();
