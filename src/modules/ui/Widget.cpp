@@ -350,6 +350,22 @@ WidgetDesc slider(std::string label, float value, float minV, float maxV, std::s
     return d;
 }
 
+WidgetDesc colorPalette(std::string label, float r, float g, float b, float a, std::string id,
+                        std::function<void(float)> onValue) {
+    WidgetDesc d;
+    d.type = NodeType::ColorPalette;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.tintR = r;
+    d.tintG = g;
+    d.tintB = b;
+    d.tintA = a;
+    d.accessibilityRole = AccessibilityRole::Slider;
+    d.onValue = std::move(onValue);
+    return d;
+}
+
 WidgetDesc progress(float fraction, std::string id, std::string overlay) {
     WidgetDesc d;
     d.type = NodeType::Progress;

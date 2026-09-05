@@ -5,13 +5,9 @@
 //   eve run --debug --mcp-port=7529 examples/ai-game
 // 或：make run/<platform>-debug GAME=examples/ai-game RUN_ARGS="--debug --mcp-port=7529"
 //
-// Agent 可以像人一样对这个运行中的游戏：
-//   读状态  eve_eval        game.enemy.hp / game.player.hp / game.tick
-//   改状态  eve_run_script  game.setEnemyHp(20.0); game.reset();
-//   复位    eve_snapshot_capture / eve_snapshot_restore
-//   看见    eve_screenshot  （配合 eve_render_describe 可让视觉模型描述画面）
-//   暂停    eve_pause / eve_continue / eve_step_frame
-//
+// Agent 通过 eve_play 驾驶本游戏（见 game.agent.json）：
+//   status / clock / step / observe combat-alive / capture / checkpoint
+// 不要把 eve_eval 当作官方观察路径。
 // 一键复现：python examples/ai-game/agent_demo.py 7529
 // ============================================================================
 
@@ -85,7 +81,7 @@ eve_update = function(dt) {
     ui.setText("status", state + "\n" + hpText);
     local hint = gameState.player.hp <= 0.0
         ? "GAME OVER —— Agent 可用 eve_run_script: game.reset(); 重开"
-        : "MCP: eve_eval / eve_run_script / eve_screenshot / eve_snapshot_*";
+        : "MCP: eve_play status/observe/step/capture/checkpoint";
     ui.setText("hint", hint);
 };
 

@@ -144,7 +144,8 @@ eve_declare_module(NAME network_editor LAYER 7 DEPS editor network_editing GROUP
 eve_declare_module(NAME npc_ai_editor LAYER 7 DEPS editor npc_ai_editing GROUP 2d 3d web)
 eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
 eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing GROUP 3d web)
-eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen_editing GROUP 3d)
+eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen procgen_editing
+                   SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)
 eve_declare_module(NAME queue_editor LAYER 7 DEPS editor queue_editing GROUP 2d 3d web)
 eve_declare_module(NAME scene_editor LAYER 7 DEPS editor scene_editing OPTIONAL_DEPS scene
@@ -154,9 +155,11 @@ eve_declare_module(NAME social_editor LAYER 7 DEPS editor social_editing GROUP 2
 eve_declare_module(NAME snow_editor LAYER 7 DEPS editor snow_editing GROUP 3d)
 eve_declare_module(NAME spritestack_editor LAYER 7 DEPS editor spritestack_editing GROUP 2d 3d)
 eve_declare_module(NAME stylize_editor LAYER 7 DEPS editor graphics_editor stylize_editing GROUP 3d web)
-eve_declare_module(NAME ui_editor LAYER 7 DEPS editor ui_editing GROUP 3d web)
+eve_declare_module(NAME ui_editor LAYER 7 DEPS editor ui ui_editing
+                   SCRIPT UiEditorModule SLOT uiEditor GROUP 3d web)
 eve_declare_module(NAME virtualgeometry_editor LAYER 7 DEPS editor virtualgeometry_editing GROUP 3d)
-eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing GROUP 3d)
+eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing
+                   SCRIPT VoxelEditorModule SLOT voxelEditor GROUP 3d)
 # L6 -- orchestration (continued)
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry

@@ -1,0 +1,35 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/ai-game",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 42,
+    "maxHostFrames": 180,
+    "mustReach": ["combat-alive"]
+  },
+  "clock": { "defaultStep": "frame" },
+  "observations": [
+    {
+      "id": "combat-alive",
+      "kind": "script-root",
+      "path": "gameState",
+      "fields": ["tick", "player.hp", "enemy.hp"]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      { "id": "reset", "script": "game.reset()" }
+    ]
+  },
+  "capture": {
+    "requiredFor": ["visual"],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

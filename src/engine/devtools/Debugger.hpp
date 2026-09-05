@@ -111,6 +111,12 @@ public:
     void     pauseAt(PauseReason reason, SourceLoc loc);
     void     resume();
     void     stepFrame();
+    /**
+     * @brief Run `count` game frames then pause. Each frame is consumed by
+     *        `shouldRunUpdate` / `notifyFrameDone` on the game loop.
+     * @param count Host frames to execute; must be >= 1.
+     */
+    void     stepFrames(int count);
     /** @brief Enter calls: stop on the next script line at any depth. */
     void     stepInto();
     /** @brief Skip calls: stop on the next line at ≤ current stack depth. */
@@ -275,6 +281,7 @@ private:
     int                   nextBpId_ = 1;
     PumpFn                pump_;
     bool                  stepFrameArmed_ = false;
+    int                   remainingHostFrames_ = 0;
     int                   stepStartDepth_ = 0;
     /** @brief While set, step filters ignore this exact source+line (multi-_OP_LINE). */
     SourceLoc             stepSkipLoc_;
