@@ -564,6 +564,7 @@ void Debugger::pause(PauseReason reason) {
 void Debugger::pauseAt(PauseReason reason, SourceLoc loc) {
     reason_.store(reason);
     mode_.store(RunMode::Paused);
+    remainingHostFrames_ = 0;
     pauseLoc_ = std::move(loc);
 }
 
@@ -571,6 +572,7 @@ void Debugger::resume() {
     reason_.store(PauseReason::None);
     mode_.store(RunMode::Running);
     stepFrameArmed_  = false;
+    remainingHostFrames_ = 0;
     stepStartDepth_  = 0;
     stepSkipLoc_     = {};
     pauseLoc_        = {};
@@ -580,6 +582,11 @@ void Debugger::stepFrame() {
     reason_.store(PauseReason::Step);
     mode_.store(RunMode::StepFrame);
     stepFrameArmed_ = true;
+}
+
+void Debugger::stepFrames(int count) {
+    remainingHostFrames_ = count < 1 ? 1 : count;
+    stepFrame();
 }
 
 int Debugger::scriptStackDepth() const {
@@ -648,6 +655,12 @@ bool Debugger::shouldRunUpdate() {
 void Debugger::notifyFrameDone() {
     if (mode_.load() == RunMode::StepFrame || stepFrameArmed_) {
         stepFrameArmed_ = false;
+        if (remainingHostFrames_ > 1) {
+            --remainingHostFrames_;
+            stepFrame();
+            return;
+        }
+        remainingHostFrames_ = 0;
         reason_.store(PauseReason::Step);
         mode_.store(RunMode::Paused);
         // Frame step finished outside the line hook — next smart step is frame.
