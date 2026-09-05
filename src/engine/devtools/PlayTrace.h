@@ -59,12 +59,12 @@ public:
 
     void clear();
     /** @brief True while `replayPlayTrace` is executing. */
-    [[nodiscard]] bool replaying() const { return replaying_; }
+    [[nodiscard]] bool isReplaying() const { return replaying_; }
     void setReplaying(bool value) { replaying_ = value; }
     void begin(std::string contractId, std::string contractHash, std::int64_t seed,
                std::string startCheckpoint);
     void append(const Value& request, const Value& response, std::uint64_t hostFrame);
-    [[nodiscard]] bool recording() const { return begun_; }
+    [[nodiscard]] bool isRecording() const { return begun_; }
     [[nodiscard]] bool empty() const { return stepCount_ == 0; }
     [[nodiscard]] Value exportTrace() const;
 

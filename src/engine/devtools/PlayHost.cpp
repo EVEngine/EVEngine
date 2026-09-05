@@ -544,7 +544,7 @@ bool sessionWantsTrace() {
 
 void tryRecordEvidence(std::string criterionId, std::string kind, std::string summary, std::string artifact) {
     auto& session = AgentDevelopmentSession::instance();
-    if (!session.active() || PlayTraceBuffer::instance().replaying() || criterionId.empty()) return;
+    if (!session.active() || PlayTraceBuffer::instance().isReplaying() || criterionId.empty()) return;
     AgentDevelopmentEvidence evidence;
     evidence.criterionId = std::move(criterionId);
     evidence.kind        = std::move(kind);
@@ -563,7 +563,7 @@ bool hasCriterion(const AgentDevelopmentSession& session, std::string_view id) {
 
 void maybeAutoEvidence(const Value::Object& request, const Value& response, IPlayHostRuntime& runtime) {
     auto& session = AgentDevelopmentSession::instance();
-    if (!session.active() || PlayTraceBuffer::instance().replaying()) return;
+    if (!session.active() || PlayTraceBuffer::instance().isReplaying()) return;
     const auto opField = request.find("op");
     if (opField == request.end() || !opField->second.isString()) return;
     const std::string& op = opField->second.asString();
@@ -616,7 +616,7 @@ void maybeAutoEvidence(const Value::Object& request, const Value& response, IPla
 void afterPlaySuccess(const Value& request, const Value& response, IPlayHostRuntime& runtime) {
     auto root = request.getIf<Value::Object>();
     if (!root) return;
-    if (PlayTraceBuffer::instance().replaying()) return;
+    if (PlayTraceBuffer::instance().isReplaying()) return;
     std::string trace;
     optionalString(*root, "trace", "request", &trace).ignore("trace already validated by dispatch");
     const auto opField = root->find("op");
@@ -625,7 +625,7 @@ void afterPlaySuccess(const Value& request, const Value& response, IPlayHostRunt
     bool append = trace == "append" || (trace.empty() && sessionWantsTrace());
     if (trace == "off") append = false;
     if (append && !skipTrace) {
-        if (!PlayTraceBuffer::instance().recording()) {
+        if (!PlayTraceBuffer::instance().isRecording()) {
             std::string contractId;
             std::string contractHash;
             auto loaded = runtime.loadContract();

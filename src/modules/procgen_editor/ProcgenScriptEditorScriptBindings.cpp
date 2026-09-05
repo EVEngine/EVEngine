@@ -152,7 +152,7 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     procgenEditor.addFunc("canRedo", [](ScriptProcgenScriptEditor* self) { return self && self->editor().canRedo(); });
     procgenEditor.addFunc("isDirty", [](ScriptProcgenScriptEditor* self) { return self && self->editor().isDirty(); });
     procgenEditor.addFunc("isLive", [](ScriptProcgenScriptEditor* self) {
-        return self && self->editor().continuousRebuild();
+        return self && self->editor().isContinuousRebuild();
     });
     procgenEditor.addFunc("getRevision", [](ScriptProcgenScriptEditor* self) {
         return self ? static_cast<int>(self->editor().revision()) : 0;

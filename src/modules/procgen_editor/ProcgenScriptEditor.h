@@ -96,7 +96,7 @@ public:
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
     bool          isDirty() const noexcept { return dirty_; }
     /** @brief True when the presenter should rebuild after every committed parameter edit. */
-    bool          continuousRebuild() const noexcept { return continuousRebuild_; }
+    bool          isContinuousRebuild() const noexcept { return continuousRebuild_; }
     std::uint64_t revision() const noexcept { return target_.revision(); }
     std::uint64_t previewRevision() const noexcept { return previewRevision_; }
     int           pointBudget() const noexcept { return pointBudget_; }
