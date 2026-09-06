@@ -3,8 +3,8 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionConsumer.h"
-#include "level_editing/FieldTargets.h"
-#include "level_editing/TileBuffer.h"
+#include "map/level/editing/FieldTargets.h"
+#include "map/level/editing/TileBuffer.h"
 
 #include <array>
 #include <memory>

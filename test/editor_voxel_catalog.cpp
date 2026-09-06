@@ -1,7 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "voxel_editing/VoxelCatalog.h"
+#include "voxel/editing/VoxelCatalog.h"
 
 using eve::voxel_editing::DomainOperation;
 using eve::voxel_editing::EditorResult;

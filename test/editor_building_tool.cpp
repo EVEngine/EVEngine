@@ -1,4 +1,4 @@
-#include "building_editor/EditorBuildingTarget.h"
+#include "building/editor/EditorBuildingTarget.h"
 
 #include "building/BuildingDef.h"
 #include "building/PlacementWorld.h"

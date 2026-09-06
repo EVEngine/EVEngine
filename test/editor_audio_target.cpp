@@ -1,4 +1,4 @@
-#include "audio_editor/EditorAudioTarget.h"
+#include "audio/editor/EditorAudioTarget.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
 

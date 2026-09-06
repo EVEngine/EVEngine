@@ -246,7 +246,12 @@ model behind them.
 - **One manifest, one boot list.** New modules are declared only in
   `cmake/module_manifest.cmake`; the link list, third-party closure and
   `eve.moduleList` are derived. Do not hand-edit `EVELIBS` / `ThirdParty` /
-  `load.nut` module wiring.
+  `load.nut` module wiring. Domain satellites live under the host package
+  (`src/modules/<host>/editing`, `editor`, `graphics`, `physics`, `fx`, …) —
+  do not add a new top-level `*_editing` / `*_editor` / `asset_*` /
+  `pixelworld_*` / `buildingfx` directory. Runtime-only profiles exclude
+  authoring directories (`editing` / `editor` / `graphics_editing`) by leaf
+  name; optional runtime satellites stay independently switchable.
 - **Keep public headers free of cross-module includes.** Prefer forward
   declarations and Pimpl so a low-level type change does not recompile every
   dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks

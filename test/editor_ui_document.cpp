@@ -1,6 +1,6 @@
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
-#include "ui_editing/UiDocument.h"
+#include "ui/editing/UiDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

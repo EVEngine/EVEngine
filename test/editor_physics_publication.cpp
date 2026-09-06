@@ -1,6 +1,6 @@
 #include "editor/EditorAuthority.h"
-#include "physics_editor/EditorPhysicsTarget.h"
-#include "physics_editor/EditorPhysicsAsset.h"
+#include "physics/editor/EditorPhysicsTarget.h"
+#include "physics/editor/EditorPhysicsAsset.h"
 #include "editor/EditorTransactionService.h"
 
 #include "physics/Body3D.h"

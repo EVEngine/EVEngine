@@ -6,7 +6,7 @@
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
-#include "buildingfx/BuildingFx.h"
+#include "building/fx/BuildingFx.h"
 #include "common/ECS.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Mesh.h"

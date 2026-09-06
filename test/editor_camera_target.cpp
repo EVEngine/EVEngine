@@ -1,4 +1,4 @@
-#include "camera_editing/CameraTarget.h"
+#include "camera/editing/CameraTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

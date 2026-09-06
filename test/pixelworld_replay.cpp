@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_replay/PixelWorldReplay.h"
+#include "pixelworld/replay/PixelWorldReplay.h"
 
 #include <algorithm>
 #include <cstdint>

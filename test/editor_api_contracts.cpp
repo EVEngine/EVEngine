@@ -8,10 +8,10 @@
 #include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorTransactions.h"
 #include "editor/EditorWorkspace.h"
-#include "level_editing/EditorHistory.h"
-#include "level_editing/FieldTargets.h"
-#include "level_editing/TileBuffer.h"
-#include "scene_editor/EditorSceneTarget.h"
+#include "map/level/editing/EditorHistory.h"
+#include "map/level/editing/FieldTargets.h"
+#include "map/level/editing/TileBuffer.h"
+#include "scene/editor/EditorSceneTarget.h"
 
 using namespace eve::editor;
 using namespace eve::level_editing;

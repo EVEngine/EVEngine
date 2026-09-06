@@ -1,4 +1,4 @@
-#include "particles_editing/ParticleGraph.h"
+#include "particles/editing/ParticleGraph.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

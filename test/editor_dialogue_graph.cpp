@@ -1,4 +1,4 @@
-#include "dialogue_editing/DialogueGraph.h"
+#include "dialogue/editing/DialogueGraph.h"
 
 #include "dialogue/ConversationAuthoring.h"
 

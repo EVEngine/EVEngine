@@ -5,8 +5,9 @@ The CMake manifest is intentionally the only module declaration source.  This
 check is kept in Python so it can run before a toolchain is installed and so a
 bad section marker cannot be hidden by CMake's parser.  A declaration must have
 an explicit ``LAYER`` and must sit below a matching ``# L<n>`` section marker.
-The check also compares the manifest with ``src/modules``; a new module cannot
-silently compile outside the profile resolver.
+The check also compares the manifest with ``src/modules`` (including nested
+``DIR`` paths such as ``animation/editing``); a new module cannot silently
+compile outside the profile resolver.
 
 Usage::
 
@@ -29,6 +30,7 @@ MODULES = ROOT / "src" / "modules"
 
 DECLARATION_START = re.compile(r"^\s*eve_declare_module\s*\(")
 NAME_RE = re.compile(r"\bNAME\s+([A-Za-z0-9_.-]+)")
+DIR_RE = re.compile(r"\bDIR\s+([A-Za-z0-9_./-]+)")
 LAYER_RE = re.compile(r"\bLAYER\s+(-?\d+)")
 SECTION_RE = re.compile(r"^\s*#\s*((?:L-?\d+\s*(?:/|,)\s*)*L-?\d+)\b")
 MANIFEST_INCLUDE_RE = re.compile(
@@ -40,11 +42,67 @@ MANIFEST_INCLUDE_RE = re.compile(
 @dataclass(frozen=True)
 class Declaration:
     name: str
+    dir: str
     layer: int | None
     section_layers: tuple[int, ...]
     line: int
     core: bool
     header_only: bool
+
+
+SATELLITE_FACETS = (
+    "streaming",
+    "graphics",
+    "physics",
+    "procgen",
+    "import",
+    "replay",
+    "scene",
+    "thread",
+)
+SPECIAL_DIRS = {
+    "buildingfx": "building/fx",
+}
+HOST_DIR_ALIASES = {
+    "biome": "procgen/biome",
+    "domain_gizmo": "editor/gizmo",
+    "localization": "i18n",
+    "material": "graphics/material",
+    "lighting": "graphics/lighting",
+    "input": "editor/input",
+    "queue": "editor/queue",
+    "level": "map/level",
+    "sceneloader": "scene/loader",
+}
+
+
+def package_root(stem: str) -> str:
+    return HOST_DIR_ALIASES.get(stem, stem)
+
+
+def default_module_dir(name: str) -> str:
+    """Match cmake/modules.cmake DIR inference for nested packages."""
+
+    if name.endswith("_graphics_editing"):
+        return f"{package_root(name[: -len('_graphics_editing')])}/graphics_editing"
+    if name.endswith("_editing"):
+        return f"{package_root(name[: -len('_editing')])}/editing"
+    if name.endswith("_editor"):
+        return f"{package_root(name[: -len('_editor')])}/editor"
+    if name in SPECIAL_DIRS:
+        return SPECIAL_DIRS[name]
+    for facet in SATELLITE_FACETS:
+        suffix = f"_{facet}"
+        if name.endswith(suffix):
+            return f"{package_root(name[: -len(suffix)])}/{facet}"
+    return package_root(name)
+
+
+def is_authoring_facet(name: str, directory: str | None = None) -> bool:
+    """True when a runtime-only profile must drop this module by directory."""
+
+    leaf = Path(directory or default_module_dir(name)).name
+    return leaf in {"editing", "editor", "graphics_editing"} or name.endswith("_target")
 
 
 def _section_layers(line: str) -> tuple[int, ...] | None:
@@ -108,9 +166,16 @@ def parse_manifest(path: Path = MANIFEST) -> list[Declaration]:
                 block, end = _balanced_block(lines, index)
                 name = NAME_RE.search(block)
                 layer = LAYER_RE.search(block)
+                declared_name = name.group(1) if name else ""
+                declared_dir = DIR_RE.search(block)
                 declarations.append(
                     Declaration(
-                        name=name.group(1) if name else "",
+                        name=declared_name,
+                        dir=(
+                            declared_dir.group(1)
+                            if declared_dir
+                            else default_module_dir(declared_name)
+                        ),
                         layer=int(layer.group(1)) if layer else None,
                         section_layers=section,
                         line=index + 1,
@@ -125,18 +190,22 @@ def parse_manifest(path: Path = MANIFEST) -> list[Declaration]:
 
 
 def source_modules(root: Path = ROOT) -> set[str]:
+    """Return top-level directory names under src/modules (containers included)."""
+
     modules_dir = root / "src" / "modules"
     return {path.name for path in modules_dir.iterdir() if path.is_dir()}
 
 
 def validate(
     declarations: list[Declaration],
-    modules: set[str],
+    modules_root: Path = MODULES,
 ) -> list[str]:
     """Return human-readable errors; an empty list means the contract passes."""
 
+    modules = {path.name for path in modules_root.iterdir() if path.is_dir()}
     errors: list[str] = []
     seen: set[str] = set()
+    justified_tops: set[str] = set()
     for declaration in declarations:
         if not declaration.name:
             errors.append(f"line {declaration.line}: declaration has no NAME")
@@ -156,13 +225,16 @@ def validate(
                 f"line {declaration.line}: {declaration.name} declares L{declaration.layer} "
                 f"inside {expected} section"
             )
-        if not declaration.core and declaration.name not in modules:
-            errors.append(
-                f"line {declaration.line}: {declaration.name} has no src/modules/{declaration.name}"
-            )
+        if not declaration.core:
+            justified_tops.add(Path(declaration.dir).parts[0])
+            module_path = modules_root / Path(*declaration.dir.split("/"))
+            if not module_path.is_dir():
+                errors.append(
+                    f"line {declaration.line}: {declaration.name} has no "
+                    f"src/modules/{declaration.dir}"
+                )
 
-    declared = {declaration.name for declaration in declarations if declaration.name and not declaration.core}
-    for missing in sorted(modules - declared):
+    for missing in sorted(modules - justified_tops):
         errors.append(f"src/modules/{missing}: no declaration in cmake/module_manifest.cmake")
     return errors
 
@@ -194,10 +266,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="emit machine-readable output")
     args = parser.parse_args(argv)
     declarations = parse_manifest(args.manifest)
-    modules = {
-        path.name for path in args.modules_dir.iterdir() if path.is_dir()
-    }
-    return report(declarations, validate(declarations, modules), args.json)
+    return report(declarations, validate(declarations, args.modules_dir), args.json)
 
 
 if __name__ == "__main__":

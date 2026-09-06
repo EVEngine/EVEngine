@@ -15,7 +15,7 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_graphics/PixelWorldGraphics.h"
+#include "pixelworld/graphics/PixelWorldGraphics.h"
 
 #include <cstddef>
 #include <cstdint>

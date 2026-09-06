@@ -1,4 +1,4 @@
-#include "housegen_editing/HouseGenTarget.h"
+#include "housegen/editing/HouseGenTarget.h"
 
 #include "housegen/HouseLayout.h"
 #include "zeroerr/assert.h"

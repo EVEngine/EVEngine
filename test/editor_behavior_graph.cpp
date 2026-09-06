@@ -1,4 +1,4 @@
-#include "npc_ai_editing/BehaviorGraph.h"
+#include "npc_ai/editing/BehaviorGraph.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

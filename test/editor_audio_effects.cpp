@@ -1,4 +1,4 @@
-#include "audio_editor/EditorAudioEffects.h"
+#include "audio/editor/EditorAudioEffects.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

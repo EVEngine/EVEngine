@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "editor/EditorDiagnostics.h"
-#include "material_editor/EditorGraph.h"
+#include "graphics/material/editor/EditorGraph.h"
 #include "editor/EditorTaskService.h"
 
 #include <chrono>

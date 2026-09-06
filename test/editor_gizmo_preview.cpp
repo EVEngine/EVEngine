@@ -1,8 +1,8 @@
-#include "domain_gizmo_editing/DomainGizmoPreview.h"
+#include "editor/gizmo/editing/DomainGizmoPreview.h"
 
-#include "audio_editing/AudioTarget.h"
-#include "lighting_editing/LightingTarget.h"
-#include "physics_editing/PhysicsTarget.h"
+#include "audio/editing/AudioTarget.h"
+#include "graphics/lighting/editing/LightingTarget.h"
+#include "physics/editing/PhysicsTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

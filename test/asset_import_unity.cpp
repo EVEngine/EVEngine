@@ -1,12 +1,12 @@
 #include "asset/AssetCooker.h"
 #include "asset/EvpackResourceReader.h"
 #include "asset/RuntimeDefinition.h"
-#include "asset_import/UnityImporter.h"
-#include "asset_import/TerrainImporter.h"
-#include "asset_procgen/EvpackInstanceSetLoader.h"
-#include "asset_procgen/EvpackTerrainLoader.h"
-#include "asset_procgen/EvpackTerrainMaterialLoader.h"
-#include "asset_scene/EvpackSceneTemplateLoader.h"
+#include "asset/import/UnityImporter.h"
+#include "asset/import/TerrainImporter.h"
+#include "asset/procgen/EvpackInstanceSetLoader.h"
+#include "asset/procgen/EvpackTerrainLoader.h"
+#include "asset/procgen/EvpackTerrainMaterialLoader.h"
+#include "asset/scene/EvpackSceneTemplateLoader.h"
 
 #include <algorithm>
 #include <cmath>

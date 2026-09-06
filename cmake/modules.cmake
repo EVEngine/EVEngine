@@ -15,14 +15,85 @@
 #                                                   pick a preset (default: full)
 #   -DEVENGINE_MODULE_<NAME>=ON|OFF              override one module
 #
+# Authoring facets are nested under the host package:
+#   src/modules/animation/editing  -> NAME animation_editing
+#   src/modules/pixelworld/physics -> NAME pixelworld_physics
+#   src/modules/scene/loader       -> NAME sceneloader
+#   src/modules/graphics/material  -> NAME material_editing / material_editor
+# runtime-3d drops every module whose DIR leaf is editing/editor/graphics_editing.
+#
 # See docs/dev/模块编排与裁剪架构.md.
 
 include_guard(GLOBAL)
 
 set(EVE_ALL_MODULES "" CACHE INTERNAL "Every declared module, in declaration order")
 
+# Maps an authoring/runtime stem onto its package root under src/modules.
+# Empty hosts (biome, input, ...) live under the real domain; sceneloader is
+# scene's loader facet.
+function(eve_package_root stem out)
+    if(stem STREQUAL "biome")
+        set(${out} "procgen/biome" PARENT_SCOPE)
+    elseif(stem STREQUAL "domain_gizmo")
+        set(${out} "editor/gizmo" PARENT_SCOPE)
+    elseif(stem STREQUAL "localization")
+        set(${out} "i18n" PARENT_SCOPE)
+    elseif(stem STREQUAL "material")
+        set(${out} "graphics/material" PARENT_SCOPE)
+    elseif(stem STREQUAL "lighting")
+        set(${out} "graphics/lighting" PARENT_SCOPE)
+    elseif(stem STREQUAL "input")
+        set(${out} "editor/input" PARENT_SCOPE)
+    elseif(stem STREQUAL "queue")
+        set(${out} "editor/queue" PARENT_SCOPE)
+    elseif(stem STREQUAL "level")
+        set(${out} "map/level" PARENT_SCOPE)
+    elseif(stem STREQUAL "sceneloader")
+        set(${out} "scene/loader" PARENT_SCOPE)
+    else()
+        set(${out} "${stem}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(eve_default_module_dir name out)
+    if(name MATCHES "_graphics_editing$")
+        string(REGEX REPLACE "_graphics_editing$" "" _stem "${name}")
+        eve_package_root("${_stem}" _root)
+        set(${out} "${_root}/graphics_editing" PARENT_SCOPE)
+    elseif(name MATCHES "_editing$")
+        string(REGEX REPLACE "_editing$" "" _stem "${name}")
+        eve_package_root("${_stem}" _root)
+        set(${out} "${_root}/editing" PARENT_SCOPE)
+    elseif(name MATCHES "_editor$")
+        string(REGEX REPLACE "_editor$" "" _stem "${name}")
+        eve_package_root("${_stem}" _root)
+        set(${out} "${_root}/editor" PARENT_SCOPE)
+    elseif(name STREQUAL "buildingfx")
+        set(${out} "building/fx" PARENT_SCOPE)
+    else()
+        set(_eve_mapped FALSE)
+        set(_eve_dir "")
+        foreach(_facet IN ITEMS streaming graphics physics procgen import replay scene thread)
+            if(NOT _eve_mapped AND name MATCHES "_${_facet}$")
+                string(REGEX REPLACE "_${_facet}$" "" _stem "${name}")
+                eve_package_root("${_stem}" _root)
+                set(_eve_dir "${_root}/${_facet}")
+                set(_eve_mapped TRUE)
+            endif()
+        endforeach()
+        if(NOT _eve_mapped)
+            eve_package_root("${name}" _root)
+            set(_eve_dir "${_root}")
+        endif()
+        set(${out} "${_eve_dir}" PARENT_SCOPE)
+    endif()
+endfunction()
+
 # eve_declare_module(
-#   NAME       <dir>            directory under src/modules and manifest key
+#   NAME       <id>             manifest key / CMake switch / boot contract name
+#   DIR        <rel>            sources under src/modules/<rel> (default: NAME,
+#                               or <host>/<facet> for authoring and runtime
+#                               satellites such as editing/editor/graphics/physics)
 #   LIB        <target>         OBJECT library name (default: EV<Name>)
 #   LAYER      <n>              informational; matches scripts/module_depgraph.py
 #   DEPS       <mod> ...        modules that must also be enabled
@@ -39,7 +110,7 @@ set(EVE_ALL_MODULES "" CACHE INTERNAL "Every declared module, in declaration ord
 # )
 function(eve_declare_module)
     set(options REQUIRED CORE)
-    set(oneValue NAME LIB LAYER)
+    set(oneValue NAME LIB LAYER DIR)
     set(multiValue DEPS OPTIONAL_DEPS THIRDPARTY GROUP SCRIPT SLOT)
     cmake_parse_arguments(M "${options}" "${oneValue}" "${multiValue}" ${ARGN})
 
@@ -53,7 +124,11 @@ function(eve_declare_module)
         string(TOUPPER "${_first}" _first)
         set(M_LIB "EV${_first}${_rest}")
     endif()
+    if(NOT M_DIR)
+        eve_default_module_dir("${M_NAME}" M_DIR)
+    endif()
 
+    set(EVE_MODULE_${M_NAME}_DIR "${M_DIR}" CACHE INTERNAL "")
     set(EVE_MODULE_${M_NAME}_LIB "${M_LIB}" CACHE INTERNAL "")
     set(EVE_MODULE_${M_NAME}_DEPS "${M_DEPS}" CACHE INTERNAL "")
     set(EVE_MODULE_${M_NAME}_OPTIONAL_DEPS "${M_OPTIONAL_DEPS}" CACHE INTERNAL "")
@@ -75,6 +150,58 @@ function(eve_declare_module)
 
     list(APPEND EVE_ALL_MODULES "${M_NAME}")
     set(EVE_ALL_MODULES "${EVE_ALL_MODULES}" CACHE INTERNAL "Every declared module")
+endfunction()
+
+# Source directory relative to src/modules (or src/engine for CORE).
+function(eve_module_scan_dir name out)
+    if(DEFINED EVE_MODULE_${name}_DIR AND NOT "${EVE_MODULE_${name}_DIR}" STREQUAL "")
+        set(${out} "${EVE_MODULE_${name}_DIR}" PARENT_SCOPE)
+    else()
+        set(${out} "${name}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Immediate child directory names of other modules nested under this one.
+# The parent source glob must skip them so a disabled facet is not compiled
+# into the host package.
+function(eve_module_nested_scan_excludes name out)
+    eve_module_scan_dir("${name}" _root)
+    set(_heads "")
+    foreach(_other IN LISTS EVE_ALL_MODULES)
+        if(_other STREQUAL name)
+            continue()
+        endif()
+        eve_module_scan_dir("${_other}" _odir)
+        string(FIND "${_odir}" "${_root}/" _at)
+        if(_at EQUAL 0)
+            string(LENGTH "${_root}" _len)
+            math(EXPR _start "${_len} + 1")
+            string(SUBSTRING "${_odir}" ${_start} -1 _rel)
+            string(REGEX REPLACE "/.*" "" _head "${_rel}")
+            if(_head)
+                list(APPEND _heads "${_head}")
+            endif()
+        endif()
+    endforeach()
+    if(_heads)
+        list(REMOVE_DUPLICATES _heads)
+    endif()
+    set(${out} "${_heads}" PARENT_SCOPE)
+endfunction()
+
+# Authoring facets live in nested editing/editor directories. Runtime-only
+# profiles drop every module whose scan dir ends with those names (plus the
+# three editor-only *_target adapters).
+function(eve_module_is_authoring_facet name out)
+    eve_module_scan_dir("${name}" _dir)
+    get_filename_component(_leaf "${_dir}" NAME)
+    if(_leaf STREQUAL "editing" OR _leaf STREQUAL "editor" OR _leaf STREQUAL "graphics_editing")
+        set(${out} TRUE PARENT_SCOPE)
+    elseif(name MATCHES "_target$")
+        set(${out} TRUE PARENT_SCOPE)
+    else()
+        set(${out} FALSE PARENT_SCOPE)
+    endif()
 endfunction()
 
 # Whether a module survived resolution. Use to guard per-module tweaks.
@@ -180,8 +307,8 @@ function(eve_resolve_modules)
             set(_on TRUE)
         endif()
 
-        if(EVENGINE_PROFILE STREQUAL "runtime-3d" AND
-           m MATCHES "^(editor|editing|.*_editing|.*_editor|tilelayer_target|heightmap_target|voxelworld_target)$")
+        eve_module_is_authoring_facet("${m}" _authoring)
+        if(EVENGINE_PROFILE STREQUAL "runtime-3d" AND _authoring)
             set(_on FALSE)
         endif()
 
@@ -229,9 +356,10 @@ function(eve_resolve_modules)
 
     if(EVENGINE_PROFILE STREQUAL "runtime-3d")
         foreach(m IN LISTS _wanted)
-            if(m MATCHES "^(editor|editing|.*_editing|.*_editor|tilelayer_target|heightmap_target|voxelworld_target)$")
+            eve_module_is_authoring_facet("${m}" _authoring)
+            if(_authoring)
                 message(FATAL_ERROR
-                    "Runtime-only profile '${EVENGINE_PROFILE}' acquired editing module '${m}'")
+                    "Runtime-only profile '${EVENGINE_PROFILE}' acquired authoring dir '${EVE_MODULE_${m}_DIR}' (module '${m}')")
             endif()
         endforeach()
     endif()
@@ -320,7 +448,7 @@ function(eve_write_module_manifest out_file)
             set(_required false)
         endif()
         list(APPEND _contracts
-            "{ name = \"${m}\", enabled = ${_enabled}, required = ${_required}, layer = ${EVE_MODULE_${m}_LAYER}, deps = ${_DEPS_array}, optionalDeps = ${_OPTIONAL_DEPS_array}, profiles = ${_GROUP_array}, classes = ${_SCRIPT_array}, slots = ${_SLOT_array} }")
+            "{ name = \"${m}\", dir = \"${EVE_MODULE_${m}_DIR}\", enabled = ${_enabled}, required = ${_required}, layer = ${EVE_MODULE_${m}_LAYER}, deps = ${_DEPS_array}, optionalDeps = ${_OPTIONAL_DEPS_array}, profiles = ${_GROUP_array}, classes = ${_SCRIPT_array}, slots = ${_SLOT_array} }")
     endforeach()
     string(JOIN "\n    " _joined ${_entries})
     string(JOIN "\n    " _contracts_joined ${_contracts})

@@ -1,4 +1,4 @@
-#include "virtualgeometry_editing/VirtualGeometryTarget.h"
+#include "virtualgeometry/editing/VirtualGeometryTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

@@ -103,6 +103,8 @@ option(EVENGINE_BUILD_PROFILE_CHECKS
     "Build independent public-header and optional-capability profile checks" OFF)
 option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
     "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
+option(EVENGINE_BUILD_RENDER_BENCHMARK
+    "Build the windowed engine rendering performance benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 option(EVENGINE_VULKAN_USE_VMA
     "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
@@ -465,6 +467,9 @@ function(main)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
     endif()
+    if(EVENGINE_BUILD_HOST AND EVENGINE_BUILD_RENDER_BENCHMARK)
+        add_subdirectory(benchmarks/render)
+    endif()
     if(EVENGINE_BUILD_HOST)
         add_subdirectory(src/scripts)
     endif()
@@ -562,7 +567,10 @@ macro(create_module libname folder)
     # shell metacharacters (command separator / pipe) that would split or
     # execute the -D argument. ',' is safe unquoted on every shell (POSIX sh,
     # cmd.exe, emcc). The scan script splits on ','.
-    string(JOIN "," _eve_excl_dirs_arg ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS})
+    eve_module_scan_dir("${folder}" _eve_scan_dir)
+    eve_module_nested_scan_excludes("${folder}" _eve_nested_dirs)
+    set(_eve_excl_dirs ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS} ${_eve_nested_dirs})
+    string(JOIN "," _eve_excl_dirs_arg ${_eve_excl_dirs})
     string(JOIN "," _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
     # Scan .cpp files at configure time. New files are picked up by the next
     # cmake configure (`make debug` reconfigures when the module directory is
@@ -571,7 +579,8 @@ macro(create_module libname folder)
     # restacks Ninja cmake re-runs and rebuilds every TU.
     execute_process(COMMAND ${CMAKE_COMMAND}
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
-        -Dmodule_name=${folder}
+        -Dscan_dir=${_eve_scan_dir}
+        -Dlist_name=${folder}
         -Dexclude_dirs=${_eve_excl_dirs_arg}
         -Dexclude_files=${_eve_excl_files_arg}
         -P ${CMAKE_SOURCE_DIR}/cmake/scan_source.cmake

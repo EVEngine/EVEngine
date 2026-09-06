@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "audio_editor/AudioEditorModule.h"
-#include "audio_editor/EditorAudioTarget.h"
+#include "audio/editor/AudioEditorModule.h"
+#include "audio/editor/EditorAudioTarget.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"

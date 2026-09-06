@@ -1,4 +1,4 @@
-#include "avatar_editing/AvatarTarget.h"
+#include "avatar/editing/AvatarTarget.h"
 
 #include "avatar/AvatarInstance.h"
 #include "zeroerr/assert.h"

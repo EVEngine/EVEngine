@@ -5,7 +5,7 @@
 #include "editor/EditorIds.h"
 #include "editor/EditorTransactionService.h"
 #include "ui/Theme.h"
-#include "ui_editing/UiTheme.h"
+#include "ui/editing/UiTheme.h"
 
 #include <cmath>
 

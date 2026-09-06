@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "editor/EditorAuthority.h"
-#include "material_editing/MaterialTarget.h"
+#include "graphics/material/editing/MaterialTarget.h"
 #include "editor/EditorTransactionService.h"
 
 #include <tuple>

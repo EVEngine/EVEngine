@@ -270,13 +270,13 @@
     {
       "id": "pixelworld-thread-system-contract",
       "rule": "ecs-system",
-      "scope": "src/modules/pixelworld_thread/PixelWorldThread.h",
+      "scope": "src/modules/pixelworld/thread/PixelWorldThread.h",
       "owner": "pixelworld::PixelWorld",
       "issue": "EVENGINE-PIXELWORLD-PARALLEL",
       "reason": "PixelWorld worker scheduling must declare immutable phase reads, isolated candidate writes and canonical commit ordering.",
       "expiry": "2027-12-31",
       "evidence": [
-        "src/modules/pixelworld_thread/PixelWorldThread.h",
+        "src/modules/pixelworld/thread/PixelWorldThread.h",
         "docs/dev/PixelWorld-Noita技术路线.md"
       ],
       "tests": [

@@ -1,9 +1,9 @@
 #include "asset/AssetCooker.h"
 #include "asset/RuntimeDefinition.h"
 #include "asset/EvpackResourceReader.h"
-#include "asset_graphics/EvpackGraphicsLoader.h"
-#include "asset_graphics/EvpackImageLoader.h"
-#include "asset_import/AssetImporter.h"
+#include "asset/graphics/EvpackGraphicsLoader.h"
+#include "asset/graphics/EvpackImageLoader.h"
+#include "asset/import/AssetImporter.h"
 #include "graphics/IMeshResourceFactory.h"
 
 #include "zeroerr/assert.h"

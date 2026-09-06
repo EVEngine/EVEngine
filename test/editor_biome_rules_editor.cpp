@@ -1,4 +1,4 @@
-#include "biome_editor/BiomeRulesEditor.h"
+#include "procgen/biome/editor/BiomeRulesEditor.h"
 #include "editor/EditorWorkspace.h"
 
 #include "zeroerr/assert.h"

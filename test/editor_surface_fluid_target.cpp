@@ -1,4 +1,4 @@
-#include "fluids_editing/SurfaceFluidTarget.h"
+#include "fluids/editing/SurfaceFluidTarget.h"
 
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidRenderData.h"

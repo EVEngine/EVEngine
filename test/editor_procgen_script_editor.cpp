@@ -1,4 +1,4 @@
-#include "procgen_editor/ProcgenScriptEditor.h"
+#include "procgen/editor/ProcgenScriptEditor.h"
 #include "editor/EditorWorkspace.h"
 #include "procgen/PointSet.h"
 

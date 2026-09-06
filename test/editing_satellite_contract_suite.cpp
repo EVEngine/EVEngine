@@ -1,8 +1,8 @@
-#include "audio_editing/AudioTarget.h"
-#include "audio_editing/AudioEditingProvider.h"
+#include "audio/editing/AudioTarget.h"
+#include "audio/editing/AudioEditingProvider.h"
 #include "editor/Editor.h"
-#include "physics_editing/PhysicsEditingProvider.h"
-#include "physics_editing/PhysicsTarget.h"
+#include "physics/editing/PhysicsEditingProvider.h"
+#include "physics/editing/PhysicsTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

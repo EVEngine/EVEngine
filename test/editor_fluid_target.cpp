@@ -1,4 +1,4 @@
-#include "fluids_editing/FluidTarget.h"
+#include "fluids/editing/FluidTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

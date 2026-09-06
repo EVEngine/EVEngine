@@ -1,4 +1,4 @@
-#include "audio_editor/AudioSourceEditor.h"
+#include "audio/editor/AudioSourceEditor.h"
 #include "editor/EditorWorkspace.h"
 
 #include "zeroerr/assert.h"

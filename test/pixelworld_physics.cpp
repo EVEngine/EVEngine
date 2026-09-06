@@ -1,7 +1,7 @@
 #include "physics/Body.h"
 #include "physics/World.h"
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_physics/PixelWorldPhysics.h"
+#include "pixelworld/physics/PixelWorldPhysics.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

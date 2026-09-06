@@ -4,8 +4,8 @@
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"
-#include "voxel_editor/VoxelCatalogEditor.h"
-#include "voxel_editor/VoxelEditorModule.h"
+#include "voxel/editor/VoxelCatalogEditor.h"
+#include "voxel/editor/VoxelEditorModule.h"
 
 using eve::editor::Editor;
 

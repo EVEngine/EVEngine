@@ -1,4 +1,4 @@
-#include "animation_editing/AnimationGraph.h"
+#include "animation/editing/AnimationGraph.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"

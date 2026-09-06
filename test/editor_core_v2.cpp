@@ -7,8 +7,8 @@
 #include "editor/EditorIds.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorValue.h"
-#include "level_editing/FieldTargets.h"
-#include "level_editing/TileBuffer.h"
+#include "map/level/editing/FieldTargets.h"
+#include "map/level/editing/TileBuffer.h"
 
 #include <memory>
 #include <stdexcept>

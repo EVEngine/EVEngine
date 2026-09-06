@@ -1,4 +1,4 @@
-#include "procgen_editing/PcgGraph.h"
+#include "procgen/editing/PcgGraph.h"
 #include "procgen/PointGraph.h"
 
 #include "zeroerr/unittest.h"

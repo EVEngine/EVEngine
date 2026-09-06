@@ -6,7 +6,7 @@
 #include "animation/DynamicBoneSolver.h"
 #include "animation/FootIKSolver.h"
 #include "animation/ProceduralBoneConfig.h"
-#include "animation_editing/ProceduralBoneOverlay.h"
+#include "animation/editing/ProceduralBoneOverlay.h"
 #include "common/Exception.h"
 
 #include <cmath>

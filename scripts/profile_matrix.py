@@ -53,16 +53,14 @@ PROFILES = (
 )
 HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
-EDITOR_ADAPTERS = {"tilelayer_target", "heightmap_target", "voxelworld_target"}
+_MODULE_DIRS: dict[str, str] | None = None
 
 
 def is_editor_module(name: str) -> bool:
-    return (
-        name in {"editor", "editing"}
-        or name in EDITOR_ADAPTERS
-        or name.endswith("_editing")
-        or name.endswith("_editor")
-    )
+    global _MODULE_DIRS
+    if _MODULE_DIRS is None:
+        _MODULE_DIRS = {item.name: item.dir for item in manifest.parse_manifest()}
+    return manifest.is_authoring_facet(name, _MODULE_DIRS.get(name))
 
 
 CORE_SEEDS = {
@@ -125,6 +123,7 @@ _KEYWORDS = {
     "NAME",
     "LIB",
     "LAYER",
+    "DIR",
     "DEPS",
     "OPTIONAL_DEPS",
     "THIRDPARTY",
@@ -134,7 +133,7 @@ _KEYWORDS = {
     "REQUIRED",
     "CORE",
 }
-_ONE_VALUE = {"NAME", "LIB", "LAYER"}
+_ONE_VALUE = {"NAME", "LIB", "LAYER", "DIR"}
 _MULTI_VALUE = {"DEPS", "OPTIONAL_DEPS", "THIRDPARTY", "SCRIPT", "SLOT", "GROUP"}
 
 
@@ -262,7 +261,7 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
 
 def check_contracts() -> int:
     declarations = manifest.parse_manifest()
-    errors = manifest.validate(declarations, manifest.source_modules())
+    errors = manifest.validate(declarations, manifest.MODULES)
     try:
         module_contracts = contracts()
     except ValueError as error:

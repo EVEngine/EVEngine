@@ -1,5 +1,5 @@
-#include "action_editor/ActionEditorModule.h"
-#include "action_editor/ActionTimelineEditor.h"
+#include "action/editor/ActionEditorModule.h"
+#include "action/editor/ActionTimelineEditor.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"

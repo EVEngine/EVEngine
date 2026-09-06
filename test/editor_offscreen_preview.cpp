@@ -1,4 +1,4 @@
-#include "graphics_editing/OffscreenPreview.h"
+#include "graphics/editing/OffscreenPreview.h"
 
 #include "graphics/Canvas.h"
 #include "graphics/ICanvasFactory.h"

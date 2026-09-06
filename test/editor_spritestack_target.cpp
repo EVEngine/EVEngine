@@ -1,4 +1,4 @@
-#include "spritestack_editing/SpriteStackTarget.h"
+#include "spritestack/editing/SpriteStackTarget.h"
 
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"

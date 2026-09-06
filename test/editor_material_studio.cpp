@@ -1,5 +1,5 @@
 #include "editor/EditorAuthority.h"
-#include "material_editor/EditorMaterialStudio.h"
+#include "graphics/material/editor/EditorMaterialStudio.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
