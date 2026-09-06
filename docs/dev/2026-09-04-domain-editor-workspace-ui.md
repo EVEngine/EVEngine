@@ -229,6 +229,10 @@ Avatar v1（2026-09-04）：`AvatarDocumentEditor` + `examples/avatar-document-e
 
 Biome v1（2026-09-04）：`BiomeRulesEditor` + `examples/biome-rules-editor` 已安装四面板（capability `biome.rules`），固定 seed 的 PointSet 预览，Inspector 排除区，密度拒绝时保留上一 generation。
 
+Procgen script v1（2026-09-05）：`ProcgenScriptEditor` + `examples/procgen-script-editor` 已安装四面板（capability `procgen.script`）。封装 Squirrel 模块提供 schema + `generate`；原生只提交 Params 并拷贝 PointSet 预览。失败/过期 revision 保留上一 generation。
+
+Voxel sculpt v1（2026-09-05）：`VoxelCatalogEditor` + `examples/voxel-catalog-editor` 已安装四面板（capability `voxel.sculpt`）。MagicaVoxel 式微型雕刻：每个模型是一块有界占用网格（边长 ≤32，占用 ≤4096），环绕相机 + attach/erase。铺满为 cube，铺不满为小模型。插座仅作家具拼接元数据。
+
 每个领域的完成门禁（与 gap analysis 对齐，且加上 UI）：
 
 1. `configureWorkspace` 安装上表四个面板（id/capability/context 稳定）。

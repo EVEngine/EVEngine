@@ -7,6 +7,7 @@
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/AgentDevelopmentMcp.hpp"
+#include "devtools/PlayHost.h"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
@@ -709,6 +710,19 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             return std::string("error: invalid request: ") + error.what();
         }
         auto response = eve::executeGameplayControlJson(request);
+        return response ? std::move(response).takeValue()
+                        : std::string("error: ") + response.status().describe();
+    }
+
+    if (name == "eve_play") {
+        if (!args || !args->has("request")) return "error: missing request";
+        std::string request;
+        try {
+            request = mcpStringify(args->get("request"));
+        } catch (const std::exception& error) {
+            return std::string("error: invalid request: ") + error.what();
+        }
+        auto response = executePlayJson(request);
         return response ? std::move(response).takeValue()
                         : std::string("error: ") + response.status().describe();
     }
@@ -1663,6 +1677,8 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
+        "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and record/replay play traces without eve_eval.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in material/reaction Catalog document.\","
@@ -2110,10 +2126,10 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) eve_gameplay op=domains, then observe and actions for the target gameplay instance.\n"
-            "2) Submit player-equivalent commands and advance deterministic ticks with eve_gameplay.\n"
-            "3) Read gameplay events and assert resulting revision/state; use eve_eval only for non-gameplay state.\n"
-            "4) eve_snapshot_restore to reset; record notes via eve_ai_note.";
+            "1) Read game.agent.json via eve_play op=status, then observe declared script roots.\n"
+            "2) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
+            "3) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
+            "4) Do not use eve_eval as the official observation path.";
     } else if (name == "ai_game_review") {
         text =
             "Review this AI-generated or AI-assisted game build:\n"

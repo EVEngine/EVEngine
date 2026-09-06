@@ -38,7 +38,30 @@ TEST_CASE("devtools.agentDevelopmentSession.enforcesWorkflowAndEvidenceGate") {
     REQUIRE(session.complete(id, "feature verified").isAccepted());
     CHECK_EQ(agentDevelopmentPhaseName(session.phase()), std::string_view("complete"));
     CHECK(!session.active());
-    CHECK_EQ(session.evidence().size(), std::size_t{2});
+    CHECK_EQ(session.evidence().size(), std::size_t{3});
+}
+
+TEST_CASE("devtools.agentDevelopmentSession.rejectsEvalAndRequiresScreenshotForVisual") {
+    auto& session = AgentDevelopmentSession::instance();
+    session.reset();
+    REQUIRE(session.start("Verify without eval",
+                          {{"visual", "Must see the frame", true, false},
+                           {"runtime", "State moved", true, false}})
+                .isAccepted());
+    const std::string id = session.sessionId();
+    REQUIRE(session.advance(id, AgentDevelopmentPhase::Modify).isAccepted());
+    REQUIRE(session.advance(id, AgentDevelopmentPhase::Run).isAccepted());
+    REQUIRE(session.advance(id, AgentDevelopmentPhase::Observe).isAccepted());
+    CHECK_EQ(session.record(id, {0, "runtime", "eval", "pass", "eve_eval cheated", {}}).code,
+             "invalid-evidence-kind");
+    REQUIRE(session.record(id, {0, "runtime", "runtime-observation", "pass", "tick moved", {}}).isAccepted());
+    REQUIRE(session.record(id, {0, "visual", "runtime-observation", "pass", "looked at numbers", {}}).isAccepted());
+    CHECK(!session.criteria()[0].passed);
+    REQUIRE(session.advance(id, AgentDevelopmentPhase::Verify).isAccepted());
+    CHECK_EQ(session.complete(id, "missing screenshot").code, "acceptance-incomplete");
+    REQUIRE(session.record(id, {0, "visual", "screenshot", "pass", "frame inspected", "frame.png"}).isAccepted());
+    REQUIRE(session.record(id, {0, "runtime", "play-trace", "pass", "trace stable", "trace.json"}).isAccepted());
+    REQUIRE(session.complete(id, "verified without eval").isAccepted());
 }
 
 TEST_CASE("devtools.agentDevelopmentSession.recoversAndAbortsExplicitly") {

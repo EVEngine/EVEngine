@@ -366,6 +366,14 @@ WidgetDesc toggleSwitch(std::string label, bool checked = false, std::string id 
                         std::function<void(bool)> onToggle = {});
 /** @brief Compact status/category pill. Tint controls its background color. */
 WidgetDesc badge(std::string label, std::string id = "");
+/**
+ * @brief Color editor with a swatch grid (调色板).
+ * RGBA is stored in tint channels. `valueText` may list extra swatches as
+ * `#rrggbb`, `#rrggbbaa`, or `r,g,b[,a]` lines; empty uses the built-in palette.
+ * Changes fire the same value events as sliders (`consumeChange` / `onValue`).
+ */
+WidgetDesc colorPalette(std::string label, float r, float g, float b, float a = 1.f,
+                        std::string id = "", std::function<void(float)> onValue = {});
 /** @brief Bordered surface container with editor-friendly padding. */
 WidgetDesc card(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Non-collapsible editor section heading with an accent marker. */

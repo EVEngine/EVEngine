@@ -277,6 +277,23 @@ snapshot、确定性 preview/picking 和可选 `UIHost` publication；`ui_editor
 `IUiSkinPlanRenderer`，在原有 box/tint 背景之后绘制同一份 plan，因此 UI host 或 graphics adapter
 无需重新解释文档语义。
 
+## UI Theme 目录（C++）
+
+规范 API 位于 `ui_editing/UiTheme.h`。`UiThemeCatalogTarget` 保存可命名的完整 `ui::Theme` 快照
+（色板、几何、间距、字体缩放、`ThemeLayout`），并记录 `dark` / `light` / `custom` 基线以便 Reset。
+Catalog 操作（从预设创建、复制、重命名、删除最后一项拒绝、切换 active、改令牌）全部生成可逆
+`ui.theme.catalog.replace.v1` 事务。`snapshotValue()` / `loadSnapshot()` 使用 schema 1，校验失败
+不改已发布状态。
+
+`UiThemePreviewService` 按 revision 复制选中方案的令牌，供画廊使用；过期 revision 返回 Conflict。
+`UiThemeRuntimePublisher` 只在 active 方案合法时调用 `ui::setGlobalTheme`（内置 id `dark`/`light`
+保留预设名，其余为 `custom`）。`UIHost::setThemeOverride` 把同一份令牌应用到单个 host，不改
+process 全局主题。
+
+启用 `ui_editor` 时，`eve.UiEditorModule().create(targetId)` 返回脚本拥有的 `UiThemeEditor`。
+`configureWorkspace` 安装 Themes / Theme Preview / Theme Inspector（capability `ui.theme`）。
+完整可运行示例见 [`examples/ui-theme-editor`](../../../examples/ui-theme-editor)。
+
 ## 流体表面与湿润材质（C++）
 
 `FluidSimulationTarget` 负责体积粒子求解器的容量、核半径、密度、黏性、PBF 迭代和预算。
@@ -709,6 +726,13 @@ tint 及 2D 叠片表现参数。`SpriteStackBakeRuntime` 在 CPU 临时 generat
 `VoxelPaletteRuntime` 候选构建完整 `CubeTypeRegistry`，并返回稳定 editor ID 到 base ID/variant 数量
 的映射，供体素笔刷、调色板 UI 和关卡文档保存引用。
 
+启用 `voxel_editor` 时，`eve.VoxelEditorModule().create(targetId)` 返回脚本拥有的
+`VoxelCatalogEditor`：原生对象是 MagicaVoxel 式微型雕刻文档（有界占用网格和撤销）的唯一事实源。
+示例用 `eve.Voxel()` 画占用、用相机射线拾取。第一期只编体素占用，不编贴图。铺满画布即为 cube；
+铺不满即为小模型。六向插座只作为家具拼接元数据，不是主编辑循环。`configureWorkspace`
+安装 Models / Sculpt / Tools / Inspector（capability `voxel.sculpt`）。完整可运行示例见
+[`examples/voxel-catalog-editor`](../../../examples/voxel-catalog-editor)。
+
 `BiomeDocumentTarget` 把 Procgen 的 BiomeRules 变成稳定资产：Layer Inspector 编辑空间域引用、优先级
 和密度，子项 Inspector 编辑加权 prefab/model、缩放范围和随机朝向，exclusion 也使用空间 AssetRef。
 结构编辑、属性编辑和快照均可撤销且原子校验；`BiomeDocumentRuntime` 先解析所有空间资源并构建完整
@@ -718,6 +742,16 @@ tint 及 2D 叠片表现参数。`SpriteStackBakeRuntime` 在 CPU 临时 generat
 `configureWorkspace` 安装 Layers / World Preview / Inspector / Assets（capability `biome.rules`）。
 排除区挂在 Inspector，不单开 dock。完整可运行示例见
 [`examples/biome-rules-editor`](../../../examples/biome-rules-editor)。
+
+`ProcgenScriptDocumentTarget` 保存一份封装脚本生成器的 uri、id、`kind=points` schema 和 Params。
+热加载时丢掉未知字段、用 default 补齐缺失字段。启用 `procgen_editor` 时，
+`eve.ProcgenEditorModule().create(targetId)` 返回脚本拥有的 `ProcgenScriptEditor`：
+原生对象是参数文档、撤销事务和 PointSet 预览拷贝的唯一事实源。脚本模块负责
+`generate(params, ctx)`；编辑器不在锁内回调 Squirrel。`configureWorkspace` 安装
+Modules / World Preview / Inspector / Debug Stages（capability `procgen.script`）。
+参数 commit 后标 dirty，presenter 重建成功才 `publishPreview`；失败或过期 revision
+保留上一版点。完整可运行示例见
+[`examples/procgen-script-editor`](../../../examples/procgen-script-editor)。
 
 `TextureRecipeTarget` 直接读取 Procgen `RecipeDescriptor`，把参数类型、范围、枚举、分类和默认值映射为
 通用 Inspector，因此新增 recipe 无需再编写专用面板。参数编辑和快照可撤销且原子校验；
@@ -787,6 +821,8 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - 动画 Clip：`eve.AnimationEditorModule().create` / `configureWorkspace` / `setViewport` / `pointerDown` / `seekX` / `seekSeconds` / `selectBone` / `setMaskWeight` / `setDuration` / `setSampleRate` / `setLoop` / `undo` / `redo` / `play` / `pause` / `stop` / `update` / `getTrack*` / `getKey*` / `getEvent*` / `getPrimitive*`
 - Avatar 文档：`eve.AvatarEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectParameter` / `selectExpression` / `pointerDown` / `setLayerVisible` / `setLayerZ` / `setParameterValue` / `createLayer` / `deleteSelectedLayer` / `deleteSelectedParameter` / `undo` / `redo` / `getPreview*` / `getLayer*` / `getParameter*` / `getExpression*`
 - Biome 规则：`eve.BiomeEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectAsset` / `setLayerDensity` / `setLayerPriority` / `setAssetWeight` / `addExclusion` / `removeExclusion` / `setSeed` / `undo` / `redo` / `getPoint*` / `getLayer*` / `getAsset*` / `getExclusion*`
+- Procgen 脚本生成器：`eve.ProcgenEditorModule().create` / `configureWorkspace` / `loadModule` / `setInt` / `setFloat` / `setBool` / `setString` / `publishPreview` / `publishStage` / `failPreview` / `selectStage` / `undo` / `redo` / `getParam*` / `getPoint*` / `getStage*`
+- Voxel catalog：`eve.VoxelEditorModule().create` / `configureWorkspace` / `selectPart` / `selectPrefab` / `selectFace` / `setPartVoxel` / `setSelectedSocket` / `setPrefabCell` / `createPart` / `deleteSelectedPart` / `undo` / `redo` / `getPart*` / `getPrefab*` / `getPreviewCell*` / `getSelectedSocket*` / `getJoinPartner*`
 - 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`。领域 Target 通过各自模块的 `bind(session, target)` 接入。
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`

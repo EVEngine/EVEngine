@@ -2,6 +2,7 @@
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
+#include "ui/Theme.h"
 
 #include <cstdint>
 #include <functional>
@@ -47,6 +48,7 @@ enum class NodeType : uint8_t {
     StatusBar = 30,     // compact horizontal status strip
     SplitPane = 31,      // two resizable panes
     NinePatchPanel = 32, // .9.png-backed stretchable content container
+    ColorPalette = 33,   // color editor + swatch grid; RGBA lives in tint*
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -243,6 +245,8 @@ public:
         bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
         UIHostHandle entity{};
+        bool hasThemeOverride = false;
+        Theme themeOverride;
     };
 
     struct Tree {
@@ -326,6 +330,22 @@ public:
     /** @brief Names the host. */
     void setName(const std::string &name);
     const std::string &getName();
+    /**
+     * @brief Apply a host-local Theme without mutating ui::globalTheme().
+     * @param theme Copied design tokens used while measuring and rendering this host.
+     * @ownership This host stores a copy. Callers retain the argument.
+     */
+    void setThemeOverride(const Theme &theme);
+    /** @brief Stop using a host-local Theme and inherit the process global again. */
+    void clearThemeOverride();
+    /** @brief True when a host-local Theme is installed. */
+    bool hasThemeOverride();
+    /**
+     * @brief Borrow the host-local Theme when one is installed.
+     * @return Pointer owned by this host, or null.
+     * @lifetime Valid until the next override mutation or host destruction.
+     */
+    [[nodiscard]] const Theme *themeOverride();
     /** @brief Attaches the host to an owner id (scene/UI ownership). */
     void setOwnerId(uint32_t id) { meta()->ownerId = id; }
     uint32_t getOwnerId() { return meta()->ownerId; }

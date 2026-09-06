@@ -18,8 +18,11 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <map>
+#include <string>
 #include <vector>
 
 namespace eve::ui {
@@ -33,6 +36,32 @@ std::vector<std::string> g_pendingFileDrops;
 UIBackend *g_backend = nullptr;
 UIStats g_stats;
 std::map<std::string, ViewportState> g_viewports;
+
+struct HostThemeScope {
+    bool active = false;
+    ImGuiStyle previousStyle;
+    float previousFontScale = 1.f;
+    ImGuiConfigFlags previousConfigFlags = ImGuiConfigFlags_None;
+
+    explicit HostThemeScope(UIHost *host) {
+        if (!host || !host->hasThemeOverride() || !host->themeOverride()) return;
+        previousStyle = ImGui::GetStyle();
+        previousFontScale = ImGui::GetIO().FontGlobalScale;
+        previousConfigFlags = ImGui::GetIO().ConfigFlags;
+        applyThemeToImGui(*host->themeOverride());
+        active = true;
+    }
+
+    ~HostThemeScope() {
+        if (!active) return;
+        ImGui::GetStyle() = previousStyle;
+        ImGui::GetIO().FontGlobalScale = previousFontScale;
+        ImGui::GetIO().ConfigFlags = previousConfigFlags;
+    }
+
+    HostThemeScope(const HostThemeScope &) = delete;
+    HostThemeScope &operator=(const HostThemeScope &) = delete;
+};
 
 struct ActiveDragPayload {
     uint64_t serial = 0;
@@ -199,9 +228,90 @@ bool isInteractive(NodeType type) {
         case NodeType::Viewport:
         case NodeType::SearchField:
         case NodeType::Switch:
+        case NodeType::ColorPalette:
         case NodeType::MenuItem: return true;
         default: return false;
     }
+}
+
+struct PaletteSwatch {
+    float r = 1.f;
+    float g = 1.f;
+    float b = 1.f;
+    float a = 1.f;
+};
+
+void appendDefaultPaletteSwatches(std::vector<PaletteSwatch> &out) {
+    static const PaletteSwatch kDefaults[] = {
+        {0.00f, 0.00f, 0.00f, 1.f}, {0.20f, 0.20f, 0.22f, 1.f},
+        {0.45f, 0.45f, 0.48f, 1.f}, {0.92f, 0.92f, 0.94f, 1.f},
+        {0.82f, 0.18f, 0.18f, 1.f}, {0.90f, 0.45f, 0.12f, 1.f},
+        {0.92f, 0.78f, 0.16f, 1.f}, {0.22f, 0.68f, 0.28f, 1.f},
+        {0.14f, 0.70f, 0.72f, 1.f}, {0.18f, 0.38f, 0.86f, 1.f},
+        {0.48f, 0.28f, 0.82f, 1.f}, {0.82f, 0.22f, 0.62f, 1.f},
+        {0.55f, 0.35f, 0.22f, 1.f}, {0.95f, 0.55f, 0.70f, 1.f},
+        {0.42f, 0.52f, 0.22f, 1.f}, {0.12f, 0.18f, 0.32f, 1.f},
+    };
+    out.insert(out.end(), std::begin(kDefaults), std::end(kDefaults));
+}
+
+bool parsePaletteSwatch(std::string token, PaletteSwatch &out) {
+    while (!token.empty() && (token.back() == ' ' || token.back() == '\r' || token.back() == '\t'))
+        token.pop_back();
+    size_t start = 0;
+    while (start < token.size() && (token[start] == ' ' || token[start] == '\t')) ++start;
+    token = token.substr(start);
+    if (token.empty()) return false;
+    if (token[0] == '#') {
+        unsigned value = 0;
+        if (token.size() == 7 && std::sscanf(token.c_str() + 1, "%06x", &value) == 1) {
+            out.r = float((value >> 16) & 0xff) / 255.f;
+            out.g = float((value >> 8) & 0xff) / 255.f;
+            out.b = float(value & 0xff) / 255.f;
+            out.a = 1.f;
+            return true;
+        }
+        if (token.size() == 9 && std::sscanf(token.c_str() + 1, "%08x", &value) == 1) {
+            out.r = float((value >> 24) & 0xff) / 255.f;
+            out.g = float((value >> 16) & 0xff) / 255.f;
+            out.b = float((value >> 8) & 0xff) / 255.f;
+            out.a = float(value & 0xff) / 255.f;
+            return true;
+        }
+        return false;
+    }
+    float r = 0.f, g = 0.f, b = 0.f, a = 1.f;
+    const int n = std::sscanf(token.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a);
+    if (n < 3) return false;
+    out.r = r;
+    out.g = g;
+    out.b = b;
+    if (n >= 4) out.a = a;
+    return true;
+}
+
+std::vector<PaletteSwatch> paletteSwatches(const UINode &n) {
+    std::vector<PaletteSwatch> swatches;
+    const std::string &src = n.valueText;
+    size_t i = 0;
+    while (i < src.size()) {
+        size_t end = src.find_first_of(";\n", i);
+        if (end == std::string::npos) end = src.size();
+        PaletteSwatch swatch;
+        if (parsePaletteSwatch(src.substr(i, end - i), swatch)) swatches.push_back(swatch);
+        i = end + 1;
+    }
+    if (swatches.empty()) appendDefaultPaletteSwatches(swatches);
+    return swatches;
+}
+
+void commitPaletteColor(UIHost *host, UINode &n, const float col[4]) {
+    n.tintR = col[0];
+    n.tintG = col[1];
+    n.tintB = col[2];
+    n.tintA = col[3];
+    n.value = col[0];
+    pushPending(host, n, "value", n.handlerValue, false, col[0]);
 }
 
 bool keyPressed(ImGuiKey key) {
@@ -663,6 +773,48 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             n.value = v;
             pushPending(host, n, "value", n.handlerValue, false, v);
         }
+        break;
+    }
+    case NodeType::ColorPalette: {
+        const float swatch = ImGui::GetFrameHeight();
+        const float gap = 4.f;
+        const int cols = 8;
+        float col[4] = {n.tintR, n.tintG, n.tintB, n.tintA};
+        const std::string label = n.text.empty() ? "Color" : n.text;
+        const std::string editId = label + "###palette-edit-" + n.id;
+        ImGui::BeginGroup();
+        ImGui::PushID(n.id.empty() ? "color-palette" : n.id.c_str());
+        ImGui::SetNextItemWidth(std::max(80.f, n.measuredW > 0.f ? n.measuredW : 220.f));
+        const ImGuiColorEditFlags flags =
+            ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf |
+            ImGuiColorEditFlags_PickerHueBar | ImGuiColorEditFlags_DisplayRGB;
+        if (ImGui::ColorEdit4(editId.c_str(), col, flags)) commitPaletteColor(host, n, col);
+        const std::vector<PaletteSwatch> swatches = paletteSwatches(n);
+        for (size_t i = 0; i < swatches.size(); ++i) {
+            if (i % static_cast<size_t>(cols) != 0) ImGui::SameLine(0.f, gap);
+            const PaletteSwatch &s = swatches[i];
+            const ImVec4 color(s.r, s.g, s.b, s.a);
+            const bool selected = std::fabs(n.tintR - s.r) < 0.004f &&
+                                  std::fabs(n.tintG - s.g) < 0.004f &&
+                                  std::fabs(n.tintB - s.b) < 0.004f &&
+                                  std::fabs(n.tintA - s.a) < 0.004f;
+            ImGui::PushID(static_cast<int>(i));
+            if (ImGui::ColorButton("##swatch", color, ImGuiColorEditFlags_NoTooltip |
+                                                          ImGuiColorEditFlags_AlphaPreview,
+                                   ImVec2(swatch, swatch))) {
+                float picked[4] = {s.r, s.g, s.b, s.a};
+                commitPaletteColor(host, n, picked);
+            }
+            if (selected) {
+                const ImVec2 p0 = ImGui::GetItemRectMin();
+                const ImVec2 p1 = ImGui::GetItemRectMax();
+                ImGui::GetWindowDrawList()->AddRect(
+                    p0, p1, ImGui::GetColorU32(ImGuiCol_Text), 0.f, 0, 1.5f);
+            }
+            ImGui::PopID();
+        }
+        ImGui::PopID();
+        ImGui::EndGroup();
         break;
     }
     case NodeType::Progress: {
@@ -1397,6 +1549,7 @@ void UISystem::render() {
     g_stats.walkMs = 0.0;
     for (auto &item : items) {
         item.tree->dirty = false;
+        HostThemeScope theme(item.host);
         const auto m0 = std::chrono::steady_clock::now();
         measureTree(*item.tree);
         const auto m1 = std::chrono::steady_clock::now();
@@ -1453,6 +1606,7 @@ void UISystem::render() {
                                          [](const Item &item) { return item.render; }));
     for (auto &item : items) {
         if (!item.render) continue;
+        HostThemeScope theme(item.host);
         const auto w0 = std::chrono::steady_clock::now();
         if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
         const auto w1 = std::chrono::steady_clock::now();
