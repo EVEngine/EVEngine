@@ -103,6 +103,8 @@ option(EVENGINE_BUILD_PROFILE_CHECKS
     "Build independent public-header and optional-capability profile checks" OFF)
 option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
     "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
+option(EVENGINE_BUILD_RENDER_BENCHMARK
+    "Build the windowed engine rendering performance benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 option(EVENGINE_VULKAN_USE_VMA
     "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
@@ -464,6 +466,9 @@ function(main)
     add_subdirectory(src/modules)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
+    endif()
+    if(EVENGINE_BUILD_HOST AND EVENGINE_BUILD_RENDER_BENCHMARK)
+        add_subdirectory(benchmarks/render)
     endif()
     if(EVENGINE_BUILD_HOST)
         add_subdirectory(src/scripts)
