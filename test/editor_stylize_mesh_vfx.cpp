@@ -1,4 +1,4 @@
-#include "stylize_editing/MeshVfxTarget.h"
+#include "stylize/editing/MeshVfxTarget.h"
 
 #include "stylize/MeshVfxAsset.h"
 #include "zeroerr/assert.h"
