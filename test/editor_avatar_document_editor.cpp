@@ -1,4 +1,4 @@
-#include "avatar_editor/AvatarDocumentEditor.h"
+#include "avatar/editor/AvatarDocumentEditor.h"
 #include "editor/EditorWorkspace.h"
 
 #include "zeroerr/assert.h"

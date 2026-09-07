@@ -1,4 +1,4 @@
-#include "scene_editor/EditorPrefab.h"
+#include "scene/editor/EditorPrefab.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

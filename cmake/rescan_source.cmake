@@ -3,7 +3,10 @@
 # -P script on Linux/macOS Ninja builds).
 include("${CMAKE_CURRENT_LIST_DIR}/collect_module_sources.cmake")
 
-set(_eve_src_txt "${output_dir}/${module_name}_src.txt")
+if(NOT DEFINED list_name)
+    set(list_name "${module_name}")
+endif()
+set(_eve_src_txt "${output_dir}/${list_name}_src.txt")
 if(NOT EXISTS "${_eve_src_txt}")
     file(WRITE "${_eve_src_txt}" "${file_list}")
     message(WARNING "Rerun CMake to update source files")

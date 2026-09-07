@@ -1,4 +1,4 @@
-#include "lighting_editing/LightingTarget.h"
+#include "graphics/lighting/editing/LightingTarget.h"
 
 #include "daynight/DayNight.h"
 #include "graphics/Light.h"

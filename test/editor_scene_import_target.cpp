@@ -1,4 +1,4 @@
-#include "sceneloader_editing/SceneImportTarget.h"
+#include "scene/loader/editing/SceneImportTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve::sceneloader_editing;

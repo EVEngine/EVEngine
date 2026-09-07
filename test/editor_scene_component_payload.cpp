@@ -1,9 +1,9 @@
-#include "scene_editor/EditorSceneComponentPayload.h"
-#include "scene_editor/EditorSceneTarget.h"
+#include "scene/editor/EditorSceneComponentPayload.h"
+#include "scene/editor/EditorSceneTarget.h"
 #include "editor/EditorTransactionService.h"
-#include "audio_editor/EditorAudioTarget.h"
-#include "material_editor/EditorMaterialTarget.h"
-#include "physics_editor/EditorPhysicsTarget.h"
+#include "audio/editor/EditorAudioTarget.h"
+#include "graphics/material/editor/EditorMaterialTarget.h"
+#include "physics/editor/EditorPhysicsTarget.h"
 
 #include "zeroerr/unittest.h"
 

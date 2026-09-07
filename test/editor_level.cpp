@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "level_editing/LevelDocument.h"
-#include "level_editing/LevelFormat.h"
+#include "map/level/editing/LevelDocument.h"
+#include "map/level/editing/LevelFormat.h"
 
 using namespace eve::level_editing;
 

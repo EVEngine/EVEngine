@@ -1,4 +1,4 @@
-#include "fluids_editor/EditorSurfaceFluidPreview.h"
+#include "fluids/editor/EditorSurfaceFluidPreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

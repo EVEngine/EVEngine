@@ -4,7 +4,7 @@
 #include "editor/EditorAssetDatabase.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorDocumentService.h"
-#include "scene_editor/EditorSceneTarget.h"
+#include "scene/editor/EditorSceneTarget.h"
 #include "editor/EditorTransactionService.h"
 
 #include <string>

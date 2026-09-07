@@ -1,4 +1,4 @@
-#include "profiler_editing/ProfilerModel.h"
+#include "profiler/editing/ProfilerModel.h"
 
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>

@@ -1,7 +1,7 @@
-#include "material_editor/EditorMaterialOffscreen.h"
-#include "particles_editor/EditorParticleOffscreen.h"
-#include "ui_editor/EditorUiOffscreen.h"
-#include "fluids_editor/EditorSurfaceFluidPreview.h"
+#include "graphics/material/editor/EditorMaterialOffscreen.h"
+#include "particles/editor/EditorParticleOffscreen.h"
+#include "ui/editor/EditorUiOffscreen.h"
+#include "fluids/editor/EditorSurfaceFluidPreview.h"
 
 #include "graphics/Canvas.h"
 #include "graphics/ICanvasFactory.h"

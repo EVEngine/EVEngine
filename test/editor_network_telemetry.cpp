@@ -1,4 +1,4 @@
-#include "network_editing/NetworkTelemetry.h"
+#include "network/editing/NetworkTelemetry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve::network_editing;

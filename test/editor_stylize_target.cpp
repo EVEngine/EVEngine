@@ -1,4 +1,4 @@
-#include "stylize_editing/StylizeTarget.h"
+#include "stylize/editing/StylizeTarget.h"
 
 #include "stylize/StyleInstance.h"
 #include "zeroerr/assert.h"

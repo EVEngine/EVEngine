@@ -31,7 +31,7 @@
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
-#include "sceneloader/SceneLoader.h"
+#include "scene/loader/SceneLoader.h"
 #include "window/Window.h"
 
 #include <assimp/mesh.h>

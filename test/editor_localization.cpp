@@ -1,4 +1,4 @@
-#include "localization_editing/LocalizationDocument.h"
+#include "i18n/editing/LocalizationDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

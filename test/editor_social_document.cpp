@@ -1,5 +1,5 @@
 #include "social/SocialGraph.h"
-#include "social_editing/SocialDocument.h"
+#include "social/editing/SocialDocument.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

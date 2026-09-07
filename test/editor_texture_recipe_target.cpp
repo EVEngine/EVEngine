@@ -1,4 +1,4 @@
-#include "procgen_editing/TextureRecipeTarget.h"
+#include "procgen/editing/TextureRecipeTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve::procgen_editing;

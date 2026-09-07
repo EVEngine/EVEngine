@@ -1,4 +1,4 @@
-#include "decal_editing/DecalTarget.h"
+#include "decal/editing/DecalTarget.h"
 
 #include "decal/DecalManager.h"
 #include "zeroerr/assert.h"

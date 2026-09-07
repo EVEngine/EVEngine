@@ -3,7 +3,10 @@
 # script on Linux/macOS Ninja builds).
 include("${CMAKE_CURRENT_LIST_DIR}/collect_module_sources.cmake")
 
-set(_eve_src_txt "${output_dir}/${module_name}_src.txt")
+if(NOT DEFINED list_name)
+    set(list_name "${module_name}")
+endif()
+set(_eve_src_txt "${output_dir}/${list_name}_src.txt")
 set(_eve_write TRUE)
 if(EXISTS "${_eve_src_txt}")
     file(READ "${_eve_src_txt}" _eve_old)

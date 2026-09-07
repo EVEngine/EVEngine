@@ -1,5 +1,5 @@
 #include "editor/EditorAuthority.h"
-#include "physics_editor/EditorPhysicsTarget.h"
+#include "physics/editor/EditorPhysicsTarget.h"
 #include "editor/EditorTransactionService.h"
 
 #include "zeroerr/assert.h"

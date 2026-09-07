@@ -1,4 +1,4 @@
-#include "building_editing/BuildingTarget.h"
+#include "building/editing/BuildingTarget.h"
 
 #include "building/BuildingDef.h"
 #include "building/PlacementSystem.h"

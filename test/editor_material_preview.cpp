@@ -1,4 +1,4 @@
-#include "material_editor/EditorMaterialPreview.h"
+#include "graphics/material/editor/EditorMaterialPreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

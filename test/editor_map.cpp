@@ -5,7 +5,7 @@
 #include "editor/Editor.h"
 #include "map/Map.h"
 #include "map/TileLayer.h"
-#include "map_editing/TileLayerTarget.h"
+#include "map/editing/TileLayerTarget.h"
 
 #include <memory>
 

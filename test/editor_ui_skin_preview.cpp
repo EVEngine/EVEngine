@@ -1,4 +1,4 @@
-#include "ui_editor/EditorUiSkinPreview.h"
+#include "ui/editor/EditorUiSkinPreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

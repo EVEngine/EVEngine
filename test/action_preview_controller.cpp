@@ -1,4 +1,4 @@
-#include "action_editor/ActionPreviewController.h"
+#include "action/editor/ActionPreviewController.h"
 
 #include "common/Diagnostic.h"
 #include "zeroerr/assert.h"

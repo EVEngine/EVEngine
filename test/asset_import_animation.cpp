@@ -1,5 +1,5 @@
 #include "asset/AssetCooker.h"
-#include "asset_import/LegacyAnimationImporter.h"
+#include "asset/import/LegacyAnimationImporter.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

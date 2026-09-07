@@ -1,4 +1,4 @@
-#include "dialogue_editor/EditorDialoguePreview.h"
+#include "dialogue/editor/EditorDialoguePreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

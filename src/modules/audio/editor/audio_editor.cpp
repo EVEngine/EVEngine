@@ -1,0 +1,6 @@
+#include "audio/editor/AudioEditorModule.h"
+#include "audio/editor/EditorAudioEffects.h"
+#include "audio/editor/EditorAudioImportDiagnostics.h"
+#include "audio/editor/EditorAudioTarget.h"
+#include "audio/editor/EditorAudioTransport.h"
+#include "audio/editor/EditorAudioWaveform.h"

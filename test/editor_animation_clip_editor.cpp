@@ -1,4 +1,4 @@
-#include "animation_editor/AnimationClipEditor.h"
+#include "animation/editor/AnimationClipEditor.h"
 #include "editor/EditorWorkspace.h"
 
 #include "zeroerr/assert.h"

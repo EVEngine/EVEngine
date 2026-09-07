@@ -1,4 +1,4 @@
-#include "voxel_editing/VoxelPaletteTarget.h"
+#include "voxel/editing/VoxelPaletteTarget.h"
 #include "voxel/CubeTypeRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

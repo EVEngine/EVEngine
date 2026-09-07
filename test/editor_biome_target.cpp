@@ -1,5 +1,5 @@
-#include "biome_editing/BiomeTarget.h"
-#include "biome_editor/BiomeEditorModule.h"
+#include "procgen/biome/editing/BiomeTarget.h"
+#include "procgen/biome/editor/BiomeEditorModule.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"

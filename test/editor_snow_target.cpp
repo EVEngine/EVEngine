@@ -1,6 +1,6 @@
 #include "editor/EditCommand.h"
-#include "level_editing/FieldTargets.h"
-#include "snow_editor/SnowFieldTarget.h"
+#include "map/level/editing/FieldTargets.h"
+#include "snow/editor/SnowFieldTarget.h"
 
 #include "snow/SnowField.h"
 #include "zeroerr/assert.h"

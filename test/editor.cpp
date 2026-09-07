@@ -1,11 +1,11 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "level_editing/Brush.h"
+#include "map/level/editing/Brush.h"
 #include "editor/BrushKernel.h"
 #include "editor/Editor.h"
 #include "editor/EditorDock.h"
-#include "level_editing/EditorHistory.h"
+#include "map/level/editing/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorPresentation.h"
@@ -13,17 +13,17 @@
 #include "editor/EditConstraint.h"
 #include "editor/EditorToolbar.h"
 #include "editor/EditorWorkspace.h"
-#include "level_editing/FieldTargets.h"
+#include "map/level/editing/FieldTargets.h"
 #include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
-#include "level_editing/TileBuffer.h"
-#include "level_editor/LevelEditorModule.h"
+#include "map/level/editing/TileBuffer.h"
+#include "map/level/editor/LevelEditorModule.h"
 #include "editor/TransformGizmo.h"
-#include "heightmap_target/HeightmapTargetModule.h"
+#include "procgen/heightmap_target/HeightmapTargetModule.h"
 
 #include "common/Exception.h"
 #include "procgen/heightmap/Heightmap.h"
-#include "procgen_editing/HeightmapTarget.h"
+#include "procgen/editing/HeightmapTarget.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 

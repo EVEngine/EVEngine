@@ -98,13 +98,16 @@ eve_declare_module(NAME voxel_editing LAYER 6
                    OPTIONAL_DEPS voxel
                    GROUP 3d)
 # L7 -- domain editor adapters
-eve_declare_module(NAME tilelayer_target LAYER 7 SCRIPT TileLayerTargetModule SLOT tileLayerTarget
+eve_declare_module(NAME tilelayer_target DIR map/tilelayer_target LAYER 7
+                   SCRIPT TileLayerTargetModule SLOT tileLayerTarget
                    DEPS editor map map_editing
                    GROUP 3d)
-eve_declare_module(NAME heightmap_target LAYER 7 SCRIPT HeightmapTargetModule SLOT heightmapTarget
+eve_declare_module(NAME heightmap_target DIR procgen/heightmap_target LAYER 7
+                   SCRIPT HeightmapTargetModule SLOT heightmapTarget
                    DEPS editor procgen procgen_editing procgen_graphics_editing
                    GROUP 3d)
-eve_declare_module(NAME voxelworld_target LAYER 7 SCRIPT VoxelWorldTargetModule SLOT voxelWorldTarget
+eve_declare_module(NAME voxelworld_target DIR voxel/voxelworld_target LAYER 7
+                   SCRIPT VoxelWorldTargetModule SLOT voxelWorldTarget
                    DEPS editor voxel voxel_editing
                    GROUP 3d)
 # Domain-facing editor compatibility adapters. These modules preserve the

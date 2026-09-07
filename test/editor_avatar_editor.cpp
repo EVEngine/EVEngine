@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "avatar_editor/AvatarEditorModule.h"
-#include "avatar_editor/EditorAvatarTarget.h"
+#include "avatar/editor/AvatarEditorModule.h"
+#include "avatar/editor/EditorAvatarTarget.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"

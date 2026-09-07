@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "animation_editor/AnimationEditorModule.h"
-#include "animation_editor/EditorAnimationClip.h"
+#include "animation/editor/AnimationEditorModule.h"
+#include "animation/editor/EditorAnimationClip.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"

@@ -1,4 +1,4 @@
-#include "physics_editor/EditorPhysicsAsset.h"
+#include "physics/editor/EditorPhysicsAsset.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

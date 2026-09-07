@@ -1,6 +1,6 @@
 #include "action/Action.h"
 #include "action/ActionTimeline.h"
-#include "action_editor/ActionTimelineEditor.h"
+#include "action/editor/ActionTimelineEditor.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

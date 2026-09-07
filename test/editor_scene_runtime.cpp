@@ -1,4 +1,4 @@
-#include "scene_editing/SceneTarget.h"
+#include "scene/editing/SceneTarget.h"
 
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"

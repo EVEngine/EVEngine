@@ -1,5 +1,5 @@
-#include "definitions_editor/EditorDefinitionTarget.h"
-#include "definitions_editor/EditorDefinitionForm.h"
+#include "definitions/editor/EditorDefinitionTarget.h"
+#include "definitions/editor/EditorDefinitionForm.h"
 #include "schema/SchemaTypes.h"
 
 #include "definitions/Definitions.h"

@@ -1,7 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "material_editing/MaterialGraph.h"
+#include "graphics/material/editing/MaterialGraph.h"
 
 #include <string>
 

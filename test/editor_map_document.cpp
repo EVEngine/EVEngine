@@ -1,4 +1,4 @@
-#include "map_editing/MapDocument.h"
+#include "map/editing/MapDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
