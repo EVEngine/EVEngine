@@ -1,7 +1,7 @@
 # CodeQL security analysis (C++ engine + Python tools).
 #
 # Runs on pushes to dev, weekly, and on demand -- not on every PR -- because
-# the C++ analysis requires a full instrumented build (~40 min). The SARIF
+# the C++ analysis requires a full instrumented build. The SARIF
 # results appear under Security -> Code scanning and are also posted as PR
 # comments when a PR branch is analyzed.
 
@@ -26,13 +26,17 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-24.04
-    # The instrumented C++ build takes about 34 minutes and database analysis
-    # can take another 30+ minutes on GitHub-hosted runners.
-    timeout-minutes: 90
+    # Run 34345313586 reached only 978/1046 build steps in 40 minutes.
+    # Allow for dependency setup, a growing full build, and database analysis.
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        language: ["cpp", "python"]
+        include:
+          - language: cpp
+            build-mode: manual
+          - language: python
+            build-mode: none
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -66,7 +70,12 @@ jobs:
           # Third-party sources are pinned and scanned in their own upstreams.
           # Build them before CodeQL initialization so the database contains
           # EVEngine production code rather than 1000+ external translation units.
+          # Keep Debug semantics/assertions and every default module (including
+          # editors). CodeQL extracts source; DWARF symbols only add compiler,
+          # linker and disk work, so omit them without enabling optimization.
           cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
+            -DCMAKE_C_FLAGS_DEBUG="-O0 -g0" \
+            -DCMAKE_CXX_FLAGS_DEBUG="-O0 -g0" \
             -DBUILD_TESTING=OFF \
             -B build/codeql -S .
           cmake --build build/codeql --target deps -j "$(nproc)"
@@ -75,11 +84,12 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
           queries: security-and-quality
 
       - name: Build (C++)
         if: matrix.language == 'cpp'
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -88,6 +98,7 @@ jobs:
           cmake --build build/codeql -j "$(nproc)"
 
       - name: Perform CodeQL analysis
+        timeout-minutes: 60
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
