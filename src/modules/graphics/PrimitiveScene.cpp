@@ -38,6 +38,26 @@ bool formsBasis(glm::vec3 a, glm::vec3 b, glm::vec3 c) {
 }
 
 eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
+    const auto& paint = descriptor.paint;
+    const auto& stroke = paint.stroke;
+    if (!std::isfinite(stroke.width) || stroke.width < 0.f ||
+        !std::isfinite(stroke.miterLimit) || stroke.miterLimit <= 0.f ||
+        !std::isfinite(paint.color.r) || !std::isfinite(paint.color.g) ||
+        !std::isfinite(paint.color.b) || !std::isfinite(paint.color.a))
+        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive paint must be finite and valid");
+    if (stroke.dash) {
+        const auto& dash = *stroke.dash;
+        float period = 0.f;
+        if (dash.intervals.empty() || dash.intervals.size() % 2 != 0 || !std::isfinite(dash.phase))
+            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash pattern");
+        for (float interval : dash.intervals) {
+            if (!std::isfinite(interval) || interval <= 0.f)
+                return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash interval");
+            period += interval;
+        }
+        if (!std::isfinite(period))
+            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive dash period overflow");
+    }
     try {
         descriptor.paint.validate();
     } catch (const std::exception& error) {
@@ -52,7 +72,7 @@ eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
         [](const auto& geometry) {
             using Geometry = std::decay_t<decltype(geometry)>;
             if constexpr (std::is_same_v<Geometry, PrimitivePolyline3D>) {
-                return geometry.points.size() >= 2 &&
+                return geometry.points.size() >= (geometry.closed ? 3u : 2u) &&
                        std::all_of(geometry.points.begin(), geometry.points.end(), finite);
             } else if constexpr (std::is_same_v<Geometry, PrimitiveAabb3D>) {
                 return finite(geometry.minimum) && finite(geometry.maximum) &&
@@ -167,7 +187,12 @@ eve::Result<std::size_t> PrimitiveScene::updateMany(std::span<const PrimitiveBat
         auto validation = validateDescriptor(update.descriptor);
         if (!validation) return eve::Result<std::size_t>::failure(validation.status());
     }
-    for (const PrimitiveBatchUpdate& update : updates) slots_[update.handle.index()].descriptor = update.descriptor;
+    // Copy every owning payload before publishing any mutation. A later allocation
+    // failure must not leave earlier descriptors in the batch already replaced.
+    std::vector<PrimitiveBatchUpdate> prepared(updates.begin(), updates.end());
+    static_assert(std::is_nothrow_move_assignable_v<PrimitiveDescriptor3D>);
+    for (PrimitiveBatchUpdate& update : prepared)
+        *slots_[update.handle.index()].descriptor = std::move(update.descriptor);
     return eve::Result<std::size_t>::success(updates.size());
 }
 

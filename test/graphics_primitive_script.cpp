@@ -21,6 +21,10 @@ TEST_CASE("GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy") {
         badMatrix <- shape.setTransform([1.0]);
         matrix <- shape.setTransform([1.0,0.0,0.0,0.0, 0.0,1.0,0.0,0.0,
                                       0.0,0.0,1.0,0.0, 2.0,0.0,0.0,1.0]);
+        batch <- gfx.setPrimitiveTransforms3D([shape],
+            [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,3.0,0.0,0.0,1.0]);
+        badBatch <- gfx.setPrimitiveTransforms3D([null],
+            [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,3.0,0.0,0.0,1.0]);
         route <- gfx.newPrimitivePolyline3D([0.0,0.0,-2.0,1.0,1.0,-3.0],false,1.0,1.0,1.0,1.0,2.0);
         badRoute <- gfx.newPrimitivePolyline3D([0.0,0.0],false,1.0,1.0,1.0,1.0,2.0);
         routeUpdate <- route.value.setPolyline([0.0,0.0,-2.0,2.0,1.0,-3.0],false);
@@ -36,9 +40,9 @@ TEST_CASE("GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy") {
         afterRemove <- shape.setLineCap("round");
     )"));
     for (const char* name : {"disk", "fill", "cap", "join", "width", "blend", "cull", "layer", "matrix", "route", "removed",
-                             "routeUpdate", "cylinder", "capsule", "cone", "arrow", "obb", "grid", "arc"})
+                             "routeUpdate", "cylinder", "capsule", "cone", "arrow", "obb", "grid", "arc", "batch"})
         CHECK(vm.find(name).toTable().get<bool>("ok"));
-    for (const char* name : {"badMode", "badMatrix", "badRoute", "afterRemove"})
+    for (const char* name : {"badMode", "badMatrix", "badRoute", "afterRemove", "badBatch"})
         CHECK(!vm.find(name).toTable().get<bool>("ok"));
     CHECK(vm.find("stale").toBool());
 }

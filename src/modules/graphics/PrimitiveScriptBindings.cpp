@@ -206,6 +206,45 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     });
     auto primitive = table.addClass<ScriptPrimitive3D>(
         "Primitive3D", std::function<ScriptPrimitive3D*()>([]() { return nullptr; }), false);
+    const auto primitiveTag = primitive.getTypeTag();
+    cls.addFunc("setPrimitiveTransforms3D", [vm, primitiveTag](Graphics* self, ssq::Array proxies,
+                                                               ssq::Array matrices) {
+        auto failure = [vm](const std::string& message) {
+            return eve::script::projectStatusResult(vm,
+                primitiveBindingFailure<std::size_t>(eve::DiagnosticCode::InvalidArgument,
+                    message, "transforms").status(), false, false);
+        };
+        if (!self || proxies.size() > 65536 || matrices.size() != proxies.size() * 16)
+            return failure("expected one column-major matrix per primitive, at most 65536 primitives");
+        auto scene = self->getPrimitiveScene();
+        std::vector<PrimitiveBatchUpdate> updates;
+        updates.reserve(proxies.size());
+        try {
+            for (std::size_t i = 0; i < proxies.size(); ++i) {
+                auto object = proxies.get<ssq::Object>(i);
+                if (object.getType() != ssq::Type::INSTANCE || object.getTypeTag() != primitiveTag)
+                    return failure("batch entries must be Primitive3D proxies");
+                auto* proxy = object.toPtrUnsafe<ScriptPrimitive3D*>();
+                auto descriptor = primitiveDescriptor(proxy);
+                if (!descriptor)
+                    return eve::script::projectStatusResult(vm, descriptor.status(), false, false);
+                auto copy = std::move(descriptor).takeValue();
+                for (int column = 0; column < 4; ++column)
+                    for (int row = 0; row < 4; ++row)
+                        copy.transform[column][row] = matrices.get<float>(i * 16 + column * 4 + row);
+                updates.push_back({proxy->handle, std::move(copy)});
+            }
+        } catch (const std::exception& error) {
+            return failure(error.what());
+        }
+        auto result = scene->updateMany(updates);
+        const auto status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        const auto count = std::move(result).takeValue();
+        auto projected = eve::script::projectStatusResult(vm, status, true, false);
+        projected.set("count", static_cast<std::int64_t>(count));
+        return projected;
+    });
     primitive.addFunc("ownership", [](ScriptPrimitive3D*) { return std::string("owned"); });
     primitive.addFunc("setPolyline", [vm](ScriptPrimitive3D* value, ssq::Array xyz, bool closed) {
         auto parsed = scriptPoints(xyz, closed ? 3 : 2, 65536);

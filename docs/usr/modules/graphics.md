@@ -104,6 +104,10 @@ local boxResult = gfx.newPrimitiveAabb3D(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0, 1.0, 1.
 `setBlendMode("alpha"|"opaque"|"additive"|"premultiplied"|"multiply")`。
 `setTransform(elements)` 接受 16 个浮点数的列主序矩阵，整体替换局部到世界变换。
 `setLayer(layer)` 设置非负 uint32 排序层。
+`gfx.setPrimitiveTransforms3D(proxies,matrices)` 批量替换同一 Graphics 所属图形的变换。
+`proxies` 为 Primitive3D 数组；`matrices` 是每对象 16 个浮点数的扁平列主序矩阵数组。
+成功返回 Result 表与 `count`；任一代理失效、类型错误、owner 不匹配或矩阵非法时整批不修改。
+同一代理重复出现时最后一个矩阵生效；空批次成功且 count 为 0。最多接受 65536 个对象。
 `setPolyline(xyz,closed)` 将代理几何替换为新的 owning 折线，保留画笔、变换、可见性和句柄。
 所有设置返回 Result；非法模式、矩阵长度或失效代理不会修改原图形。
 上述操作在 VM 所在线程同步执行，不保留调用方数组，不调用外部回调。

@@ -632,6 +632,25 @@ TEST_CASE("GraphicsPrimitives.persistentSceneRejectsInvalidSpatialDescriptorsBef
     CHECK_EQ(scene.size(), 0u);
 }
 
+TEST_CASE("GraphicsPrimitives.sceneRejectsInvalidPaintWithoutMutation") {
+    PrimitiveScene scene;
+    PrimitiveDescriptor3D descriptor;
+    descriptor.geometry = PrimitiveSphere3D{};
+    auto added = scene.add(descriptor);
+    REQUIRE(added.ok());
+    const auto handle = added.value();
+    descriptor.paint.stroke.width = -1.f;
+    auto badWidth = scene.update(handle, descriptor);
+    CHECK(!badWidth.ok());
+    REQUIRE(scene.tryGet(handle) != nullptr);
+    CHECK_EQ(scene.tryGet(handle)->paint.stroke.width, 1.f);
+    descriptor.paint.stroke.width = 1.f;
+    descriptor.paint.stroke.dash = DashPattern{{1.f, 0.f}, 0.f, DashSpace::WorldUnits};
+    auto badDash = scene.update(handle, descriptor);
+    CHECK(!badDash.ok());
+    CHECK(!scene.tryGet(handle)->paint.stroke.dash.has_value());
+}
+
 TEST_CASE("GraphicsPrimitives.persistentSceneProjectsVisibleDescriptorsInSlotOrder") {
     PrimitiveScene        scene;
     PrimitiveDescriptor3D hidden;
