@@ -168,11 +168,16 @@ std::vector<uint8_t> SnowField::toAlbedoRGBA() const {
     for (int z = 0; z < height_; ++z) {
         for (int x = 0; x < width_; ++x) {
             const float s = data_[size_t(z) * width_ + x];
-            const float t = s * s;  // quadratic: floors show ground sooner
-            const float n = (cellNoise(x, z) - 0.5f) * 0.05f;
+            // Compression changes the snow's shade, not its material. Soil
+            // appears only when almost all of the snow layer is removed.
+            const float     cover      = smoothstep(0.015f, 0.14f, s);
+            const float     powder     = smoothstep(0.18f, 0.85f, s);
+            constexpr float kPacked[3] = {0.76f, 0.84f, 0.94f};
+            const float     n          = (cellNoise(x, z) - 0.5f) * 0.012f;
             const size_t i = (size_t(z) * width_ + x) * 4;
             for (int c = 0; c < 3; ++c) {
-                const float v = kGround[c] + (kSnow[c] - kGround[c]) * t + n;
+                const float snow = kPacked[c] + (kSnow[c] - kPacked[c]) * powder;
+                const float v    = kGround[c] + (snow - kGround[c]) * cover + n;
                 rgba[i + c] = uint8_t(std::clamp(v * 255.f, 0.f, 255.f) + 0.5f);
             }
             rgba[i + 3] = 255;
