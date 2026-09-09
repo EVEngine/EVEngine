@@ -23,6 +23,9 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 # reconfigures when an individual test/*.cpp is newer than that list (not when
 # anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+# The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
+set_source_files_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
+  "${CMAKE_SOURCE_DIR}/src/modules/procgen/dtl_compat")
 list(SORT all_test_cpp)
 set(_eve_test_src_txt "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt")
 set(_eve_test_src_text "")
@@ -39,6 +42,13 @@ if(NOT _eve_test_src_text STREQUAL _eve_test_src_old)
     file(WRITE "${_eve_test_src_txt}" "${_eve_test_src_text}")
 endif()
 list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
+
+# The FBX success fixtures construct files with Assimp's native exporter.
+# Emscripten uses UnityFbx.cpp's explicit provider-absent implementation, covered
+# separately by test/asset_import/UnityFbxUnavailable.cpp.
+if(EMSCRIPTEN)
+  list(FILTER all_test_cpp EXCLUDE REGEX "/asset_import_unity_fbx.cpp$")
+endif()
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
@@ -217,6 +227,18 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  # Manual real-backend asset admission/visual probe; purchased inputs are never test fixtures.
+  if(TARGET EVAsset_graphics AND TARGET EVAsset_scene)
+    add_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
+    add_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
+    target_link_libraries(unity_sprite_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_link_libraries(unity_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+                          ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    if(WIN32)
+      target_link_libraries(unity_graphics_probe EVBacktrace)
+    endif()
+  endif()
   if(WIN32)
     # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
     # symbolized stack trace on unhandled exceptions (see test/main.cpp).

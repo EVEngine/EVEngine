@@ -1891,7 +1891,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     vkb::DescriptorSetUpdater updater(17, 17, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DClusteredUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)

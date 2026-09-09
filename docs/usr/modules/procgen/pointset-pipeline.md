@@ -205,6 +205,27 @@ in-flight Cell 设置常驻硬上限（0 表示无限），
 world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出缓存。每次异步生成或
 清理还携带唯一 `getTicket()`；Cell 离开、重新进入调度范围后，旧任务即使 seed 相同也会
 被 `completeGeneration` / `completeCleanup` 拒绝，避免大世界流送中的 ABA 陈旧提交。
+
+C++ worker 调度应优先使用值语义接口：owner thread 调用 `nextGenerationJob()` 取得可复制的
+`ProcgenGenerationJob`，worker 只读取 job、生成 owning `PointSet`，并构造
+`ProcgenGenerationCompletion`。completion 必须回到创建 `RuntimeGeneration` 的 owner thread，
+再由 `completeGenerationJob()` 原子发布；这组 checked job 接口在非 owner thread 调用时返回结构化失败，
+且不改变 cell 状态。其余 scheduler 查询和配置也只允许 owner thread 调用，并不因此成为线程安全 API。
+`failGenerationJob()` 同样只能由 owner thread 应用重试策略。脚本的
+`nextGenerate()`/`completeGeneration()` 是兼容投影，不是跨线程对象共享协议。
+Job 同时携带私有的进程内 scheduler 身份和 cell ticket；另一 scheduler 即使 seed、坐标和 ticket
+相同也不能接受它。Scheduler 不可复制或移动；销毁后 worker 仍可安全丢弃其 owning 数据，
+但不能把旧 job 提交到新 scheduler。该身份不进入存档，也不参与确定性 seed。
+Owner thread 必须存活至 scheduler 销毁，并在销毁前结束所有对 scheduler 的访问。丢弃 job 不会隐式
+完成或取消生成；失败结果须回到 owner 调用 `failGenerationJob()`，或由 source 更新/clear 使 ticket 失效。
+
+所有 cell seed 都由 world seed、level 和 cell 坐标稳定派生。内置生成器不得使用共享或线程全局
+随机状态；每个任务在自己的调用栈内创建并只消费由 job seed 初始化的 RNG，因此 worker 调度顺序
+不会改变生成结果。
+`cave.cellular` 保留旧 DTL 的采样与平滑顺序，但 RNG 改为每次调用独占；同一工具链下与旧 seed
+输出一致。标准库概率分布不承诺跨标准库 bit-exact；本次未改变持久化格式或宣称 CPU/GPU 位级一致。
+DTL 兼容头仍保留上游无 seed 的重载，但内置生成路径不调用它们；注册生成器须在启动 worker 前完成，
+不能在 worker 读取 registry 时并发增删算法。本接口不创建线程池，也不把 PointGraph、VM 或图形对象交给 worker。
 生成失败只按 `setMaxGenerationRetries` 有界重试，耗尽后进入 Failed 状态并从工作队列移除；
 修复资产或外部依赖后用 `retryFailedCells()` 显式恢复，避免确定性错误形成 retry storm。
 `getCellOutput` 返回缓存副本，`debugReport` 汇总 pending/generating/active/cleanup/failed。
@@ -215,7 +236,8 @@ world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出�
 返回本次检查数量；用 `isRefreshPending()` 判断完成。规划过程中到达的新 source 位置会合并为
 下一快照，而不是重启当前扫描，因此持续移动不会让刷新永久饥饿；
 `getCommittedRefreshRevision()` 可用于观察已发布快照进度。该预算只覆盖调度规划，不替代
-生成 worker 在昂贵阶段之间调用 `isRequestCurrent()`。
+owner thread 在分阶段工作之间调用 `isRequestCurrent()`。后台 worker 不得读取 scheduler；过期的
+completion 由 owner thread 提交时拒绝，当前 job 不提供可跨线程轮询的取消 token。
 需要跨会话或跨 World Partition 回访复用时，`serializeCell(level,x,z)` 输出版本化、属性键
 稳定排序的完整 Cell 缓存；`deserializeCell(definition)` 校验 world seed、level、数据上限和
 完整输入后原子恢复，同时使同 Cell 的旧异步 ticket 失效。实例覆写或图版本应由调用方纳入
@@ -361,6 +383,44 @@ GLSL/SPIR-V，WebGPU 使用 WGSL。设备尚未初始化、shader 编译、提�
 `getComputeReadbackCount()`、`getComputeBufferReuseCount()`、`getComputePeakBufferBytes()` 和
 `getLastFusedTransformCount()` 提供。计数属于图实例持有的 Compute 执行器并跨 `execute()` 累积，
 可用执行前后差值验证一个图段是否只发生一次上传、dispatch 和回读。
+
+`PointGraph` 会把指定输出的可达拓扑编译为内部不可变 execution plan；每个图最多缓存 16 个输出计划，
+命中时更新最近使用顺序，超限时淘汰最久未使用的计划。计划记录稳定的拓扑序、
+CPU 节点段与无分支的 GPU transform 段；脚本仍然只需要构造和执行 `PointGraph`，不需要管理另一种
+公开图类型。参数或外部输入变化只失效受影响的节点结果缓存并复用计划；节点和连线变化只淘汰依赖
+受影响节点的输出计划，不影响其他分支。编译失败不发布半成品，也不清除其他输出的有效计划。
+计划不参与序列化；不可变计划不代表图实例线程安全，构图、执行与缓存管理仍由图所属线程负责。
+`getCompiledSegmentCount()` 和 `getExecutionPlanBuildCount()` 可用于确认计划划分与复用情况。
+
+执行与验证的 C++ 主入口为 `executeResult(outputId) -> Result<PointSet>` 与
+`validateResult() -> Result<void>`，都必须检查返回值。编译、递归求值与子图失败直接传播
+结构化诊断，不从 `getError()` 文本反推错误。诊断携带节点 `path` 和 `procgen.pointGraph`
+来源；缺失输出为 `NotFound`，环为 `Conflict`，配置或点数预算错误为 `InvalidArgument`，
+取消及执行节点预算中止为 `Cancelled`。旧 biome/grammar 生成器失败在调用边界转成 `Failed`；
+本次未改写这些生成器及 PointCompute 自身的历史接口。
+成功结果独立拥有点数据；失败不返回部分输出，但已完成的中间节点缓存可以保留。
+GPU 失败仍按已声明契约回退 CPU，并通过 `getComputeFallbackReason()` 保持可观察。
+
+Squirrel 同名入口返回公共 Result 表，`executeResult().value` 是 VM 拥有的 PointSet：
+
+```nut
+local execution = graph.executeResult("output");
+if (!execution.ok) throw execution.status.summary;
+local generated = execution.value;
+```
+
+`execute()/validate()/getError()` 仅作历史兼容投影；内部执行、子图和编辑器预览不依赖它们。
+迁移跟踪为 PR #345，owner 为 procgen；本兼容窗口保留现有脚本及旧 C++ 调用点，待这些调用点
+迁移且兼容测试退役后删除。它们不作为新代码的默认入口，`getError()` 只描述最近一次兼容调用。
+
+RuntimeGeneration 的主调度入口为 `nextGenerationJob`、`completeGenerationJob`、
+`failGenerationJob`、`nextCleanupRequest`、`completeCleanupRequest`。C++ 返回带 `[[nodiscard]]`
+的 Result；两个领取接口以成功的空 optional 表示暂时无工作，而错误线程返回失败。
+清理 request 自持 ticket 和 scheduler 身份，复制不延长 scheduler 生命周期；重复、跨 scheduler
+或过期提交失败且不删除 cell。所有领取与提交均在 owner thread，worker 只传递自持数据。
+Squirrel 的五个同名方法返回公共 Result 表，成功但无工作为 `value == null`；生成提交与清理提交的
+`value` 分别为十进制 revision 和清理数量字符串。旧 `nextGenerate/nextCleanup/completeGeneration/
+failGeneration/completeCleanup` 是同一 PR #345 迁移窗口内的兼容投影，不是另一套调度实现。
 
 子图节点将首个输入写入嵌套图指定的 input node，并返回指定 output node：
 

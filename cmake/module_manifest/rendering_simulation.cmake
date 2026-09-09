@@ -11,7 +11,7 @@ eve_declare_module(NAME graphics_editing LAYER 4
 
 # Typed bridge from admitted runtime packages into backend-owned GPU resources.
 eve_declare_module(NAME asset_graphics LAYER 4
-                   DEPS asset graphics
+                   DEPS asset asset_scene graphics
                    GROUP minimal 2d 3d web)
 
 eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SLOT pixelworldGraphics

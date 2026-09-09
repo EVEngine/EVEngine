@@ -66,6 +66,19 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from,
                                        std::string(type));
     if (type == "eve.image" && from.value() == 1 && current.value() == 2)
         return migrateImageV1ToV2(definition);
+    if (type == "eve.scene-template" && from.value() == 1 && current.value() == 2) {
+        const auto* object = definition.getIf<Value::Object>();
+        if (!object || !object->contains("nodes") || object->contains("renderers") || !object->contains("schema") ||
+            !object->at("schema").isString() || object->at("schema").asString() != "eve.scene-template" ||
+            !object->contains("schemaVersion") || !object->at("schemaVersion").isInt64() ||
+            object->at("schemaVersion").asInt() != 1)
+            return migrationFailure<Value>(DiagnosticCode::ParseError,
+                                           "scene-template/1 is malformed or has unversioned renderers");
+        auto migrated             = *object;
+        migrated["schemaVersion"] = Value(std::int64_t(2));
+        migrated["renderers"]     = Value(Value::Array{});
+        return Result<Value>::success(Value(std::move(migrated)));
+    }
     return migrationFailure<Value>(DiagnosticCode::Unsupported,
                                    "asset definition has no registered migration", std::string(type));
 }
@@ -114,11 +127,11 @@ Result<void> refreshImportReport(EvaArchive& archive) {
 
 Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
     static const std::map<std::string_view, std::uint64_t> versions = {
-        {"eve.image", 2},          {"eve.texture", 1},       {"eve.mesh", 1},
-        {"eve.skeleton", 1},       {"eve.animation-clip", 1},{"eve.material", 1},
-        {"eve.scene-template", 1}, {"eve.terrain", 1},       {"eve.terrain-material", 1},
-        {"eve.pcg-graph", 1},      {"eve.instance-set", 1},  {"eve.audio", 1},
-        {"eve.font", 1},
+        {"eve.image", 2},          {"eve.texture", 1},          {"eve.mesh", 1},
+        {"eve.skeleton", 1},       {"eve.animation-clip", 1},   {"eve.material", 1},
+        {"eve.scene-template", 2}, {"eve.terrain", 1},          {"eve.terrain-material", 1},
+        {"eve.pcg-graph", 1},      {"eve.instance-set", 1},     {"eve.audio", 1},
+        {"eve.font", 1},           {"eve.sprite-animation", 1},
     };
     const auto found = versions.find(type);
     if (found == versions.end())

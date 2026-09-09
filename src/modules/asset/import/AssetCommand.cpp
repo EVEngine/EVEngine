@@ -1,11 +1,12 @@
 #include "asset/AssetCooker.h"
-#include "asset/AssetMigration.h"
 #include "asset/AssetDiff.h"
+#include "asset/AssetMigration.h"
 #include "asset/AssetPackageStore.h"
 #include "asset/import/AssetImporter.h"
-#include "asset/import/UnityImporter.h"
-#include "asset/import/UnrealImporter.h"
 #include "asset/import/LegacyAnimationImporter.h"
+#include "asset/import/UnityImporter.h"
+#include "asset/import/UnitySource.h"
+#include "asset/import/UnrealImporter.h"
 
 #include "cmdline/cmdline.h"
 
@@ -67,42 +68,89 @@ Result<ImportPackageIdentity> packageIdentity(std::string_view id, std::string n
         {*parsed, std::move(name), std::move(version), std::move(provenance)});
 }
 
-Result<std::map<std::string, std::vector<std::uint8_t>>> readTree(
-    const std::filesystem::path& root, std::uint64_t maximumBytes) {
-    if (!std::filesystem::is_directory(root))
-        return Result<std::map<std::string, std::vector<std::uint8_t>>>::failure(Diagnostic::error(
-            DiagnosticCode::NotFound, "asset project root is not a directory", root.string(), {}, "cmd.asset"));
-    std::map<std::string, std::vector<std::uint8_t>> files;
-    std::uint64_t total = 0;
+Result<asset_import::UnitySourceFiles> readTree(const std::filesystem::path& root, std::uint64_t maximumBytes,
+                                                std::uint64_t maximumFiles = 200000) {
     std::error_code ec;
-    for (std::filesystem::recursive_directory_iterator it(
-             root, std::filesystem::directory_options::skip_permission_denied, ec), end;
-         it != end; it.increment(ec)) {
-        if (ec) return Result<std::map<std::string, std::vector<std::uint8_t>>>::failure(Diagnostic::error(
-            DiagnosticCode::Failed, "cannot traverse asset project: " + ec.message(), root.string(), {},
-            "cmd.asset"));
-        if (!it->is_regular_file()) continue;
+    if (!std::filesystem::is_directory(root, ec))
+        return Result<asset_import::UnitySourceFiles>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "asset project root is not a readable directory", root.string(),
+                              {}, "cmd.asset"));
+    asset_import::UnitySourceFiles files;
+    std::uint64_t                  total = 0;
+    for (std::filesystem::recursive_directory_iterator it(root, std::filesystem::directory_options::none, ec), end;
+         !ec && it != end; it.increment(ec)) {
+        if (it->is_symlink(ec) || ec)
+            return Result<asset_import::UnitySourceFiles>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "asset source links cannot be followed",
+                                  it->path().string(), {}, "cmd.asset"));
+        const bool regular = it->is_regular_file(ec);
+        if (ec) break;
+        if (!regular) continue;
         const auto size = it->file_size(ec);
-        if (ec || size > maximumBytes || total > maximumBytes - size)
-            return Result<std::map<std::string, std::vector<std::uint8_t>>>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "asset project exceeds source budget", it->path().string(), {},
-                "cmd.asset"));
+        if (ec) break;
+        if (size > maximumBytes || total > maximumBytes - size || files.size() >= maximumFiles)
+            return Result<asset_import::UnitySourceFiles>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "asset project exceeds source budget",
+                                  it->path().string(), {}, "cmd.asset"));
         auto bytes = readFile(it->path(), maximumBytes);
-        if (!bytes) return Result<std::map<std::string, std::vector<std::uint8_t>>>::failure(bytes.status());
-        auto relative = std::filesystem::relative(it->path(), root, ec).generic_string();
-        if (ec || relative.empty())
-            return Result<std::map<std::string, std::vector<std::uint8_t>>>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, "cannot canonicalize project-relative asset path", it->path().string(), {},
-                "cmd.asset"));
+        if (!bytes) return Result<asset_import::UnitySourceFiles>::failure(bytes.status());
+        const auto        utf8Path = it->path().lexically_relative(root).generic_u8string();
+        const std::string relative(reinterpret_cast<const char*>(utf8Path.data()), utf8Path.size());
+        if (relative.empty())
+            return Result<asset_import::UnitySourceFiles>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "cannot resolve asset path", it->path().string(), {}, "cmd.asset"));
         total += size;
-        files.emplace(std::move(relative), std::move(bytes).takeValue());
+        files.emplace(relative, std::move(bytes).takeValue());
     }
-    return Result<std::map<std::string, std::vector<std::uint8_t>>>::success(std::move(files));
+    if (ec)
+        return Result<asset_import::UnitySourceFiles>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "cannot traverse asset project: " + ec.message(), root.string(), {}, "cmd.asset"));
+    return Result<asset_import::UnitySourceFiles>::success(std::move(files));
+}
+
+Result<asset_import::UnitySourceFiles> readUnityInput(const std::string&                     input,
+                                                      const asset_import::AssetImportLimits& limits) {
+    std::error_code ec;
+    const auto      sourcePath = std::filesystem::path(std::u8string(input.begin(), input.end()));
+    if (std::filesystem::is_regular_file(sourcePath, ec)) {
+        auto bytes = readFile(sourcePath, limits.maximumSourceBytes);
+        if (!bytes) return Result<asset_import::UnitySourceFiles>::failure(bytes.status());
+        return asset_import::readUnityPackage(bytes.value(), limits);
+    }
+    const auto assetsRoot = sourcePath / "Assets";
+    if (!std::filesystem::is_directory(assetsRoot, ec))
+        return readTree(sourcePath, limits.maximumSourceBytes, std::uint64_t(limits.maximumAssets) * 2);
+    auto files = readTree(assetsRoot, limits.maximumSourceBytes, std::uint64_t(limits.maximumAssets) * 2);
+    if (!files) return files;
+    asset_import::UnitySourceFiles prefixed;
+    for (auto& [path, bytes] : files.value()) prefixed.emplace("Assets/" + path, std::move(bytes));
+    return Result<asset_import::UnitySourceFiles>::success(std::move(prefixed));
+}
+
+std::string_view unityKindName(asset_import::UnitySourceKind kind) {
+    using enum asset_import::UnitySourceKind;
+    switch (kind) {
+        case Folder: return "folder";
+        case Prefab: return "prefab";
+        case Scene: return "scene";
+        case Model: return "model";
+        case Material: return "material";
+        case Image: return "image";
+        case Animation: return "animation";
+        case Audio: return "audio";
+        case Font: return "font";
+        case Shader: return "shader";
+        case Script: return "script";
+        case Data: return "data";
+        case Other: return "other";
+    }
+    return "other";
 }
 
 struct AssetArgs final : Handler {
     CLI::App* assetCommand = nullptr;
     CLI::App* importCommand = nullptr;
+    CLI::App*   scanCommand             = nullptr;
     CLI::App* validateCommand = nullptr;
     CLI::App* inspectCommand = nullptr;
     CLI::App* cookCommand = nullptr;
@@ -115,6 +163,9 @@ struct AssetArgs final : Handler {
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         assetCommand = app.add_subcommand("asset", "Import, validate, inspect and Cook EVEngine asset packages");
         assetCommand->formatter(formatter);
+        scanCommand =
+            assetCommand->add_subcommand("scan", "Index a Unity package or source directory without importing");
+        scanCommand->add_option("input", input)->required();
         importCommand = assetCommand->add_subcommand("import", "Import source content into a canonical .eva");
         importCommand->add_option("input", input)->required();
         importCommand->add_option("--from", from, "image|gltf|unity|ue5")->required();
@@ -152,6 +203,7 @@ struct AssetArgs final : Handler {
     }
 
     int parse(CLI::App&, Cmdline&) override {
+        if (scanCommand && scanCommand->parsed()) return runScan();
         if (importCommand && importCommand->parsed()) return runImport();
         if (validateCommand && validateCommand->parsed()) return runValidate(false);
         if (inspectCommand && inspectCommand->parsed()) return runValidate(true);
@@ -160,6 +212,46 @@ struct AssetArgs final : Handler {
         if (migrateAnimationCommand && migrateAnimationCommand->parsed()) return runMigrateAnimation();
         if (diffCommand && diffCommand->parsed()) return runDiff();
         return -1;
+    }
+
+    int runScan() {
+        auto files = readUnityInput(input, {});
+        if (!files) {
+            printFailure(files.status());
+            return 2;
+        }
+        auto index = asset_import::indexUnitySources(files.value());
+        if (!index) {
+            printFailure(index.status());
+            return 2;
+        }
+        Value::Array assets, findings;
+        for (const auto& entry : index.value().assets) {
+            Value::Array references;
+            for (const auto& reference : entry.references)
+                references.emplace_back(
+                    Value::Object{{"guid", Value(reference.guid)}, {"fileID", Value(reference.fileId)}});
+            assets.emplace_back(Value::Object{{"path", Value(entry.path)},
+                                              {"guid", Value(entry.guid)},
+                                              {"kind", Value(std::string(unityKindName(entry.kind)))},
+                                              {"importer", Value(entry.importer)},
+                                              {"references", Value(std::move(references))}});
+        }
+        for (const auto& finding : index.value().findings)
+            findings.emplace_back(Value::Object{{"path", Value(finding.sourcePath)},
+                                                {"feature", Value(finding.feature)},
+                                                {"message", Value(finding.message)}});
+        auto report = Value(Value::Object{{"schema", Value("eve.unity-source-index")},
+                                          {"schemaVersion", Value(std::int64_t(1))},
+                                          {"assets", Value(std::move(assets))},
+                                          {"findings", Value(std::move(findings))}})
+                          .toJson();
+        if (!report) {
+            printFailure(report.status());
+            return 2;
+        }
+        std::cout << report.value() << "\n";
+        return 0;
     }
 
     int runImport() {
@@ -198,7 +290,7 @@ struct AssetArgs final : Handler {
                      std::move(source).takeValue(), std::move(external), limits});
             }
         } else if (from == "unity" || from == "ue5") {
-            auto files = readTree(input, limits.maximumSourceBytes);
+            auto files = from == "unity" ? readUnityInput(input, limits) : readTree(input, limits.maximumSourceBytes);
             if (!files) { prepared.ignore(); printFailure(files.status()); return 2; }
             prepared.ignore();
             if (from == "unity")

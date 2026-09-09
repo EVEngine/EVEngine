@@ -14,14 +14,23 @@ struct SceneTemplateLoadLimits {
     std::uint64_t maximumDecodedBytes = 256ull * 1024ull * 1024ull;
 };
 
-/** @brief Owning declarative scene tree ready for `Scene::mount`. */
+/** @brief Immutable asset identities associated with a persisted scene node; no runtime objects are retained. */
+struct SceneMeshBinding {
+    SceneObjectId object;
+    AssetRef      mesh;
+    AssetRef      material;
+    bool          enabled = true;
+};
+
+/** @brief Owning declarative scene tree and render bindings; neither mutates a Scene or retains GPU objects. */
 struct LoadedSceneTemplate {
     AssetRef                      asset;
     scene::NodeDesc               root;
     asset::EvpackVariantSelection variant;
+    std::vector<SceneMeshBinding> renderers;
 };
 
-/** @brief Capability-aware `eve.scene-template/1` to Scene::NodeDesc adapter. */
+/** @brief Capability-aware scene-template/2 decoder with explicit N-1 hierarchy-only compatibility. */
 class EvpackSceneTemplateLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */

@@ -1,4 +1,5 @@
 #include "asset/AssetCooker.h"
+#include "asset/AssetMigration.h"
 #include "asset/EvpackResourceReader.h"
 #include "asset/RuntimeDefinition.h"
 #include "asset/import/UnityImporter.h"
@@ -138,14 +139,14 @@ MonoBehaviour:
     AssetCookProfile profile{{"android", "arm64", "vulkan", {"astc"}, "spirv-1.6", "high", {}},
                              CookPublication::LocalInspection, 16};
     auto cooked = cookEvaToEvpack(eva.value(), profile);
+    REQUIRE(cooked.ok());
     AssetCookProfile webProfile{{"web", "wasm32", "webgpu", {"rgba8"}, "wgsl-1", "high", {}},
                                 CookPublication::LocalInspection, 16};
     auto webCooked = cookEvaToEvpack(eva.value(), webProfile);
-    REQUIRE(cooked.ok());
     REQUIRE(webCooked.ok());
     auto runtime = parseEvpack(cooked.value().bytes);
-    auto webRuntime = parseEvpack(webCooked.value().bytes);
     REQUIRE(runtime.ok());
+    auto webRuntime = parseEvpack(webCooked.value().bytes);
     REQUIRE(webRuntime.ok());
     CHECK(runtime.value().chunks().size() >= prepared.value().manifest.assets.size());
     CHECK_EQ(runtime.value().chunks().size(), webRuntime.value().chunks().size());
@@ -154,17 +155,17 @@ MonoBehaviour:
     EvpackResourceReader androidReader(androidAdmitted);
     EvpackResourceReader webReader(webAdmitted);
     for (const auto& sourceAsset : prepared.value().manifest.assets) {
-        const std::string expected = sourceAsset.type + "/" +
-                                     std::to_string(sourceAsset.schemaVersion.value());
-        auto androidAsset = androidReader.read(
-            sourceAsset.asset, expected,
-            {"android", "arm64", "vulkan", {"astc"}, {"spirv-1.6"}, {"high"}, {}},
-            16 * 1024 * 1024);
+        auto currentVersion = currentAssetSchemaVersion(sourceAsset.type);
+        REQUIRE(currentVersion.ok());
+        const std::string expected = sourceAsset.type + "/" + std::to_string(currentVersion.value().value());
+        auto              androidAsset =
+            androidReader.read(sourceAsset.asset, expected,
+                               {"android", "arm64", "vulkan", {"astc"}, {"spirv-1.6"}, {"high"}, {}}, 16 * 1024 * 1024);
+        REQUIRE(androidAsset.ok());
         auto webAsset = webReader.read(
             sourceAsset.asset, expected,
             {"web", "wasm32", "webgpu", {"rgba8"}, {"wgsl-1"}, {"high"}, {}},
             16 * 1024 * 1024);
-        REQUIRE(androidAsset.ok());
         REQUIRE(webAsset.ok());
         CHECK_EQ(androidAsset.value().chunks.front().bytes,
                  webAsset.value().chunks.front().bytes);

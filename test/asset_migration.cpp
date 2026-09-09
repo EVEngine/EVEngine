@@ -76,3 +76,24 @@ TEST_CASE("asset.migration.rejectsUnknownNewVersionWithoutChangingInput") {
     CHECK_EQ(rejected.error()->code(), DiagnosticCode::UnknownVersion);
     CHECK_EQ(original.entries.front().bytes, before);
 }
+
+TEST_CASE("asset.migration.sceneV1PreservesUnknownFieldsAndAddsEmptyRenderers") {
+    auto original                         = legacyImage();
+    original.manifest.assets.front().type = "eve.scene-template";
+    const std::string text = R"({"schema":"eve.scene-template","schemaVersion":1,"nodes":[],"vendorExtension":42})";
+    original.entries.front().bytes.assign(text.begin(), text.end());
+    auto migrated = migrateEvaArchive(original);
+    REQUIRE(migrated.ok());
+    REQUIRE(migrated.value().manifest.assets.front().schemaVersion == SchemaVersion(2));
+    const auto& bytes   = migrated.value().entries.front().bytes;
+    auto        decoded = Value::fromJson(std::string(bytes.begin(), bytes.end()));
+    REQUIRE(decoded.ok());
+    const auto& object = *decoded.value().getIf<Value::Object>();
+    REQUIRE_EQ(object.at("vendorExtension").asInt(), std::int64_t(42));
+    REQUIRE(object.at("renderers").getIf<Value::Array>()->empty());
+    REQUIRE(original.entries.front().bytes == std::vector<std::uint8_t>(text.begin(), text.end()));
+    const std::string invalid = R"({"schema":"eve.scene-template","schemaVersion":1,"nodes":[],"renderers":[]})";
+    original.entries.front().bytes.assign(invalid.begin(), invalid.end());
+    auto rejected = migrateEvaArchive(original);
+    REQUIRE(!rejected.ok());
+}

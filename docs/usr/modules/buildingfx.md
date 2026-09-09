@@ -42,6 +42,17 @@ function eve_render() {
 
 ### `BuildingFx`（模块）
 
+- `setMeshResolver(resources)`：脚本传入 `{资源路径 = Mesh}` 表；完整读取成功后，
+  一次性安装到现有 C++ mesh resolver。复制映射，不保留脚本表或 VM 回调。
+  类型错误抛出脚本异常且保留原 resolver；未知路径仍由 `getVisualFallbackReason`
+  返回 `resource_unresolved`。`clearMeshResolver()` 清除映射。
+  仅在主线程、`sync/updateGhost` 调用之外更换映射；Mesh 由 Graphics 拥有，必须
+  活得比引用它的所有视觉更久。重载时先 detach 旧 world，再销毁 world；资源
+  重建时重新安装映射。示例通过 Model3D 加载 OBJ，并复用上传后的 Mesh。
+- XZ 平面上的 `grid` 吸附 cell 建筑：逻辑位置表示占地最小角，3D 视觉平移到
+  旋转后占地的中心；Mesh 使用旋转前的局部宽深，yaw 只旋转一次。
+  `free` 吸附和 edge/corner/free 放置保留精确锚点。自定义模型应使用归一化、
+  居中的坐标；底面高度通过 `visual3d.offsetY` 指定。
 - `attach(world)` / `detach(world)` / `isAttached(world)` / `getAttachedCount()`。
 - `sync(world)`：把占用图中的建筑同步为视觉（每帧调用）。
 - `getVisualCount(world)`：当前视觉实例数。

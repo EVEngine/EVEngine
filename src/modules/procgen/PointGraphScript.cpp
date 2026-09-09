@@ -1,5 +1,7 @@
 #include "procgen/PointGraphScript.h"
 
+#include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "procgen/PointGraph.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -42,6 +44,19 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("clearParameterOverride", &PointGraph::clearParameterOverride);
     graph.addFunc("setNodeSubgraph", &PointGraph::setNodeSubgraph);
     graph.addFunc("execute", &PointGraph::execute);
+    graph.addFunc("executeResult", [vm = graph.getHandle()](PointGraph* self, const std::string& output) {
+        auto result = self->executeResult(output);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
+            vm, std::make_unique<PointSet>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
+        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
+        projected.set("value", std::move(instance).takeValue());
+        return projected;
+    });
+    graph.addFunc("validateResult", [vm = graph.getHandle()](PointGraph* self) {
+        return eve::script::projectResult(vm, self->validateResult());
+    });
     graph.addFunc("setExecutionNodeBudget", &PointGraph::setExecutionNodeBudget);
     graph.addFunc("getExecutionNodeBudget", &PointGraph::getExecutionNodeBudget);
     graph.addFunc("setMaxNodeOutputPoints", &PointGraph::setMaxNodeOutputPoints);
@@ -59,6 +74,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getRevision", &PointGraph::getRevision);
     graph.addFunc("getExecutionCount", &PointGraph::getExecutionCount);
     graph.addFunc("getCacheHitCount", &PointGraph::getCacheHitCount);
+    graph.addFunc("getCompiledSegmentCount", &PointGraph::getCompiledSegmentCount);
+    graph.addFunc("getExecutionPlanBuildCount", &PointGraph::getExecutionPlanBuildCount);
     graph.addFunc("getMetricCount", &PointGraph::getMetricCount);
     graph.addFunc("getMetricNodeId", &PointGraph::getMetricNodeId);
     graph.addFunc("getMetricOutputCount", &PointGraph::getMetricOutputCount);
