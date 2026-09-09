@@ -127,11 +127,22 @@ Result<void> refreshImportReport(EvaArchive& archive) {
 
 Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
     static const std::map<std::string_view, std::uint64_t> versions = {
-        {"eve.image", 2},          {"eve.texture", 1},          {"eve.mesh", 1},
-        {"eve.skeleton", 1},       {"eve.animation-clip", 1},   {"eve.material", 1},
-        {"eve.scene-template", 2}, {"eve.terrain", 1},          {"eve.terrain-material", 1},
-        {"eve.pcg-graph", 1},      {"eve.instance-set", 1},     {"eve.audio", 1},
-        {"eve.font", 1},           {"eve.sprite-animation", 1},
+        {"eve.image", 2},
+        {"eve.texture", 1},
+        {"eve.mesh", 1},
+        {"eve.skeleton", 1},
+        {"eve.animation-clip", 1},
+        {"eve.material", 1},
+        {"eve.scene-template", 2},
+        {"eve.terrain", 1},
+        {"eve.terrain-material", 1},
+        {"eve.pcg-graph", 1},
+        {"eve.instance-set", 1},
+        {"eve.audio", 1},
+        {"eve.font", 1},
+        {"eve.sprite-animation", 1},
+        {"eve.shader", 1},
+        {"eve.stylize.mesh-vfx", 1},
     };
     const auto found = versions.find(type);
     if (found == versions.end())

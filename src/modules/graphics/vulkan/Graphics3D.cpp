@@ -235,7 +235,7 @@ void Graphics::ensureOffscreen3DResources() {
                     hdrOffscreen3DSurfacePipelines, hdrOffscreenPrimitive3DPipelines);
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
-        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         offscreen3DPool = dev->createCommandPool(poolInfo);
         vk::CommandBufferAllocateInfo allocInfo{};
         allocInfo.commandPool = offscreen3DPool;

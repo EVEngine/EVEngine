@@ -1,0 +1,15 @@
+if(TARGET EVAsset_stylize)
+  add_executable(shader_effect_probe EXCLUDE_FROM_ALL asset_shader/ShaderEffectProbe.cpp)
+  set(shader_probe_modules)
+  foreach(module IN LISTS EVELIBS)
+    if(TARGET ${module})
+      list(APPEND shader_probe_modules ${module})
+    endif()
+  endforeach()
+  target_link_libraries(shader_effect_probe eve_engine_includes ${shader_probe_modules} zeroerr ${ThirdParty}
+    ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  if(WIN32)
+    target_link_libraries(shader_effect_probe EVBacktrace)
+  endif()
+endif()
+
