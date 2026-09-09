@@ -220,8 +220,8 @@
 
 ### 编辑与属性协议
 
-56. 属性访问 / 脚本模型 / 编辑契约 — `property_access` `scriptmodel` `editing`
-    无渲染的属性契约、Squirrel 反射适配、可编辑 Target / 命令 / 事务（给编辑器与局内建造共用）
+56. 属性访问 / 编辑契约 — `property_access` `editing`
+    无渲染的属性契约（含 `squirrel/` 下的 Squirrel 反射适配）、可编辑 Target / 命令 / 事务（给编辑器与局内建造共用）
 
 57. 编辑器构件 — `editor`（`eve.Editor`）
     不内置完整 3D/地图编辑器；可组装：TransformGizmo、TileBuffer+Brush、Toolbar/Inspector/Dock/History
