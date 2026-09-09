@@ -227,6 +227,23 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  # Scene composition must also run in a trimmed host, where unrelated unit-test
+  # translation units still reference disabled optional domains.
+  if(TARGET EVScene_editor)
+    add_executable(scene_editor_component_test EXCLUDE_FROM_ALL
+      main.cpp scene_editing_commands.cpp scene_editor_session.cpp
+      scene_editor_live_session.cpp scene_editor_script.cpp scene_editor_gizmo.cpp
+      editor_scene_target_v2.cpp editor_scene_runtime.cpp)
+    target_link_libraries(scene_editor_component_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_compile_options(scene_editor_component_test PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+    if(WIN32)
+      target_link_libraries(scene_editor_component_test EVBacktrace)
+      target_compile_definitions(scene_editor_component_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    endif()
+  endif()
   # Manual real-backend asset admission/visual probe; purchased inputs are never test fixtures.
   if(TARGET EVAsset_graphics AND TARGET EVAsset_scene)
     add_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
