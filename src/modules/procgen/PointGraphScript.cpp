@@ -59,6 +59,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getRevision", &PointGraph::getRevision);
     graph.addFunc("getExecutionCount", &PointGraph::getExecutionCount);
     graph.addFunc("getCacheHitCount", &PointGraph::getCacheHitCount);
+    graph.addFunc("getCompiledSegmentCount", &PointGraph::getCompiledSegmentCount);
+    graph.addFunc("getExecutionPlanBuildCount", &PointGraph::getExecutionPlanBuildCount);
     graph.addFunc("getMetricCount", &PointGraph::getMetricCount);
     graph.addFunc("getMetricNodeId", &PointGraph::getMetricNodeId);
     graph.addFunc("getMetricOutputCount", &PointGraph::getMetricOutputCount);

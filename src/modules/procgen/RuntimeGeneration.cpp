@@ -3,14 +3,23 @@
 #include "procgen/PointSet.h"
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
+#include <exception>
 #include <limits>
 #include <sstream>
 #include <unordered_set>
 
 namespace eve::procgen {
 namespace {
+
+uint64_t nextSchedulerId() {
+    static std::atomic<uint64_t> next{1};
+    const auto                   id = next.fetch_add(1, std::memory_order_relaxed);
+    if (id == 0) std::terminate();
+    return id;
+}
 
 float distanceToCell(float x, float z, int cellX, int cellZ, float size) {
     const float centerX = (float(cellX) + 0.5f) * size;
@@ -32,7 +41,25 @@ float    ProcgenCellRequest::getMinZ() const { return float(z_) * cellSize_; }
 float    ProcgenCellRequest::getMaxX() const { return float(x_ + 1) * cellSize_; }
 float    ProcgenCellRequest::getMaxZ() const { return float(z_ + 1) * cellSize_; }
 
-RuntimeGeneration::RuntimeGeneration(uint32_t worldSeed) : worldSeed_(worldSeed ? worldSeed : 1u) {}
+int      ProcgenGenerationJob::getLevel() const { return level_; }
+int      ProcgenGenerationJob::getX() const { return x_; }
+int      ProcgenGenerationJob::getZ() const { return z_; }
+uint32_t ProcgenGenerationJob::getSeed() const { return seed_; }
+uint64_t ProcgenGenerationJob::getTicket() const { return ticket_; }
+float    ProcgenGenerationJob::getMinX() const { return float(x_) * cellSize_; }
+float    ProcgenGenerationJob::getMinZ() const { return float(z_) * cellSize_; }
+float    ProcgenGenerationJob::getMaxX() const { return float(x_ + 1) * cellSize_; }
+float    ProcgenGenerationJob::getMaxZ() const { return float(z_ + 1) * cellSize_; }
+
+ProcgenGenerationCompletion::ProcgenGenerationCompletion(ProcgenGenerationJob job, PointSet output)
+    : job_(std::move(job)), output_(std::move(output)) {}
+
+RuntimeGeneration::RuntimeGeneration(uint32_t worldSeed)
+    : worldSeed_(worldSeed ? worldSeed : 1u),
+      ownerThread_(std::this_thread::get_id()),
+      schedulerId_(nextSchedulerId()) {}
+
+bool RuntimeGeneration::isOwnerThread() const noexcept { return std::this_thread::get_id() == ownerThread_; }
 
 void RuntimeGeneration::clear() {
     levels_.clear();
@@ -393,14 +420,29 @@ int RuntimeGeneration::retryFailedCells() {
 }
 
 ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
-    if (generateQueue_.empty() || getGeneratingCount() >= maxGenerating_) return nullptr;
-    if (maxActiveCells_ > 0 && getActiveCellCount() + getGeneratingCount() >= maxActiveCells_)
-        return nullptr;
+    auto issued = nextGenerationJob();
+    if (!issued.ok()) return nullptr;
+    auto job = std::move(issued).takeValue();
+    if (!job) return nullptr;
+    auto* request         = new ProcgenCellRequest();
+    request->level_       = job->level_;
+    request->x_           = job->x_;
+    request->z_           = job->z_;
+    request->seed_        = job->seed_;
+    request->ticket_      = job->ticket_;
+    request->schedulerId_ = job->schedulerId_;
+    request->cellSize_    = job->cellSize_;
+    return request;
+}
+
+std::optional<ProcgenGenerationJob> RuntimeGeneration::issueGenerationJob() {
+    if (generateQueue_.empty() || getGeneratingCount() >= maxGenerating_) return std::nullopt;
+    if (maxActiveCells_ > 0 && getActiveCellCount() + getGeneratingCount() >= maxActiveCells_) return std::nullopt;
     if (frameTimeBudgetMs_ > 0.f && frameStartedNs_ != 0) {
         const uint64_t now = uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(
                                          std::chrono::steady_clock::now().time_since_epoch())
                                          .count());
-        if (float(now - frameStartedNs_) * 0.000001f >= frameTimeBudgetMs_) return nullptr;
+        if (float(now - frameStartedNs_) * 0.000001f >= frameTimeBudgetMs_) return std::nullopt;
     }
     while (!generateQueue_.empty()) {
         const CellKey key = generateQueue_.front();
@@ -409,12 +451,74 @@ ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
         if (found == cells_.end() || found->second.state != State::Pending) continue;
         transitionCellState(found->second, State::Generating);
         found->second.ticket = ++nextTicket_;
-        return makeRequest(key);
+        return makeGenerationJob(key);
     }
-    return nullptr;
+    return std::nullopt;
+}
+
+Result<std::optional<ProcgenGenerationJob>> RuntimeGeneration::nextGenerationJob() {
+    if (!isOwnerThread())
+        return Result<std::optional<ProcgenGenerationJob>>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "runtime-generation scheduler called from a non-owner thread", "thread"));
+    return Result<std::optional<ProcgenGenerationJob>>::success(issueGenerationJob());
+}
+
+Result<std::reference_wrapper<RuntimeGeneration::Cell>> RuntimeGeneration::validateGenerationJob(
+    const ProcgenGenerationJob& job) {
+    if (!isOwnerThread())
+        return Result<std::reference_wrapper<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "runtime-generation scheduler called from a non-owner thread", "thread"));
+    if (job.schedulerId_ != schedulerId_)
+        return Result<std::reference_wrapper<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "runtime-generation job belongs to another scheduler", "job.scheduler"));
+    const CellKey key{job.level_, job.x_, job.z_};
+    const auto    found = cells_.find(key);
+    if (found == cells_.end() || found->second.state != State::Generating || job.seed_ != cellSeed(key) ||
+        job.ticket_ != found->second.ticket)
+        return Result<std::reference_wrapper<Cell>>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "runtime-generation job ticket is stale", "job.ticket"));
+    return Result<std::reference_wrapper<Cell>>::success(found->second);
+}
+
+Result<uint64_t> RuntimeGeneration::completeGenerationJob(ProcgenGenerationCompletion completion) {
+    auto validated = validateGenerationJob(completion.job_);
+    if (!validated.ok()) return Result<uint64_t>::failure(validated.status());
+    Cell&     cell         = std::move(validated).takeValue().get();
+    const int outputPoints = completion.output_.getCount();
+    if ((maxPointsPerCell_ > 0 && outputPoints > maxPointsPerCell_) ||
+        (maxResidentPoints_ > 0 && getResidentPointCount() > maxResidentPoints_ - outputPoints)) {
+        ++rejectedOutputCount_;
+        if (maxResidentPoints_ > 0 && outputPoints <= maxResidentPoints_)
+            trimToResidentPoints(maxResidentPoints_ - outputPoints);
+        return Result<uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "runtime-generation completion exceeds point budget", "output"));
+    }
+    cell.output   = std::move(completion.output_);
+    cell.hasDelta = false;
+    cell.failures = 0;
+    ++cell.revision;
+    transitionCellState(cell, State::Active);
+    return Result<uint64_t>::success(cell.revision);
+}
+
+Result<void> RuntimeGeneration::failGenerationJob(const ProcgenGenerationJob& job) {
+    auto validated = validateGenerationJob(job);
+    if (!validated.ok()) return Result<void>::failure(validated.status());
+    Cell& cell = std::move(validated).takeValue().get();
+    ++cell.failures;
+    cell.ticket = ++nextTicket_;
+    if (cell.failures <= maxGenerationRetries_) {
+        transitionCellState(cell, State::Pending);
+        generateQueue_.push_back({job.level_, job.x_, job.z_});
+        sortQueues();
+    } else {
+        transitionCellState(cell, State::Failed);
+    }
+    return Result<void>::success();
 }
 
 ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
+    if (!isOwnerThread()) return nullptr;
     while (!cleanupQueue_.empty()) {
         const CellKey key = cleanupQueue_.front();
         cleanupQueue_.pop_front();
@@ -427,7 +531,7 @@ ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
 }
 
 bool RuntimeGeneration::isRequestCurrent(const ProcgenCellRequest* request) const {
-    if (!request) return false;
+    if (!isOwnerThread() || !request || request->schedulerId_ != schedulerId_) return false;
     const CellKey key{request->level_, request->x_, request->z_};
     const auto    found = cells_.find(key);
     if (found == cells_.end() || request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
@@ -437,44 +541,30 @@ bool RuntimeGeneration::isRequestCurrent(const ProcgenCellRequest* request) cons
 
 bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet* output) {
     if (!request || !output) return false;
-    const CellKey key{request->level_, request->x_, request->z_};
-    const auto    found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Generating ||
-        request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
-        return false;
-    const int outputPoints = output->getCount();
-    if ((maxPointsPerCell_ > 0 && outputPoints > maxPointsPerCell_) ||
-        (maxResidentPoints_ > 0 && getResidentPointCount() > maxResidentPoints_ - outputPoints)) {
-        ++rejectedOutputCount_;
-        if (maxResidentPoints_ > 0 && outputPoints <= maxResidentPoints_)
-            trimToResidentPoints(maxResidentPoints_ - outputPoints);
-        return false;
-    }
-    found->second.output = *output;
-    found->second.hasDelta = false;
-    found->second.failures = 0;
-    ++found->second.revision;
-    transitionCellState(found->second, State::Active);
-    return true;
+    ProcgenGenerationJob job;
+    job.level_       = request->level_;
+    job.x_           = request->x_;
+    job.z_           = request->z_;
+    job.seed_        = request->seed_;
+    job.ticket_      = request->ticket_;
+    job.schedulerId_ = request->schedulerId_;
+    job.cellSize_    = request->cellSize_;
+    auto completed   = completeGenerationJob(ProcgenGenerationCompletion(std::move(job), *output));
+    return completed.ok();
 }
 
 bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
     if (!request) return false;
-    const CellKey key{request->level_, request->x_, request->z_};
-    const auto    found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Generating ||
-        request->ticket_ != found->second.ticket)
-        return false;
-    ++found->second.failures;
-    found->second.ticket = ++nextTicket_;
-    if (found->second.failures <= maxGenerationRetries_) {
-        transitionCellState(found->second, State::Pending);
-        generateQueue_.push_back(key);
-        sortQueues();
-    } else {
-        transitionCellState(found->second, State::Failed);
-    }
-    return true;
+    ProcgenGenerationJob job;
+    job.level_       = request->level_;
+    job.x_           = request->x_;
+    job.z_           = request->z_;
+    job.seed_        = request->seed_;
+    job.ticket_      = request->ticket_;
+    job.schedulerId_ = request->schedulerId_;
+    job.cellSize_    = request->cellSize_;
+    auto failed      = failGenerationJob(job);
+    return failed.ok();
 }
 
 bool RuntimeGeneration::completeCleanup(ProcgenCellRequest* request) {
@@ -484,6 +574,9 @@ bool RuntimeGeneration::completeCleanup(ProcgenCellRequest* request) {
 }
 
 Result<uint64_t> RuntimeGeneration::completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests) {
+    if (!isOwnerThread())
+        return Result<uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "runtime-generation scheduler called from a non-owner thread", "thread"));
     auto validated = validateCleanups(requests);
     if (!validated.ok()) return Result<uint64_t>::failure(validated.status());
     eraseValidatedCleanups(requests);
@@ -506,8 +599,8 @@ Result<void> RuntimeGeneration::validateCleanups(const std::vector<const Procgen
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::Conflict, "cleanup transaction contains a duplicate cell", "requests"));
         const auto found = cells_.find(key);
-        if (found == cells_.end() || found->second.state != State::Cleanup || request->seed_ != cellSeed(key) ||
-            request->ticket_ != found->second.ticket)
+        if (request->schedulerId_ != schedulerId_ || found == cells_.end() || found->second.state != State::Cleanup ||
+            request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
                                                            "cleanup transaction contains a stale request", "requests"));
     }
@@ -625,8 +718,22 @@ ProcgenCellRequest* RuntimeGeneration::makeRequest(const CellKey& key) const {
     request->seed_    = cellSeed(key);
     const auto found  = cells_.find(key);
     request->ticket_  = found == cells_.end() ? 0 : found->second.ticket;
+    request->schedulerId_ = schedulerId_;
     request->cellSize_ = levels_[size_t(key.level)].cellSize;
     return request;
+}
+
+ProcgenGenerationJob RuntimeGeneration::makeGenerationJob(const CellKey& key) const {
+    ProcgenGenerationJob job;
+    job.level_       = key.level;
+    job.x_           = key.x;
+    job.z_           = key.z;
+    job.seed_        = cellSeed(key);
+    const auto found = cells_.find(key);
+    job.ticket_      = found == cells_.end() ? 0 : found->second.ticket;
+    job.schedulerId_ = schedulerId_;
+    job.cellSize_    = levels_[size_t(key.level)].cellSize;
+    return job;
 }
 
 void RuntimeGeneration::transitionCellState(Cell& cell, State nextState) {

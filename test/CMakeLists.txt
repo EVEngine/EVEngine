@@ -23,6 +23,9 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 # reconfigures when an individual test/*.cpp is newer than that list (not when
 # anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+# The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
+set_source_files_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
+  "${CMAKE_SOURCE_DIR}/src/modules/procgen/dtl_compat")
 list(SORT all_test_cpp)
 set(_eve_test_src_txt "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt")
 set(_eve_test_src_text "")

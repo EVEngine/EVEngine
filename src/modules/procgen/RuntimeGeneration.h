@@ -4,8 +4,10 @@
 
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <optional>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -32,7 +34,63 @@ private:
     int      z_        = 0;
     uint32_t seed_     = 1;
     uint64_t ticket_   = 0;
+    uint64_t schedulerId_ = 0;
     float    cellSize_ = 1.f;
+};
+
+/**
+ * @brief Copyable generation input issued by one RuntimeGeneration scheduler.
+ *
+ * Workers own copies of this value and never access scheduler state. The ticket
+ * is validated only when a completion returns to the scheduler-owning thread.
+ */
+class ProcgenGenerationJob {
+public:
+    /** @brief Return the hierarchical grid level captured at issue time. */
+    int getLevel() const;
+    /** @brief Return the cell X coordinate captured at issue time. */
+    int getX() const;
+    /** @brief Return the cell Z coordinate captured at issue time. */
+    int getZ() const;
+    /** @brief Return the deterministic seed derived from world seed, level and coordinates. */
+    uint32_t getSeed() const;
+    /** @brief Return the ticket; valid only together with this job's private scheduler identity. */
+    uint64_t getTicket() const;
+    /** @brief Return the captured lower world-space X bound. */
+    float getMinX() const;
+    /** @brief Return the captured lower world-space Z bound. */
+    float getMinZ() const;
+    /** @brief Return the captured upper world-space X bound. */
+    float getMaxX() const;
+    /** @brief Return the captured upper world-space Z bound. */
+    float getMaxZ() const;
+
+private:
+    friend class RuntimeGeneration;
+    int      level_       = 0;
+    int      x_           = 0;
+    int      z_           = 0;
+    uint32_t seed_        = 1;
+    uint64_t ticket_      = 0;
+    uint64_t schedulerId_ = 0;
+    float    cellSize_    = 1.f;
+};
+
+/** @brief Owning worker result returned to a RuntimeGeneration scheduler. */
+class ProcgenGenerationCompletion {
+public:
+    /**
+     * @brief Package a job and generated points without touching scheduler state.
+     * @param job Copyable immutable job originally issued by the scheduler.
+     * @param output Owning generated point snapshot moved into the completion.
+     * @thread Worker-safe; mutates no scheduler or shared state.
+     */
+    ProcgenGenerationCompletion(ProcgenGenerationJob job, PointSet output);
+
+private:
+    friend class RuntimeGeneration;
+    ProcgenGenerationJob job_;
+    PointSet             output_;
 };
 
 /**
@@ -41,11 +99,19 @@ private:
  * updateSource computes desired cells for every configured level. nextGenerate
  * and nextCleanup provide bounded work queues; completeGeneration atomically
  * publishes a cell output. The scheduler owns no scene or graphics objects.
+ * All state access is owner-thread-only. Only jobs and completions may cross
+ * worker boundaries; their private process-local identity is never serialized.
+ * Destroying the scheduler does not invalidate owning worker data, but its jobs
+ * cannot be committed to a replacement scheduler. No callbacks are invoked.
  */
 class RuntimeGeneration {
 public:
     /** @brief Create a scheduler with a stable world seed. */
     explicit RuntimeGeneration(uint32_t worldSeed = 1);
+    RuntimeGeneration(const RuntimeGeneration&)            = delete;
+    RuntimeGeneration& operator=(const RuntimeGeneration&) = delete;
+    RuntimeGeneration(RuntimeGeneration&&)                 = delete;
+    RuntimeGeneration& operator=(RuntimeGeneration&&)      = delete;
 
     /** @brief Remove levels, cells, queues and outputs while retaining the world seed. */
     void clear();
@@ -160,6 +226,33 @@ public:
     int                 getFailedCellCount() const;
     /** @brief Reset and requeue all terminally failed cells still tracked by the scheduler. */
     int                 retryFailedCells();
+    /**
+     * @brief Issue one owning worker job, or an empty optional when no work is currently admissible.
+     * @return Job query result; failure means the call was made off the scheduler-owning thread.
+     * @thread Scheduler-owning thread only.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<std::optional<ProcgenGenerationJob>> nextGenerationJob();
+    /**
+     * @brief Atomically publish an owning worker completion.
+     * @param completion Job identity and generated output, both consumed by this call.
+     * @return New cell revision, or structured stale/thread/budget failure.
+     * @thread Scheduler-owning thread only; workers must enqueue the completion for its owner.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<uint64_t> completeGenerationJob(ProcgenGenerationCompletion completion);
+    /**
+     * @brief Report an issued job failure and apply the bounded retry policy.
+     * @param job Immutable copy of the issued job.
+     * @return Success when the matching ticket was requeued or made terminal.
+     * @thread Scheduler-owning thread only.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<void> failGenerationJob(const ProcgenGenerationJob& job);
+    /** @brief Return whether the caller is the thread that constructed this scheduler. */
+    bool isOwnerThread() const noexcept;
+
+    /** @brief Compatibility facade returning a heap request; prefer nextGenerationJob(). */
     ProcgenCellRequest* nextGenerate();
     ProcgenCellRequest* nextCleanup();
     /**
@@ -277,6 +370,9 @@ private:
     };
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
+    ProcgenGenerationJob                               makeGenerationJob(const CellKey& key) const;
+    std::optional<ProcgenGenerationJob>                issueGenerationJob();
+    [[nodiscard]] Result<std::reference_wrapper<Cell>> validateGenerationJob(const ProcgenGenerationJob& job);
     void                       transitionCellState(Cell& cell, State nextState);
     void                       requestGenerationRefresh();
     void                       startRefreshPlan();
@@ -288,6 +384,8 @@ private:
     void                sortQueues();
 
     uint32_t worldSeed_       = 1;
+    std::thread::id                                ownerThread_;
+    const uint64_t                                 schedulerId_;
     float    directionWeight_ = 0.25f;
     int      maxGenerating_   = 4;
     int      maxActiveCells_  = 0;

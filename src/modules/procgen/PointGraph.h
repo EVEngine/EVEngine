@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -130,6 +131,20 @@ public:
     uint64_t    getRevision() const;
     int         getExecutionCount() const;
     int         getCacheHitCount() const;
+    /**
+     * @brief Return logical CPU/GPU segments in the execution plan compiled for the latest output.
+     * @return Segment count, or zero when no active valid plan exists.
+     * @thread Call on the graph-owning thread.
+     * @reentrant Not reentrant for this graph instance.
+     */
+    int getCompiledSegmentCount() const;
+    /**
+     * @brief Return how many execution plans this graph instance has compiled.
+     * @return Monotonic build count; parameter-only changes do not increase it.
+     * @thread Call on the graph-owning thread.
+     * @reentrant Not reentrant for this graph instance.
+     */
+    uint64_t getExecutionPlanBuildCount() const;
 
     int         getMetricCount() const;
     std::string getMetricNodeId(int index) const;
@@ -215,6 +230,15 @@ private:
         std::string key;
         std::string kind;
     };
+    struct ExecutionSegment {
+        std::vector<std::string> nodes;
+        bool                     gpuTransformChain = false;
+    };
+    struct ExecutionPlan {
+        std::vector<std::string>                     topologicalOrder;
+        std::vector<ExecutionSegment>                segments;
+        std::unordered_map<std::string, std::size_t> segmentByOutput;
+    };
 
     const PointSet* evaluate(const std::string& id, std::unordered_map<std::string, int>& states);
     const PointSet* evaluateTransformSegment(const std::string& id, std::unordered_map<std::string, int>& states);
@@ -223,6 +247,8 @@ private:
                                  std::unordered_map<std::string, int>& states);
     void            invalidate();
     void            invalidateFrom(const std::string& id);
+    void            invalidateTopology(const std::string& changedNode);
+    void            compileExecutionPlan(const std::string& outputId);
     float           floatValue(const Node& node, const std::string& key, float fallback) const;
     int             intValue(const Node& node, const std::string& key, int fallback) const;
     std::string     stringValue(const Node& node, const std::string& key,
@@ -240,6 +266,10 @@ private:
     int                                               executionCount_      = 0;
     int                                               cacheHitCount_       = 0;
     uint64_t                                          revision_            = 0;
+    uint64_t                                                              executionPlanBuildCount_ = 0;
+    std::shared_ptr<const ExecutionPlan>                                  executionPlan_;
+    std::unordered_map<std::string, std::shared_ptr<const ExecutionPlan>> executionPlans_;
+    std::vector<std::string>                                              executionPlanRecency_;
     int                                               executionNodeBudget_ = 0;
     int                                               maxNodeOutputPoints_ = 0;
     std::string                                       computePolicy_        = "auto";

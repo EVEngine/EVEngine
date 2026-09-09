@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <sstream>
 
@@ -144,6 +145,7 @@ bool PointGraph::addNode(const std::string& id, const std::string& operation) {
     nodes_[id].id        = id;
     nodes_[id].operation = operation;
     nodeOrder_.push_back(id);
+    invalidateTopology(id);
     invalidateFrom(id);
     return true;
 }
@@ -168,6 +170,7 @@ bool PointGraph::removeNode(const std::string& id) {
     for (auto& [otherId, node] : nodes_)
         for (auto& input : node.inputs)
             if (input == id) input.clear();
+    invalidateTopology(id);
     return true;
 }
 
@@ -189,6 +192,7 @@ bool PointGraph::connect(const std::string& fromId, const std::string& toId, int
         inputIndex >= spec->inputs || fromId == toId)
         return false;
     to->second.inputs[inputIndex] = fromId;
+    invalidateTopology(toId);
     invalidateFrom(toId);
     return true;
 }
@@ -199,6 +203,7 @@ bool PointGraph::disconnect(const std::string& toId, int inputIndex) {
         to->second.inputs[inputIndex].empty())
         return false;
     to->second.inputs[inputIndex].clear();
+    invalidateTopology(toId);
     invalidateFrom(toId);
     return true;
 }
@@ -389,6 +394,8 @@ PointSet* PointGraph::execute(const std::string& outputId) {
         lastCancelled_ = true;
         return nullptr;
     }
+    compileExecutionPlan(outputId);
+    if (!error_.empty()) return nullptr;
     std::unordered_map<std::string, int> states;
     const PointSet* result = evaluate(outputId, states);
     return result ? new PointSet(*result) : nullptr;
@@ -443,6 +450,8 @@ void PointGraph::clearCache() {
 }
 int PointGraph::getExecutionCount() const { return executionCount_; }
 int PointGraph::getCacheHitCount() const { return cacheHitCount_; }
+int PointGraph::getCompiledSegmentCount() const { return executionPlan_ ? int(executionPlan_->segments.size()) : 0; }
+uint64_t    PointGraph::getExecutionPlanBuildCount() const { return executionPlanBuildCount_; }
 uint64_t PointGraph::getRevision() const { return revision_; }
 int PointGraph::getMetricCount() const { return int(metrics_.size()); }
 std::string PointGraph::getMetricNodeId(int index) const {
@@ -508,8 +517,8 @@ PointSet* PointGraph::materializeNodeOutput(const std::string& id) const {
 
 std::string PointGraph::debugReport() const {
     std::ostringstream out;
-    out << "nodes=" << nodes_.size() << " executions=" << executionCount_
-        << " cacheHits=" << cacheHitCount_;
+    out << "nodes=" << nodes_.size() << " executions=" << executionCount_ << " cacheHits=" << cacheHitCount_
+        << " planBuilds=" << executionPlanBuildCount_ << " segments=" << getCompiledSegmentCount();
     for (const auto& metric : metrics_)
         out << "\n"
             << metric.id << " count=" << metric.outputCount << " ms=" << metric.milliseconds
@@ -814,18 +823,16 @@ const PointSet* PointGraph::evaluate(const std::string& id,
 
 const PointSet* PointGraph::evaluateTransformSegment(const std::string&                    id,
                                                      std::unordered_map<std::string, int>& states) {
-    std::vector<std::string> chain;
-    std::string              cursor = id;
-    while (chain.size() < 4) {
-        const auto found = nodes_.find(cursor);
-        if (found == nodes_.end() || found->second.operation != "transform" || found->second.cacheValid ||
-            found->second.inputs[0].empty())
-            break;
-        chain.push_back(cursor);
-        cursor = found->second.inputs[0];
-    }
-    if (chain.size() < 2) return nullptr;
-    std::reverse(chain.begin(), chain.end());
+    if (!executionPlan_) return nullptr;
+    const auto segmentEntry = executionPlan_->segmentByOutput.find(id);
+    if (segmentEntry == executionPlan_->segmentByOutput.end()) return nullptr;
+    const ExecutionSegment& planned = executionPlan_->segments[segmentEntry->second];
+    if (!planned.gpuTransformChain || planned.nodes.size() < 2) return nullptr;
+    const std::vector<std::string>& chain = planned.nodes;
+    if (std::any_of(chain.begin(), chain.end(),
+                    [&](const std::string& nodeId) { return nodes_.at(nodeId).cacheValid; }))
+        return nullptr;
+    const std::string& cursor = nodes_.at(chain.front()).inputs[0];
 
     const PointSet* input = evaluate(cursor, states);
     if (!input) return nullptr;
@@ -923,6 +930,7 @@ bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::str
 }
 
 void PointGraph::invalidate() { clearCache(); }
+
 void PointGraph::invalidateFrom(const std::string& id) {
     ++revision_;
     std::vector<std::string> dirty{id};
