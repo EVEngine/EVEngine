@@ -12,4 +12,3 @@ if(TARGET EVAsset_stylize)
     target_link_libraries(shader_effect_probe EVBacktrace)
   endif()
 endif()
-

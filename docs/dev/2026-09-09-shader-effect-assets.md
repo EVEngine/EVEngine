@@ -69,4 +69,3 @@ bindings for these new objects, Unity ShaderLab/Shader Graph translation,
 WebGPU shaders, packaged texture resolution, or trail/animation attachment
 adapters. Unsupported trail/animation attachments are rejected, not ignored.
 Callers may supply a texture to draw through the established graphics API.
-

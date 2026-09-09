@@ -27,4 +27,3 @@ function(eve_configure_shader_asset_validation target)
     endif()
   endif()
 endfunction()
-
