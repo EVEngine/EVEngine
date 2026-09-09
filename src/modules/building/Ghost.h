@@ -102,6 +102,7 @@ private:
     float surfaceInputX_ = 0.f;
     float surfaceInputY_ = 0.f;
     bool surfacePatchStale_ = false;
+    bool          surfaceHitMissing_ = false;
     float rotationDeg_ = 0.f;
     std::string placementKind_ = "cell";
     EdgeAddress edge_;

@@ -94,6 +94,20 @@ void placedWorldPosition(const building::PlacedBuilding &placed,
         x = placed.worldX;
         y = placed.elevation + float(placed.level) * world.getFloorHeight();
         z = placed.worldY;
+        // Cell poses name the minimum footprint corner, while meshes are centered.
+        if (placed.placementKind == "cell") {
+            if (const auto *definition = building::BuildingRegistry::find(placed.buildingId)) {
+                const auto snapMode = definition->snapMode.empty() ? world.getSnapMode() : definition->snapMode;
+                if (snapMode != "grid") return;
+                int width = 1, depth = 1;
+                building::PlacementSystem::effectiveFootprint(*definition, placed.rotationDeg, &width, &depth);
+                float startX = 0.f, startZ = 0.f, endX = 0.f, endZ = 0.f;
+                world.cellToWorldPlane(placed.originCellX, placed.originCellY, startX, startZ);
+                world.cellToWorldPlane(placed.originCellX + width, placed.originCellY + depth, endX, endZ);
+                x += (endX - startX) * 0.5f;
+                z += (endZ - startZ) * 0.5f;
+            }
+        }
     } else {
         x = placed.worldX;
         y = placed.worldY;
@@ -663,17 +677,16 @@ void BuildingFx::createVisual(WorldState &st, const building::BuildingDefinition
         const bool edge = pb.placementKind == "edge";
         const bool corner = pb.placementKind == "corner";
         const bool free = pb.placementKind == "free";
-        tr->sx = (free ? freeVisualSize(def, pb, *world, true, "width")
-                       : corner ? cornerVisualSize(def, pb, *world, true, "width")
-                         : edge ? (pb.edge.axis == building::EdgeAxis::Horizontal ? cellW : cellH)
-                                : float(effW) * cellW) *
+        tr->sx             = (free     ? freeVisualSize(def, pb, *world, true, "width")
+                              : corner ? cornerVisualSize(def, pb, *world, true, "width")
+                              : edge   ? (pb.edge.axis == building::EdgeAxis::Horizontal ? cellW : cellH)
+                                       : float(def.footprintW) * cellW) *
                  (topology.mirrorX ? -1.f : 1.f);
         tr->sy = height;
-        tr->sz = (free ? freeVisualSize(def, pb, *world, true, "depth")
-                       : corner ? cornerVisualSize(def, pb, *world, true, "depth")
-                         : edge ? toFloat(visualValue(def, pb, *world, true, "thickness"),
-                                          std::min(cellW, cellH) * 0.1f)
-                                : float(effH) * cellH) *
+        tr->sz = (free     ? freeVisualSize(def, pb, *world, true, "depth")
+                  : corner ? cornerVisualSize(def, pb, *world, true, "depth")
+                  : edge   ? toFloat(visualValue(def, pb, *world, true, "thickness"), std::min(cellW, cellH) * 0.1f)
+                           : float(def.footprintH) * cellH) *
                  (topology.mirrorZ ? -1.f : 1.f);
         const float visualRotation = pb.rotationDeg + topology.rotationDegrees;
         const float rad = visualRotation * 3.14159265f / 180.f;
@@ -771,17 +784,16 @@ void BuildingFx::updateVisual(const building::BuildingDefinition &def,
         const bool edge = pb.placementKind == "edge";
         const bool corner = pb.placementKind == "corner";
         const bool free = pb.placementKind == "free";
-        tr->sx = (free ? freeVisualSize(def, pb, *world, true, "width")
-                       : corner ? cornerVisualSize(def, pb, *world, true, "width")
-                         : edge ? (pb.edge.axis == building::EdgeAxis::Horizontal ? cellW : cellH)
-                                : float(effW) * cellW) *
+        tr->sx             = (free     ? freeVisualSize(def, pb, *world, true, "width")
+                              : corner ? cornerVisualSize(def, pb, *world, true, "width")
+                              : edge   ? (pb.edge.axis == building::EdgeAxis::Horizontal ? cellW : cellH)
+                                       : float(def.footprintW) * cellW) *
                  (topology.mirrorX ? -1.f : 1.f);
         tr->sy = height;
-        tr->sz = (free ? freeVisualSize(def, pb, *world, true, "depth")
-                       : corner ? cornerVisualSize(def, pb, *world, true, "depth")
-                         : edge ? toFloat(visualValue(def, pb, *world, true, "thickness"),
-                                          std::min(cellW, cellH) * 0.1f)
-                                : float(effH) * cellH) *
+        tr->sz = (free     ? freeVisualSize(def, pb, *world, true, "depth")
+                  : corner ? cornerVisualSize(def, pb, *world, true, "depth")
+                  : edge   ? toFloat(visualValue(def, pb, *world, true, "thickness"), std::min(cellW, cellH) * 0.1f)
+                           : float(def.footprintH) * cellH) *
                  (topology.mirrorZ ? -1.f : 1.f);
         const float visualRotation = pb.rotationDeg + topology.rotationDegrees;
         const float rad = visualRotation * 3.14159265f / 180.f;
@@ -1234,6 +1246,9 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
             auto *r = graphics::Renderable3D::create();
             auto tr = r->transform();
             building::PlacedBuilding placed;
+            placed.buildingId      = ghost->getBuildingId();
+            placed.originCellX     = ghost->getCellX();
+            placed.originCellY     = ghost->getCellY();
             placed.worldX = ghost->getWorldX();
             placed.worldY = ghost->getWorldY();
             placed.placementKind = ghost->getPlacementKind();
@@ -1250,18 +1265,15 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
             tr->x += placed.surfaceNormalX * 0.03f;
             tr->y += placed.surfaceNormalY * 0.03f;
             tr->z += placed.surfaceNormalZ * 0.03f;
+            if (world->getGrid().plane == grid::GridPlane::XZ) tr->yaw = placed.rotationDeg * 3.14159265f / 180.f;
             applySurfaceRotation(placed, placed.rotationDeg, *tr);
-            tr->sx = placed.placementKind == "free"
-                         ? freeVisualSize(*def, placed, *world, true, "width")
-                     : placed.placementKind == "corner"
-                         ? cornerVisualSize(*def, placed, *world, true, "width")
-                         : float(effW) * cellW;
+            tr->sx        = placed.placementKind == "free"     ? freeVisualSize(*def, placed, *world, true, "width")
+                            : placed.placementKind == "corner" ? cornerVisualSize(*def, placed, *world, true, "width")
+                                                               : float(def->footprintW) * cellW;
             tr->sy = 0.04f;
-            tr->sz = placed.placementKind == "free"
-                         ? freeVisualSize(*def, placed, *world, true, "depth")
-                     : placed.placementKind == "corner"
-                         ? cornerVisualSize(*def, placed, *world, true, "depth")
-                         : float(effH) * cellH;
+            tr->sz        = placed.placementKind == "free"     ? freeVisualSize(*def, placed, *world, true, "depth")
+                            : placed.placementKind == "corner" ? cornerVisualSize(*def, placed, *world, true, "depth")
+                                                               : float(def->footprintH) * cellH;
             auto mr = r->meshRenderer();
             mr->mesh = cubeMesh(gfxOrNull());
             mr->r = cr;
@@ -1276,6 +1288,9 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
             tr->y = ghost->getWorldY();
             auto sp = r->sprite();
             building::PlacedBuilding placed;
+            placed.buildingId    = ghost->getBuildingId();
+            placed.originCellX   = ghost->getCellX();
+            placed.originCellY   = ghost->getCellY();
             placed.placementKind = ghost->getPlacementKind();
             sp->width = placed.placementKind == "free"
                             ? freeVisualSize(*def, placed, *world, false, "width")
@@ -1302,6 +1317,9 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
         if (st.cursor.r3d) {
             auto tr = st.cursor.r3d->transform();
             building::PlacedBuilding placed;
+            placed.buildingId      = ghost->getBuildingId();
+            placed.originCellX     = ghost->getCellX();
+            placed.originCellY     = ghost->getCellY();
             placed.worldX = ghost->getWorldX();
             placed.worldY = ghost->getWorldY();
             placed.placementKind = ghost->getPlacementKind();
@@ -1318,17 +1336,14 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
             tr->x += placed.surfaceNormalX * 0.03f;
             tr->y += placed.surfaceNormalY * 0.03f;
             tr->z += placed.surfaceNormalZ * 0.03f;
+            if (world->getGrid().plane == grid::GridPlane::XZ) tr->yaw = placed.rotationDeg * 3.14159265f / 180.f;
             applySurfaceRotation(placed, placed.rotationDeg, *tr);
-            tr->sx = placed.placementKind == "free"
-                         ? freeVisualSize(*def, placed, *world, true, "width")
-                     : placed.placementKind == "corner"
-                         ? cornerVisualSize(*def, placed, *world, true, "width")
-                         : float(effW) * cellW;
-            tr->sz = placed.placementKind == "free"
-                         ? freeVisualSize(*def, placed, *world, true, "depth")
-                     : placed.placementKind == "corner"
-                         ? cornerVisualSize(*def, placed, *world, true, "depth")
-                         : float(effH) * cellH;
+            tr->sx  = placed.placementKind == "free"     ? freeVisualSize(*def, placed, *world, true, "width")
+                      : placed.placementKind == "corner" ? cornerVisualSize(*def, placed, *world, true, "width")
+                                                         : float(def->footprintW) * cellW;
+            tr->sz  = placed.placementKind == "free"     ? freeVisualSize(*def, placed, *world, true, "depth")
+                      : placed.placementKind == "corner" ? cornerVisualSize(*def, placed, *world, true, "depth")
+                                                         : float(def->footprintH) * cellH;
             auto mr = st.cursor.r3d->meshRenderer();
             mr->r = cr;
             mr->g = cg;
@@ -1339,6 +1354,9 @@ void BuildingFx::updateGhost(building::PlacementWorld *world, building::Ghost *g
             tr->y = ghost->getWorldY();
             auto sp = st.cursor.r2d->sprite();
             building::PlacedBuilding placed;
+            placed.buildingId    = ghost->getBuildingId();
+            placed.originCellX   = ghost->getCellX();
+            placed.originCellY   = ghost->getCellY();
             placed.placementKind = ghost->getPlacementKind();
             sp->width = placed.placementKind == "free"
                             ? freeVisualSize(*def, placed, *world, false, "width")
@@ -1530,47 +1548,6 @@ void BuildingFx::drawGrid3D(building::PlacementWorld *world, graphics::Graphics 
     }
     for (graphics::Renderable3D *cell : st.heatCells3d)
         if (cell) cell->meshRenderer()->visible = st.gridVisible;
-}
-
-void BuildingFx::expose(ssq::Table &table) {
-    auto cls = table.addClass(name, BuildingFx::create, false);
-    expose(cls);
-}
-
-void BuildingFx::expose(ssq::Class &cls) {
-    cls.addFunc("attach", &BuildingFx::attach);
-    cls.addFunc("detach", &BuildingFx::detach);
-    cls.addFunc("isAttached", &BuildingFx::isAttached);
-    cls.addFunc("getAttachedCount", &BuildingFx::getAttachedCount);
-    cls.addFunc("sync", &BuildingFx::sync);
-    cls.addFunc("getVisualCount", &BuildingFx::getVisualCount);
-    cls.addFunc("getVisualVariant", &BuildingFx::getVisualVariant);
-    cls.addFunc("getVisualResource", &BuildingFx::getVisualResource);
-    cls.addFunc("getVisualFallbackReason", &BuildingFx::getVisualFallbackReason);
-    cls.addFunc("getCurveGroupCount", &BuildingFx::getCurveGroupCount);
-    cls.addFunc("getContinuousCurveVisualCount", &BuildingFx::getContinuousCurveVisualCount);
-    cls.addFunc("getCurveVisualFallbackReason", &BuildingFx::getCurveVisualFallbackReason);
-    cls.addFunc("updateEdgeCurveSurfacePreview",
-                &BuildingFx::updateEdgeCurveSurfacePreviewStatus);
-    cls.addFunc("clearEdgeCurvePreview", &BuildingFx::clearEdgeCurvePreview);
-    cls.addFunc("hasEdgeCurvePreview", &BuildingFx::hasEdgeCurvePreview);
-    cls.addFunc("getEdgeCurvePreviewFallbackReason",
-                &BuildingFx::getEdgeCurvePreviewFallbackReason);
-    cls.addFunc("getEdgeCurvePreviewSurfaceId",
-                &BuildingFx::getEdgeCurvePreviewSurfaceId);
-    cls.addFunc("setLevelVisibilityMode", &BuildingFx::setLevelVisibilityMode);
-    cls.addFunc("getLevelVisibilityMode", &BuildingFx::getLevelVisibilityMode);
-    cls.addFunc("isVisualVisible", &BuildingFx::isVisualVisible);
-    cls.addFunc("updateGhost", &BuildingFx::updateGhost);
-    cls.addFunc("hideGhost", &BuildingFx::hideGhost);
-    cls.addFunc("updateAreaPreview", &BuildingFx::updateAreaPreview);
-    cls.addFunc("clearAreaPreview", &BuildingFx::clearAreaPreview);
-    cls.addFunc("getAreaPreviewCount", &BuildingFx::getAreaPreviewCount);
-    cls.addFunc("getAreaPreviewAccepted", &BuildingFx::getAreaPreviewAccepted);
-    cls.addFunc("setGridVisible", &BuildingFx::setGridVisible);
-    cls.addFunc("getGridVisible", &BuildingFx::getGridVisible);
-    cls.addFunc("drawGrid2D", &BuildingFx::drawGrid2D);
-    cls.addFunc("drawGrid3D", &BuildingFx::drawGrid3D);
 }
 
 }  // namespace eve::buildingfx

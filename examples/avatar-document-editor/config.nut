@@ -1,7 +1,8 @@
 config = {
-    title = "EVEngine Avatar Document Editor",
+    title = "Azure / Avatar Atelier",
     width = 1280,
-    height = 720,
-    debug = true,
-    hotReload = true,
+    height = 880,
+    documentMode = false,
+    debug = false,
+    hotReload = false,
 };

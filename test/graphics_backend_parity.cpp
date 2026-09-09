@@ -1,9 +1,11 @@
 #include "zeroerr/unittest.h"
+#include "GraphicsParitySupport.h"
 
 #include "common/config.h"
 #include "filesystem/FileData.h"
 #include "graphics/AlphaMask.h"
 #include "graphics/Canvas.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
@@ -27,138 +29,8 @@
 
 using namespace eve::graphics;
 
-namespace {
+using namespace eve::graphics::parity_test;
 
-const char *expectedBackendName() {
-#ifdef EVENGINE_WEBGPU
-    return "webgpu";
-#else
-    return "vulkan";
-#endif
-}
-
-const uint8_t *pixel(const eve::image::ImageData &image, int x, int y) {
-    const auto *bytes = static_cast<const uint8_t *>(image.getData());
-    return bytes + (size_t(y) * size_t(image.getWidth()) + size_t(x)) * 4u;
-}
-
-uint64_t imageRgbDifference(const eve::image::ImageData &a, const eve::image::ImageData &b) {
-    REQUIRE(a.getWidth() == b.getWidth());
-    REQUIRE(a.getHeight() == b.getHeight());
-    const auto *aBytes = static_cast<const uint8_t *>(a.getData());
-    const auto *bBytes = static_cast<const uint8_t *>(b.getData());
-    uint64_t difference = 0;
-    const size_t pixels = size_t(a.getWidth()) * size_t(a.getHeight());
-    for (size_t i = 0; i < pixels; ++i) {
-        for (size_t channel = 0; channel < 3; ++channel) {
-            const int delta = int(aBytes[i * 4u + channel]) - int(bBytes[i * 4u + channel]);
-            difference += uint64_t(delta < 0 ? -delta : delta);
-        }
-    }
-    return difference;
-}
-
-Graphics *headlessGraphics() {
-    Graphics *gfx = Graphics::create();
-    if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
-    gfx->setViewportSize(64, 64, 64, 64);
-    return gfx;
-}
-
-void writeParityArtifact(const eve::image::ImageData &image, const std::string &scene,
-                         const std::string &backend) {
-    const char *root = std::getenv("EVENGINE_RENDER_PARITY_DIR");
-    if (!root || root[0] == '\0') return;
-
-    [[maybe_unused]] auto *const               imageModule = eve::image::Image::create();
-    std::unique_ptr<eve::filesystem::FileData> png(
-        image.encode(medialoader::FormatHandler::ENCODED_PNG, (scene + ".png").c_str(), false));
-    REQUIRE(png.get() != nullptr);
-
-    const std::filesystem::path directory = std::filesystem::path(root) / backend;
-    std::error_code ec;
-    std::filesystem::create_directories(directory, ec);
-    REQUIRE(!ec);
-
-    std::ofstream imageOut(directory / (scene + ".png"), std::ios::binary);
-    REQUIRE(imageOut.good());
-    imageOut.write(static_cast<const char *>(png->getData()),
-                   static_cast<std::streamsize>(png->getSize()));
-    REQUIRE(imageOut.good());
-
-    std::ofstream manifest(directory / (scene + ".json"));
-    REQUIRE(manifest.good());
-    const bool lit3d = scene.starts_with("pbr_") || scene.starts_with("surface_") ||
-                       scene.starts_with("masked_") || scene.starts_with("gbuffer_") ||
-                       scene.starts_with("decal_") || scene == "dither" || scene == "coverage";
-    const double meanLimit = (lit3d ? 6.0 : 2.0) / 255.0;
-    const double p99Limit  = (lit3d ? 20.0 : 8.0) / 255.0;
-    manifest << "{\n"
-             << "  \"schema\": \"evengine.render-parity\",\n"
-             << "  \"version\": 1,\n"
-             << "  \"scene\": \"" << scene << "\",\n"
-             << "  \"backend\": \"" << backend << "\",\n"
-             << "  \"width\": " << image.getWidth() << ",\n"
-             << "  \"height\": " << image.getHeight() << ",\n"
-             << "  \"contract\": {\n"
-             << "    \"color_space\": \"srgb-linearized\",\n"
-             << "    \"alpha_coverage_delta_max\": 0.005,\n"
-             << "    \"mean_rgb_error_max\": " << meanLimit << ",\n"
-             << "    \"p99_rgb_error_max\": " << p99Limit << "\n"
-             << "  }\n"
-             << "}\n";
-    REQUIRE(manifest.good());
-}
-
-}  // namespace
-
-TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
-    Graphics *gfx = headlessGraphics();
-    REQUIRE(gfx != nullptr);
-
-    Canvas *flatTarget = gfx->newCanvas(64, 64);
-    REQUIRE(flatTarget != nullptr);
-    gfx->setCanvas(flatTarget);
-    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
-    PrimitiveCanvas2D flat;
-    PrimitivePaint    flatPaint;
-    flatPaint.mode         = PaintMode::FillAndStroke;
-    flatPaint.color        = Color(1.f, 0.1f, 0.05f, 1.f);
-    flatPaint.stroke.width = 3.f;
-    flatPaint.stroke.cap   = LineCap::Round;
-    flatPaint.stroke.join  = LineJoin::Round;
-    flat.drawRoundedRect({10.f, 12.f}, {54.f, 50.f}, {8.f, 8.f}, flatPaint);
-    gfx->drawPrimitiveCanvas(flat);
-    gfx->setCanvas();
-    std::unique_ptr<eve::image::ImageData> flatImage(flatTarget->newImageData());
-    REQUIRE(flatImage.get() != nullptr);
-    REQUIRE(pixel(*flatImage, 32, 32)[0] > 160);
-    writeParityArtifact(*flatImage, "primitive_2d_fill_stroke", gfx->getBackendName());
-
-    Canvas *spatialTarget = gfx->newCanvas(64, 64);
-    REQUIRE(spatialTarget != nullptr);
-    SceneDrawContext context;
-    context.viewportSize = {64, 64};
-    context.nearPlane    = 0.1f;
-    context.farPlane     = 10.f;
-    context.projection   = glm::perspectiveRH_ZO(glm::radians(60.f), 1.f, context.nearPlane, context.farPlane);
-    PrimitiveSceneCanvas3D spatial(context);
-    ScenePrimitivePaint    spatialPaint;
-    spatialPaint.mode         = PaintMode::FillAndStroke;
-    spatialPaint.color        = Color(0.05f, 0.9f, 0.2f, 1.f);
-    spatialPaint.stroke.width = 3.f;
-    spatialPaint.depth        = PrimitiveDepthMode::TestOnly;
-    spatial.drawDisk({0.f, 0.f, -2.f}, {0.f, 0.f, 1.f}, 0.55f, spatialPaint, 32);
-    gfx->begin3DFrameToCanvas(spatialTarget);
-    gfx->drawPrimitiveScene(spatial);
-    gfx->end3DFrameToCanvas();
-    std::unique_ptr<eve::image::ImageData> spatialImage(spatialTarget->newImageData());
-    REQUIRE(spatialImage.get() != nullptr);
-    const uint8_t *center = pixel(*spatialImage, 32, 32);
-    REQUIRE(center[1] > 140);
-    REQUIRE(center[1] > center[0] + 60);
-    writeParityArtifact(*spatialImage, "primitive_3d_depth_fill_stroke", gfx->getBackendName());
-}
 
 TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     Graphics *gfx = headlessGraphics();
