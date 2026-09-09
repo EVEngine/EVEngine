@@ -40,6 +40,13 @@ if(NOT _eve_test_src_text STREQUAL _eve_test_src_old)
 endif()
 list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
 
+# The FBX success fixtures construct files with Assimp's native exporter.
+# Emscripten uses UnityFbx.cpp's explicit provider-absent implementation, covered
+# separately by test/asset_import/UnityFbxUnavailable.cpp.
+if(EMSCRIPTEN)
+  list(FILTER all_test_cpp EXCLUDE REGEX "/asset_import_unity_fbx.cpp$")
+endif()
+
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
 endif()
@@ -217,6 +224,18 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  # Manual real-backend asset admission/visual probe; purchased inputs are never test fixtures.
+  if(TARGET EVAsset_graphics AND TARGET EVAsset_scene)
+    add_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
+    add_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
+    target_link_libraries(unity_sprite_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_link_libraries(unity_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+                          ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    if(WIN32)
+      target_link_libraries(unity_graphics_probe EVBacktrace)
+    endif()
+  endif()
   if(WIN32)
     # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
     # symbolized stack trace on unhandled exceptions (see test/main.cpp).

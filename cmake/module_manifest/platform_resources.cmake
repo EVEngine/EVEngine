@@ -11,6 +11,7 @@ eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME asset_import LAYER 1
                    DEPS asset data cmdline
+                   THIRDPARTY zlib assimp xxhash
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME i18n LAYER 1 SCRIPT I18n SLOT i18n
                    DEPS filesystem

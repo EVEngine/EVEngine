@@ -55,8 +55,10 @@ struct FlatNode {
 Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
     const AssetRef& sceneTemplate, const asset::EvpackCapabilities& capabilities,
     const SceneTemplateLoadLimits& limits) const {
-    auto payload = reader_.read(sceneTemplate, "eve.scene-template/1", capabilities,
-                                limits.maximumDecodedBytes);
+    auto payload = reader_.read(sceneTemplate, "eve.scene-template/2", capabilities, limits.maximumDecodedBytes);
+    // N-1 packs remain readable as hierarchy-only templates; version 1 cannot contain renderer fields.
+    if (!payload && payload.error()->code() == DiagnosticCode::TypeMismatch)
+        payload = reader_.read(sceneTemplate, "eve.scene-template/1", capabilities, limits.maximumDecodedBytes);
     if (!payload) return Result<LoadedSceneTemplate>::failure(payload.status());
     const asset::RuntimeAssetChunk* definition = nullptr;
     for (const auto& chunk : payload.value().chunks) {
@@ -79,14 +81,14 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
     const Value* coordinate = root ? field(*root, "coordinateSystem") : nullptr;
     const Value* nodesValue = root ? field(*root, "nodes") : nullptr;
     const auto* nodes = nodesValue ? nodesValue->getIf<Value::Array>() : nullptr;
-    if (!schema || !schema->isString() || schema->asString() != "eve.scene-template" ||
-        !version || !version->isInt64() || version->asInt() != 1 || !coordinate ||
-        !coordinate->isString() ||
-        coordinate->asString() != "right-handed-x-right-y-up-minus-z-forward" || !nodes ||
+    if (!schema || !schema->isString() || schema->asString() != "eve.scene-template" || !version ||
+        !version->isInt64() || version->asInt() != std::int64_t(payload.value().schemaVersion.value()) || !coordinate ||
+        !coordinate->isString() || coordinate->asString() != "right-handed-x-right-y-up-minus-z-forward" || !nodes ||
         nodes->empty() || nodes->size() > limits.maximumNodes)
         return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError,
                                             "scene-template metadata is invalid");
     std::map<std::uint64_t, FlatNode> flat;
+    std::set<SceneObjectId>           objectIds;
     constexpr float radiansToDegrees = 57.29577951308232f;
     for (std::size_t i = 0; i < nodes->size(); ++i) {
         const auto* node = (*nodes)[i].getIf<Value::Object>();
@@ -114,14 +116,25 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
                                                 "$.nodes[" + std::to_string(i) + "]");
         const float x = rotation[0] / length, y = rotation[1] / length;
         const float z = rotation[2] / length, w = rotation[3] / length;
-        const float pitch = std::atan2(2.f * (w * x + y * z), 1.f - 2.f * (x * x + y * y));
-        const float yaw = std::asin(std::clamp(2.f * (w * y - z * x), -1.f, 1.f));
-        const float roll = std::atan2(2.f * (w * z + x * y), 1.f - 2.f * (y * y + z * z));
+        // Scene TransformSystem composes Ry * Rx * Rz, not the common Rz * Ry * Rx convention.
+        const float     sinPitch = std::clamp(2.f * (w * x - y * z), -1.f, 1.f);
+        const float     pitch    = std::asin(sinPitch);
+        const bool      gimbal   = std::abs(sinPitch) > 0.999999f;
+        const float     yaw      = gimbal ? std::atan2(2.f * (w * y - x * z), 1.f - 2.f * (y * y + z * z))
+                                          : std::atan2(2.f * (x * z + w * y), 1.f - 2.f * (x * x + y * y));
+        const float     roll     = gimbal ? 0.f : std::atan2(2.f * (x * y + w * z), 1.f - 2.f * (x * x + z * z));
         scene::NodeDesc desc;
         desc.id = std::to_string(sourceId->asInt());
         desc.key = desc.id;
         desc.name = name->asString();
+        if (const auto* visible = field(*node, "visible")) {
+            if (!visible->isBool())
+                return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "invalid node visibility");
+            desc.visible = visible->asBool();
+        }
         desc.persistentId = *persistentId;
+        if (!objectIds.insert(*persistentId).second)
+            return failure<LoadedSceneTemplate>(DiagnosticCode::Conflict, "duplicate scene object identity");
         desc.withPosition(position[0], position[1], position[2])
             .withRotation(yaw * radiansToDegrees, pitch * radiansToDegrees,
                           roll * radiansToDegrees)
@@ -169,8 +182,39 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
     if (resultRoot.children.empty() || completed.size() != flat.size())
         return failure<LoadedSceneTemplate>(DiagnosticCode::Conflict,
                                             "scene hierarchy has no valid root");
+    std::vector<SceneMeshBinding> bindings;
+    const Value*                  renderersValue = field(*root, "renderers");
+    if (version->asInt() == 1 && renderersValue)
+        return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "version 1 cannot carry renderer bindings");
+    if (version->asInt() == 2) {
+        const auto* renderers = renderersValue ? renderersValue->getIf<Value::Array>() : nullptr;
+        if (!renderers || renderers->size() > limits.maximumNodes)
+            return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "invalid renderer bindings");
+        std::set<SceneObjectId> bound;
+        for (const auto& value : *renderers) {
+            const auto* binding  = value.getIf<Value::Object>();
+            const auto* id       = binding ? field(*binding, "objectId") : nullptr;
+            const auto* mesh     = binding ? field(*binding, "mesh") : nullptr;
+            const auto* material = binding ? field(*binding, "material") : nullptr;
+            const auto* enabled  = binding ? field(*binding, "enabled") : nullptr;
+            if (!id || !id->isString() || !mesh || !mesh->isString() || !material || !material->isString() ||
+                !enabled || !enabled->isBool())
+                return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "malformed renderer binding");
+            auto       object        = SceneObjectId::parse(id->asString());
+            auto       meshRef       = AssetRef::parse(mesh->asString());
+            auto       materialRef   = AssetRef::parse(material->asString());
+            const bool meshValid     = meshRef.ok();
+            const bool materialValid = materialRef.ok();
+            if (!object || !objectIds.contains(*object) || !bound.insert(*object).second || !meshValid ||
+                !materialValid)
+                return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError,
+                                                    "renderer identity or reference is invalid");
+            bindings.push_back(
+                {*object, std::move(meshRef).takeValue(), std::move(materialRef).takeValue(), enabled->asBool()});
+        }
+    }
     return Result<LoadedSceneTemplate>::success(
-        {sceneTemplate, std::move(resultRoot), std::move(payload).takeValue().variant});
+        {sceneTemplate, std::move(resultRoot), std::move(payload).takeValue().variant, std::move(bindings)});
 }
 
 }  // namespace eve::asset_scene

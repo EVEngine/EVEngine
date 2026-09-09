@@ -196,9 +196,11 @@ function(eve_thirdparty_libs out_var)
             endif()
 
         elseif(g STREQUAL "xxhash")
-            # Only the WASM aggregate installs xxHash as a separate archive;
-            # elsewhere it is folded into the libraries that use it.
-            if(_emscripten)
+            if(_win_debug)
+                list(APPEND _libs xxHashmdd)
+            elseif(WIN32)
+                list(APPEND _libs xxHashmd)
+            else()
                 list(APPEND _libs xxHash)
             endif()
 
