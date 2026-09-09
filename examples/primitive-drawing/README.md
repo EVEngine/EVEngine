@@ -20,5 +20,5 @@ Windows Debug：
 make run/win32-debug GAME=examples/primitive-drawing
 ```
 
-当前 Squirrel 长期对象入口提供 line、sphere、AABB。圆盘、弧、OBB、网格、胶囊、圆柱、
-圆锥、箭头和视锥目前通过 C++ `PrimitiveSceneCanvas3D` 使用。
+Squirrel 长期对象入口现已覆盖线、折线、球、AABB、圆盘、弧、OBB、网格、胶囊、圆柱、
+圆锥、箭头和视锥。示例新增填充圆锥和圆帽箭头；完整参数见 graphics 用户文档。

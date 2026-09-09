@@ -941,6 +941,7 @@ private:
     std::array<vk::Pipeline, kPrimitive3DPipelineVariants> offscreenPrimitive3DPipelines{};
     std::array<vk::Pipeline, kPrimitive3DPipelineVariants> hdrOffscreenPrimitive3DPipelines{};
     std::vector<vkb::HostVertexBuffer>                     offscreenPrimitive3DBufs;
+    std::size_t                                            offscreenPrimitive3DDrawIndex = 0;
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -1552,6 +1553,7 @@ private:
         std::vector<vkb::HostVertexBuffer> texBufs;
         std::vector<vkb::HostVertexBuffer> uiTexBufs;
         std::vector<vkb::HostVertexBuffer> primitive3DBufs;
+        std::size_t                        primitive3DDrawIndex = 0;
     };
     std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot
     Frame2DBuffers offscreenBuffers;             // synchronous offscreen path
