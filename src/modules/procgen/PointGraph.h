@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
 
@@ -7,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -102,7 +104,21 @@ public:
     bool setNodeSubgraph(const std::string& id, PointGraph* graph, const std::string& inputNode,
                          const std::string& outputNode);
 
-    /** @brief Evaluate one node and return a caller-owned result, or nullptr on failure. */
+    /**
+     * @brief Evaluate an output and return an independent owning point snapshot.
+     * @param outputId Output node identity.
+     * @return Owning points or structured node/path diagnostics; failure publishes no output.
+     * @thread Graph-owning thread only; not reentrant. Successful intermediate caches may survive failure.
+     * @ownership The value and diagnostics remain valid after graph mutation or destruction.
+     */
+    [[nodiscard]] Result<PointSet> executeResult(std::string_view outputId);
+    /**
+     * @brief Validate configured nodes and nested graphs without executing them.
+     * @return Structured topology/configuration diagnostics, independent of getError().
+     * @thread Graph-owning thread only; not reentrant. Does not mutate node results.
+     */
+    [[nodiscard]] Result<void> validateResult() const;
+    /** @brief Compatibility-only projection of executeResult; caller deletes the result, nullptr means failure. */
     PointSet* execute(const std::string& outputId);
     /** @brief Limit uncached nodes evaluated by one execute call; zero disables the limit. */
     void setExecutionNodeBudget(int nodes);
@@ -123,8 +139,10 @@ public:
     void requestCancel();
     void resetCancellation();
     bool wasCancelled() const;
-    /** @brief Validate ids, operations, required inputs and graph acyclicity. */
+    /** @brief Compatibility-only bool projection of validateResult; diagnostics are rendered by getError(). */
     bool validate();
+    /** @brief Render the last compatibility execute/validate or legacy authoring error; canonical Result calls do not
+     * update it. */
     std::string getError() const;
     void        clearCache();
     /** @brief Monotonic topology/parameter revision used by asset and preview caches. */
@@ -240,15 +258,16 @@ private:
         std::unordered_map<std::string, std::size_t> segmentByOutput;
     };
 
-    const PointSet* evaluate(const std::string& id, std::unordered_map<std::string, int>& states);
-    const PointSet* evaluateTransformSegment(const std::string& id, std::unordered_map<std::string, int>& states);
+    [[nodiscard]] ResultRef<const PointSet>           evaluate(const std::string&                    id,
+                                                               std::unordered_map<std::string, int>& states);
+    [[nodiscard]] Result<OptionalRef<const PointSet>> evaluateTransformSegment(
+        const std::string& id, std::unordered_map<std::string, int>& states);
     PointSet*       materializeNodeOutput(const std::string& id) const;
-    bool            validateNode(const std::string& id,
-                                 std::unordered_map<std::string, int>& states);
+    [[nodiscard]] Result<void> validateNode(const std::string& id, std::unordered_map<std::string, int>& states) const;
     void            invalidate();
     void            invalidateFrom(const std::string& id);
     void            invalidateTopology(const std::string& changedNode);
-    void            compileExecutionPlan(const std::string& outputId);
+    [[nodiscard]] Result<void> compileExecutionPlan(const std::string& outputId);
     float           floatValue(const Node& node, const std::string& key, float fallback) const;
     int             intValue(const Node& node, const std::string& key, int fallback) const;
     std::string     stringValue(const Node& node, const std::string& key,

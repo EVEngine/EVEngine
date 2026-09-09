@@ -6,6 +6,12 @@
 
 ## Result 投影约定
 
+PointGraph 的 `executeResult`、`validateResult` 以及 RuntimeGeneration 的
+`nextGenerationJob`、`completeGenerationJob`、`failGenerationJob`、`nextCleanupRequest`、
+`completeCleanupRequest` 已使用结构化 Result。领取成功但暂无任务时 `value == null`，不代表失败。
+旧图执行和调度方法只作为兼容投影保留；具体错误码、所有权和迁移窗口见
+[PointSet 管线](procgen/pointset-pipeline.md)。
+
 Procgen 的创建、生成、输出和事务提交 API 都返回统一的 Squirrel Result 表：
 `{ ok, code, hasValue, status, diagnostics, value }`。调用方必须先读取 `ok`；只有
 `ok == true` 时才读取 `value`。失败信息使用 `status.summary` 或结构化

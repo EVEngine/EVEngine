@@ -18,43 +18,46 @@ void PointGraph::invalidateTopology(const std::string& changedNode) {
     }
 }
 
-void PointGraph::compileExecutionPlan(const std::string& outputId) {
+Result<void> PointGraph::compileExecutionPlan(const std::string& outputId) {
     if (const auto found = executionPlans_.find(outputId); found != executionPlans_.end()) {
         executionPlan_ = found->second;
         std::erase(executionPlanRecency_, outputId);
         executionPlanRecency_.push_back(outputId);
-        return;
+        return Result<void>::success();
     }
     executionPlan_.reset();
 
     ExecutionPlan                           plan;
     std::unordered_map<std::string, int>    states;
-    std::function<void(const std::string&)> visit = [&](const std::string& id) {
-        if (!error_.empty() || states[id] == 2) return;
+    std::function<Result<void>(const std::string&)> visit = [&](const std::string& id) -> Result<void> {
+        if (states[id] == 2) return Result<void>::success();
         if (states[id] == 1) {
-            error_ = "cycle at node: " + id;
-            return;
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "cycle at node: " + id, id, {}, "procgen.pointGraph"));
         }
         const auto found = nodes_.find(id);
         if (found == nodes_.end()) {
-            error_ = "unknown node: " + id;
-            return;
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "unknown node: " + id, id, {}, "procgen.pointGraph"));
         }
         states[id]           = 1;
         const int inputCount = getOperationInputCount(found->second.operation);
         for (int input = 0; input < inputCount; ++input) {
             if (found->second.inputs[input].empty()) {
-                error_ = found->second.operation + " requires input " + std::to_string(input) + ": " + id;
-                return;
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                      found->second.operation + " requires input " + std::to_string(input) + ": " + id,
+                                      id, {}, "procgen.pointGraph"));
             }
-            visit(found->second.inputs[input]);
+            auto result = visit(found->second.inputs[input]);
+            if (!result.ok()) return result;
         }
-        if (!error_.empty()) return;
         states[id] = 2;
         plan.topologicalOrder.push_back(id);
+        return Result<void>::success();
     };
-    visit(outputId);
-    if (!error_.empty()) return;
+    auto visited = visit(outputId);
+    if (!visited.ok()) return visited;
 
     std::unordered_map<std::string, std::vector<std::string>> consumers;
     for (const std::string& id : plan.topologicalOrder) {
@@ -91,6 +94,7 @@ void PointGraph::compileExecutionPlan(const std::string& outputId) {
         executionPlanRecency_.erase(executionPlanRecency_.begin());
     }
     ++executionPlanBuildCount_;
+    return Result<void>::success();
 }
 
 }  // namespace eve::procgen

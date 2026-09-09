@@ -518,16 +518,29 @@ Result<void> RuntimeGeneration::failGenerationJob(const ProcgenGenerationJob& jo
 }
 
 ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
-    if (!isOwnerThread()) return nullptr;
+    auto result = nextCleanupRequest();
+    if (!result.ok()) return nullptr;
+    auto request = std::move(result).takeValue();
+    return request ? new ProcgenCellRequest(*request) : nullptr;
+}
+
+Result<std::optional<ProcgenCellRequest>> RuntimeGeneration::nextCleanupRequest() {
+    if (!isOwnerThread())
+        return Result<std::optional<ProcgenCellRequest>>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "runtime-generation scheduler called from a non-owner thread", "thread"));
     while (!cleanupQueue_.empty()) {
         const CellKey key = cleanupQueue_.front();
         cleanupQueue_.pop_front();
         const auto found = cells_.find(key);
         if (found == cells_.end() || found->second.state != State::Cleanup) continue;
         found->second.ticket = ++nextTicket_;
-        return makeRequest(key);
+        return Result<std::optional<ProcgenCellRequest>>::success(makeRequest(key));
     }
-    return nullptr;
+    return Result<std::optional<ProcgenCellRequest>>::success(std::nullopt);
+}
+
+Result<uint64_t> RuntimeGeneration::completeCleanupRequest(const ProcgenCellRequest& request) {
+    return completeCleanupsAtomic({&request});
 }
 
 bool RuntimeGeneration::isRequestCurrent(const ProcgenCellRequest* request) const {
@@ -710,16 +723,16 @@ size_t RuntimeGeneration::CellKeyHash::operator()(const CellKey& key) const {
     return hash;
 }
 
-ProcgenCellRequest* RuntimeGeneration::makeRequest(const CellKey& key) const {
-    auto* request     = new ProcgenCellRequest();
-    request->level_   = key.level;
-    request->x_       = key.x;
-    request->z_       = key.z;
-    request->seed_    = cellSeed(key);
+ProcgenCellRequest RuntimeGeneration::makeRequest(const CellKey& key) const {
+    ProcgenCellRequest request;
+    request.level_       = key.level;
+    request.x_           = key.x;
+    request.z_           = key.z;
+    request.seed_        = cellSeed(key);
     const auto found  = cells_.find(key);
-    request->ticket_  = found == cells_.end() ? 0 : found->second.ticket;
-    request->schedulerId_ = schedulerId_;
-    request->cellSize_ = levels_[size_t(key.level)].cellSize;
+    request.ticket_      = found == cells_.end() ? 0 : found->second.ticket;
+    request.schedulerId_ = schedulerId_;
+    request.cellSize_    = levels_[size_t(key.level)].cellSize;
     return request;
 }
 

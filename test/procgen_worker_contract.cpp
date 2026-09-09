@@ -81,7 +81,8 @@ TEST_CASE("procgen.worker.legacyIssueRejectsWrongThread") {
 TEST_CASE("procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary") {
     RuntimeGeneration runtime(4201);
     REQUIRE(runtime.isOwnerThread());
-    REQUIRE_EQ(runtime.addLevel(10.f, 4.f, 2.f), 0);
+    const int addedLevel = runtime.addLevel(10.f, 4.f, 2.f);
+    REQUIRE_EQ(addedLevel, 0);
     runtime.updateSource(5.f, 5.f, 1.f, 0.f);
 
     auto issued = runtime.nextGenerationJob();
@@ -107,7 +108,8 @@ TEST_CASE("procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary") {
 
 TEST_CASE("procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation") {
     RuntimeGeneration runtime(4202);
-    REQUIRE_EQ(runtime.addLevel(10.f, 4.f, 2.f), 0);
+    const int         addedLevel = runtime.addLevel(10.f, 4.f, 2.f);
+    REQUIRE_EQ(addedLevel, 0);
     runtime.updateSource(5.f, 5.f, 1.f, 0.f);
     auto issued = runtime.nextGenerationJob();
     REQUIRE(issued.ok());

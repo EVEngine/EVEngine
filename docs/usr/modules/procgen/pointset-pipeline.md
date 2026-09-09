@@ -392,6 +392,36 @@ CPU 节点段与无分支的 GPU transform 段；脚本仍然只需要构造和�
 计划不参与序列化；不可变计划不代表图实例线程安全，构图、执行与缓存管理仍由图所属线程负责。
 `getCompiledSegmentCount()` 和 `getExecutionPlanBuildCount()` 可用于确认计划划分与复用情况。
 
+执行与验证的 C++ 主入口为 `executeResult(outputId) -> Result<PointSet>` 与
+`validateResult() -> Result<void>`，都必须检查返回值。编译、递归求值与子图失败直接传播
+结构化诊断，不从 `getError()` 文本反推错误。诊断携带节点 `path` 和 `procgen.pointGraph`
+来源；缺失输出为 `NotFound`，环为 `Conflict`，配置或点数预算错误为 `InvalidArgument`，
+取消及执行节点预算中止为 `Cancelled`。旧 biome/grammar 生成器失败在调用边界转成 `Failed`；
+本次未改写这些生成器及 PointCompute 自身的历史接口。
+成功结果独立拥有点数据；失败不返回部分输出，但已完成的中间节点缓存可以保留。
+GPU 失败仍按已声明契约回退 CPU，并通过 `getComputeFallbackReason()` 保持可观察。
+
+Squirrel 同名入口返回公共 Result 表，`executeResult().value` 是 VM 拥有的 PointSet：
+
+```nut
+local execution = graph.executeResult("output");
+if (!execution.ok) throw execution.status.summary;
+local generated = execution.value;
+```
+
+`execute()/validate()/getError()` 仅作历史兼容投影；内部执行、子图和编辑器预览不依赖它们。
+迁移跟踪为 PR #345，owner 为 procgen；本兼容窗口保留现有脚本及旧 C++ 调用点，待这些调用点
+迁移且兼容测试退役后删除。它们不作为新代码的默认入口，`getError()` 只描述最近一次兼容调用。
+
+RuntimeGeneration 的主调度入口为 `nextGenerationJob`、`completeGenerationJob`、
+`failGenerationJob`、`nextCleanupRequest`、`completeCleanupRequest`。C++ 返回带 `[[nodiscard]]`
+的 Result；两个领取接口以成功的空 optional 表示暂时无工作，而错误线程返回失败。
+清理 request 自持 ticket 和 scheduler 身份，复制不延长 scheduler 生命周期；重复、跨 scheduler
+或过期提交失败且不删除 cell。所有领取与提交均在 owner thread，worker 只传递自持数据。
+Squirrel 的五个同名方法返回公共 Result 表，成功但无工作为 `value == null`；生成提交与清理提交的
+`value` 分别为十进制 revision 和清理数量字符串。旧 `nextGenerate/nextCleanup/completeGeneration/
+failGeneration/completeCleanup` 是同一 PR #345 迁移窗口内的兼容投影，不是另一套调度实现。
+
 子图节点将首个输入写入嵌套图指定的 input node，并返回指定 output node：
 
 ```nut

@@ -249,11 +249,26 @@ public:
      * @reentrant Not reentrant for this RuntimeGeneration.
      */
     [[nodiscard]] Result<void> failGenerationJob(const ProcgenGenerationJob& job);
+    /**
+     * @brief Claim an owning cleanup ticket, or an empty optional when no cleanup is pending.
+     * @return Independent request value or a structured wrong-thread diagnostic.
+     * @thread Scheduler-owning thread only; not reentrant. No callbacks are invoked.
+     * @ownership Copies survive scheduler destruction, but cannot commit to another scheduler.
+     */
+    [[nodiscard]] Result<std::optional<ProcgenCellRequest>> nextCleanupRequest();
+    /**
+     * @brief Commit one cleanup ticket after consumers have removed its generated content.
+     * @param request Owning ticket borrowed only for this call; never retained.
+     * @return Erased cell count or structured stale/foreign/thread failure without mutation.
+     * @thread Scheduler-owning thread only; not reentrant. No callbacks are invoked.
+     */
+    [[nodiscard]] Result<uint64_t> completeCleanupRequest(const ProcgenCellRequest& request);
     /** @brief Return whether the caller is the thread that constructed this scheduler. */
     bool isOwnerThread() const noexcept;
 
     /** @brief Compatibility facade returning a heap request; prefer nextGenerationJob(). */
     ProcgenCellRequest* nextGenerate();
+    /** @brief Compatibility-only heap projection of nextCleanupRequest; caller owns the returned request. */
     ProcgenCellRequest* nextCleanup();
     /**
      * @brief Test whether an issued generation or cleanup request still owns its scheduler ticket.
@@ -262,11 +277,11 @@ public:
      * @thread Call on the scheduler-owning thread between cooperative generation stages.
      */
     bool isRequestCurrent(const ProcgenCellRequest* request) const;
-    /** @brief Publish generated points for an issued request. */
+    /** @brief Compatibility-only bool projection of completeGenerationJob; request and output are borrowed. */
     bool completeGeneration(ProcgenCellRequest* request, PointSet* output);
-    /** @brief Return an issued request to the pending queue after failure or cancellation. */
+    /** @brief Compatibility-only bool projection of failGenerationJob; request is borrowed. */
     bool failGeneration(ProcgenCellRequest* request);
-    /** @brief Acknowledge cleanup after consumers have removed spawned content. */
+    /** @brief Compatibility-only bool projection of completeCleanupsAtomic; request is borrowed. */
     bool completeCleanup(ProcgenCellRequest* request);
     /**
      * @brief Atomically acknowledge several cleanup tickets owned by this scheduler.
@@ -369,7 +384,7 @@ private:
         bool                                            rangeReady          = false;
     };
 
-    ProcgenCellRequest* makeRequest(const CellKey& key) const;
+    ProcgenCellRequest                                 makeRequest(const CellKey& key) const;
     ProcgenGenerationJob                               makeGenerationJob(const CellKey& key) const;
     std::optional<ProcgenGenerationJob>                issueGenerationJob();
     [[nodiscard]] Result<std::reference_wrapper<Cell>> validateGenerationJob(const ProcgenGenerationJob& job);
