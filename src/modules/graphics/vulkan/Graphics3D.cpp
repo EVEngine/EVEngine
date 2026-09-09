@@ -170,7 +170,7 @@ void Graphics::ensureOffscreen3DResources() {
                     hdrOffscreen3DSurfacePipelines, hdrOffscreenPrimitive3DPipelines);
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
-        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         offscreen3DPool = dev->createCommandPool(poolInfo);
         vk::CommandBufferAllocateInfo allocInfo{};
         allocInfo.commandPool = offscreen3DPool;
@@ -1251,6 +1251,8 @@ void Graphics::buildDeferredFrameGraphs() {
         shadowDesc.aspect = vk::ImageAspectFlagBits::eDepth;
         shadowDesc.usage = vk::ImageUsageFlagBits::eSampled |
                            vk::ImageUsageFlagBits::eDepthStencilAttachment;
+        // Shadow descriptors sample the depth array in SHADER_READ_ONLY, matching
+        // the legacy shadow pass and the layout of every imported cascade.
         shadowDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         vk::ClearValue shadowClear{};
         shadowClear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};

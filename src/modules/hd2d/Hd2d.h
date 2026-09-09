@@ -13,7 +13,7 @@
 //   * Sprite3D   -- a camera-facing billboard quad in the 3D world carrying a
 //                   2D texture (a character / animation frame). It is an ECS
 //                   graphics::Renderable3D oriented toward the camera each
-//                   frame (cylindrical billboard, upright), so it composites
+//                   frame (screen-aligned billboard), so it composites
 //                   into the forward pass and casts shadows like any mesh.
 //                   Supports a sprite-sheet frame grid so existing 2D
 //                   animations play in 3D.
@@ -42,13 +42,16 @@ namespace eve::hd2d {
 /**
  * @brief Extrudes a 2D tile layer into a 3D terrain mesh (HD-2D ground).
  *
- * Coordinates map the layer's tileToWorld() X/Z plane onto world X/Z; the box
- * footprint per tile is tileW × tileH world units. The top face of every
+ * Coordinates map the layer's tileToWorld() top-left origin onto world X/Z;
+ * the footprint extends by tileW × tileH
+ * in positive X/Z. The top face of every
  * non-empty tile is textured with the tile's atlas region from the layer's
  * tileset; the side walls sample a configurable wall region of the same atlas
  * (default: a small region at the atlas origin). Per-tile elevation is read
  * from the tile's "height" custom data (0 when absent); each tile spans from
- * `elevation` down to `elevation - sideDepth`.
+ * `elevation` down to `elevation - sideDepth`. Zero depth emits only the top
+ * face. Tiled
+ * diagonal/horizontal/vertical flags transform the top UVs.
  */
 class TileMap3D {
 public:
@@ -96,14 +99,17 @@ private:
 /**
  * @brief Camera-facing 2D sprite billboard rendered inside the 3D scene.
  *
- * A unit quad is drawn through the alpha-cutout G-buffer + shadow extra-drawer
- * path (graphics/RenderSystem3D.h), so transparent sprite pixels discard and
- * the sprite casts a silhouette shadow like other billboard/card geometry. The
- * billboard is oriented toward the active camera each frame.
- *
- * 2D sprite-sheet animation: setFrameGrid(cols, rows) + setFrameIndex / play
- * advance a frame index; update(dt) steps the clock. This lets existing 2D
- * character animations run in 3D.
+ * A unit quad uses an ECS Renderable3D with a Graphics-owned masked material
+ * in the forward, G-buffer and shadow
+ * paths, so transparent pixels discard and
+ * the sprite casts a silhouette shadow like other billboard/card geometry.
+ * The billboard is oriented toward the attached camera each frame. Graphics owns
+ * its mesh, material and texture;
+ * they must outlive the sprite. Calls belong
+ * to the render thread and do not invoke user callbacks.
+ * 2D
+ * sprite-sheet animation: setFrameGrid(cols, rows) + setFrameIndex / play advance a frame index; update(dt) steps the
+ * clock. This lets existing 2D character animations run in 3D.
  */
 class Sprite3D {
 public:
@@ -123,11 +129,11 @@ public:
     void setFlipX(bool flip);
     void setFlipY(bool flip);
 
-    /** @brief Configure a sprite-sheet frame grid (cell frame 0 = top-left). */
+    /** @brief Configure a sprite-sheet grid (frame 0 = top-left); stops the previous clip. */
     void setFrameGrid(int columns, int rows);
     int getFrameGridColumns() const;
     int getFrameGridRows() const;
-    /** @brief Jump to a grid frame index; wraps within the grid. */
+    /** @brief Jump to a grid frame index, clamped within the grid. */
     void setFrameIndex(int index);
     int getFrameIndex() const;
     /** @brief Total grid frames. */
@@ -144,14 +150,38 @@ public:
     /**
      * @brief Advance the animation clock and re-orient the billboard toward the
      * attached camera. Call once per frame.
-     * @param dt Seconds elapsed since the last update.
+     * @param dt Seconds elapsed since the last update. Non-positive and non-finite
+     * values do not advance
+     * animation; camera orientation is still refreshed.
      */
     void update(float dt);
 
-    /** @brief Camera the billboard faces; null disables auto-orientation. */
+    /**
+     * @brief Borrow the camera used for screen alignment, including pitch/roll.
+     * @details Render-thread
+     * only, no callbacks. The camera must outlive this
+     * binding; detach with null before destroying it. Null or a
+     * degenerate
+     * camera basis preserves the last valid orientation. All sprites share the
+     * camera
+     * image-plane basis rather than pointing individually at its eye.
+     */
     void setCamera(graphics::Camera3D *camera);
 
-    /** @brief World position (billboard center). */
+    /**
+     * @brief Set the image-space pivot; (0,0) is visible top-left, (1,1) bottom-right.
+     * @param x Finite
+     * horizontal fraction; default 0.5.
+     * @param y Finite vertical fraction; default 0.5. Use 1 for bottom
+     * center.
+     * @pre Both values are finite. Values outside [0,1] allow an external pivot.
+     * @details
+     * Render-thread only; no callbacks. Position remains fixed while the
+     * geometry rotates/scales about this
+     * pivot. UV flips do not move the pivot.
+     */
+    void setPivot(float x, float y);
+    /** @brief World position of the pivot (center by default). */
     void setPosition(float x, float y, float z);
     float getPositionX() const;
     float getPositionY() const;
@@ -198,6 +228,7 @@ private:
     // placement
     float x_ = 0.f, y_ = 0.f, z_ = 0.f;
     float width_ = 1.f, height_ = 1.f;
+    float pivotX_ = 0.5f, pivotY_ = 0.5f;
     float tintR_ = 1.f, tintG_ = 1.f, tintB_ = 1.f, tintA_ = 1.f;
     bool visible_ = true;
 };

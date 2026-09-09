@@ -2,6 +2,8 @@
 # This file only carries the per-module build settings that cannot be expressed
 # in the manifest: extra include directories and compile definitions.
 
+include(${CMAKE_SOURCE_DIR}/cmake/shader_asset_validation.cmake)
+
 # --- sources that follow an optional dependency ------------------------------
 # graphics/Font.cpp is the only bridge from graphics into the font module, so it
 # comes out with font. (The Emscripten build already excluded it by name; the
@@ -302,6 +304,10 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
 endforeach()
 
 # --- per-module build settings ----------------------------------------------
+
+if(TARGET EVAsset_graphics)
+  eve_configure_shader_asset_validation(EVAsset_graphics)
+endif()
 
 eve_module_enabled(data _has_data)
 if(_has_data)

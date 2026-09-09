@@ -1,0 +1,38 @@
+{
+  "cell": 64,
+  "columns": 6,
+  "rows": 4,
+  "action": "walk",
+  "directions": [
+    "south",
+    "east",
+    "north",
+    "west"
+  ],
+  "rows_meta": [
+    {
+      "row": 0,
+      "action": "walk",
+      "direction": "south",
+      "frames": 6
+    },
+    {
+      "row": 1,
+      "action": "walk",
+      "direction": "east",
+      "frames": 6
+    },
+    {
+      "row": 2,
+      "action": "walk",
+      "direction": "north",
+      "frames": 6
+    },
+    {
+      "row": 3,
+      "action": "walk",
+      "direction": "west",
+      "frames": 6
+    }
+  ]
+}

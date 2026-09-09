@@ -9,6 +9,9 @@
 
 namespace eve::stylize {
 
+MeshEffectInstance::MeshEffectInstance(std::string style, std::map<std::string, float> defaults)
+    : style_(std::move(style), std::move(defaults)) {}
+
 MeshEffectInstance::MeshEffectInstance(std::string style) : style_(std::move(style)) {
     const StyleDefinition* definition = findStyleDefinition(style_.getStyle());
     if (!definition || !definition->mesh)

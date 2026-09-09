@@ -39,6 +39,8 @@ class MeshEffectInstance {
 public:
     /** @brief Construct an unbound effect from a registered mesh style. */
     explicit MeshEffectInstance(std::string style);
+    /** @brief Build external-style playback from an owning snapshot of resolved shader scalar defaults. */
+    MeshEffectInstance(std::string style, std::map<std::string, float> defaults);
 
     MeshEffectInstance(const MeshEffectInstance&) = delete;
     MeshEffectInstance& operator=(const MeshEffectInstance&) = delete;

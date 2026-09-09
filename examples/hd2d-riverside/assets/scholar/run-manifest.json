@@ -1,0 +1,78 @@
+{
+  "reference": {
+    "source_type": "file",
+    "source": "source/base.png",
+    "used_for_generation": true,
+    "origin": "original imagegen character concept",
+    "identity_notes": [
+      "plum bob haircut",
+      "round gold spectacles",
+      "mustard cape",
+      "burgundy skirt",
+      "blue book"
+    ]
+  },
+  "scope": {
+    "sizes": [
+      64
+    ],
+    "actions": [
+      "walk"
+    ],
+    "directions": [
+      "south",
+      "east",
+      "north",
+      "west"
+    ],
+    "frames": 6
+  },
+  "generation": {
+    "method": "imagegen",
+    "imagegen_output_path": "source/base.png",
+    "procedural": false,
+    "text_only": false,
+    "imported_contact_sheet": false
+  },
+  "strips": [
+    {
+      "cell": 64,
+      "action": "walk",
+      "direction": "south",
+      "method": "imagegen",
+      "imagegen_output_path": "source/walk-south.png",
+      "source_path": "64/generated/walk-south.png",
+      "prompt_path": "64/prompts/walk-south.txt"
+    },
+    {
+      "cell": 64,
+      "action": "walk",
+      "direction": "east",
+      "method": "imagegen",
+      "imagegen_output_path": "source/walk-east.png",
+      "source_path": "64/generated/walk-east.png",
+      "prompt_path": "64/prompts/walk-east.txt"
+    },
+    {
+      "cell": 64,
+      "action": "walk",
+      "direction": "north",
+      "method": "imagegen",
+      "imagegen_output_path": "source/walk-north.png",
+      "source_path": "64/generated/walk-north.png",
+      "prompt_path": "64/prompts/walk-north.txt"
+    },
+    {
+      "cell": 64,
+      "action": "walk",
+      "direction": "west",
+      "method": "imagegen",
+      "imagegen_output_path": "source/walk-west.png",
+      "source_path": "64/generated/walk-west.png",
+      "prompt_path": "64/prompts/walk-west.txt"
+    }
+  ],
+  "visual_review": {
+    "path": "64/qa/visual-review.json"
+  }
+}

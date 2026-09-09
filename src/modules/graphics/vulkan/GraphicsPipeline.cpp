@@ -1618,7 +1618,8 @@ void Graphics::createShadowResources() {
                 .addSampledDepthAttachment(vk::Format::eD32Sfloat)
                 .addSubpass(
                     vkb::SubpassBuilder().setDepthStencilAttachment(0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-                // Match cleared, then sampled FrameGraph cascade attachments.
+                // Imported cascades start undefined and finish sampled. Match the
+                // actual FrameGraph pass, including its single outgoing dependency.
                 .addDependency(
                     0, VK_SUBPASS_EXTERNAL,
                     vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
@@ -1629,7 +1630,7 @@ void Graphics::createShadowResources() {
                 .build();
         shadowRenderPass = shadowPass;
 
-        for (auto &slot : shadowMaps) {
+        for (auto& slot : shadowMaps) {
             for (uint32_t i = 0; i < layers; ++i) {
                 slot.framebuffers[i] =
                     shadowPass.createFramebuffer(device, size, size, {slot.image.layerAttachment(i)});
