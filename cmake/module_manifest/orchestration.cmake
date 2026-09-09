@@ -2,6 +2,10 @@
 # L5 / L6 -- aggregates and orchestration
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME asset_stylize DIR asset/stylize LAYER 5
+                   DEPS asset asset_graphics asset_import stylize graphics data
+                   GROUP 3d)
+
 # Renderables, bodies and audio sources attach through registered link kinds
 # (scene/SceneLink.h), so scene no longer depends on those modules. The two
 # picking entry points that take a Camera3D are implemented in the graphics

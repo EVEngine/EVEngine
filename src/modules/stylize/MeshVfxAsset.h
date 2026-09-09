@@ -108,6 +108,10 @@ public:
      * @return Owned instance or a diagnostic when a style or parameter is incompatible.
      */
     [[nodiscard]] static eve::Result<std::unique_ptr<MeshVfxAssetInstance>> create(const MeshVfxAsset& asset);
+    /** @brief Create with resolved external style defaults; maps are borrowed only during construction and copied into
+     * instances. */
+    [[nodiscard]] static eve::Result<std::unique_ptr<MeshVfxAssetInstance>> create(
+        const MeshVfxAsset& asset, const std::map<std::string, std::map<std::string, float>>& externalStyles);
 
     /** @brief Bind every layer to the same authoritative target handle. */
     void bindTarget(MeshEffectTargetHandle target);
@@ -139,7 +143,8 @@ public:
     [[nodiscard]] TrailEmitter& trail();
 
 private:
-    explicit MeshVfxAssetInstance(const MeshVfxAsset& asset);
+    explicit MeshVfxAssetInstance(const MeshVfxAsset&                                        asset,
+                                  const std::map<std::string, std::map<std::string, float>>& externalStyles);
 
     std::vector<std::unique_ptr<MeshEffectInstance>> layers_;
     std::vector<std::map<std::string, MeshVfxFloatCurve>> curves_;
