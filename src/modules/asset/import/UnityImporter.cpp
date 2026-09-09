@@ -51,7 +51,7 @@ std::optional<std::string> guidFromMeta(const UnityProjectImportRequest& request
     const auto found = request.files.find(assetPath + ".meta");
     if (found == request.files.end()) return std::nullopt;
     const std::string text(found->second.begin(), found->second.end());
-    auto              guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?$|\n))"));
+    auto              guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?\n|\r?$))"));
     if (guid) *guid = unity_detail::foldAscii(std::move(*guid));
     return guid;
 }
@@ -61,7 +61,7 @@ std::map<std::string, std::string> guidPaths(const UnityProjectImportRequest& re
     for (const auto& [path, bytes] : request.files) {
         if (!path.ends_with(".meta")) continue;
         const std::string text(bytes.begin(), bytes.end());
-        auto guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?$|\n))"));
+        auto guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?\n|\r?$))"));
         if (guid) result.emplace(unity_detail::foldAscii(*guid), path.substr(0, path.size() - 5));
     }
     return result;

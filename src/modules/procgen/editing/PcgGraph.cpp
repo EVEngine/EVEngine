@@ -385,17 +385,16 @@ PcgGraphPreviewResult PcgPointGraphDomain::preview(const GraphDocumentData& grap
                                        : runtime.getError()));
         return result;
     }
-    std::unique_ptr<procgen::PointSet> output(runtime.execute(outputNode));
-    if (!output) {
-        result.status = runtime.wasCancelled() ? EditorStatus::Cancelled : EditorStatus::Failed;
+    auto output = runtime.executeResult(outputNode);
+    if (!output.ok()) {
+        const bool cancelled = output.status().code() == eve::StatusCode::Cancelled;
+        result.status        = cancelled ? EditorStatus::Cancelled : EditorStatus::Failed;
         result.diagnostics.push_back(pcgDiagnostic(
-            runtime.wasCancelled() ? "editor.pcg.preview-cancelled"
-                                   : "editor.pcg.preview-execution-failed",
-            runtime.wasCancelled() ? DiagnosticSeverity::Info : DiagnosticSeverity::Error,
-            runtime.getError()));
+            cancelled ? "editor.pcg.preview-cancelled" : "editor.pcg.preview-execution-failed",
+            cancelled ? DiagnosticSeverity::Info : DiagnosticSeverity::Error, output.status().describe()));
         return result;
     }
-    result.outputCount = output->getCount();
+    result.outputCount = output.value().getCount();
     result.metrics.reserve(size_t(runtime.getMetricCount()));
     for (int index = 0; index < runtime.getMetricCount(); ++index) {
         PcgGraphPreviewMetric metric;

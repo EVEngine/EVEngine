@@ -36,6 +36,7 @@ Result<PreparedAssetImport> importSource(const UnityProjectImportRequest& reques
             DiagnosticCode::Unsupported, "a .meta GUID is required for stable collection asset identity", source.path);
     const auto ext = detail::extension(source.path);
     if (ext == "anim") return prepareUnitySpriteAnimation(request, source);
+    if (ext == "asset") return prepareUnityNativeMesh(request, source);
     if (ext == "fbx") return prepareUnityFbx(request, source);
     if (source.kind == UnitySourceKind::Material) return prepareUnityMaterial(request, source);
     auto identity      = request.package;
@@ -92,9 +93,25 @@ Result<PreparedAssetImport> prepareUnityCollection(const UnityProjectImportReque
     PreparedAssetImport out;
     out.manifest = std::move(manifest).takeValue();
     out.findings = index.findings;
+    UnityProjectImportRequest resolved      = request;
+    std::uint64_t             expandedBytes = 0;
+    for (const auto& source : index.assets) {
+        if (source.kind != UnitySourceKind::Prefab) continue;
+        const auto& bytes = request.files.at(source.path);
+        if (std::string(bytes.begin(), bytes.end()).find("!u!1001 ") == std::string::npos) continue;
+        auto expanded = expandUnityPrefab(request, index, source);
+        if (!expanded) return Result<PreparedAssetImport>::failure(expanded.status());
+        out.findings.insert(out.findings.end(), expanded.value().findings.begin(), expanded.value().findings.end());
+        if (expanded.value().bytes.size() > request.limits.maximumDecodedBytes ||
+            expandedBytes > request.limits.maximumDecodedBytes - expanded.value().bytes.size())
+            return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
+                                                        "aggregate Prefab expansion budget exceeded");
+        expandedBytes += expanded.value().bytes.size();
+        resolved.files[source.path] = std::move(expanded).takeValue().bytes;
+    }
     for (const auto& source : index.assets) {
         if (source.kind == UnitySourceKind::Folder) continue;
-        auto imported = importSource(request, source);
+        auto imported = importSource(resolved, source);
         if (!imported) {
             const auto* error = imported.status().primaryDiagnostic();
             if (!error || error->code() != DiagnosticCode::Unsupported)
@@ -110,7 +127,7 @@ Result<PreparedAssetImport> prepareUnityCollection(const UnityProjectImportReque
         return detail::failure<PreparedAssetImport>(
             DiagnosticCode::Unsupported,
             "Unity collection has no convertible assets; use asset scan to inspect all resource types");
-    auto bindings = bindUnityRenderers(request, index, out);
+    auto bindings = bindUnityRenderers(resolved, index, out);
     if (!bindings) return Result<PreparedAssetImport>::failure(bindings.status());
     Value::Object sourceHashes;
     for (const auto& [path, data] : request.files) {

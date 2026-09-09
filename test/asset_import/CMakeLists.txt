@@ -23,6 +23,8 @@ enable_testing()
 add_test(NAME asset.import.unitySource COMMAND unity_source_tests)
 
 add_library(unity_import_core STATIC
+    "${EVE_ROOT}/src/modules/asset/import/UnityPrefabExpansion.cpp"
+    "${EVE_ROOT}/src/modules/asset/import/UnityNativeMesh.cpp"
     "${EVE_ROOT}/src/modules/asset/import/UnitySpriteAnimation.cpp"
     "${EVE_ROOT}/src/engine/common/Utf8Validation.cpp"
     "${EVE_ROOT}/src/engine/common/Identity.cpp"
@@ -68,7 +70,7 @@ target_link_libraries(unity_import_core PUBLIC "${UTF8PROC_LIBRARY}" "${ZSTD_LIB
 add_executable(unity_collection_tests "${EVE_ROOT}/test/asset_import_unity_collection.cpp")
 target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_migration.cpp")
 target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_scene_bindings.cpp")
-target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_import_unity_sprite.cpp")
+target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_import_unity_sprite.cpp" "${EVE_ROOT}/test/asset_import_unity_native.cpp")
 target_link_libraries(unity_collection_tests PRIVATE unity_import_core)
 if(MSVC)
     target_compile_options(unity_collection_tests PRIVATE /utf-8 /EHsc)

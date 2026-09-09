@@ -552,6 +552,8 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointDelta.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGeneration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGenerationAsset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
   set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h

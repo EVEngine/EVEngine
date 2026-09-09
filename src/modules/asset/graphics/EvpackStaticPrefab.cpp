@@ -5,12 +5,14 @@
 #include "asset/scene/EvpackSceneTemplateLoader.h"
 #include "graphics/Graphics.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <functional>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
+#include <numeric>
 
 namespace eve::asset_graphics {
 namespace {
@@ -23,6 +25,8 @@ struct MaterialData {
     graphics::Color         color{1.f, 1.f, 1.f, 1.f};
     float                   metallic = 0.f, roughness = 1.f;
     std::optional<AssetRef> image;
+    bool                    transparent = false;
+    graphics::BlendMode     blend       = graphics::BlendMode::Alpha;
 };
 Result<MaterialData> material(const asset::EvpackResourceReader& reader, const AssetRef& ref,
                               const asset::EvpackCapabilities& caps) {
@@ -43,7 +47,7 @@ Result<MaterialData> material(const asset::EvpackResourceReader& reader, const A
     };
     const auto* version = field("schemaVersion");
     if (!equal("schema", "eve.material") || !version || !version->isInt64() || version->asInt() != 1 ||
-        !equal("shadingModel", "pbr") || !equal("surfaceMode", "opaque"))
+        !equal("shadingModel", "pbr") || (!equal("surfaceMode", "opaque") && !equal("surfaceMode", "transparent")))
         return fail<MaterialData>("unsupported material definition");
     auto scalar = [](const Value* value, float& output) {
         if (!value || !value->isNumeric()) return false;
@@ -53,6 +57,12 @@ Result<MaterialData> material(const asset::EvpackResourceReader& reader, const A
         return true;
     };
     MaterialData out;
+    out.transparent = equal("surfaceMode", "transparent");
+    if (out.transparent) {
+        if (!equal("blendMode", "alpha") && !equal("blendMode", "premultiplied"))
+            return fail<MaterialData>("invalid transparent blend mode");
+        if (equal("blendMode", "premultiplied")) out.blend = graphics::BlendMode::Premultiplied;
+    }
     const auto*  color    = field("baseColor");
     const auto*  channels = color ? color->getIf<Value::Array>() : nullptr;
     if (!channels || channels->size() != 4 || !scalar(&(*channels)[0], out.color.r) ||
@@ -66,6 +76,8 @@ Result<MaterialData> material(const asset::EvpackResourceReader& reader, const A
         if (!parsed) return Result<MaterialData>::failure(parsed.status());
         out.image = std::move(parsed).takeValue();
     }
+    if (out.image && out.transparent && out.blend == graphics::BlendMode::Premultiplied)
+        return fail<MaterialData>("premultiplied texture alpha is unsupported");
     return Result<MaterialData>::success(std::move(out));
 }
 }  // namespace
@@ -165,13 +177,29 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
     }
     return Result<std::unique_ptr<EvpackStaticPrefab>>::success(std::move(out));
 }
-Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform) const {
+Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform,
+                                      const std::array<float, 16>& cameraView) const {
     if (impl_->released) return fail<void>("prefab resources have been released");
     for (float value : transform)
         if (!std::isfinite(value)) return fail<void>("nonfinite instance transform");
+    for (float value : cameraView)
+        if (!std::isfinite(value)) return fail<void>("nonfinite camera view");
     const auto instance = glm::make_mat4(transform.data());
-    for (const auto& draw : impl_->draws) {
-        gfx.setMesh3DSurface(graphics::SurfaceMode::Opaque, graphics::BlendMode::Alpha, true, false, 0.5f, "cutoff");
+    const auto               view     = glm::make_mat4(cameraView.data());
+    std::vector<std::size_t> order(impl_->draws.size());
+    std::iota(order.begin(), order.end(), 0);
+    std::stable_sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
+        const auto& left  = impl_->draws[a];
+        const auto& right = impl_->draws[b];
+        if (left.material.transparent != right.material.transparent) return !left.material.transparent;
+        return left.material.transparent &&
+               (view * instance * left.transform)[3].z < (view * instance * right.transform)[3].z;
+    });
+    for (auto index : order) {
+        const auto& draw = impl_->draws[index];
+        gfx.setMesh3DSurface(
+            draw.material.transparent ? graphics::SurfaceMode::Transparent : graphics::SurfaceMode::Opaque,
+            draw.material.blend, !draw.material.transparent, false, 0.5f, "cutoff");
         gfx.setMesh3DMaterial(draw.material.metallic, draw.material.roughness);
         gfx.setMesh3DNormalTexture(nullptr);
         gfx.setMesh3DHeightTexture(nullptr);
@@ -179,7 +207,13 @@ Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<
         gfx.setMesh3DTexCellBomb(1.f, 0.f, 0.f);
         gfx.setMesh3DParallax(0.f);
         gfx.setMesh3DShadowReceive(true);
-        gfx.drawMesh(draw.mesh, instance * draw.transform, draw.image, draw.material.color);
+        auto color = draw.material.color;
+        if (draw.material.transparent && draw.material.blend == graphics::BlendMode::Premultiplied) {
+            color.r *= color.a;
+            color.g *= color.a;
+            color.b *= color.a;
+        }
+        gfx.drawMesh(draw.mesh, instance * draw.transform, draw.image, color);
     }
     return Result<void>::success();
 }

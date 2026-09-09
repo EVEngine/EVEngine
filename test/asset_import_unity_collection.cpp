@@ -53,6 +53,22 @@ MeshRenderer:
 }
 }  // namespace
 
+TEST_CASE("asset.import.unityCollectionAcceptsCrLfMetadata") {
+    auto request = collection();
+    for (auto& [path, data] : request.files) {
+        if (!path.ends_with(".meta")) continue;
+        std::string crlf;
+        for (const auto byte : data) {
+            if (byte == '\n') crlf += '\r';
+            crlf += static_cast<char>(byte);
+        }
+        data = bytes(crlf);
+    }
+    auto prepared = prepareUnityProjectImport(request);
+    REQUIRE(prepared.ok());
+    REQUIRE(prepared.value().manifest.entrypoints.contains("Assets/prop.prefab"));
+}
+
 TEST_CASE("asset.import.unityCollectionReportsNegativeComponentIdsWithoutLosingHierarchy") {
     auto       request  = collection();
     const auto collider = bytes("\n--- !u!65 &-4356345918748047990\nBoxCollider:\n  m_GameObject: {fileID: 1}\n");
@@ -159,16 +175,11 @@ TEST_CASE("asset.import.unityCollectionTracksMetadataChangesAndGuidCase") {
     REQUIRE(after.value().manifest.provenance.at("importKey").asString() != oldKey);
 }
 
-TEST_CASE("asset.import.unityCollectionDoesNotPublishEmptyNestedPrefabAsConverted") {
+TEST_CASE("asset.import.unityCollectionRejectsMalformedNestedPrefabBeforePublication") {
     auto request                        = collection();
     request.files["Assets/prop.prefab"] = bytes("%YAML 1.1\n--- !u!1001 &123\nPrefabInstance:\n");
     auto result                         = prepareUnityProjectImport(request);
-    REQUIRE(result.ok());
-    REQUIRE_EQ(result.value().manifest.assets.size(), std::size_t(1));
-    REQUIRE(!result.value().manifest.entrypoints.contains("Assets/prop.prefab"));
-    REQUIRE(std::any_of(result.value().findings.begin(), result.value().findings.end(), [](const auto& f) {
-        return f.sourcePath == "Assets/prop.prefab" && f.disposition == ImportDisposition::Unsupported;
-    }));
+    REQUIRE(!result.ok());
 }
 
 TEST_CASE("asset.import.unityPackageAndDirectoryProduceIdenticalCanonicalArchive") {

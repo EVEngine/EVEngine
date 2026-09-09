@@ -46,16 +46,22 @@ eve asset cook MyAssets.eva --target windows-x86_64-vulkan --out MyAssets.evpack
   正数 globalScale 和 file scale。轴向转换为 `(-x,y,-z)`，UV 转为 `(u,1-v)`，
   单位比例为 `UnitScaleFactor * 0.01 * globalScale`。旧 fileID、蒙皮和动画明确不支持。
   Web 没有 Assimp provider 时明确报告 Unsupported。额外顶点流不被伪装成已转换。
-- Material：内置 Standard 的 opaque metallic/roughness、baseColor、主贴图及其依赖；
-  非单位贴图变换、自定义 shader 和透明模式尚未转换。其他保存属性/关键字单独报告。
-- Prefab：直接 GameObject/Transform 层级、可见性，以及 GUID/fileID 可准确解析的单材质
-  MeshFilter/MeshRenderer 绑定。Collider、RectTransform 布局、脚本和其他组件逐项报告。
+- 原生 Mesh：文本 `.asset` Mesh version 9，未压缩、单 stream float32 position/normal/UV0、
+  16/32 位三角索引。反射 Z、反转绕序、翻转 UV 的 V；非空子网格分别生成规范网格，
+  空子网格保留材质槽编号。骨骼、blend shape、外部流不支持；额外顶点通道保留并报告。
+- Material：内置 Standard 的 opaque、Fade、无贴图 Transparent，保留 metallic/roughness、
+  baseColor、主贴图及其依赖。透明绘制禁用深度写入，支持 alpha/premultiplied；非单位
+  贴图变换、自定义 shader 和带纹理 alpha 的 premultiplied Standard 尚未转换。
+- Prefab：层级、可见性和多材质槽绑定；支持嵌套实例、stripped 引用、名称、变换、
+  可见性、renderer enable、Mesh 引用覆盖与删除继承组件。每个非空子网格生成独立的
+  绘制子节点。循环、身份冲突、超预算及非法覆盖拒绝发布；失效 override 保留诊断。
+  Collider 行为、RectTransform 布局、脚本和其他组件逐项报告。
 - 批量输出：支持的 canonical 资产进入 `.eva`；原始文件及 `.meta` 保存在
   `sources/unity/` 作为不可变来源记录，不作为可执行组件或第二份可变领域状态。
   `reports/import.json` 记录源文件哈希、转换结果和未支持项。只有未支持资源的包会失败，
   不发布一个看似成功的空资源包。
 
-尚未完成：多材质子网格路由、嵌套 Prefab/Variant 覆盖、角色蒙皮与动画、
+尚未完成：任意组件/数组的 Prefab Variant 覆盖、角色蒙皮与动画、
 独立 Sprite 资产、九宫格/UI 行为、Animator 状态机、AudioClip/字体 canonical 转换，以及编辑器拖放/预览流程。
 这些属于后续保真转换工作，不能以本阶段的索引或源文件保留代替验收。
 
@@ -102,11 +108,14 @@ prepare 不修改项目/数据库；成功候选仍由现有 AtomicAssetPackageS
 `renderers` 数组的每项包含持久 `objectId`、`mesh`/`material` AssetRef 与 `enabled`。
 版本 1 经 migration 添加空 renderers，保留未知字段；版本 2 消费者忽略未知字段但拒绝
 未知版本、重复对象、悬空节点、非法引用及版本 1 中未版本化的 renderers。
-`eve.material/1` 定义 `shadingModel=pbr`、`surfaceMode=opaque`、四分量 baseColor、
-归一化 metallic/roughness 和可选 baseColorTexture；未知字段忽略，未知版本拒绝。
+`eve.material/1` 定义 `shadingModel=pbr`、`surfaceMode=opaque|transparent`、四分量 baseColor、
+归一化 metallic/roughness 和可选 baseColorTexture。透明模式要求 `blendMode=alpha|premultiplied`；
+未知字段忽略，未知版本和不支持的模式拒绝。此 schema 在本 PR 引入，没有旧版迁移。
+子网格使用现有 scene-template/2 子节点，不新增容器或运行时 mesh schema。
 
 `EvpackStaticPrefab::load` 消费 scene-template、mesh、material、image 并返回独占 owning
-候选；`draw` 在现有 3D pass 中提交静态 PBR 绘制。创建/绘制/释放/析构均在 graphics
+候选；`draw` 显式接收 instance transform 和 camera view，先画不透明，再按节点原点深度
+排列本 Prefab 内透明绘制；多个 Prefab 间由调用方排序。创建/绘制/释放/析构均在 graphics
 线程，mesh/image factory 必须活到候选释放之后。失败清理本次已上传资源，不修改旧候选；
 重导入先 load 新候选再交换。`release` 可以重试失败释放，析构报告未释放错误。
 该入口不创建 ECS/Scene Link，也不自动提交 shadow-caster pass，未支持项会记录在报告中。
@@ -170,3 +179,23 @@ Windows 构建命令同样通过 `cmake/with-msvc.cmd` 执行；环境变量
 不安装或执行其中的依赖；普通 GUID 资产的路径仍限制在 Assets 下。
 负数的非层级组件 ID 保留在未支持报告中，不再阻断层级导入；负数的
 GameObject/Transform ID 仍明确报告不支持 scene-template/1 转换。
+
+### Snaps Prototype 实测
+
+`Snaps Prototype Asian Residential` 与 `Snaps Prototype School` 的原始包使用
+CRLF `.meta`，GUID 读取支持这种行尾。两个包和共享目录均完成导入和 cook：
+
+- Asian Residential：358 个源 Mesh → 484 个运行时子网格；353 个可绘制 Prefab、
+  16 个材质、2 张图像，2509 个 renderer bindings。
+- School：377 个源 Mesh → 502 个运行时子网格；333 个可绘制 Prefab、
+  5 个材质、2 张图像，2078 个 renderer bindings。
+- 共享目录：986 个子网格、686 个 Prefab、21 个材质、2 张图像，共 4587 个绑定。
+  2683 个规范文件与分别导入两个包后的并集逐字节一致。
+
+生产运行时加载器逐个验证引用及 factory lease 回收；Vulkan Canvas 回读验证完整住宅
+和学校入口。碰撞体、脚本和额外顶点通道仍未转换，不代表 Unity 光照、阴影或全部
+Standard shader 功能的复刻。购买的资源、生成包和预览不入库。
+
+预览探针最后可加根节点名称，如 `ResidentialBuilding_A_snaps004` 或
+`Highschool_Entrance_Snaps014`。嵌套引用处理参考 Unity 的
+[PrefabInstance 序列化说明](https://unity.com/blog/engine-platform/understanding-unitys-serialization-language-yaml)。
