@@ -1884,7 +1884,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     vkb::DescriptorSetUpdater updater(17, 17, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DClusteredUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1898,7 +1898,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
         .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
         .buffer(st.indicesBuf.buffer, 0, vk::DeviceSize(st.indicesCap))
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.shadowRing.buffer, 0, fslots.shadowRing.size)
+        .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)

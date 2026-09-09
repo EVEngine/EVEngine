@@ -1,6 +1,7 @@
 #include "asset/import/UnityImporter.h"
 
 #include "asset/import/ImportCommon.h"
+#include "asset/import/UnitySourceInternal.h"
 
 #include <cmath>
 #include <charconv>
@@ -50,7 +51,9 @@ std::optional<std::string> guidFromMeta(const UnityProjectImportRequest& request
     const auto found = request.files.find(assetPath + ".meta");
     if (found == request.files.end()) return std::nullopt;
     const std::string text(found->second.begin(), found->second.end());
-    return firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?$|\n))"));
+    auto              guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?\n|\r?$))"));
+    if (guid) *guid = unity_detail::foldAscii(std::move(*guid));
+    return guid;
 }
 
 std::map<std::string, std::string> guidPaths(const UnityProjectImportRequest& request) {
@@ -58,8 +61,8 @@ std::map<std::string, std::string> guidPaths(const UnityProjectImportRequest& re
     for (const auto& [path, bytes] : request.files) {
         if (!path.ends_with(".meta")) continue;
         const std::string text(bytes.begin(), bytes.end());
-        auto guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?$|\n))"));
-        if (guid) result.emplace(*guid, path.substr(0, path.size() - 5));
+        auto guid = firstMatch(text, std::regex(R"((?:^|\n)guid:\s*([0-9a-fA-F]{32})(?:\r?\n|\r?$))"));
+        if (guid) result.emplace(unity_detail::foldAscii(*guid), path.substr(0, path.size() - 5));
     }
     return result;
 }
@@ -154,7 +157,7 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest& requ
         auto guid = firstMatch(entry, std::regex(R"(guid:\s*([0-9a-fA-F]{32}))"));
         if (!guid) continue;
         CanonicalTerrainLayer layer;
-        const auto resolved = paths.find(*guid);
+        const auto            resolved = paths.find(unity_detail::foldAscii(*guid));
         layer.name = resolved == paths.end() ? *guid : resolved->second;
         if (resolved != paths.end()) {
             auto layerText = textFile(request, resolved->second);
@@ -221,7 +224,7 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest& requ
 }
 
 struct UnityObject {
-    std::uint64_t fileId = 0;
+    std::int64_t  fileId  = 0;
     std::uint32_t classId = 0;
     std::string body;
 };
@@ -236,11 +239,12 @@ std::vector<UnityObject> documents(std::string_view yaml) {
         const auto parsedId = std::from_chars(signedText.data(), signedText.data() + signedText.size(), signedId);
         const auto classText = (*it)[1].str();
         const auto classId = parseUnsignedText(classText);
-        if (parsedId.ec != std::errc{} || parsedId.ptr != signedText.data() + signedText.size() ||
-            signedId < 0 || !classId || *classId > std::numeric_limits<std::uint32_t>::max()) continue;
+        if (parsedId.ec != std::errc{} || parsedId.ptr != signedText.data() + signedText.size() || !classId ||
+            *classId > std::numeric_limits<std::uint32_t>::max())
+            continue;
         starts.push_back({static_cast<std::size_t>((*it).position()),
                           static_cast<std::size_t>((*it).position() + (*it).length()),
-                          {static_cast<std::uint64_t>(signedId), static_cast<std::uint32_t>(*classId), {}}});
+                          {signedId, static_cast<std::uint32_t>(*classId), {}}});
     }
     std::vector<UnityObject> result;
     for (std::size_t index = 0; index < starts.size(); ++index) {
@@ -252,25 +256,38 @@ std::vector<UnityObject> documents(std::string_view yaml) {
 }
 
 Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAssetImport& output,
-                          std::vector<ImportFinding>& findings) {
-    if (request.prefabPath.empty()) return Result<void>::success();
-    auto text = textFile(request, request.prefabPath);
+                          std::vector<ImportFinding>& findings, const std::string& prefabPath) {
+    if (prefabPath.empty()) return Result<void>::success();
+    auto text = textFile(request, prefabPath);
     if (!text) return Result<void>::failure(text.status());
-    const auto prefabGuid = guidFromMeta(request, request.prefabPath);
+    if (std::regex_search(text.value(), std::regex(R"((?:^|\n)---\s*!u!(?:1|4|224)\s*&-)")))
+        return detail::failure<void>(
+            DiagnosticCode::Unsupported,
+            "prefab signed hierarchy IDs are indexed but cannot yet be represented by scene-template/1", prefabPath);
+    const auto prefabGuid = guidFromMeta(request, prefabPath);
     if (!prefabGuid)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                       "Unity prefab .meta GUID is required",
-                                                       request.prefabPath + ".meta", {}, "asset.import.unity"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Unity prefab .meta GUID is required",
+                                                       prefabPath + ".meta", {}, "asset.import.unity"));
     const auto objects = documents(text.value());
+    if (objects.size() > request.limits.maximumAssets)
+        return detail::failure<void>(DiagnosticCode::InvalidArgument, "Unity prefab object count exceeds budget",
+                                     prefabPath);
     std::map<std::uint64_t, std::string> gameNames;
+    std::map<std::uint64_t, bool>        gameVisibility;
     for (const auto& object : objects) {
         if (object.classId == 1) {
             auto name = firstMatch(object.body, std::regex(R"(m_Name:\s*([^\r\n]+))"));
             gameNames[object.fileId] = name.value_or("GameObject");
+            gameVisibility[object.fileId] = !std::regex_search(object.body, std::regex(R"(m_IsActive:\s*0(?:\s|$))"));
         } else if (object.classId == 114) {
-            findings.push_back({request.prefabPath, "MonoBehaviour:" + std::to_string(object.fileId),
+            findings.push_back({prefabPath, "MonoBehaviour:" + std::to_string(object.fileId),
                                 ImportDisposition::Unsupported,
                                 "C# behaviour is not executed or translated by the data importer"});
+        } else if (object.classId != 4) {
+            findings.push_back(
+                {prefabPath, "Prefab.component:" + std::to_string(object.classId) + ":" + std::to_string(object.fileId),
+                 ImportDisposition::Unsupported,
+                 "component behavior is not converted; only GameObject/Transform hierarchy is available"});
         }
     }
     Value::Array nodes;
@@ -285,10 +302,11 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
         auto vector = [&](const std::regex& regex, std::size_t count, float* target, bool reflect) -> Result<void> {
             for (std::size_t component = 0; component < count; ++component) {
                 auto field = firstMatch(object.body, regex, component + 1);
-                if (!field) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
-                                                                           "Unity transform field is missing",
-                                                                           request.prefabPath, {}, "asset.import.unity"));
-                auto parsed = parseFloat(*field, request.prefabPath);
+                if (!field)
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                   "Unity transform field is missing", prefabPath, {},
+                                                                   "asset.import.unity"));
+                auto parsed = parseFloat(*field, prefabPath);
                 if (!parsed) return Result<void>::failure(parsed.status());
                 target[component] = parsed.value();
             }
@@ -303,9 +321,8 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
         const auto gameIdValue = parseUnsignedText(*game);
         const auto parentIdValue = father ? parseUnsignedText(*father) : std::optional<std::uint64_t>(0);
         if (!gameIdValue || !parentIdValue)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
-                                                           "Unity transform fileID overflows",
-                                                           request.prefabPath, {}, "asset.import.unity"));
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "Unity transform fileID overflows", prefabPath, {}, "asset.import.unity"));
         const auto gameId = *gameIdValue;
         const std::uint64_t parentId = *parentIdValue;
         Value::Object node;
@@ -313,12 +330,17 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
                                                                   std::to_string(object.fileId)).format());
         node["sourceFileId"] = Value(static_cast<std::int64_t>(object.fileId));
         node["name"] = Value(gameNames.contains(gameId) ? gameNames[gameId] : "GameObject");
+        node["visible"]            = Value(!gameVisibility.contains(gameId) || gameVisibility.at(gameId));
         node["parentSourceFileId"] = Value(static_cast<std::int64_t>(parentId));
         node["position"] = Value(Value::Array{Value(double(p[0])), Value(double(p[1])), Value(double(p[2]))});
         node["rotation"] = Value(Value::Array{Value(double(q[0])), Value(double(q[1])), Value(double(q[2])), Value(double(q[3]))});
         node["scale"] = Value(Value::Array{Value(double(s[0])), Value(double(s[1])), Value(double(s[2]))});
         nodes.emplace_back(std::move(node));
     }
+    if (nodes.empty())
+        return detail::failure<void>(
+            DiagnosticCode::Unsupported,
+            "prefab has no directly convertible Transform nodes; nested prefab expansion is required", prefabPath);
     const PersistentId sceneId = request.package.packageId.child("unity-prefab:" + *prefabGuid);
     Value::Object definition;
     definition["schema"] = Value("eve.scene-template"); definition["schemaVersion"] = Value(std::int64_t(1));
@@ -340,27 +362,33 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
         if (!entrypoint) return Result<void>::failure(entrypoint.status());
         output.manifest.entrypoints.emplace("default", std::move(entrypoint).takeValue());
     }
-    findings.push_back({request.prefabPath, "Prefab.GameObject.Transform",
-                        ImportDisposition::Translated, "GUID/fileID hierarchy converted to canonical TRS"});
+    findings.push_back({prefabPath, "Prefab.GameObject.Transform", ImportDisposition::Translated,
+                        "GUID/fileID hierarchy converted to canonical TRS"});
     return Result<void>::success();
 }
 
 }  // namespace
 
+Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& request, const std::string& path) {
+    auto manifest = detail::baseManifest(request.package, "eve.unity-prefab/1");
+    if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
+    PreparedAssetImport output;
+    output.manifest = std::move(manifest).takeValue();
+    auto prefab     = appendPrefab(request, output, output.findings, path);
+    if (!prefab) return Result<PreparedAssetImport>::failure(prefab.status());
+    for (const auto& asset : output.manifest.assets) output.sourceMappings.push_back({"Prefab#Transform", asset.asset});
+    return Result<PreparedAssetImport>::success(std::move(output));
+}
+
 Result<PreparedAssetImport> prepareUnityProjectImport(const UnityProjectImportRequest& request) {
     if (request.files.empty() || request.package.packageId.isNil())
         return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
                                                     "Unity project files and package identity are required");
-    std::uint64_t totalBytes = 0;
-    for (const auto& [path, bytes] : request.files) {
-        if (path.empty() || path.front() == '/' || path.find("..") != std::string::npos ||
-            bytes.size() > request.limits.maximumSourceBytes ||
-            totalBytes > request.limits.maximumSourceBytes - bytes.size())
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                        "Unity project path or total source budget is invalid", path);
-        totalBytes += bytes.size();
-    }
-    std::vector<ImportFinding> findings;
+    auto sourceIndex = indexUnitySources(request.files, request.limits);
+    if (!sourceIndex) return Result<PreparedAssetImport>::failure(sourceIndex.status());
+    if (request.terrainDataPath.empty() && request.prefabPath.empty())
+        return prepareUnityCollection(request, sourceIndex.value());
+    std::vector<ImportFinding> findings = sourceIndex.value().findings;
     PreparedAssetImport output;
     if (!request.terrainDataPath.empty()) {
         auto terrain = parseTerrain(request, guidPaths(request), findings);
@@ -374,7 +402,7 @@ Result<PreparedAssetImport> prepareUnityProjectImport(const UnityProjectImportRe
         if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
         output.manifest = std::move(manifest).takeValue();
     }
-    auto prefab = appendPrefab(request, output, findings);
+    auto prefab = appendPrefab(request, output, findings, request.prefabPath);
     if (!prefab) return Result<PreparedAssetImport>::failure(prefab.status());
     output.manifest.provenance["sourceEngine"] = Value("unity");
     output.manifest.provenance["sourceCoordinateSystem"] = Value("left-handed-x-right-y-up-z-forward");
