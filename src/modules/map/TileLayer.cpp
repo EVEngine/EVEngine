@@ -58,7 +58,7 @@ void TileLayer::setTile(int tx, int ty, int gid) {
     if (tx < 0 || ty < 0 || tx >= c->mapW || ty >= c->mapH) return;
     auto t = tiles();
     const size_t index = size_t(ty * c->mapW + tx);
-    const uint32_t next = uint32_t(gid < 0 ? 0 : gid);
+    const uint32_t next     = uint32_t(gid);
     const bool wasEmpty = tileGid(t->gids[index]) == 0;
     const bool isEmpty = tileGid(next) == 0;
     if (t->gids[index] == next) return;
@@ -83,7 +83,7 @@ void TileLayer::fillRect(int x, int y, int width, int height, int gid) {
     const int x1 = std::min(c->mapW, x + width);
     const int y1 = std::min(c->mapH, y + height);
     if (x0 >= x1 || y0 >= y1) return;
-    const uint32_t next = uint32_t(gid < 0 ? 0 : gid);
+    const uint32_t next    = uint32_t(gid);
     bool changed = false;
     auto t = tiles();
     for (int ty = y0; ty < y1; ++ty) {
@@ -100,7 +100,7 @@ void TileLayer::fillRect(int x, int y, int width, int height, int gid) {
 }
 
 void TileLayer::fill(int gid) {
-    const uint32_t g = uint32_t(gid < 0 ? 0 : gid);
+    const uint32_t g       = uint32_t(gid);
     auto t = tiles();
     bool changed = false;
     for (auto &v : t->gids) {
@@ -296,10 +296,9 @@ void resolveTerrainRegion(TileLayer *layer, int x0, int y0, int x1, int y1) {
         for (int cx = std::max(0, x0); cx <= std::min(c->mapW - 1, x1); ++cx) {
             const size_t cell    = size_t(cy * c->mapW + cx);
             const int    terrain = cell < t->terrainIds.size() ? t->terrainIds[cell] : -1;
-            if (terrain < 0) {
-                t->gids[cell] = 0;
-                continue;
-            }
+            // Manual tiles have no terrain owner. Only explicit terrain erasure
+            // may clear them; resolving a neighbor must preserve their GID.
+            if (terrain < 0) continue;
             int mask = 0;
             for (int i = 0; i < 8; ++i) {
                 const int nx = cx + dx[i], ny = cy + dy[i];
@@ -377,7 +376,11 @@ void TileLayer::eraseTerrainRect(int x, int y, int width, int height) {
     const int x1 = std::min(c->mapW, x + width), y1 = std::min(c->mapH, y + height);
     if (x0 >= x1 || y0 >= y1) return;
     for (int cy = y0; cy < y1; ++cy)
-        for (int cx = x0; cx < x1; ++cx) t->terrainIds[size_t(cy * c->mapW + cx)] = -1;
+        for (int cx = x0; cx < x1; ++cx) {
+            const size_t cell   = size_t(cy * c->mapW + cx);
+            t->terrainIds[cell] = -1;
+            t->gids[cell]       = 0;
+        }
     resolveTerrainRegion(this, x0 - 1, y0 - 1, x1, y1);
 }
 
