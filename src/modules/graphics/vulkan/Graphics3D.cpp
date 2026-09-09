@@ -313,8 +313,8 @@ void Graphics::end3DFrameToCanvas() {
     if (!offscreen3DPassOpen || !offscreen3DCB) return;
     offscreen3DCB.endRenderPass();
     if (offscreen3DCanvas) {
-        offscreen3DCanvas->colorImage().setLayout(offscreen3DCB,
-                                                  vk::ImageLayout::eShaderReadOnlyOptimal);
+        // The sampled render pass already performed its final-layout transition.
+        offscreen3DCanvas->colorImage().endSampledLayout();
     }
     if (offscreen3DTimestampQueryPool) {
         offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe,

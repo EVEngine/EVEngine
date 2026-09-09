@@ -227,6 +227,11 @@ void PrimitiveScene::clear() {
 }
 
 void PrimitiveScene::render(PrimitiveSceneCanvas3D& destination) const {
+    auto result = tryRender(destination);
+    std::move(result).expect("primitive scene exceeded its command budget");
+}
+
+eve::Result<void> PrimitiveScene::tryRender(PrimitiveSceneCanvas3D& destination) const {
     for (const Slot& slot : slots_) {
         if (!slot.descriptor || !slot.descriptor->visible) continue;
         const PrimitiveDescriptor3D& descriptor = *slot.descriptor;
@@ -279,7 +284,7 @@ void PrimitiveScene::render(PrimitiveSceneCanvas3D& destination) const {
         const auto  used   = destination.commands_.size() + destination.triangles_.size();
         if (used > destination.hardCommandLimit_ || count > destination.hardCommandLimit_ - used) {
             destination.statistics_.droppedCommands += count + cached.statistics_.droppedCommands;
-            continue;
+            return primitiveFailure<void>(eve::DiagnosticCode::Failed, "primitive scene command budget exceeded");
         }
         // Prepare all owning payloads and capacity before publishing this slot.
         auto lines     = cached.commands_;
@@ -297,6 +302,7 @@ void PrimitiveScene::render(PrimitiveSceneCanvas3D& destination) const {
         destination.statistics_.triangleCount += cached.statistics_.triangleCount;
         destination.statistics_.cacheHits += hit ? 1u : 0u;
     }
+    return eve::Result<void>::success();
 }
 
 bool PrimitiveScene::matches(PrimitiveHandle handle) const noexcept {

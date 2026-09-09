@@ -171,11 +171,20 @@ public:
      * Successful updates invalidate the affected cache; removal/clear release it.
      * Camera changes reuse geometry, but clipping and screen-space stroke resolution
      * remain frame-local. No GPU allocation is retained by this cache.
-     * A primitive exceeding the remaining command budget is omitted as a whole;
-     * statistics().droppedCommands reports omitted commands. Allocation failure throws
-     * before publishing that primitive; already recorded primitives remain valid.
+     * A primitive exceeding the remaining command budget returns a failure without
+     * publishing that primitive; earlier primitives remain recorded. droppedCommands
+     * reports the rejected primitive's commands. Allocation failure throws before
+     * publishing that primitive; already recorded primitives remain valid.
      * @param canvas Borrowed for this call only; receives independent owning commands.
+     * @return Success, or Failed when the next primitive exceeds the remaining budget.
      * @thread Owner-thread affine, including concurrent const calls.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> tryRender(PrimitiveSceneCanvas3D& canvas) const;
+    /**
+     * @brief Compatibility-only wrapper over tryRender; throws on budget failure.
+     * @param canvas Borrowed for this synchronous call; retains owning command copies.
+     * @thread Owner-thread affine.
      * @reentrancy Does not invoke callbacks.
      */
     void                      render(PrimitiveSceneCanvas3D& canvas) const;

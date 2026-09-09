@@ -49,7 +49,7 @@ function buildPrimitiveScene() {
                                1.0, 0.45, 0.12, 0.9, 3.0),
         "wire aabb");
     requireUpdate(bounds.setDepthMode("test"), "aabb depth");
-    requireUpdate(bounds.setDash(10.0, 6.0, 0.0, "world"), "aabb dash");
+    requireUpdate(bounds.setDash(0.35, 0.18, 0.0, "world"), "aabb dash");
     local cone = requirePrimitive(
         gfx.newPrimitiveCone3D(-4.0, 2.0, -6.0, 0.0, -1.0, 0.0, 2.0, 0.8,
                                0.8, 0.3, 1.0, 0.8, 2.0), "cone");

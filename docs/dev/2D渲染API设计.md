@@ -221,7 +221,8 @@ RenderSystem 每帧只读快照并投影到 DrawList。句柄在删除、clear�
 裁剪、虚线和屏幕线宽仍使用当前帧 context 求解。成功 update/updateMany 使对应 slot
 失效（包括仅修改颜色或变换）；失败更新保持缓存。remove/clear 释放缓存，旧帧持有独立副本。
 render 包括 const 调用均限 owner 线程，不保留调用方 Canvas，也不调用回调。
-目标 Canvas 剩余预算不足时整图形不提交，遗漏命令数记入 droppedCommands；
+目标 Canvas 剩余预算不足时，tryRender 返回结构化失败且不提交该图形，之前提交的图形保留，
+拒绝命令数记入 droppedCommands；render 仅为兼容包装，失败时抛异常，不静默截断。
 cacheHits 对长期场景按复用的可见 slot 计数。该实现省去几何重复展开，但仍有每帧命令复制和 GPU 上传。
 Vulkan 单次提交、WebGPU 单次 flush 均将排序后的各组顶点合并为一次上传，再按组设置绘制状态。
 共享 clip 坐标采用引擎 RH/ZO/Y-down 约定；WebGPU 顶点阶段适配 Y 方向，与现有 Mesh 路径一致。

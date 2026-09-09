@@ -115,14 +115,14 @@ TEST_CASE("GraphicsPrimitives.sceneCacheRespectsWholePrimitiveBudget") {
     SceneDrawContext context;
     context.viewportSize = {800, 600};
     PrimitiveSceneCanvas3D small(context, 2);
-    scene.render(small);
+    REQUIRE(!scene.tryRender(small).ok());
     CHECK(small.commands().empty());
     CHECK_EQ(small.statistics().droppedCommands, 3u);
     PrimitiveSceneCanvas3D enough(context, 3);
     scene.render(enough);
     CHECK_EQ(enough.commands().size(), 3u);
     CHECK_EQ(enough.statistics().cacheHits, 1u);
-    scene.render(enough);
+    REQUIRE(!scene.tryRender(enough).ok());
     CHECK_EQ(enough.commands().size(), 3u);
     CHECK_EQ(enough.statistics().droppedCommands, 3u);
     descriptor.paint.mode = PaintMode::Fill;
