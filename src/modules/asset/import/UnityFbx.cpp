@@ -38,8 +38,9 @@ std::optional<double> setting(const std::string& text, const std::string& name) 
     if (!std::regex_search(text, match, std::regex("(?:^|\\n)    " + name + ": *([^\\r\\n]+)"))) return {};
     try {
         std::size_t end   = 0;
-        const auto  value = std::stod(match[1].str(), &end);
-        if (end != match[1].length() || !std::isfinite(value)) return {};
+        const auto  token = match[1].str();
+        const auto  value = std::stod(token, &end);
+        if (end != token.size() || !std::isfinite(value)) return {};
         return value;
     } catch (...) {
         return {};
