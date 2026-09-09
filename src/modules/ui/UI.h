@@ -362,7 +362,7 @@ public:
     /** @brief Marks the host as a modal (blocks other hosts) / overlay. */
     void setHostModal(bool modal);
     void setHostOverlay(bool overlay);
-    /** @brief Sets frameless overlay opacity (0..1). */
+    /** @brief Sets overlay opacity (0..1); zero also removes the host border and outer padding. */
     void setHostOverlayAlpha(float alpha);
     /** @brief Allows or prevents user movement after the initial position. */
     void setHostMovable(bool movable);

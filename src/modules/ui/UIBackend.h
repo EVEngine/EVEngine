@@ -56,11 +56,13 @@ public:
     virtual void *textureHandle(uint64_t /*id*/) const { return nullptr; }
 
     /**
-     * @brief Whether textures are composited by the backend after its normal UI pass.
+     * @brief Whether textures require the backend's ordered texture draw bridge.
      *
      * Older renderer integrations may not support a texture handle per draw command.
      * Declarative widgets keep their normal layout/input behavior and enqueue their
      * textured rectangles through queueTextureDraw instead.
+     * Queued rectangles preserve their position among
+     * ordinary UI commands.
      * @return True when declarative widgets must use queueTextureDraw().
      */
     virtual bool usesQueuedTextureDraws() const { return false; }
