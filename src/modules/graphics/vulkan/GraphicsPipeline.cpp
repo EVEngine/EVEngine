@@ -844,14 +844,13 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             // Match the FrameGraph render pass used to record this pipeline:
             // imported G-buffer targets begin undefined and leave sampled, so
             // only the subpass-to-reader dependency is materialized.
-            .addDependency(
-                0, VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
-                    vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
+            .addDependency(0, VK_SUBPASS_EXTERNAL,
+                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                               vk::PipelineStageFlagBits::eLateFragmentTests,
+                           vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                           vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                           vk::AccessFlagBits::eShaderRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -1614,20 +1613,28 @@ void Graphics::createShadowResources() {
                                .addressModeV(vk::SamplerAddressMode::eClampToEdge)
                                .build(device);
 
-    auto shadowPass =
-        device.createRenderPass()
-            .addSampledDepthAttachment(vk::Format::eD32Sfloat)
-            .addSubpass(vkb::SubpassBuilder().setDepthStencilAttachment(
-                0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-    shadowRenderPass = shadowPass;
+        auto shadowPass =
+            device.createRenderPass()
+                .addSampledDepthAttachment(vk::Format::eD32Sfloat)
+                .addSubpass(
+                    vkb::SubpassBuilder().setDepthStencilAttachment(0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                // Imported cascades start undefined and finish sampled. Match the
+                // actual FrameGraph pass, including its single outgoing dependency.
+                .addDependency(
+                    0, VK_SUBPASS_EXTERNAL,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                        vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eShaderRead)
+                .build();
+        shadowRenderPass = shadowPass;
 
-    for (auto &slot : shadowMaps) {
-        for (uint32_t i = 0; i < layers; ++i) {
-            slot.framebuffers[i] = shadowPass.createFramebuffer(
-                device, size, size, {slot.image.layerAttachment(i)});
-        }
+        for (auto& slot : shadowMaps) {
+            for (uint32_t i = 0; i < layers; ++i) {
+                slot.framebuffers[i] =
+                    shadowPass.createFramebuffer(device, size, size, {slot.image.layerAttachment(i)});
+            }
     }
 
     shadowPipelineLayout =
