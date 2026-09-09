@@ -682,8 +682,12 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
                 flags |= ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::SetNextWindowBgAlpha(host->meta()->overlayBgAlpha);
         }
-        const bool flushOverlay = host && host->meta()->overlay && host->meta()->overlayFlush;
+        // A transparent overlay delegates its surface to its content (for example
+        // a nine-patch skin). Do not leave desktop chrome around that surface.
+        const bool transparentOverlay = host && host->meta()->overlay && host->meta()->overlayBgAlpha == 0.f;
+        const bool flushOverlay = host && host->meta()->overlay && (host->meta()->overlayFlush || transparentOverlay);
         if (flushOverlay) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+        if (transparentOverlay) ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
         if (modal) {
             ImGui::OpenPopup(title.c_str());
             if (ImGui::BeginPopupModal(title.c_str(), nullptr,
@@ -700,6 +704,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
             ImGui::End();
         }
+        if (transparentOverlay) ImGui::PopStyleVar();
         if (flushOverlay) ImGui::PopStyleVar();
         break;
     }

@@ -15,6 +15,8 @@ void Ghost::setBuildingId(const std::string &id) {
     placementKind_ = "cell";
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -34,6 +36,8 @@ void Ghost::setCell(int cellX, int cellY) {
     cellY_ = cellY;
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -53,6 +57,8 @@ void Ghost::setWorld(float worldX, float worldY) {
     worldY_ = worldY;
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -70,6 +76,8 @@ void Ghost::setElevation(float elevation) {
     elevation_ = elevation;
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -87,7 +95,7 @@ void Ghost::setRotationDeg(float deg) {
     rotationDeg_ = deg;
     if (!surfaceId_.empty()) surfacePatchStale_ = true;
     valid_ = false;
-    reason_.clear();
+    if (!surfaceHitMissing_) reason_.clear();
 }
 
 void Ghost::rotateBy(float deltaDeg) {
@@ -105,6 +113,8 @@ void Ghost::setFromWorld(PlacementWorld *world, float worldX, float worldY) {
     elevation_ = s.elevation;
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -129,6 +139,8 @@ void Ghost::setFromWorld3D(PlacementWorld *world, float worldX, float worldY, fl
     elevation_ = s.elevation;
     valid_ = false;
     reason_.clear();
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceNormalX_ = 0.f;
@@ -167,6 +179,8 @@ void Ghost::setEdge(PlacementWorld *world, int cellX, int cellY, const std::stri
     worldX_ = (ax + bx) * 0.5f;
     worldY_ = (ay + by) * 0.5f;
     rotationDeg_ = edge_.axis == EdgeAxis::Horizontal ? 0.f : 90.f;
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     valid_ = false;
@@ -181,6 +195,8 @@ void Ghost::setCorner(PlacementWorld *world, int vertexX, int vertexY) {
     cellY_ = vertexY;
     world->cellToWorldPlane(vertexX, vertexY, worldX_, worldY_);
     rotationDeg_ = PlacementSystem::normalizeRotation(buildingId_, rotationDeg_);
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceSampleCount_ = 0;
@@ -197,6 +213,8 @@ void Ghost::setFree(PlacementWorld *world, float worldX, float worldY, float ele
     grid::worldToCell(world->getGrid(), worldX, worldY, cellX_, cellY_, world->getWidth(),
                       world->getHeight());
     rotationDeg_ = PlacementSystem::normalizeRotation(buildingId_, rotationDeg_);
+    surfacePatchStale_ = false;
+    surfaceHitMissing_ = false;
     surfaceId_.clear();
     surfaceRevision_ = 0;
     surfaceSampleCount_ = 0;
@@ -224,6 +242,7 @@ void Ghost::setFromSurface(PlacementWorld *world, const std::string &surface, fl
         surfaceMaxSlopeDegrees_ = 0.f;
         surfaceHeightDelta_ = 0.f;
         surfacePatchStale_ = false;
+        surfaceHitMissing_      = true;
         valid_ = false;
         reason_ = result.code() == eve::StatusCode::NotFound ? "no_surface_hit"
                                                              : "invalid_surface_hit";
@@ -253,6 +272,11 @@ bool Ghost::validate(PlacementWorld *world) {
         valid_ = false;
         reason_ = "no_world";
         return false;
+    }
+    if (surfaceHitMissing_) return false;
+    if (surfacePatchStale_) {
+        setFromSurface(world, surfaceProviderName_, surfaceInputX_, surfaceInputY_);
+        if (surfaceHitMissing_) return false;
     }
     const BuildingDefinition *definition = BuildingRegistry::find(buildingId_);
     if (definition && definition->placementKind == "edge") {
@@ -295,10 +319,6 @@ bool Ghost::validate(PlacementWorld *world) {
             reason_ = "surface_height_delta";
         }
         return valid_;
-    }
-    if (surfacePatchStale_) {
-        setFromSurface(world, surfaceProviderName_, surfaceInputX_, surfaceInputY_);
-        if (surfaceId_.empty()) return false;
     }
     rotationDeg_ = PlacementSystem::normalizeRotation(buildingId_, rotationDeg_);
     PlacementQuery query;

@@ -13,7 +13,8 @@
   "choice": { "yes": "Continue", "no": "That's all" },
   "hint": {
     "advance": "Space / Click to continue",
-    "choose": "Press 1 / 2 to choose",
+    "choose": "Click an option or press 1 / 2",
+    "styles": "[4] Moonlight  [5] Letter  [6] Radio",
     "restart": "Space to restart"
   }
 }

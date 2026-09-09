@@ -154,9 +154,13 @@ public:
     virtual void drawCone(glm::vec3 apex, glm::vec3 axis, float height, float radius,
                           const ScenePaint&) = 0;
     virtual void drawFrustum(const FrustumCorners&, const ScenePaint&) = 0;
-    virtual void drawPath(const Path3D&, const ScenePaint&) = 0;
 };
 ```
+
+首期 `Path3D` 不在当前接口中。空间曲线必须先明确采用平面路径、相机朝向 ribbon，还是具有旋转最小标架的
+空间管线；三种语义的 join、fill 和深度行为不同，不能用一个未定义语义的 `drawPath` 混在一起。
+当前调用方使用 owning 3D polyline 表达空间折线和曲线细分结果，后续若有至少两个真实曲线 consumer，
+再单独稳定 `SpatialPath3D` 契约。
 
 Canvas 由当前 3D pass 根据 `SceneDrawContext` 创建，不持有 `Camera3D*` 或 Scene 指针。Context 是
 单帧值快照。Canvas 为 render-thread affine，同步记录命令，不调用脚本或未知 callback。
@@ -211,6 +215,17 @@ using PrimitiveHandle = RuntimeHandle<PrimitiveTag>;
 
 RenderSystem 每帧只读快照并投影到 DrawList。句柄在删除、clear、reload 后用 generation/owner epoch
 检测 stale。它不创建 ECS Entity；若图形是游戏实体表现，由对应 ECS component 做权威 owner。
+
+已实现的长期缓存是每个 slot 的 owning CPU 命令缓存，不是 GPU 常驻网格或实例化缓冲。
+第一次绘制展开固定细分图形；未修改的后续帧直接复制命令，相机变化不使缓存失效，
+裁剪、虚线和屏幕线宽仍使用当前帧 context 求解。成功 update/updateMany 使对应 slot
+失效（包括仅修改颜色或变换）；失败更新保持缓存。remove/clear 释放缓存，旧帧持有独立副本。
+render 包括 const 调用均限 owner 线程，不保留调用方 Canvas，也不调用回调。
+目标 Canvas 剩余预算不足时，tryRender 返回结构化失败且不提交该图形，之前提交的图形保留，
+拒绝命令数记入 droppedCommands；render 仅为兼容包装，失败时抛异常，不静默截断。
+cacheHits 对长期场景按复用的可见 slot 计数。该实现省去几何重复展开，但仍有每帧命令复制和 GPU 上传。
+Vulkan 单次提交、WebGPU 单次 flush 均将排序后的各组顶点合并为一次上传，再按组设置绘制状态。
+共享 clip 坐标采用引擎 RH/ZO/Y-down 约定；WebGPU 顶点阶段适配 Y 方向，与现有 Mesh 路径一致。
 
 脚本首期只暴露长期 handle API，避免 Squirrel 每帧逐图形调用；即时 Canvas 服务 C++、编辑器和
 DevTools。脚本 proxy 不持有 Canvas 裸指针。

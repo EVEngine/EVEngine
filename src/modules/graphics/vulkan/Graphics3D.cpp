@@ -76,6 +76,7 @@ void Graphics::begin3DFrame() {
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
         return;
+    currentFrame2DBuffers().primitive3DDrawIndex = 0;
     decalLayerFresh = false;
     recordDeferredFrameGraph();
     recordDecalPass();
@@ -127,72 +128,6 @@ void Graphics::begin3DFrame() {
     hasPendingClear = false;
 }
 
-void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
-    ASSERT(initialized);
-    if (!initialized) throw Exception("drawPrimitiveScene: graphics not initialized");
-    const bool offscreen = offscreen3DPassOpen;
-    if (!offscreen && gpuDrivenScenePassPending_) gpuDrivenOpenScenePass();
-    if (!offscreen && !swapchainPassOpen) throw Exception("drawPrimitiveScene: call begin3DFrame first");
-
-    const ResolvedPrimitiveTriangles resolved = resolvePrimitiveStrokes3D(canvas);
-    if (resolved.vertices.empty()) return;
-
-    struct DrawGroup {
-        ScenePrimitivePaint            paint;
-        std::size_t                    sequence     = 0;
-        float                          averageDepth = 0.f;
-        std::vector<Primitive3DVertex> vertices;
-    };
-    std::vector<DrawGroup> groups;
-    groups.reserve(resolved.batches3D.size());
-    for (const ResolvedPrimitiveBatch3D &batch : resolved.batches3D) {
-        DrawGroup group;
-        group.paint        = batch.paint;
-        group.sequence     = batch.sequence;
-        group.averageDepth = batch.averageDepth;
-        group.vertices.reserve(batch.vertexCount);
-        for (std::size_t vertex = batch.firstVertex; vertex < batch.firstVertex + batch.vertexCount; ++vertex)
-            group.vertices.push_back({resolved.vertices[vertex].clipPosition, resolved.vertices[vertex].color});
-        groups.push_back(std::move(group));
-    }
-    std::stable_sort(groups.begin(), groups.end(), [&](const DrawGroup &a, const DrawGroup &b) {
-        const ScenePrimitivePaint &paintA  = a.paint;
-        const ScenePrimitivePaint &paintB  = b.paint;
-        const bool                 ignoreA = paintA.depth == PrimitiveDepthMode::Ignore;
-        const bool                 ignoreB = paintB.depth == PrimitiveDepthMode::Ignore;
-        if (ignoreA != ignoreB) return !ignoreA;
-        if (paintA.layer != paintB.layer) return paintA.layer < paintB.layer;
-        const bool transparentA = paintA.blend != BlendMode::Opaque || paintA.color.a < 1.f;
-        const bool transparentB = paintB.blend != BlendMode::Opaque || paintB.color.a < 1.f;
-        if (transparentA != transparentB) return !transparentA;
-        if (transparentA && a.averageDepth != b.averageDepth) return a.averageDepth > b.averageDepth;
-        return a.sequence < b.sequence;
-    });
-
-    auto &buffers = offscreen ? offscreenPrimitive3DBufs : currentFrame2DBuffers().primitive3DBufs;
-    if (buffers.size() < groups.size()) buffers.resize(groups.size());
-    const vk::CommandBuffer cb = offscreen ? offscreen3DCB : currentPresentCb();
-    const uint32_t          targetWidth =
-        offscreen ? static_cast<uint32_t>(offscreen3DCanvas->getWidth()) : swapchain.extent.width;
-    const uint32_t targetHeight =
-        offscreen ? static_cast<uint32_t>(offscreen3DCanvas->getHeight()) : swapchain.extent.height;
-    auto &pipelines = offscreen
-                          ? (offscreen3DHDRActive ? hdrOffscreenPrimitive3DPipelines : offscreenPrimitive3DPipelines)
-                          : primitive3DPipelines;
-    setViewportAndScissor(cb, targetWidth, targetHeight);
-    for (std::size_t groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
-        const DrawGroup           &group             = groups[groupIndex];
-        const ScenePrimitivePaint &paint             = group.paint;
-        const std::size_t          pipelineIndex     = primitive3DPipelineIndex(paint.depth, paint.blend, paint.cull);
-        const vk::Pipeline         primitivePipeline = pipelines[pipelineIndex];
-        if (!primitivePipeline) throw Exception("drawPrimitiveScene: primitive pipeline unavailable");
-        buffers[groupIndex].allocate<Primitive3DVertex>(frameToken(), device, group.vertices);
-        const vk::DeviceSize offset = 0;
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, primitivePipeline);
-        cb.bindVertexBuffers(0, 1, buffers[groupIndex], &offset);
-        cb.draw(static_cast<uint32_t>(group.vertices.size()), 1, 0, 0);
-    }
-}
 
 void Graphics::ensureOffscreen3DResources() {
     auto &dev = getDevice();
@@ -332,6 +267,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreen3DHDRActive = oc->isHDR();
 
     if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    offscreenPrimitive3DDrawIndex = 0;
     vk::CommandBufferBeginInfo beginInfo{};
     offscreen3DCB.begin(beginInfo);
     lastOffscreen3DGpuDurationMs = 0.f;
@@ -377,7 +313,7 @@ void Graphics::end3DFrameToCanvas() {
     if (!offscreen3DPassOpen || !offscreen3DCB) return;
     offscreen3DCB.endRenderPass();
     if (offscreen3DCanvas) {
-        // The sampled render-pass attachment already transitions to shader-read at endRenderPass.
+        // The sampled render pass already performed its final-layout transition.
         offscreen3DCanvas->colorImage().endSampledLayout();
     }
     if (offscreen3DTimestampQueryPool) {
