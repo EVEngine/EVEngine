@@ -844,14 +844,13 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             // Match the FrameGraph render pass used to record this pipeline:
             // imported G-buffer targets begin undefined and leave sampled, so
             // only the subpass-to-reader dependency is materialized.
-            .addDependency(
-                0, VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
-                    vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
+            .addDependency(0, VK_SUBPASS_EXTERNAL,
+                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                               vk::PipelineStageFlagBits::eLateFragmentTests,
+                           vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                           vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                           vk::AccessFlagBits::eShaderRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -1614,20 +1613,28 @@ void Graphics::createShadowResources() {
                                .addressModeV(vk::SamplerAddressMode::eClampToEdge)
                                .build(device);
 
-    auto shadowPass =
-        device.createRenderPass()
-            .addSampledDepthAttachment(vk::Format::eD32Sfloat)
-            .addSubpass(vkb::SubpassBuilder().setDepthStencilAttachment(
-                0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-    shadowRenderPass = shadowPass;
+        auto shadowPass =
+            device.createRenderPass()
+                .addSampledDepthAttachment(vk::Format::eD32Sfloat)
+                .addSubpass(
+                    vkb::SubpassBuilder().setDepthStencilAttachment(0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                // Imported cascades start undefined and finish sampled. Match the
+                // actual FrameGraph pass, including its single outgoing dependency.
+                .addDependency(
+                    0, VK_SUBPASS_EXTERNAL,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                        vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eShaderRead)
+                .build();
+        shadowRenderPass = shadowPass;
 
-    for (auto &slot : shadowMaps) {
-        for (uint32_t i = 0; i < layers; ++i) {
-            slot.framebuffers[i] = shadowPass.createFramebuffer(
-                device, size, size, {slot.image.layerAttachment(i)});
-        }
+        for (auto& slot : shadowMaps) {
+            for (uint32_t i = 0; i < layers; ++i) {
+                slot.framebuffers[i] =
+                    shadowPass.createFramebuffer(device, size, size, {slot.image.layerAttachment(i)});
+            }
     }
 
     shadowPipelineLayout =
@@ -1884,7 +1891,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     vkb::DescriptorSetUpdater updater(17, 17, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1898,7 +1905,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
         .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
         .buffer(st.indicesBuf.buffer, 0, vk::DeviceSize(st.indicesCap))
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.shadowRing.buffer, 0, fslots.shadowRing.size)
+        .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)

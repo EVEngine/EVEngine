@@ -55,6 +55,8 @@ void Hd2D::expose(ssq::Table &table) {
     sprite.addFunc("stop", &Sprite3D::stop);
     sprite.addFunc("isPlaying", &Sprite3D::isPlaying);
     sprite.addFunc("update", &Sprite3D::update);
+    sprite.addFunc("setCamera", &Sprite3D::setCamera);
+    sprite.addFunc("setPivot", &Sprite3D::setPivot);
     sprite.addFunc("setPosition", &Sprite3D::setPosition);
     sprite.addFunc("getPositionX", &Sprite3D::getPositionX);
     sprite.addFunc("getPositionY", &Sprite3D::getPositionY);
