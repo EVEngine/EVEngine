@@ -111,7 +111,7 @@ Result<asset_import::UnitySourceFiles> readTree(const std::filesystem::path& roo
 Result<asset_import::UnitySourceFiles> readUnityInput(const std::string&                     input,
                                                       const asset_import::AssetImportLimits& limits) {
     std::error_code ec;
-    const auto      sourcePath = std::filesystem::u8path(input);
+    const auto      sourcePath = std::filesystem::path(std::u8string(input.begin(), input.end()));
     if (std::filesystem::is_regular_file(sourcePath, ec)) {
         auto bytes = readFile(sourcePath, limits.maximumSourceBytes);
         if (!bytes) return Result<asset_import::UnitySourceFiles>::failure(bytes.status());
