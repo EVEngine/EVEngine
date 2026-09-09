@@ -26,14 +26,12 @@ eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
 eve_declare_module(NAME grid LAYER 0
                    GROUP 2d 3d web)
 # UI-independent property-access contracts shared by game UI, editor UI and
-# automation hosts. This module deliberately has no renderer or script runtime.
+# automation hosts. Core headers (PropertyAccess.h) have no renderer or script
+# runtime. The Squirrel reflection adapter lives in squirrel/ so Inspector can
+# bind script instances without a separate module.
 eve_declare_module(NAME property_access LAYER 0
                    GROUP minimal 2d 3d web)
-# Squirrel reflection adapter for renderer-independent property-access adapters.
 # L1 -- gameplay/model adapters
-eve_declare_module(NAME scriptmodel LAYER 1
-                   DEPS property_access
-                   GROUP minimal 2d 3d web)
 # UI-independent editable-target, command and transaction contracts shared by
 # developer editors, in-game builders and automation hosts.
 eve_declare_module(NAME editing LAYER 1

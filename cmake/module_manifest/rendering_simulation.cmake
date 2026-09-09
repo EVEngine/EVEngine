@@ -25,7 +25,7 @@ eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
                    GROUP 2d 3d web)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
-                   DEPS platform_event filesystem graphics image property_access scriptmodel timer window
+                   DEPS platform_event filesystem graphics image property_access timer window
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 # The public Physics facade retains its interactive presentation dependencies;
