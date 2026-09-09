@@ -67,6 +67,7 @@ public:
         putFloat(metadata_, 1);
         put64(metadata_, kHeaderSize);
         const auto    chunkChecksum = checksum(chunk_);
+        const auto    chunkBytes    = static_cast<std::uint32_t>(chunk_.size());
         std::uint64_t offset        = payloadStart_;
         for (int y = 0; y < columns; ++y)
             for (int x = 0; x < columns; ++x) {
@@ -76,8 +77,8 @@ public:
                 put16(metadata_, chunkSize);
                 metadata_.insert(metadata_.end(), {0, 0, 0, 0});
                 put64(metadata_, offset);
-                put32(metadata_, chunk_.size());
-                put32(metadata_, chunk_.size());
+                put32(metadata_, chunkBytes);
+                put32(metadata_, chunkBytes);
                 put32(metadata_, chunkChecksum);
                 offset += chunk_.size();
             }
