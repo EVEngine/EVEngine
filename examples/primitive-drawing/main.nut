@@ -50,6 +50,14 @@ function buildPrimitiveScene() {
         "wire aabb");
     requireUpdate(bounds.setDepthMode("test"), "aabb depth");
     requireUpdate(bounds.setDash(10.0, 6.0, 0.0, "world"), "aabb dash");
+    local cone = requirePrimitive(
+        gfx.newPrimitiveCone3D(-4.0, 2.0, -6.0, 0.0, -1.0, 0.0, 2.0, 0.8,
+                               0.8, 0.3, 1.0, 0.8, 2.0), "cone");
+    requireUpdate(cone.setPaintMode("fill-stroke"), "cone fill");
+    local arrow = requirePrimitive(
+        gfx.newPrimitiveArrow3D(2.0, 3.0, -4.0, 4.0, 3.0, -6.0, 0.5, 0.2,
+                                0.2, 1.0, 0.65, 1.0, 3.0), "arrow");
+    requireUpdate(arrow.setLineCap("round"), "arrow cap");
 }
 
 eve_init = function() {
