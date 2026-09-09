@@ -200,6 +200,15 @@ check/architecture-contracts:
 	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
 	python3 -m unittest scripts.tests.test_architecture_contracts -v
 
+# Focused CPU tests for format round trips and live tile editing; no GPU host.
+TILEMAP_TEST_BUILD ?= build/tilemap-editor-tests
+TILEMAP_CMAKE_ARGS ?=
+.PHONY: check/tilemap-editor
+check/tilemap-editor:
+	cmake -S test/tilemap_editor -B "$(TILEMAP_TEST_BUILD)" -DCMAKE_BUILD_TYPE=Debug $(TILEMAP_CMAKE_ARGS)
+	cmake --build "$(TILEMAP_TEST_BUILD)" -j $(JOBS)
+	ctest --test-dir "$(TILEMAP_TEST_BUILD)" --output-on-failure
+
 # Resolve all supported module profiles without a compiler or build tree.
 check/profile-matrix:
 	python3 scripts/profile_matrix.py --check

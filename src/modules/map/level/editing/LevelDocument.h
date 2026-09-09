@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/BorrowedRef.h"
+#include "common/Value.h"
 #include "map/level/editing/TileBuffer.h"
 
 #include <memory>
@@ -22,6 +23,8 @@ struct LevelObject {
     bool        visible = true;
 
     std::unordered_map<std::string, std::string> properties;
+    /** @brief Owned format fields not represented above; codec excludes authoritative fields. */
+    eve::Value::Object extensions;
 };
 
 /** @brief A tile or object layer in a LevelDocument. */
@@ -40,6 +43,8 @@ struct LevelLayer {
     std::vector<LevelObject>    objects;
 
     std::unordered_map<std::string, std::string> properties;
+    /** @brief Owned format fields not represented above; codec excludes authoritative fields. */
+    eve::Value::Object extensions;
 };
 
 /**
@@ -94,6 +99,8 @@ public:
     const std::vector<LevelLayer>& layers() const { return layers_; }
 
 private:
+    friend class LevelFormatCodec;
+    eve::Value::Object extensions_;
     std::string nextId(const char* prefix);
     int         width_, height_;
     float       tileWidth_, tileHeight_;
