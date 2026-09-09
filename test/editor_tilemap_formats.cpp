@@ -18,6 +18,7 @@ TEST_CASE("editor.tilemap.formats.preserveAssetsFlagsAndObjectIdentity") {
     LevelFormatRegistry formats;
     auto                decoded = formats.decode("tiled.json", R"({
       "type":"map","width":1,"height":1,"tilewidth":16,"tileheight":16,
+      "orientation":"hexagonal",
       "tilesets":[{"firstgid":1,"source":"tiles/ground.tsj"}],
       "staggeraxis":"x","staggerindex":"even","hexsidelength":8,
       "layers":[{"id":7,"type":"tilelayer","data":[2147483649]},
@@ -31,6 +32,7 @@ TEST_CASE("editor.tilemap.formats.preserveAssetsFlagsAndObjectIdentity") {
     auto json = eve::json::Document::parse(encoded.value());
     REQUIRE(json.valid());
     auto root = json.root();
+    CHECK_EQ(root.getString("orientation"), std::string("hexagonal"));
     CHECK_EQ(root.get("tilesets").at(0).getString("source"), std::string("tiles/ground.tsj"));
     CHECK_EQ(root.getString("staggeraxis"), std::string("x"));
     CHECK_EQ(root.get("layers").at(0).getInt("id"), 7);
@@ -39,6 +41,29 @@ TEST_CASE("editor.tilemap.formats.preserveAssetsFlagsAndObjectIdentity") {
     CHECK_EQ(object.getInt("id"), 42);
     CHECK_EQ(object.get("polygon").size(), size_t(3));
     CHECK_EQ(object.getString("class"), std::string("door"));
+}
+
+TEST_CASE("editor.tilemap.formats.roundTripProjectedOrientations") {
+    LevelFormatRegistry formats;
+    for (const char* orientation : {"isometric", "staggered", "hexagonal"}) {
+        LevelDocument level(3, 2, 64.f, 32.f);
+        level.setOrientation(orientation);
+        level.addTileLayer("ground");
+
+        auto tiled = formats.encode("tiled.json", level);
+        REQUIRE(tiled.ok());
+        auto restored = formats.decode("tiled.json", tiled.value());
+        REQUIRE(restored.ok());
+        CHECK_EQ(restored.value()->getOrientation(), std::string(orientation));
+
+        auto native = formats.encode("eve.level", *restored.value());
+        REQUIRE(native.ok());
+        auto reopened = formats.decode("eve.level", native.value());
+        REQUIRE(reopened.ok());
+        CHECK_EQ(reopened.value()->getOrientation(), std::string(orientation));
+        CHECK_EQ(reopened.value()->getTileWidth(), 64.f);
+        CHECK_EQ(reopened.value()->getTileHeight(), 32.f);
+    }
 }
 
 TEST_CASE("editor.tilemap.formats.rejectUnsupportedWithoutBlankMaps") {
