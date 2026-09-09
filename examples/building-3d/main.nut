@@ -4,9 +4,9 @@
 // 演示：
 //   PlacementWorld.setGridPlane("xz")（网格第二轴 -> 世界 Z，Y 为高度）
 //   内置 "plane" 放置表面 + 脚本侧 Camera3D.screenToRay -> Y=0 平面求交
-//   BuildingFx 3D 视觉（Renderable3D 立方体）+ 鬼影 + 3D 网格线框
+//   BuildingFx 3D 视觉（简单 OBJ 房屋）+ 鬼影 + 3D 网格线框
 //
-// 按键：1-2 选建筑  R 旋转  左键放置  右键拆除  T 切换网格
+// 按键：1-3 选建筑  R 旋转  左键放置  右键拆除  T 切换网格
 // 运行： make run/<platform>-debug GAME=examples/building-3d
 // ============================================================================
 
@@ -21,6 +21,7 @@ persist paletteIndex = 0
 persist prevKeys = {}
 persist prevMouse = { left = false, right = false }
 persist uiBuilt = false
+persist mouseHit = false
 
 const GRID_W = 16;
 const GRID_H = 16;
@@ -41,17 +42,32 @@ function mousePressed(button) {
     return down && !was;
 }
 
-function registerBuildings() {
-    bld.registerBuildingsFromJson(@"[{
-      ""id"":""house"",""displayName"":""房屋"",""category"":""housing"",
-      ""footprintW"":2,""footprintH"":2,""tags"":[""house""],
-      ""renderMode"":""3d"",
-      ""visual3d"":{""colorR"":""0.72"",""colorG"":""0.48"",""colorB"":""0.28"",""height"":""1.0""}},
-      {""id"":""tower"",""displayName"":""塔楼"",""category"":""defense"",
-       ""footprintW"":1,""footprintH"":1,""tags"":[""tower""],
-       ""renderMode"":""3d"",""rotationMode"":""none"",
-       ""visual3d"":{""colorR"":""0.55"",""colorG"":""0.42"",""colorB"":""0.62"",""height"":""1.6""}}
-    ]");
+function registerBuildings(loadMeshes = false) {
+    local resources = {};
+    local entries = [
+        ["house", "山墙小屋", "cottage", 2, 2, 1.8, 0.82, 0.62, 0.38],
+        ["barn", "长屋谷仓", "barn", 3, 2, 1.6, 0.72, 0.34, 0.24],
+        ["pavilion", "尖顶小屋", "pavilion", 2, 2, 2.0, 0.38, 0.64, 0.64]
+    ];
+    foreach (entry in entries) {
+        local resource = "assets/" + entry[2] + ".obj";
+        if (loadMeshes) {
+            local data = model3d.newModelDataFromFile(resource);
+            if (data.getMeshCount() != 1) throw "Expected one mesh in " + resource;
+            local renderable = model3d.createRenderable(gfx, data, 0);
+            resources[resource] <- renderable.getMesh();
+            renderable.setVisible(false);
+            // ECS owns this hidden source; Graphics owns the mesh for the scene lifetime.
+        }
+        local json = "[{\"id\":\"" + entry[0] + "\",\"displayName\":\"" + entry[1] +
+            "\",\"renderMode\":\"3d\",\"footprintW\":" + entry[3] +
+            ",\"footprintH\":" + entry[4] + ",\"visual3d\":{\"mesh\":\"" + resource +
+            "\",\"height\":\"" + entry[5] + "\",\"offsetY\":\"" + (entry[5]*0.5) +
+            "\",\"colorR\":\"" + entry[6] + "\",\"colorG\":\"" + entry[7] +
+            "\",\"colorB\":\"" + entry[8] + "\"}}]";
+        if (bld.registerBuildingsFromJson(json) != 1) throw "Failed to register " + entry[0];
+    }
+    if (loadMeshes) fx.setMeshResolver(resources);
 }
 
 function rayPlaneHitY0(ox, oy, oz, dx, dy, dz, out) {
@@ -67,13 +83,13 @@ function rayPlaneHitY0(ox, oy, oz, dx, dy, dz, out) {
 function setupScene() {
     if (cam == null) {
         cam = eve.Camera3D();
-        cam.setEye(15.0, 11.0, 15.0);
-        cam.setTarget(0.0, 0.0, 0.0);
+        cam.setEye(13.0, 7.0, 16.0);
+        cam.setTarget(0.0, 0.7, 0.0);
         cam.setUp(0.0, 1.0, 0.0);
         cam.setFov(45.0);
         cam.setAmbient(0.35, 0.35, 0.38);
         cam.setActive(true);
-        gfx.setDirectionalLight(-0.4, -1.0, -0.35, 1.2, 1.1, 1.0);
+        gfx.setDirectionalLight(-1.0, -1.0, 0.3, 2.2, 2.0, 1.7);
     }
     if (ground == null) {
         ground = eve.Renderable3D();
@@ -85,20 +101,21 @@ function setupScene() {
 }
 
 function resetWorld() {
-    if (world) world.destroy();
+    if (session) { session.destroy(); session = null; }
+    if (world) { fx.detach(world); world.destroy(); world = null; }
     world = bld.newWorld(GRID_W, GRID_H, CELL);
     world.setId("city3d");
     world.setGridPlane("xz");
     world.setOrigin(-GRID_W * 0.5, -GRID_H * 0.5);
 
-    if (session) session.destroy();
     session = bld.newSession();
     session.startPlacement(world, palette[paletteIndex]);
 
-    if (fx) fx.detach(world);
     fx.attach(world);
     fx.setGridVisible(world, true);
     bld.clearChangeEvents();
+    prevMouse = { left = false, right = false };
+    mouseHit = false;
 }
 
 function selectPalette(index) {
@@ -108,6 +125,7 @@ function selectPalette(index) {
 }
 
 function updateGhostFromMouse() {
+    mouseHit = false;
     local mx = mouse.getX();
     local my = mouse.getY();
     cam.screenToRay(mx, my, gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
@@ -117,6 +135,7 @@ function updateGhostFromMouse() {
                       cam.getScreenRayDirX(), cam.getScreenRayDirY(), cam.getScreenRayDirZ(),
                       hit)) {
         session.updateFromSurface(world, "plane", hit[0], hit[1]);
+        mouseHit = true;
     }
 }
 
@@ -129,7 +148,7 @@ function refreshHud() {
         "  当前 [" + (paletteIndex + 1) + "] " + name +
         "  旋转 " + session.getRotationDeg().tointeger() + "°  " + info);
     ui.setText("help",
-        "1房屋 2塔楼 | 移动预览 | R旋转 | 左键建 | 右键拆 | T网格");
+        "1山墙小屋 2谷仓 3尖顶小屋 | 移动预览 | R旋转 | 左键建 | 右键拆 | T网格");
 }
 
 eve_init = function() {
@@ -137,9 +156,9 @@ eve_init = function() {
     gfx.setBackgroundColor(0.08, 0.10, 0.12, 1.0);
     if (bld == null) bld = eve.Building();
     if (fx == null) fx = eve.BuildingFx();
-    registerBuildings();
+    registerBuildings(true);
     setupScene();
-    palette = ["house", "tower"];
+    palette = ["house", "barn", "pavilion"];
     paletteIndex = 0;
     resetWorld();
 
@@ -169,19 +188,20 @@ eve_update = function(dt) {
 
     if (keyPressed("1")) selectPalette(0);
     if (keyPressed("2")) selectPalette(1);
+    if (keyPressed("3")) selectPalette(2);
     if (keyPressed("r") || keyPressed("R")) session.rotateBy(90.0);
     if (keyPressed("t") || keyPressed("T"))
         fx.setGridVisible(world, !fx.getGridVisible(world));
 
     updateGhostFromMouse();
 
-    if (mousePressed(1)) {
+    if (mousePressed(1) && mouseHit) {
         session.setMode("place");
         local id = session.execute();
         if (id <= 0)
             print("failed to place: " + session.getReason() + "\n");
     }
-    if (mousePressed(2)) {
+    if (mousePressed(2) && mouseHit) {
         session.setMode("remove");
         local id = session.execute();
         session.setMode("place");
@@ -189,7 +209,8 @@ eve_update = function(dt) {
             print("no building here.\n");
     }
     fx.sync(world);
-    fx.updateGhost(world, session.getGhost());
+    if (mouseHit) fx.updateGhost(world, session.getGhost());
+    else fx.hideGhost(world);
     refreshHud();
 };
 
