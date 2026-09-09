@@ -154,9 +154,13 @@ public:
     virtual void drawCone(glm::vec3 apex, glm::vec3 axis, float height, float radius,
                           const ScenePaint&) = 0;
     virtual void drawFrustum(const FrustumCorners&, const ScenePaint&) = 0;
-    virtual void drawPath(const Path3D&, const ScenePaint&) = 0;
 };
 ```
+
+首期 `Path3D` 不在当前接口中。空间曲线必须先明确采用平面路径、相机朝向 ribbon，还是具有旋转最小标架的
+空间管线；三种语义的 join、fill 和深度行为不同，不能用一个未定义语义的 `drawPath` 混在一起。
+当前调用方使用 owning 3D polyline 表达空间折线和曲线细分结果，后续若有至少两个真实曲线 consumer，
+再单独稳定 `SpatialPath3D` 契约。
 
 Canvas 由当前 3D pass 根据 `SceneDrawContext` 创建，不持有 `Camera3D*` 或 Scene 指针。Context 是
 单帧值快照。Canvas 为 render-thread affine，同步记录命令，不调用脚本或未知 callback。

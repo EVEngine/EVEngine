@@ -16,6 +16,27 @@ eve::Result<T> primitiveFailure(eve::DiagnosticCode code, std::string message) {
 
 bool finite(glm::vec3 value) { return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z); }
 
+bool nonZero(glm::vec3 value) {
+    constexpr float minimumLengthSquared = 1e-12f;
+    return finite(value) && glm::dot(value, value) > minimumLengthSquared;
+}
+
+bool independent(glm::vec3 a, glm::vec3 b) {
+    constexpr float minimumRelativeAreaSquared = 1e-12f;
+    const float aLengthSquared = glm::dot(a, a);
+    const float bLengthSquared = glm::dot(b, b);
+    const glm::vec3 crossValue = glm::cross(a, b);
+    const float areaSquared    = glm::dot(crossValue, crossValue);
+    return aLengthSquared > 0.f && bLengthSquared > 0.f &&
+           areaSquared > minimumRelativeAreaSquared * aLengthSquared * bLengthSquared;
+}
+
+bool formsBasis(glm::vec3 a, glm::vec3 b, glm::vec3 c) {
+    constexpr float minimumRelativeVolumeSquared = 1e-12f;
+    const float volume = glm::dot(a, glm::cross(b, c));
+    return volume * volume > minimumRelativeVolumeSquared * glm::dot(a, a) * glm::dot(b, b) * glm::dot(c, c);
+}
+
 eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
     try {
         descriptor.paint.validate();
@@ -34,15 +55,21 @@ eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
                 return geometry.points.size() >= 2 &&
                        std::all_of(geometry.points.begin(), geometry.points.end(), finite);
             } else if constexpr (std::is_same_v<Geometry, PrimitiveAabb3D>) {
-                return finite(geometry.minimum) && finite(geometry.maximum);
+                return finite(geometry.minimum) && finite(geometry.maximum) &&
+                       geometry.minimum.x <= geometry.maximum.x && geometry.minimum.y <= geometry.maximum.y &&
+                       geometry.minimum.z <= geometry.maximum.z;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveObb3D>) {
-                return finite(geometry.center) && finite(geometry.halfAxes[0]) && finite(geometry.halfAxes[1]) &&
-                       finite(geometry.halfAxes[2]);
+                return finite(geometry.center) && nonZero(geometry.halfAxes[0]) && nonZero(geometry.halfAxes[1]) &&
+                       nonZero(geometry.halfAxes[2]) && independent(geometry.halfAxes[0], geometry.halfAxes[1]) &&
+                       independent(geometry.halfAxes[1], geometry.halfAxes[2]) &&
+                       independent(geometry.halfAxes[2], geometry.halfAxes[0]) &&
+                       formsBasis(geometry.halfAxes[0], geometry.halfAxes[1], geometry.halfAxes[2]);
             } else if constexpr (std::is_same_v<Geometry, PrimitiveDisk3D>) {
-                return finite(geometry.center) && finite(geometry.normal) && std::isfinite(geometry.radius) &&
+                return finite(geometry.center) && nonZero(geometry.normal) && std::isfinite(geometry.radius) &&
                        geometry.radius > 0.f && geometry.segments >= 3;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveArc3D>) {
-                return finite(geometry.center) && finite(geometry.normal) && finite(geometry.zeroDirection) &&
+                return finite(geometry.center) && nonZero(geometry.normal) && nonZero(geometry.zeroDirection) &&
+                       independent(geometry.normal, geometry.zeroDirection) &&
                        std::isfinite(geometry.radius) && geometry.radius > 0.f &&
                        std::isfinite(geometry.startRadians) && std::isfinite(geometry.sweepRadians) &&
                        geometry.segments >= 1;
@@ -51,17 +78,20 @@ eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
                        geometry.segments >= 3;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveCapsule3D> ||
                                  std::is_same_v<Geometry, PrimitiveCylinder3D>) {
-                return finite(geometry.a) && finite(geometry.b) && std::isfinite(geometry.radius) &&
+                return finite(geometry.a) && finite(geometry.b) && nonZero(geometry.b - geometry.a) &&
+                       std::isfinite(geometry.radius) &&
                        geometry.radius > 0.f && geometry.segments >= 3;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveCone3D>) {
-                return finite(geometry.apex) && finite(geometry.axis) && std::isfinite(geometry.height) &&
+                return finite(geometry.apex) && nonZero(geometry.axis) && std::isfinite(geometry.height) &&
                        geometry.height > 0.f && std::isfinite(geometry.radius) && geometry.radius > 0.f &&
                        geometry.segments >= 3;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveGrid3D>) {
-                return finite(geometry.origin) && finite(geometry.axisU) && finite(geometry.axisV) &&
+                return finite(geometry.origin) && nonZero(geometry.axisU) && nonZero(geometry.axisV) &&
+                       independent(geometry.axisU, geometry.axisV) &&
                        geometry.cellsU > 0 && geometry.cellsV > 0;
             } else if constexpr (std::is_same_v<Geometry, PrimitiveArrow3D>) {
-                return finite(geometry.from) && finite(geometry.to) && std::isfinite(geometry.headLength) &&
+                return finite(geometry.from) && finite(geometry.to) && nonZero(geometry.to - geometry.from) &&
+                       std::isfinite(geometry.headLength) &&
                        geometry.headLength > 0.f && std::isfinite(geometry.headRadius) && geometry.headRadius > 0.f;
             } else {
                 return std::all_of(geometry.corners.begin(), geometry.corners.end(), finite);
@@ -146,7 +176,7 @@ const PrimitiveDescriptor3D* PrimitiveScene::tryGet(PrimitiveHandle handle) cons
     return &*slots_[handle.index()].descriptor;
 }
 
-bool PrimitiveScene::isStale(PrimitiveHandle handle) const noexcept { return handle.isValid() && !matches(handle); }
+bool PrimitiveScene::isStale(PrimitiveHandle handle) const noexcept { return !matches(handle); }
 
 void PrimitiveScene::clear() {
     freeSlots_.clear();

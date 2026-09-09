@@ -141,7 +141,8 @@ void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
         ScenePrimitivePaint            paint;
         std::size_t                    sequence     = 0;
         float                          averageDepth = 0.f;
-        std::vector<Primitive3DVertex> vertices;
+        std::size_t                    firstVertex  = 0;
+        std::size_t                    vertexCount  = 0;
     };
     std::vector<DrawGroup> groups;
     groups.reserve(resolved.batches3D.size());
@@ -150,9 +151,8 @@ void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
         group.paint        = batch.paint;
         group.sequence     = batch.sequence;
         group.averageDepth = batch.averageDepth;
-        group.vertices.reserve(batch.vertexCount);
-        for (std::size_t vertex = batch.firstVertex; vertex < batch.firstVertex + batch.vertexCount; ++vertex)
-            group.vertices.push_back({resolved.vertices[vertex].clipPosition, resolved.vertices[vertex].color});
+        group.firstVertex = batch.firstVertex;
+        group.vertexCount = batch.vertexCount;
         groups.push_back(std::move(group));
     }
     std::stable_sort(groups.begin(), groups.end(), [&](const DrawGroup &a, const DrawGroup &b) {
@@ -170,7 +170,7 @@ void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
     });
 
     auto &buffers = offscreen ? offscreenPrimitive3DBufs : currentFrame2DBuffers().primitive3DBufs;
-    if (buffers.size() < groups.size()) buffers.resize(groups.size());
+    if (buffers.empty()) buffers.resize(1);
     const vk::CommandBuffer cb = offscreen ? offscreen3DCB : currentPresentCb();
     const uint32_t          targetWidth =
         offscreen ? static_cast<uint32_t>(offscreen3DCanvas->getWidth()) : swapchain.extent.width;
@@ -180,17 +180,25 @@ void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
                           ? (offscreen3DHDRActive ? hdrOffscreenPrimitive3DPipelines : offscreenPrimitive3DPipelines)
                           : primitive3DPipelines;
     setViewportAndScissor(cb, targetWidth, targetHeight);
+    std::vector<Primitive3DVertex> vertices;
+    vertices.reserve(resolved.vertices.size());
+    for (const DrawGroup &group : groups) {
+        for (std::size_t vertex = group.firstVertex; vertex < group.firstVertex + group.vertexCount; ++vertex)
+            vertices.push_back({resolved.vertices[vertex].clipPosition, resolved.vertices[vertex].color});
+    }
+    buffers.front().allocate<Primitive3DVertex>(frameToken(), device, vertices);
+    const vk::DeviceSize offset = 0;
+    cb.bindVertexBuffers(0, 1, buffers.front(), &offset);
+    std::uint32_t firstVertex = 0;
     for (std::size_t groupIndex = 0; groupIndex < groups.size(); ++groupIndex) {
         const DrawGroup           &group             = groups[groupIndex];
         const ScenePrimitivePaint &paint             = group.paint;
         const std::size_t          pipelineIndex     = primitive3DPipelineIndex(paint.depth, paint.blend, paint.cull);
         const vk::Pipeline         primitivePipeline = pipelines[pipelineIndex];
         if (!primitivePipeline) throw Exception("drawPrimitiveScene: primitive pipeline unavailable");
-        buffers[groupIndex].allocate<Primitive3DVertex>(frameToken(), device, group.vertices);
-        const vk::DeviceSize offset = 0;
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, primitivePipeline);
-        cb.bindVertexBuffers(0, 1, buffers[groupIndex], &offset);
-        cb.draw(static_cast<uint32_t>(group.vertices.size()), 1, 0, 0);
+        cb.draw(static_cast<uint32_t>(group.vertexCount), 1, firstVertex, 0);
+        firstVertex += static_cast<std::uint32_t>(group.vertexCount);
     }
 }
 

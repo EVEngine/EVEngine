@@ -159,6 +159,7 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     [[nodiscard]] const PrimitiveDescriptor3D* tryGet(PrimitiveHandle handle) const noexcept;
+    /** @brief Returns true when a handle is invalid, removed, foreign, or generation-stale. */
     [[nodiscard]] bool                         isStale(PrimitiveHandle handle) const noexcept;
     /** @brief Invalidates all live handles while retaining slot capacity. */
     void clear();

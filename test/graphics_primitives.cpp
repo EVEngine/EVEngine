@@ -588,6 +588,7 @@ TEST_CASE("GraphicsPrimitives.batcherAcceptsResolvedArbitraryTriangles") {
 
 TEST_CASE("GraphicsPrimitives.persistentSceneDetectsStaleAndReusedSlots") {
     PrimitiveScene        scene;
+    CHECK(scene.isStale({}));
     PrimitiveDescriptor3D descriptor;
     descriptor.geometry = PrimitiveSphere3D{{0.f, 0.f, 0.f}, 1.f, 8};
     auto added          = scene.add(descriptor);
@@ -607,6 +608,28 @@ TEST_CASE("GraphicsPrimitives.persistentSceneDetectsStaleAndReusedSlots") {
     auto staleUpdate = scene.update(first, descriptor);
     CHECK(!staleUpdate.ok());
     CHECK_EQ(static_cast<int>(staleUpdate.error()->code()), static_cast<int>(eve::DiagnosticCode::StaleHandle));
+}
+
+TEST_CASE("GraphicsPrimitives.persistentSceneRejectsInvalidSpatialDescriptorsBeforeRender") {
+    PrimitiveScene scene;
+    const std::array<PrimitiveGeometry3D, 8> invalidGeometries{{
+        PrimitiveAabb3D{{1.f, 0.f, 0.f}, {0.f, 1.f, 1.f}},
+        PrimitiveObb3D{{0.f, 0.f, 0.f}, {{{1.f, 0.f, 0.f}, {2.f, 0.f, 0.f}, {0.f, 0.f, 1.f}}}},
+        PrimitiveDisk3D{{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, 1.f, 8},
+        PrimitiveArc3D{{0.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 2.f, 0.f}, 1.f, 0.f, 1.f, 8},
+        PrimitiveCylinder3D{{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, 1.f, 8},
+        PrimitiveCone3D{{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, 1.f, 1.f, 8},
+        PrimitiveGrid3D{{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {2.f, 0.f, 0.f}, 2, 2},
+        PrimitiveArrow3D{{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, 0.2f, 0.1f},
+    }};
+
+    for (const PrimitiveGeometry3D& geometry : invalidGeometries) {
+        PrimitiveDescriptor3D descriptor;
+        descriptor.geometry = geometry;
+        auto added          = scene.add(std::move(descriptor));
+        CHECK(!added.ok());
+    }
+    CHECK_EQ(scene.size(), 0u);
 }
 
 TEST_CASE("GraphicsPrimitives.persistentSceneProjectsVisibleDescriptorsInSlotOrder") {
