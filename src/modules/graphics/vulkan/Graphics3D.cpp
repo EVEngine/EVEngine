@@ -1251,7 +1251,7 @@ void Graphics::buildDeferredFrameGraphs() {
         shadowDesc.aspect = vk::ImageAspectFlagBits::eDepth;
         shadowDesc.usage = vk::ImageUsageFlagBits::eSampled |
                            vk::ImageUsageFlagBits::eDepthStencilAttachment;
-        shadowDesc.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+        shadowDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         vk::ClearValue shadowClear{};
         shadowClear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
         const bool haveShadowSlot =
