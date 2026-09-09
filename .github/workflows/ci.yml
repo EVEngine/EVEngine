@@ -200,7 +200,11 @@ jobs:
       - name: Install profile toolchain
         timeout-minutes: 15
         run: |
-          sudo apt-get update
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build libvulkan-dev \
             libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
@@ -1013,9 +1017,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1171,9 +1179,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1261,9 +1273,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1351,9 +1367,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1459,7 +1479,11 @@ jobs:
       - name: Install fuzz toolchain
         timeout-minutes: 5
         run: |
-          sudo apt-get update
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
       - name: Setup C/C++ compilation cache
@@ -1527,9 +1551,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
