@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -47,6 +48,11 @@ class TerrainStreamingCache {
 public:
     /** @brief Compatibility operation that opens EVTR and clears decoded chunks. */
     bool open(const uint8_t *data, size_t size, std::string *error = nullptr);
+    /**
+     * @brief Open EVTR through a retained random-access source without loading chunk payloads.
+     * @return Success after metadata validation; failure preserves the previous cache.
+     */
+    [[nodiscard]] Result<void> openSource(std::shared_ptr<const ITerrainArchiveSource> source);
     void clear();
 
     /**

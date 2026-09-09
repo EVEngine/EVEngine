@@ -36,6 +36,10 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
         restored <- target.readScalar(3, 4);
         redone <- session.redo();
         replayed <- target.readScalar(3, 4);
+        encoded <- heightmapTargets.encodeDocument(heightmap, 0.5, 0.5);
+        target.writeScalar(3, 4, -2.0);
+        decoded <- heightmapTargets.decodeDocument(encoded.value, heightmap);
+        documentRestored <- target.readScalar(3, 4);
     )"));
 
     CHECK(vm.find("added").toBool());
@@ -48,4 +52,7 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
     CHECK_EQ(vm.find("restored").toFloat(), 0.f);
     CHECK(vm.find("redone").toBool());
     CHECK_GT(vm.find("replayed").toFloat(), 0.2f);
+    CHECK(vm.find("encoded").toTable().find("ok").toBool());
+    CHECK(vm.find("decoded").toTable().find("ok").toBool());
+    CHECK_GT(vm.find("documentRestored").toFloat(), 0.2f);
 }
