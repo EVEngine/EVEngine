@@ -175,16 +175,11 @@ TEST_CASE("asset.import.unityCollectionTracksMetadataChangesAndGuidCase") {
     REQUIRE(after.value().manifest.provenance.at("importKey").asString() != oldKey);
 }
 
-TEST_CASE("asset.import.unityCollectionDoesNotPublishEmptyNestedPrefabAsConverted") {
+TEST_CASE("asset.import.unityCollectionRejectsMalformedNestedPrefabBeforePublication") {
     auto request                        = collection();
     request.files["Assets/prop.prefab"] = bytes("%YAML 1.1\n--- !u!1001 &123\nPrefabInstance:\n");
     auto result                         = prepareUnityProjectImport(request);
-    REQUIRE(result.ok());
-    REQUIRE_EQ(result.value().manifest.assets.size(), std::size_t(1));
-    REQUIRE(!result.value().manifest.entrypoints.contains("Assets/prop.prefab"));
-    REQUIRE(std::any_of(result.value().findings.begin(), result.value().findings.end(), [](const auto& f) {
-        return f.sourcePath == "Assets/prop.prefab" && f.disposition == ImportDisposition::Unsupported;
-    }));
+    REQUIRE(!result.ok());
 }
 
 TEST_CASE("asset.import.unityPackageAndDirectoryProduceIdenticalCanonicalArchive") {

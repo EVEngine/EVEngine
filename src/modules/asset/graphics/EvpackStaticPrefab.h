@@ -41,11 +41,14 @@ public:
     /** @brief Draw in an already-open 3D pass using its camera/light state and a column-major instance transform.
      * @param graphics Borrowed backend corresponding to the factories used at load.
      * @param transform Finite column-major instance transform; borrowed only during this call.
+     * @param cameraView Finite right-handed column-major view matrix, borrowed for per-prefab transparent sorting.
      * @return Success or invalid-transform/released-state error before issuing draws.
-     * @remarks Sets opaque PBR draw state; caller restores any state needed by subsequent custom draws. No shadow pass
-     * is submitted.
+     * @remarks Draws opaque PBR first, then transparent submeshes back-to-front by node origin within this prefab;
+     * caller orders separate prefab instances for transparency. Sets material state; caller restores any state needed
+     * by subsequent custom draws. No shadow pass is submitted.
      */
-    [[nodiscard]] Result<void> draw(graphics::Graphics& graphics, const std::array<float, 16>& transform) const;
+    [[nodiscard]] Result<void> draw(graphics::Graphics& graphics, const std::array<float, 16>& transform,
+                                    const std::array<float, 16>& cameraView) const;
     /** @brief Invalidate draw packets and release all leases; failed releases remain owned for retry.
      * @return Backend failure if any release fails. Destructor retries and reports remaining errors to stderr.
      */

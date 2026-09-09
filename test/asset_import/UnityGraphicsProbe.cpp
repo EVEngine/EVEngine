@@ -7,6 +7,7 @@
 #include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackImageLoader.h"
 #include "asset/graphics/EvpackStaticPrefab.h"
+#include "asset/scene/EvpackSceneTemplateLoader.h"
 #include "common/CrashHandler.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
@@ -15,8 +16,8 @@
 
 int main(int argc, char** argv) try {
     eve::installCrashHandler();
-    if (argc != 4) {
-        std::cerr << "usage: unity_graphics_probe <evpack> <output.png> <display.frag.spv>\n";
+    if (argc != 4 && argc != 5) {
+        std::cerr << "usage: unity_graphics_probe <evpack> <output.png> <display.frag.spv> [prefab-name]\n";
         return 2;
     }
     std::ifstream input(argv[1], std::ios::binary);
@@ -40,6 +41,12 @@ int main(int argc, char** argv) try {
         if (chunk.type != "eve.scene-template" || chunk.kind != eve::asset::EvpackChunkKind::Definition) continue;
         auto ref = eve::AssetRef::fromId(chunk.assetId);
         if (!ref) return 1;
+        if (argc == 5) {
+            auto scene = eve::asset_scene::EvpackSceneTemplateLoader(reader).load(ref.value(), caps);
+            if (!scene) return 1;
+            if (scene.value().root.children.empty() || scene.value().root.children.front().name != argv[4]) continue;
+        } else if (prefabs.size() >= 96)
+            break;
         auto loaded = eve::asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref.value(), caps);
         if (!loaded) {
             std::cerr << loaded.error()->message();
@@ -51,10 +58,10 @@ int main(int argc, char** argv) try {
         std::cerr << "probe expects 1..96 static prefabs";
         return 1;
     }
-    auto*           canvas = gfx->newCanvas(1400, 1000);
-    const glm::vec3 eye(36.f, 44.f, 38.f);
-    const auto      view       = glm::lookAtRH(eye, glm::vec3(0.f), glm::vec3(0, 1, 0));
-    auto            projection = glm::orthoRH_ZO(-24.f, 24.f, -17.15f, 17.15f, 0.1f, 200.f);
+    auto*           canvas     = gfx->newCanvas(1400, 1000);
+    const glm::vec3 eye        = argc == 5 ? glm::vec3(60.f, 45.f, -65.f) : glm::vec3(36.f, 44.f, 38.f);
+    const auto      view       = glm::lookAtRH(eye, glm::vec3(0.f, argc == 5 ? 6.f : 0.f, 0.f), glm::vec3(0, 1, 0));
+    auto            projection = glm::orthoRH_ZO(-24.f, 24.f, -17.15f, 17.15f, 0.1f, 300.f);
     projection[1][1] *= -1.f;
     gfx->setMesh3DViewProj(projection * view);
     gfx->setMesh3DView(view);
@@ -70,9 +77,12 @@ int main(int argc, char** argv) try {
     for (std::size_t i = 0; i < prefabs.size(); ++i) {
         auto matrix =
             glm::translate(glm::mat4(1), glm::vec3((float(i % 12) - 5.5f) * 3.f, 0, (float(i / 12) - 3.5f) * 3.f));
+        if (argc == 5) matrix = glm::mat4(1.f);
         std::array<float, 16> transform;
         std::copy_n(glm::value_ptr(matrix), 16, transform.begin());
-        auto drawn = prefabs[i]->draw(*gfx, transform);
+        std::array<float, 16> cameraView;
+        std::copy_n(glm::value_ptr(view), 16, cameraView.begin());
+        auto drawn = prefabs[i]->draw(*gfx, transform, cameraView);
         if (!drawn) {
             std::cerr << drawn.error()->message();
             return 1;

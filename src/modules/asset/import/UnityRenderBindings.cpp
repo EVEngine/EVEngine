@@ -51,15 +51,16 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     if (!match(text, R"(m_Shader: *\{fileID: *(46), guid: *0000000000000000f000000000000000, type: *0\})"))
         return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
                                                     "only built-in Standard shader is converted", source.path);
-    auto metallic = property(text, "_Metallic", 0), smoothness = property(text, "_Glossiness", 0.5),
-         mode = property(text, "_Mode", 0);
+    auto metallic = property(text, "_Metallic", 0);
     if (!metallic) return Result<PreparedAssetImport>::failure(metallic.status());
+    auto smoothness = property(text, "_Glossiness", 0.5);
     if (!smoothness) return Result<PreparedAssetImport>::failure(smoothness.status());
+    auto mode = property(text, "_Mode", 0);
     if (!mode) return Result<PreparedAssetImport>::failure(mode.status());
-    if (mode.value() != 0 || metallic.value() < 0 || metallic.value() > 1 || smoothness.value() < 0 ||
-        smoothness.value() > 1)
+    if ((mode.value() != 0 && mode.value() != 2 && mode.value() != 3) || metallic.value() < 0 || metallic.value() > 1 ||
+        smoothness.value() < 0 || smoothness.value() > 1)
         return detail::failure<PreparedAssetImport>(
-            DiagnosticCode::Unsupported, "only opaque Standard materials with normalized factors are converted",
+            DiagnosticCode::Unsupported, "Standard opaque/fade/transparent materials require normalized factors",
             source.path);
     Value::Array color{Value(1.0), Value(1.0), Value(1.0), Value(1.0)};
     if (auto value = match(text, R"(- _Color: *(\{[^\r\n]+\}))")) {
@@ -87,13 +88,18 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     Value::Object definition{{"schema", Value("eve.material")},
                              {"schemaVersion", Value(std::int64_t(1))},
                              {"shadingModel", Value("pbr")},
-                             {"surfaceMode", Value("opaque")},
+                             {"surfaceMode", Value(mode.value() == 0 ? "opaque" : "transparent")},
                              {"baseColor", Value(std::move(color))},
                              {"metallic", Value(metallic.value())},
                              {"roughness", Value(1.0 - smoothness.value())}};
+    if (mode.value() != 0) definition["blendMode"] = Value(mode.value() == 3 ? "premultiplied" : "alpha");
     if (auto main = match(text, R"(- _MainTex:([\s\S]*?)(?:\n    - |\n    m_Floats:))")) {
         const auto guid = match(*main, R"(m_Texture: *\{fileID: *2800000, guid: *([0-9a-fA-F]{32}), type: *3\})");
         if (guid) {
+            if (mode.value() == 3)
+                return detail::failure<PreparedAssetImport>(
+                    DiagnosticCode::Unsupported, "premultiplied Standard texture alpha requires a shader conversion",
+                    source.path);
             if (!match(*main, R"(m_Scale: *\{x: *(1), y: *1\})") || !match(*main, R"(m_Offset: *\{x: *(0), y: *0\})"))
                 return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
                                                             "material texture transform is unsupported", source.path);
@@ -119,8 +125,8 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     out.entries.push_back({path, std::move(encoded)});
     out.manifest.entrypoints.emplace("default", ref.value());
     out.sourceMappings.push_back({"2100000", ref.value()});
-    out.findings.push_back(
-        {source.path, "Material.Standard", ImportDisposition::Translated, "opaque metallic-roughness and base color"});
+    out.findings.push_back({source.path, "Material.Standard", ImportDisposition::Translated,
+                            "metallic-roughness, base color and surface mode"});
     out.findings.push_back({source.path, "Material.extraProperties", ImportDisposition::Unsupported,
                             "additional shader keywords, non-base texture maps and saved properties are not applied"});
     return Result<PreparedAssetImport>::success(std::move(out));
@@ -129,6 +135,16 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
 Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const UnitySourceIndex& index,
                                 PreparedAssetImport& out) {
     std::map<std::string, AssetRef> mappings;
+    std::map<std::string, std::size_t> nativeSlots;
+    const std::regex                   submeshMarker("(?:^|\\n)    firstByte:");
+    for (const auto& source : index.assets) {
+        if (detail::extension(source.path) != "asset") continue;
+        const auto&       bytes = request.files.at(source.path);
+        const std::string text(bytes.begin(), bytes.end());
+        if (text.find("!u!43 ") != std::string::npos)
+            nativeSlots[source.guid] = std::size_t(
+                std::distance(std::sregex_iterator(text.begin(), text.end(), submeshMarker), std::sregex_iterator()));
+    }
     for (const auto& mapping : out.sourceMappings) mappings.emplace(mapping.sourceObject, mapping.asset);
     for (const auto& source : index.assets) {
         if (source.kind != UnitySourceKind::Prefab) continue;
@@ -154,6 +170,15 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                 return detail::failure<void>(DiagnosticCode::Conflict,
                                              "duplicate Transform or MeshFilter on GameObject", source.path);
         }
+        auto definition = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
+        if (!definition) return Result<void>::failure(definition.status());
+        auto* object = definition.value().getIf<Value::Object>();
+        if (!object) return detail::failure<void>(DiagnosticCode::ParseError, "invalid scene definition", source.path);
+        auto* nodes = object->at("nodes").getIf<Value::Array>();
+        if (!nodes) return detail::failure<void>(DiagnosticCode::ParseError, "invalid scene nodes", source.path);
+        std::int64_t nextNode = 1;
+        for (const auto& node : *nodes)
+            nextNode = std::max(nextNode, node.getIf<Value::Object>()->at("sourceFileId").asInt());
         Value::Array          renderers;
         std::set<std::string> resolvedComponents;
         for (const auto& doc : docs) {
@@ -162,45 +187,76 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
             if (!game || !transforms.contains(*game) || !filters.contains(*game)) continue;
             const auto& filter = filters.at(*game);
             const auto  meshGuid =
-                match(filter.body, R"(m_Mesh: *\{fileID: *-?[0-9]+, guid: *([0-9a-fA-F]{32}), type: *3\})");
+                match(filter.body, R"(m_Mesh: *\{fileID: *-?[0-9]+, guid: *([0-9a-fA-F]{32}), type: *[23]\})");
             const auto meshId = match(filter.body, R"(m_Mesh: *\{fileID: *(-?[0-9]+),)");
-            if (!meshGuid || !meshId || !mappings.contains(refKey(*meshGuid, *meshId))) continue;
-            const auto material =
-                match(doc.body, R"(m_Materials:\s*\n  - \{fileID: *2100000, guid: *([0-9a-fA-F]{32}), type: *2\})");
-            if (!material || !mappings.contains(refKey(*material, "2100000"))) continue;
-            // A second material slot requires submesh routing; never silently select its first slot.
-            if (match(doc.body, R"(m_Materials:\s*\n  - [^\n]+\n  (- ))")) continue;
-            const auto meshRef     = mappings.at(refKey(*meshGuid, *meshId));
-            const auto materialRef = mappings.at(refKey(*material, "2100000"));
-            const auto objectId =
-                request.package.packageId.child("unity:" + source.guid + ":" + transforms.at(*game).id);
-            renderers.emplace_back(
-                Value::Object{{"objectId", Value(objectId.format())},
-                              {"mesh", Value(meshRef.format())},
-                              {"material", Value(materialRef.format())},
-                              {"enabled", Value(!match(doc.body, R"(m_Enabled: *(0)(?:\s|$))").has_value())}});
-            out.manifest.dependencies.push_back({sceneId.value(),
-                                                 meshRef,
-                                                 asset::EvaDependencyKind::RuntimeRequired,
-                                                 "renderers[" + std::to_string(renderers.size() - 1) + "].mesh",
-                                                 {},
-                                                 "eve.mesh/1",
-                                                 {}});
-            out.manifest.dependencies.push_back({sceneId.value(),
-                                                 materialRef,
-                                                 asset::EvaDependencyKind::RuntimeRequired,
-                                                 "renderers[" + std::to_string(renderers.size() - 1) + "].material",
-                                                 {},
-                                                 "eve.material/1",
-                                                 {}});
+            if (!meshGuid || !meshId) continue;
+            const auto key    = refKey(*meshGuid, *meshId);
+            const bool native = nativeSlots.contains(unity_detail::foldAscii(*meshGuid));
+            if (!native && !mappings.contains(key)) continue;
+            const auto list = match(doc.body, R"(m_Materials:([^\n]*\n(?:  - [^\n]*(?:\n|$))*))");
+            if (!list) continue;
+            std::vector<std::string> materials;
+            const std::regex         materialPattern(R"(  - (\{[^\n]+\}))");
+            for (std::sregex_iterator it(list->begin(), list->end(), materialPattern), end; it != end; ++it) {
+                auto guid = match((*it)[1].str(), R"(fileID: *2100000, guid: *([0-9a-fA-F]{32}), type: *2)");
+                materials.push_back(guid.value_or(""));
+            }
+            std::size_t count = 1;
+            if (native) count = nativeSlots.at(unity_detail::foldAscii(*meshGuid));
+            if (materials.size() != count) {
+                out.findings.push_back({source.path, "Prefab.materialSlots", ImportDisposition::Unsupported,
+                                        "material slot count does not match mesh submeshes"});
+                continue;
+            }
+            for (std::size_t slot = 0; slot < count; ++slot) {
+                if (!mappings.contains(refKey(materials[slot], "2100000")) ||
+                    (native && !mappings.contains(key + "/submesh/" + std::to_string(slot))))
+                    continue;
+                const auto meshRef     = mappings.at(native ? key + "/submesh/" + std::to_string(slot) : key);
+                const auto materialRef = mappings.at(refKey(materials[slot], "2100000"));
+                auto objectId = request.package.packageId.child("unity:" + source.guid + ":" + transforms.at(*game).id);
+                if (native) {
+                    if (nextNode == std::numeric_limits<std::int64_t>::max() ||
+                        nodes->size() >= request.limits.maximumAssets)
+                        return detail::failure<void>(DiagnosticCode::InvalidArgument, "submesh node budget exceeded",
+                                                     source.path);
+                    ++nextNode;
+                    objectId = objectId.child("submesh:" + std::to_string(slot));
+                    nodes->emplace_back(
+                        Value::Object{{"objectId", Value(objectId.format())},
+                                      {"sourceFileId", Value(nextNode)},
+                                      {"parentSourceFileId", Value(std::int64_t(std::stoll(transforms.at(*game).id)))},
+                                      {"name", Value("Submesh " + std::to_string(slot))},
+                                      {"visible", Value(true)},
+                                      {"position", Value(Value::Array{Value(0.0), Value(0.0), Value(0.0)})},
+                                      {"rotation", Value(Value::Array{Value(0.0), Value(0.0), Value(0.0), Value(1.0)})},
+                                      {"scale", Value(Value::Array{Value(1.0), Value(1.0), Value(1.0)})}});
+                }
+                renderers.emplace_back(
+                    Value::Object{{"objectId", Value(objectId.format())},
+                                  {"mesh", Value(meshRef.format())},
+                                  {"material", Value(materialRef.format())},
+                                  {"enabled", Value(!match(doc.body, R"(m_Enabled: *(0)(?:\s|$))").has_value())}});
+                const auto prefix = "renderers[" + std::to_string(renderers.size() - 1) + "]";
+                out.manifest.dependencies.push_back({sceneId.value(),
+                                                     meshRef,
+                                                     asset::EvaDependencyKind::RuntimeRequired,
+                                                     prefix + ".mesh",
+                                                     {},
+                                                     "eve.mesh/1",
+                                                     {}});
+                out.manifest.dependencies.push_back({sceneId.value(),
+                                                     materialRef,
+                                                     asset::EvaDependencyKind::RuntimeRequired,
+                                                     prefix + ".material",
+                                                     {},
+                                                     "eve.material/1",
+                                                     {}});
+            }
             resolvedComponents.insert("Prefab.component:23:" + doc.id);
             resolvedComponents.insert("Prefab.component:33:" + filter.id);
         }
         if (renderers.empty()) continue;
-        auto definition = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
-        if (!definition) return Result<void>::failure(definition.status());
-        auto* object = definition.value().getIf<Value::Object>();
-        if (!object) return detail::failure<void>(DiagnosticCode::ParseError, "invalid scene definition", source.path);
         (*object)["schemaVersion"] = Value(std::int64_t(2));
         (*object)["renderers"]     = Value(std::move(renderers));
         auto encoded               = definition.value().toJson();

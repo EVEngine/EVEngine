@@ -7,6 +7,14 @@
 
 namespace eve::asset_import {
 struct UnityProjectImportRequest;
+/** @brief Owning import-only expansion; original source bytes remain authoritative for archival. */
+struct UnityExpandedPrefab {
+    std::vector<std::uint8_t>  bytes;
+    std::vector<ImportFinding> findings;
+};
+/** @brief Resolve bounded nested prefab references into an unpublished owning text candidate. */
+[[nodiscard]] Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&, const UnitySourceIndex&,
+                                                            const UnitySourceAsset&);
 /** @brief Convert an explicit SpriteRenderer timeline and referenced metadata into an owning canonical candidate. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImportRequest& request,
                                                                       const UnitySourceAsset&          source);
@@ -19,6 +27,9 @@ struct UnityProjectImportRequest;
 /** @brief Convert a static FBX with explicit Unity importer settings and hashed subasset identities. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request,
                                                           const UnitySourceAsset&          source);
+/** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
+                                                                 const UnitySourceAsset&);
 /** @brief Convert supported built-in Standard material properties to canonical PBR data. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest& request,
                                                                const UnitySourceAsset&          source);
