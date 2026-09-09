@@ -155,6 +155,7 @@ public:
     [[nodiscard]] const PrimitiveDrawStatistics&        statistics() const noexcept { return statistics_; }
 
 private:
+    friend class PrimitiveScene;
     SceneDrawContext               context_;
     std::size_t                    hardCommandLimit_;
     glm::mat4                      transform_{1.f};

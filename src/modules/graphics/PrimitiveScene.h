@@ -134,8 +134,11 @@ struct PrimitiveBatchUpdate {
 /**
  * @brief Authoritative owner for primitives that persist across frames.
  *
- * Mutation is owner-thread affine. render() is const and synchronously projects
- * descriptors into a caller-owned frame Canvas without retaining it.
+ * All operations, including render(), are owner-thread affine and invoke no callbacks.
+ * Descriptors are authoritative; cached CPU commands are disposable derived data.
+ * @ownership Owns descriptors and caches; borrows the destination Canvas only during rendering.
+ * @lifetime Cached data lives until successful replacement, removal, clear, or scene destruction.
+ * Rendering synchronously copies commands into a caller-owned Canvas without retaining it.
  */
 class PrimitiveScene {
 public:
@@ -163,7 +166,18 @@ public:
     [[nodiscard]] bool                         isStale(PrimitiveHandle handle) const noexcept;
     /** @brief Invalidates all live handles while retaining slot capacity. */
     void clear();
-    /** @brief Projects visible descriptors in stable slot order. */
+    /**
+     * @brief Projects visible descriptors in stable slot order using per-slot CPU caches.
+     * Successful updates invalidate the affected cache; removal/clear release it.
+     * Camera changes reuse geometry, but clipping and screen-space stroke resolution
+     * remain frame-local. No GPU allocation is retained by this cache.
+     * A primitive exceeding the remaining command budget is omitted as a whole;
+     * statistics().droppedCommands reports omitted commands. Allocation failure throws
+     * before publishing that primitive; already recorded primitives remain valid.
+     * @param canvas Borrowed for this call only; receives independent owning commands.
+     * @thread Owner-thread affine, including concurrent const calls.
+     * @reentrancy Does not invoke callbacks.
+     */
     void                      render(PrimitiveSceneCanvas3D& canvas) const;
     [[nodiscard]] std::size_t size() const noexcept { return liveCount_; }
 
@@ -172,6 +186,7 @@ private:
         std::optional<PrimitiveDescriptor3D> descriptor;
         PrimitiveHandle::generation_type     generation = 1;
         bool                                 retired    = false;
+        mutable std::optional<PrimitiveSceneCanvas3D> cache;
     };
 
     [[nodiscard]] bool                       matches(PrimitiveHandle handle) const noexcept;

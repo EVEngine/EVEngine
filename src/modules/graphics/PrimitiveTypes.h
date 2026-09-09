@@ -86,7 +86,11 @@ struct ScenePrimitivePaint : PrimitivePaint {
     std::uint64_t      objectId = 0;
 };
 
-/** @brief Immutable camera and viewport facts used to resolve one 3D draw list. */
+/**
+ * @brief Immutable camera and viewport facts used to resolve one 3D draw list.
+ * Projection uses the engine's RH, zero-to-one depth, Vulkan Y-down convention
+ * (see ClipSpace.h). Backends adapt these shared clip coordinates at submission.
+ */
 struct SceneDrawContext {
     glm::mat4  view{1.f};
     glm::mat4  projection{1.f};

@@ -4,6 +4,7 @@
 #include "filesystem/FileData.h"
 #include "graphics/AlphaMask.h"
 #include "graphics/Canvas.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
@@ -149,13 +150,14 @@ TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
     context.viewportSize = {64, 64};
     context.nearPlane    = 0.1f;
     context.farPlane     = 10.f;
-    context.projection   = glm::perspectiveRH_ZO(glm::radians(60.f), 1.f, context.nearPlane, context.farPlane);
+    context.projection   = perspectiveVulkanRH_ZO(glm::radians(60.f), 1.f, context.nearPlane, context.farPlane);
     PrimitiveSceneCanvas3D spatial(context);
     ScenePrimitivePaint    spatialPaint;
     spatialPaint.mode         = PaintMode::FillAndStroke;
     spatialPaint.color        = Color(0.05f, 0.9f, 0.2f, 1.f);
     spatialPaint.stroke.width = 3.f;
     spatialPaint.depth        = PrimitiveDepthMode::TestOnly;
+    spatialPaint.cull         = PrimitiveCullMode::Back;
     spatial.drawDisk({0.f, 0.f, -2.f}, {0.f, 0.f, 1.f}, 0.55f, spatialPaint, 32);
     ScenePrimitivePaint spatialDash;
     spatialDash.mode              = PaintMode::Stroke;
@@ -177,12 +179,36 @@ TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
     spatial.drawLine({-0.75f, -0.7f, -0.05f}, {0.75f, -0.7f, -2.5f}, clipped);
     gfx->begin3DFrameToCanvas(spatialTarget);
     gfx->drawPrimitiveScene(spatial);
+    PrimitiveSceneCanvas3D secondSubmission(context);
+    ScenePrimitivePaint    secondPaint;
+    secondPaint.mode         = PaintMode::Stroke;
+    secondPaint.color        = Color(1.f, 0.f, 1.f, 1.f);
+    secondPaint.depth        = PrimitiveDepthMode::Ignore;
+    secondPaint.stroke.width = 3.f;
+    secondSubmission.drawLine({-0.95f, 0.25f, -2.f}, {-0.65f, 0.25f, -2.f}, secondPaint);
+    gfx->drawPrimitiveScene(secondSubmission);
     gfx->end3DFrameToCanvas();
     std::unique_ptr<eve::image::ImageData> spatialImage(spatialTarget->newImageData());
     REQUIRE(spatialImage.get() != nullptr);
     const uint8_t *center = pixel(*spatialImage, 32, 32);
     REQUIRE(center[1] > 140);
     REQUIRE(center[1] > center[0] + 60);
+    // An asymmetric fixture catches clip-Y inversions that a centered disk hides.
+    std::size_t blueAbove = 0;
+    std::size_t blueBelow = 0;
+    for (int y = 0; y < 64; ++y) {
+        for (int x = 0; x < 64; ++x) {
+            const auto *sample = pixel(*spatialImage, x, y);
+            if (sample[2] > 100 && sample[2] > sample[0] + 60) {
+                if (y < 32)
+                    ++blueAbove;
+                else
+                    ++blueBelow;
+            }
+        }
+    }
+    REQUIRE(blueAbove > 20u);
+    REQUIRE_EQ(blueBelow, 0u);
     writeParityArtifact(*spatialImage, "primitive_3d_depth_fill_stroke", gfx->getBackendName());
 }
 
