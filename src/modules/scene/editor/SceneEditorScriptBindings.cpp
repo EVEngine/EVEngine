@@ -25,7 +25,7 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
     cls.addFunc("undo", [project](SceneEditorSession* self) { return project(self->undo()); });
     cls.addFunc("restrictCommands", [vm](SceneEditorSession* self, ssq::Array commands) {
         std::vector<std::string> ids;
-        for (SQInteger i = 0; i < commands.size(); ++i) ids.push_back(commands.get<std::string>(i));
+        for (std::size_t i = 0; i < commands.size(); ++i) ids.push_back(commands.get<std::string>(i));
         auto result = self->restrictCommands(ids);
         return script::projectStatusResult(vm, result.status(), result.ok(), false);
     });
