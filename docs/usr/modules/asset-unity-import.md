@@ -170,3 +170,16 @@ Windows 构建命令同样通过 `cmake/with-msvc.cmd` 执行；环境变量
 不安装或执行其中的依赖；普通 GUID 资产的路径仍限制在 Assets 下。
 负数的非层级组件 ID 保留在未支持报告中，不再阻断层级导入；负数的
 GameObject/Transform ID 仍明确报告不支持 scene-template/1 转换。
+
+### Snaps Prototype 实测边界
+
+`Snaps Prototype Asian Residential` 与 `Snaps Prototype School` 的原始包使用
+CRLF `.meta`，GUID 读取支持这种行尾。两个包可完成导入、归档和 cook，但不能据此
+认定模型已可用：它们分别包含 358、377 个 Unity 原生 `.asset` Mesh，目前没有对应
+转换器，运行时 renderer bindings 均为 0。嵌套 Prefab、透明玻璃材质和碰撞体也仍在
+未支持报告中；原始数据会保留。
+
+本地样本分别得到 353/333 个场景层级、15/4 个材质、各 2 张图片。共享的
+`AssetStoreOriginals` 目录得到 686 个场景层级、19 个材质和 2 张图片，共 707 个
+规范资源；它保留了 735 个原生 Mesh 源文件，并未把它们转换成运行时网格。
+完整可视化支持仍需原生 Mesh 解码及嵌套 Prefab 展开。购买的资源和生成包不入库。

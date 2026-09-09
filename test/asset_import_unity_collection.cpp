@@ -53,6 +53,22 @@ MeshRenderer:
 }
 }  // namespace
 
+TEST_CASE("asset.import.unityCollectionAcceptsCrLfMetadata") {
+    auto request = collection();
+    for (auto& [path, data] : request.files) {
+        if (!path.ends_with(".meta")) continue;
+        std::string crlf;
+        for (const auto byte : data) {
+            if (byte == '\n') crlf += '\r';
+            crlf += static_cast<char>(byte);
+        }
+        data = bytes(crlf);
+    }
+    auto prepared = prepareUnityProjectImport(request);
+    REQUIRE(prepared.ok());
+    REQUIRE(prepared.value().manifest.entrypoints.contains("Assets/prop.prefab"));
+}
+
 TEST_CASE("asset.import.unityCollectionReportsNegativeComponentIdsWithoutLosingHierarchy") {
     auto       request  = collection();
     const auto collider = bytes("\n--- !u!65 &-4356345918748047990\nBoxCollider:\n  m_GameObject: {fileID: 1}\n");
