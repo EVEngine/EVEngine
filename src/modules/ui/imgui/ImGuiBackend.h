@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include <cstdint>
+#include <deque>
 #include <map>
 #include <vector>
 
@@ -35,6 +36,7 @@ public:
 private:
     void renderDrawData(void *vkCommandBuffer);
     static bool presentOverlayThunk(void *userdata, void *commandBuffer);
+    static void textureDrawThunk(const ImDrawList* list, const ImDrawCmd* command);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
     /** @brief Initial logical UI scale; follows Windows display DPI and mobile density. */
@@ -91,9 +93,12 @@ private:
         float clipW = 0.f;
         float clipH = 0.f;
         bool opaque = false;
+        ImGuiBackend* owner       = nullptr;  // ImGui callback ABI; owned by this backend until frame end.
+        std::size_t   bufferIndex = 0;
     };
     std::map<uint64_t, RegisteredTexture> textures_;
-    std::vector<QueuedTextureDraw> queuedTextureDraws_;
+    std::deque<QueuedTextureDraw>         queuedTextureDraws_;  // Stable callback addresses while appending.
+    void*             activeCommandBuffer_ = nullptr;  // Borrowed only during renderDrawData's synchronous callbacks.
     uint64_t nextTextureKey_ = 1;
     ImVector<ImWchar> fontRanges_;  // kept alive for cfg.GlyphRanges across font builds
     ImVector<ImWchar> cjkRanges_;   // kept alive for the merged CJK font config

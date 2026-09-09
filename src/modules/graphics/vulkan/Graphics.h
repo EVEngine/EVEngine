@@ -652,8 +652,15 @@ public:
      * @brief Composite queued engine textures into the currently open UI render pass.
      * @param commandBuffer Native Vulkan command buffer owned by the active UI pass.
      * @param draws Ordered textured rectangles in framebuffer coordinates.
+     * @param bufferOffset First transient
+     * vertex-buffer slot; disjoint calls in the
+     * same frame must reserve non-overlapping ranges of draws.size()
+     * slots.
+     * @ownership Inputs are borrowed for this synchronous render-thread call only.
+     * @reentrancy
+     * Must not be called concurrently; invokes no user callbacks.
      */
-    void drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws);
+    void drawUiTextureRects(void* commandBuffer, const std::vector<UiTextureDraw>& draws, std::size_t bufferOffset = 0);
     vkb::Instance &getInstance() { return inst; }
     vkb::Swapchain &getSwapchain() { return swapchain; }
     void *getSdlWindow() const { return sdlWindow; }

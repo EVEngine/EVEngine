@@ -933,14 +933,15 @@ Graphics::SceneColorDistortionStatus Graphics::drawSceneColorDistortionUVRotated
     return SceneColorDistortionStatus::Queued;
 }
 
-void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
+void Graphics::drawUiTextureRects(void* commandBuffer, const std::vector<UiTextureDraw>& draws,
+                                  std::size_t bufferOffset) {
     if (!commandBuffer || draws.empty() || !uiTexturePipeline || uiColorWidth <= 0 ||
         uiColorHeight <= 0)
         return;
 
     vk::CommandBuffer cb(static_cast<VkCommandBuffer>(commandBuffer));
     auto &buffers = currentFrame2DBuffers().uiTexBufs;
-    std::size_t bufferIndex = 0;
+    std::size_t       bufferIndex = bufferOffset;
     setViewportAndScissor(cb, uint32_t(uiColorWidth), uint32_t(uiColorHeight));
 
     for (const UiTextureDraw &draw : draws) {
@@ -959,7 +960,7 @@ void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextu
         for (const auto &vertex : batch.vertices())
             vertices.push_back(TexturedVertex{vertex.pos, vertex.color, vertex.uv});
 
-        if (bufferIndex >= buffers.size()) buffers.emplace_back();
+        while (bufferIndex >= buffers.size()) buffers.emplace_back();
         vkb::HostVertexBuffer &vertexBuffer = buffers[bufferIndex++];
         vertexBuffer.allocate<TexturedVertex>(frameToken(), device, vertices);
 
