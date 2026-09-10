@@ -111,6 +111,10 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
     auto red                = render(s);
     s.textures[0].texcoord  = 1;
     auto green              = render(s);
+    const size_t center             = (64 * 128 + 64) * 4;
+    std::fprintf(stderr, "PBR UV0 RGB=%u,%u,%u UV1 RGB=%u,%u,%u changed=%zu\n", unsigned(red[center]),
+                 unsigned(red[center + 1]), unsigned(red[center + 2]), unsigned(green[center]),
+                 unsigned(green[center + 1]), unsigned(green[center + 2]), difference(red, green));
     REQUIRE(difference(red, green) > 1000);
     s.textures[0].texcoord = 0;
     s.textures[0].offset   = {.8f, 0};

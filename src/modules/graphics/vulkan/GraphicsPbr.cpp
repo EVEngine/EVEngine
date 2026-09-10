@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <map>
 #include <tuple>
 #include "graphics/shaders/pbr_surface_frag_spv.inc"

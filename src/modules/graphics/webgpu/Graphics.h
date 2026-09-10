@@ -65,7 +65,7 @@ struct Mesh3DUBO {
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DUBO) == 8960, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 768, "Mesh3DUBO layout must match the WGSL Frame block");
 
 struct MeshVertex {
     glm::vec3 pos;
