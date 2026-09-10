@@ -18,7 +18,17 @@ layout(set=0,binding=5,std140) uniform Shadows {
 layout(set=0,binding=6) uniform sampler2DArrayShadow shadowMap;
 layout(location=0) in vec3 worldPosition;
 layout(location=1) in vec3 worldNormal;
-layout(location=2) in vec2 texcoords[11];
+layout(location=2) in vec2 texcoord0;
+layout(location=3) in vec2 texcoord1;
+layout(location=4) in vec2 texcoord2;
+layout(location=5) in vec2 texcoord3;
+layout(location=6) in vec2 texcoord4;
+layout(location=7) in vec2 texcoord5;
+layout(location=8) in vec2 texcoord6;
+layout(location=9) in vec2 texcoord7;
+layout(location=10) in vec2 texcoord8;
+layout(location=11) in vec2 texcoord9;
+layout(location=12) in vec2 texcoord10;
 layout(location=0) out vec4 outColor;
 const float PI=3.14159265359;
 vec3 linearColor(vec3 c) { return mix(c/12.92,pow((c+.055)/1.055,vec3(2.4)),step(vec3(.04045),c)); }
@@ -57,41 +67,41 @@ float visibility() {
 }
 void main() {
  vec4 base=u.tint;
- if(u.uvInfo[0].present>0) { vec4 s=texture(maps[0],texcoords[0]); base*=vec4(u.uvInfo[0].srgb>0?linearColor(s.rgb):s.rgb,s.a); }
+ if(u.uvInfo[0].present>0) { vec4 s=texture(maps[0],texcoord0); base*=vec4(u.uvInfo[0].srgb>0?linearColor(s.rgb):s.rgb,s.a); }
  if(u.material.z==1 && base.a<u.material.w) discard;
  if(u.misc.z>0) { outColor=vec4(u.material.z==3?base.rgb*base.a:base.rgb,u.material.z>=2?base.a:1); return; }
  float metallic=u.material.x,roughness=u.material.y;
- if(u.uvInfo[1].present>0) { vec4 s=texture(maps[1],texcoords[1]); metallic*=s.b; roughness*=s.g; }
+ if(u.uvInfo[1].present>0) { vec4 s=texture(maps[1],texcoord1); metallic*=s.b; roughness*=s.g; }
  roughness=clamp(roughness,.045,1);
  vec3 ng=safeNormal(worldNormal,vec3(0,0,1))*(gl_FrontFacing?1:-1);
  vec3 n=ng;
- if(u.uvInfo[2].present>0) { vec3 s=texture(maps[2],texcoords[2]).xyz*2-1;s.xy*=u.misc.x;n=safeNormal(basis(ng,texcoords[2])*s,ng); }
+ if(u.uvInfo[2].present>0) { vec3 s=texture(maps[2],texcoord2).xyz*2-1;s.xy*=u.misc.x;n=safeNormal(basis(ng,texcoord2)*s,ng); }
  float ao=1;
- if(u.uvInfo[3].present>0) ao=mix(1,texture(maps[3],texcoords[3]).r,u.misc.y);
+ if(u.uvInfo[3].present>0) ao=mix(1,texture(maps[3],texcoord3).r,u.misc.y);
  vec3 emission=u.emissive.rgb*u.emissive.w;
- if(u.uvInfo[4].present>0) {vec3 c=texture(maps[4],texcoords[4]).rgb;emission*=u.uvInfo[4].srgb>0?linearColor(c):c;}
+ if(u.uvInfo[4].present>0) {vec3 c=texture(maps[4],texcoord4).rgb;emission*=u.uvInfo[4].srgb>0?linearColor(c):c;}
  float specWeight=u.specular.w;
- if(u.uvInfo[5].present>0) specWeight*=texture(maps[5],texcoords[5]).a;
+ if(u.uvInfo[5].present>0) specWeight*=texture(maps[5],texcoord5).a;
  vec3 specColor=u.specular.rgb;
- if(u.uvInfo[6].present>0) {vec3 c=texture(maps[6],texcoords[6]).rgb;specColor*=u.uvInfo[6].srgb>0?linearColor(c):c;}
+ if(u.uvInfo[6].present>0) {vec3 c=texture(maps[6],texcoord6).rgb;specColor*=u.uvInfo[6].srgb>0?linearColor(c):c;}
  float ior=u.coat.w;
  float dielectric=ior==0?1:pow((ior-1)/(ior+1),2);
  vec3 f0=mix(min(vec3(dielectric)*specColor,vec3(1))*specWeight,base.rgb,metallic);
  vec3 f90=vec3(mix(specWeight,1,metallic));
  vec3 v=safeNormal(u.camera.xyz-worldPosition,n);
- mat3 bn=basis(n,texcoords[2]);
+ mat3 bn=basis(n,texcoord2);
  float strength=u.ambient.w,angle=u.camera.w;
  vec2 direction=vec2(cos(angle),sin(angle));
- if(u.uvInfo[7].present>0) { vec3 a=texture(maps[7],texcoords[7]).rgb;vec2 d=a.rg*2-1;
+ if(u.uvInfo[7].present>0) { vec3 a=texture(maps[7],texcoord7).rgb;vec2 d=a.rg*2-1;
   d=dot(d,d)>1e-10?normalize(d):vec2(1,0);direction=mat2(direction.x,direction.y,-direction.y,direction.x)*d;strength*=a.b; }
  vec3 t=safeNormal(bn*vec3(direction,0),bn[0]),b=safeNormal(cross(n,t),bn[1]);
  float ab=roughness*roughness,at=mix(ab,1,strength*strength);
  float coat=u.coat.x,cr=u.coat.y;
- if(u.uvInfo[8].present>0) coat*=texture(maps[8],texcoords[8]).r;
- if(u.uvInfo[9].present>0) cr*=texture(maps[9],texcoords[9]).g;
+ if(u.uvInfo[8].present>0) coat*=texture(maps[8],texcoord8).r;
+ if(u.uvInfo[9].present>0) cr*=texture(maps[9],texcoord9).g;
  vec3 cn=ng;
- if(u.uvInfo[10].present>0) {vec3 s=texture(maps[10],texcoords[10]).xyz*2-1;s.xy*=u.coat.z;cn=safeNormal(basis(ng,texcoords[10])*s,ng);}
- mat3 cb=basis(cn,texcoords[10]);float ca=max(cr*cr,.002025);
+ if(u.uvInfo[10].present>0) {vec3 s=texture(maps[10],texcoord10).xyz*2-1;s.xy*=u.coat.z;cn=safeNormal(basis(ng,texcoord10)*s,ng);}
+ mat3 cb=basis(cn,texcoord10);float ca=max(cr*cr,.002025);
  vec3 color=vec3(0);float vis=visibility();
  for(int i=0;i<8;i++) {
   vec3 l; float attenuation=1;

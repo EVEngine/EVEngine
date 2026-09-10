@@ -19,7 +19,25 @@ layout(set=0,binding=2,std430) readonly buffer UVs { vec2 values[]; } uv;
 layout(set=0,binding=3,std430) readonly buffer Skin { mat4 values[]; } skin;
 layout(location=0) out vec3 worldPosition;
 layout(location=1) out vec3 worldNormal;
-layout(location=2) out vec2 texcoords[11];
+layout(location=2) out vec2 texcoord0;
+layout(location=3) out vec2 texcoord1;
+layout(location=4) out vec2 texcoord2;
+layout(location=5) out vec2 texcoord3;
+layout(location=6) out vec2 texcoord4;
+layout(location=7) out vec2 texcoord5;
+layout(location=8) out vec2 texcoord6;
+layout(location=9) out vec2 texcoord7;
+layout(location=10) out vec2 texcoord8;
+layout(location=11) out vec2 texcoord9;
+layout(location=12) out vec2 texcoord10;
+vec2 materialUv(int slot) {
+ vec2 t=texcoord;
+ if(u.uvInfo[slot].offset!=0xffffffffu)
+  t=uv.values[u.uvInfo[slot].offset+uint(gl_VertexIndex)];
+ t*=u.uvTransform[slot].zw;
+ float c=cos(u.uvInfo[slot].rotation),s=sin(u.uvInfo[slot].rotation);
+ return mat2(c,s,-s,c)*t+u.uvTransform[slot].xy;
+}
 void main() {
  mat4 pose=mat4(1);
  if(u.misc.w>0) {
@@ -33,10 +51,15 @@ void main() {
  worldPosition=(u.model*p).xyz;
  worldNormal=transpose(inverse(mat3(u.model*pose)))*normal;
  gl_Position=u.mvp*p;
- for(int i=0;i<11;i++) {
-  vec2 t=u.uvInfo[i].offset==0xffffffffu ? texcoord : uv.values[int(u.uvInfo[i].offset)+gl_VertexIndex];
-  t*=u.uvTransform[i].zw;
-  float c=cos(u.uvInfo[i].rotation),s=sin(u.uvInfo[i].rotation);
-  texcoords[i]=mat2(c,s,-s,c)*t+u.uvTransform[i].xy;
- }
+ texcoord0=materialUv(0);
+ texcoord1=materialUv(1);
+ texcoord2=materialUv(2);
+ texcoord3=materialUv(3);
+ texcoord4=materialUv(4);
+ texcoord5=materialUv(5);
+ texcoord6=materialUv(6);
+ texcoord7=materialUv(7);
+ texcoord8=materialUv(8);
+ texcoord9=materialUv(9);
+ texcoord10=materialUv(10);
 }
