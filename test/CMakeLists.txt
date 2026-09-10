@@ -235,6 +235,21 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  if(TARGET EVTensor AND NOT EVENGINE_WEBGPU)
+    add_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")
+    target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    target_link_libraries(onnx_engine_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+    add_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
+    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    target_link_libraries(onnx_gpu_contracts eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+
+
+    if(WIN32)
+      target_link_libraries(onnx_engine_probe EVBacktrace)
+      target_link_libraries(onnx_gpu_contracts EVBacktrace)
+    endif()
+  endif()
+
   # Scene composition must also run in a trimmed host, where unrelated unit-test
   # translation units still reference disabled optional domains.
   if(TARGET EVScene_editor)

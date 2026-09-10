@@ -292,6 +292,7 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 Graphics::Graphics() = default;
 
 Graphics::~Graphics() {
+    retireResourceLifetime();
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
         // A process-level boot warmup may exist even when callers decide not

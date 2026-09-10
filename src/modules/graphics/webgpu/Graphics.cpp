@@ -99,7 +99,10 @@ Graphics::Graphics() {
     }
 }
 
-Graphics::~Graphics() { detachGraphicsArtifactProvider(this); }
+Graphics::~Graphics() {
+    retireResourceLifetime();
+    detachGraphicsArtifactProvider(this);
+}
 
 // ---------------------------------------------------------------------------
 // Init
