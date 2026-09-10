@@ -1,3 +1,4 @@
+#include "common/config.h"
 #if !defined(EVENGINE_WEBGPU)
 #include <cstring>
 #include <memory>
