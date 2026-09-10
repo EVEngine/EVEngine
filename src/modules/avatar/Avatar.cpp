@@ -1,5 +1,7 @@
 #include "avatar/Avatar.h"
 #include "avatar/Live2DNullBackend.h"
+#include "avatar/VrmRuntime.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "inventory/Equipment.h"
@@ -61,11 +63,19 @@ bool AvatarInstance::removeExpression(const std::string& name) {
 }
 
 int AvatarInstance::getExpressionCount() const {
-    return static_cast<int>(expressionDefs_.size());
+    int count = static_cast<int>(expressionDefs_.size());
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions)
+            if (!expressionDefs_.contains(e.name)) ++count;
+    return count;
 }
 
 std::string AvatarInstance::getExpressionName(int index) const {
-    const std::vector<std::string> names = sortedKeys(expressionDefs_);
+    std::vector<std::string> names = sortedKeys(expressionDefs_);
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions) names.push_back(e.name);
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
     return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
                                                                : names[static_cast<size_t>(index)];
 }
@@ -244,6 +254,16 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getLive2DBackendName", &AvatarInstance::getLive2DBackendName);
     av.addFunc("hasLive2DBackend", &AvatarInstance::hasLive2DBackend);
 
+    av.addFunc("loadVroidModel", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& path) {
+        return eve::script::projectResult(vm, avatar->loadVroidModel(path));
+    });
+    av.addFunc("setHumanoidBoneRotation", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& semantic,
+                                                                   float yaw, float pitch, float roll) {
+        return eve::script::projectResult(vm, avatar->setHumanoidBoneRotation(semantic, yaw, pitch, roll));
+    });
+    av.addFunc("getVroidMeshCount", &AvatarInstance::getVroidMeshCount);
+    av.addFunc("getVroidSpringCount", &AvatarInstance::getVroidSpringCount);
+    av.addFunc("getVroidVersion", &AvatarInstance::getVroidVersion);
     av.addFunc("loadVroidModelPath", &AvatarInstance::loadVroidModelPath);
     av.addFunc("bindVroidModelData", &AvatarInstance::bindVroidModelData);
     av.addFunc("loadMorphNamesFromModel", &AvatarInstance::loadMorphNamesFromModel);

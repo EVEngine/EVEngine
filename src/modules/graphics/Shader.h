@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "graphics/BlendMode.h"
 
 #include <glm/mat4x4.hpp>
 
@@ -60,6 +61,13 @@ public:
      */
     void setXray(bool x) { isXray_ = x; }
     bool isXray() const { return isXray_; }
+
+    /** @brief Backend-owned surface state retained across pipeline recreation. */
+    BlendMode meshBlend = BlendMode::Opaque;
+    /** @brief Backend-owned depth-write state for custom mesh programs. */
+    bool meshDepthWrite = true;
+    /** @brief Backend-owned culling state for custom mesh programs. */
+    bool meshDoubleSided = true;
 
     /** @brief Reserve sequential float slots in the push-constant block. Returns start index. */
     int declareFloat(const std::string &name);
