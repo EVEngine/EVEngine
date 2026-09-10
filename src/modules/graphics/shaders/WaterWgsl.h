@@ -2,7 +2,7 @@
 
 namespace eve::graphics::shaders {
 
-inline constexpr const char *kWaterFragWgsl = R"wgsl(
+inline constexpr const char* kWaterFragWgsl = R"wgsl(
 struct Light3D { posRadius: vec4f, color: vec4f };
 struct Frame {
     mvp: mat4x4f, model: mat4x4f, lightDir: vec4f, lightColor: vec4f,
