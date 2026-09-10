@@ -26,7 +26,7 @@ namespace eve::weather {
  *   // each frame before gfx.render3D():
  *   weather.update(dt, gfx);
  *
- * Presets: "clear", "drizzle", "rain", "storm", "snow", "fog".
+ * Presets: "clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard".
  */
 class Weather : public Module {
 public:

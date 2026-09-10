@@ -1201,6 +1201,7 @@ fn vs_main(in: VSIn) -> VSOut {
 
 inline const char *kMesh3DGbufferFragWgsl = R"wgsl(
 struct FSIn {
+    @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,
     @location(1) vNdcZ: f32,
     @location(2) vUV: vec2f,
@@ -1226,7 +1227,7 @@ fn fs_main(in: FSIn) -> GBufOut {
     let nearZ = max(pc.clip.x, 1e-4);
     let farZ = max(pc.clip.y, nearZ + 1e-3);
     // NDC z -> linear [0,1] over the clip range (matches scene color A).
-    let ndc = clamp(in.vNdcZ, 0.0, 1.0);
+    let ndc = clamp(in.position.z, 0.0, 1.0);
     let eyeZ = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
     let linear = clamp((eyeZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
     let packedMotion = u32(pc.clip.w + 0.5);
@@ -1244,6 +1245,7 @@ fn fs_main(in: FSIn) -> GBufOut {
 
 inline const char *kMesh3DGbufferAlphaFragWgsl = R"wgsl(
 struct FSIn {
+    @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,
     @location(1) vNdcZ: f32,
     @location(2) vUV: vec2f,
@@ -1270,7 +1272,7 @@ fn fs_main(in: FSIn) -> GBufOut {
     var out: GBufOut;
     let nearZ = max(pc.clip.x, 1e-4);
     let farZ = max(pc.clip.y, nearZ + 1e-3);
-    let ndc = clamp(in.vNdcZ, 0.0, 1.0);
+    let ndc = clamp(in.position.z, 0.0, 1.0);
     let eyeZ = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
     let linear = clamp((eyeZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
     let packedMotion = u32(pc.clip.w + 0.5);
