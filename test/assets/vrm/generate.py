@@ -28,3 +28,8 @@ result = struct.pack("<III", 0x46546C67, 2, 28 + len(text) + len(data))
 result += struct.pack("<II", len(text), 0x4E4F534A) + text
 result += struct.pack("<II", len(data), 0x004E4942) + data
 (root / "contract.vrm").write_bytes(result)
+
+# The runnable example shares this deterministic fixture; no private model is required.
+example = root.parents[2] / "examples/vrm-avatar/assets/contract.vrm"
+example.parent.mkdir(parents=True, exist_ok=True)
+example.write_bytes(result)
