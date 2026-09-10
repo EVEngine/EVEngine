@@ -25,9 +25,12 @@ static std::string quote(const std::string& text) {
     return out + "\"";
 }
 static void emit(std::ostream& out, agent::Policy p, agent::Observation o, bool training, int test) {
-    auto recipe = agent::detail::makePolicyGraph(p.featureCount, p.hiddenWidth, p.actionCount, training);
-    auto opt    = tensor::optimizeGraph(recipe.graph, recipe.output);
-    std::vector<std::vector<float>> feeds{{p.weights.begin(), p.weights.end()},
+    auto               recipe = agent::detail::makePolicyGraph(p.featureCount, p.hiddenWidth, p.actionCount, training);
+    auto               opt    = tensor::optimizeGraph(recipe.graph, recipe.output);
+    std::vector<float> weights;
+    weights.reserve(p.weights.size());
+    for (double weight : p.weights) weights.push_back(static_cast<float>(weight));
+    std::vector<std::vector<float>> feeds{std::move(weights),
                                           o.features,
                                           std::vector<float>(p.actionCount, -1e38f),
                                           std::vector<float>(p.actionCount, 0),

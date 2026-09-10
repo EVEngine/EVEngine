@@ -62,7 +62,9 @@ private:
                 if (!program)
                     return gpuError<std::vector<double>>("Policy graph cannot execute on this GPU; no CPU fallback");
             }
-            std::vector<float> weights(p.weights.begin(), p.weights.end());
+            std::vector<float> weights;
+            weights.reserve(p.weights.size());
+            for (double weight : p.weights) weights.push_back(static_cast<float>(weight));
             std::vector<float> mask(a_, -std::numeric_limits<float>::infinity()), target(a_, 0);
             for (auto legal : o.legalActions) mask[legal] = 0;
             std::vector<const float*> feeds{weights.data(), o.features.data(), mask.data()};

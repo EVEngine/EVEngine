@@ -28,6 +28,10 @@ if(EVE_AGENT_TENSOR)
         "${EVE_ROOT}/src/modules/agent/tensor/GpuGraph.cpp"
         "${EVE_ROOT}/src/modules/tensor/GpuBackend.cpp")
     target_link_libraries(agent_gpu_compile PRIVATE agent_core)
+    if(MSVC)
+        # Match the root build's STL DLL-interface policy; retain conversion diagnostics.
+        target_compile_options(agent_gpu_compile PRIVATE /WX /wd4251 /wd4275)
+    endif()
     list(APPEND extra_agent_targets agent_gpu_compile)
     add_library(agent_tensor_backend STATIC
         "${EVE_ROOT}/src/modules/agent/tensor/TensorBackend.cpp"
