@@ -239,7 +239,7 @@ TEST_CASE("stylize.styles.registry") {
     auto *mod = Stylize::create();
     REQUIRE(mod != nullptr);
     CHECK_EQ(mod->getName(), std::string("Stylize"));
-    CHECK_EQ(mod->getStyleCount(), 12);
+    CHECK_EQ(mod->getStyleCount(), 16);
     CHECK(mod->hasStyle("cartoon"));
     CHECK(mod->hasStyle("watercolor"));
     CHECK(mod->hasStyle("ink"));
