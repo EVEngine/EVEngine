@@ -1198,7 +1198,9 @@ void Graphics::buildDeferredFrameGraphs() {
         shadowDesc.aspect = vk::ImageAspectFlagBits::eDepth;
         shadowDesc.usage = vk::ImageUsageFlagBits::eSampled |
                            vk::ImageUsageFlagBits::eDepthStencilAttachment;
-        shadowDesc.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+        // Shadow descriptors sample the depth array in SHADER_READ_ONLY, matching
+        // the legacy shadow pass and the layout of every imported cascade.
+        shadowDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         vk::ClearValue shadowClear{};
         shadowClear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
         const bool haveShadowSlot =

@@ -460,11 +460,16 @@ float MeshVfxFloatCurve::evaluate(float normalizedTime) const noexcept {
 }
 
 eve::Result<std::unique_ptr<MeshVfxAssetInstance>> MeshVfxAssetInstance::create(const MeshVfxAsset& asset) {
+    return create(asset, {});
+}
+
+eve::Result<std::unique_ptr<MeshVfxAssetInstance>> MeshVfxAssetInstance::create(
+    const MeshVfxAsset& asset, const std::map<std::string, std::map<std::string, float>>& externalStyles) {
     auto valid = asset.validate();
     if (!valid) return eve::Result<std::unique_ptr<MeshVfxAssetInstance>>::failure(valid.status());
     try {
         return eve::Result<std::unique_ptr<MeshVfxAssetInstance>>::success(
-            std::unique_ptr<MeshVfxAssetInstance>(new MeshVfxAssetInstance(asset)));
+            std::unique_ptr<MeshVfxAssetInstance>(new MeshVfxAssetInstance(asset, externalStyles)));
     } catch (const eve::Exception& error) {
         return failure<std::unique_ptr<MeshVfxAssetInstance>>(eve::DiagnosticCode::InvalidArgument, error.what(),
                                                               "layers.parameters");
@@ -474,9 +479,13 @@ eve::Result<std::unique_ptr<MeshVfxAssetInstance>> MeshVfxAssetInstance::create(
     }
 }
 
-MeshVfxAssetInstance::MeshVfxAssetInstance(const MeshVfxAsset& asset) {
+MeshVfxAssetInstance::MeshVfxAssetInstance(const MeshVfxAsset&                                        asset,
+                                           const std::map<std::string, std::map<std::string, float>>& externalStyles) {
     for (const auto& definition : asset.layers) {
-        auto runtime = std::make_unique<MeshEffectInstance>(definition.style);
+        const auto external = externalStyles.find(definition.style);
+        auto       runtime  = external == externalStyles.end()
+                                  ? std::make_unique<MeshEffectInstance>(definition.style)
+                                  : std::make_unique<MeshEffectInstance>(definition.style, external->second);
         runtime->setPlayback(definition.playback);
         for (const auto& [name, value] : definition.floatParameters) runtime->style().setFloat(name, value);
         for (const auto& [name, curve] : definition.floatCurves)

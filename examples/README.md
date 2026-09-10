@@ -17,6 +17,8 @@ make run/<platform>-debug GAME=examples/<name>
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
 | [ai-editor](ai-editor/README.md) | AI 现场生成项目专属编辑器：`eve mcp` 无头主机 + JSON View + ViewModel 双向绑定（含 `editor_demo.py`） |
 
+新增人物动画示例：[Character Motion Lab](character-motion-lab/README.md) — 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察。
+
 ## 入门与基础
 
 | 示例 | 演示能力 |

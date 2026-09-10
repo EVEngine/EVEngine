@@ -26,7 +26,10 @@ public:
  * @brief Registry and conversion gateway for level formats.
  *
  * Own formats may be registered from C++ with registerFormat(). Built-ins are
- * `eve.level` (lossless EVEngine JSON) and `tiled.json` (Tiled JSON maps).
+ * `eve.level` (version 1) and `tiled.json` (finite array-backed Tiled JSON maps).
+ * Unmodeled fields are owned by the document and preserved on export. Group,
+ * image, infinite and encoded layers are rejected instead of flattened/lost.
+ * All operations are synchronous on the document owner thread, without callbacks.
  */
 class LevelFormatRegistry {
 public:
@@ -42,6 +45,13 @@ public:
 
     [[nodiscard]] eve::Result<std::unique_ptr<LevelDocument>> load(const std::string& path,
                                                                    const std::string& format = {}) const;
+    /** @brief Encode then atomically replace a file; failures preserve an existing destination.
+     * @param path Destination path; relative asset references are preserved verbatim.
+     * @param level Synchronously borrowed document, never retained or mutated.
+     * @param format Registered format, or infer it from the extension.
+     * @return Structured encoding or filesystem failure, or successful replacement.
+     * @thread Document owner thread; no callbacks. This is not a power-loss durability guarantee.
+     */
     [[nodiscard]] eve::Result<void>                           save(const std::string& path, const LevelDocument& level,
                                                                    const std::string& format = {}) const;
 

@@ -1,5 +1,6 @@
 #include "hd2d/Hd2d.h"
 
+#include "common/Assert.h"
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -10,6 +11,8 @@
 #include <cmath>
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <limits>
 #include <vector>
 
 namespace eve::hd2d {
@@ -47,6 +50,12 @@ void Sprite3D::buildQuad(graphics::Graphics *gfx) {
     renderable_ = graphics::Renderable3D::create();
     if (!renderable_) throw eve::Exception("Sprite3D: Renderable3D create failed");
     renderable_->setMesh(quad_);
+    auto* material = gfx->newMaterial();
+    material->setSurfaceMode("masked");
+    material->setReceiveLight(false);
+    material->setAlbedoTexture(texture_);
+    material->setTint(tintR_, tintG_, tintB_, tintA_);
+    renderable_->setMaterial(material);
     // 2D sprites are self-lit (HD-2D characters), not shaded by 3D lights.
     renderable_->setReceiveLight(false);
     renderable_->setScale(width_, height_, 1.f);
@@ -60,21 +69,30 @@ void Sprite3D::updateFrameUv() {
     if (!gfx_ || !quad_) return;
     std::vector<float> uv(8);
     for (int i = 0; i < 4; ++i) {
-        float u = (i == 0 || i == 3) ? u0_ : u1_;
-        float v = (i < 2) ? v0_ : v1_;
+        // The visible front is -Z, so local +X is the viewer's left.
+        float u = (i == 0 || i == 3) ? u1_ : u0_;
+        // Image row zero is at the top; the first two vertices are the feet.
+        float v = (i < 2) ? v1_ : v0_;
         if (flipX_) u = (u0_ + u1_) - u;
         if (flipY_) v = (v0_ + v1_) - v;
         uv[size_t(i) * 2u] = u;
         uv[size_t(i) * 2u + 1u] = v;
     }
-    // Positions are required by updateMeshVertices; pass the unchanged base.
-    gfx_->updateMeshVertices(quad_, kQuadPos.data(), kQuadNrm.data(), uv.data(),
-                             int(kQuadPos.size() / 3), nullptr, 0);
+    auto positions = kQuadPos;
+    for (int i = 0; i < 4; ++i) {
+        // Local +X projects left on the visible -Z face.
+        positions[size_t(i) * 3u] += pivotX_ - 0.5f;
+        positions[size_t(i) * 3u + 1u] += pivotY_ - 0.5f;
+    }
+    gfx_->updateMeshVertices(quad_, positions.data(), kQuadNrm.data(), uv.data(), int(kQuadPos.size() / 3), nullptr, 0);
 }
 
 void Sprite3D::setTexture(graphics::Texture *texture) {
     texture_ = texture;
-    if (renderable_) renderable_->setTexture(texture);
+    if (renderable_) {
+        renderable_->setTexture(texture);
+        renderable_->getMaterial()->setAlbedoTexture(texture);
+    }
 }
 graphics::Texture *Sprite3D::getTexture() const { return texture_; }
 
@@ -101,10 +119,11 @@ void Sprite3D::setFlipY(bool flip) {
 }
 
 void Sprite3D::setFrameGrid(int columns, int rows) {
-    if (columns <= 0 || rows <= 0)
+    if (columns <= 0 || rows <= 0 || columns > std::numeric_limits<int>::max() / rows)
         throw eve::Exception("Sprite3D.setFrameGrid: columns and rows must be > 0");
     gridCols_ = columns;
     gridRows_ = rows;
+    stop();
     frameIndex_ = std::min(frameIndex_, gridCols_ * gridRows_ - 1);
     setFrameIndex(frameIndex_);
 }
@@ -127,7 +146,7 @@ int Sprite3D::getFrameIndex() const { return frameIndex_; }
 void Sprite3D::play(int start, int end, float fps) {
     if (start < 0 || end < start || end >= gridCols_ * gridRows_)
         throw eve::Exception("Sprite3D.play: frame range [%d,%d] out of grid", start, end);
-    if (fps <= 0.f) throw eve::Exception("Sprite3D.play: fps must be > 0");
+    if (!std::isfinite(fps) || fps <= 0.f) throw eve::Exception("Sprite3D.play: fps must be finite and > 0");
     anim_ = {start, end, fps, 0.f, true};
     setFrameIndex(start);
 }
@@ -135,17 +154,17 @@ void Sprite3D::stop() { anim_.playing = false; }
 bool Sprite3D::isPlaying() const { return anim_.playing; }
 
 void Sprite3D::update(float dt) {
-    if (anim_.playing && anim_.fps > 0.f) {
-        anim_.clock += dt;
-        const float frameDur = 1.f / anim_.fps;
-        if (anim_.clock >= frameDur) {
-            int steps = int(anim_.clock / frameDur);
-            anim_.clock -= float(steps) * frameDur;
-            const int span = anim_.end - anim_.start + 1;
-            if (span > 0) {
-                frameIndex_ = anim_.start + (frameIndex_ - anim_.start + steps) % span;
-                setFrameIndex(frameIndex_);
-            }
+    if (anim_.playing && std::isfinite(dt) && dt > 0.f) {
+        const int span = anim_.end - anim_.start + 1;
+        // Reduce in floating point before converting to int. A long suspension
+        // or a large finite dt must never overflow the integral frame counter.
+        const double frames = double(anim_.clock) + double(dt) * double(anim_.fps);
+        const double whole  = std::floor(frames);
+        anim_.clock         = float(frames - whole);
+        if (whole >= 1.0) {
+            const int steps  = int(std::fmod(whole, double(span)));
+            const int offset = std::clamp(frameIndex_ - anim_.start, 0, span - 1);
+            setFrameIndex(anim_.start + int((int64_t(offset) + steps) % span));
         }
     }
     orientToCamera();
@@ -160,16 +179,30 @@ void Sprite3D::orientToCamera() {
     if (!renderable_ || !camera_) return;
     const auto &cam = *camera_->data();
     const glm::vec3 eye(cam.eyeX, cam.eyeY, cam.eyeZ);
-    const glm::vec3 pos(x_, y_, z_);
-    // The billboard quad's front face is -Z, so it faces the camera when its
-    // +Z points away from the eye. Cylindrical billboard: rotate around world Y
-    // only, keeping the sprite upright (no pitch) so it faces the camera
-    // squarely while standing vertical.
-    glm::vec3 away = pos - eye;
-    if (glm::dot(away, away) < 1e-6f) away = glm::vec3(0.f, 0.f, 1.f);
-    away = glm::normalize(away);
-    const float yaw = std::atan2(away.x, away.z);
-    renderable_->setRotation(yaw, 0.f, 0.f);
+    glm::vec3       forward = glm::vec3(cam.targetX, cam.targetY, cam.targetZ) - eye;
+    const float     length2 = glm::dot(forward, forward);
+    if (!std::isfinite(length2) || length2 < 1e-12f) return;
+    forward /= std::sqrt(length2);
+    glm::vec3   right        = glm::cross(forward, glm::vec3(cam.upX, cam.upY, cam.upZ));
+    const float rightLength2 = glm::dot(right, right);
+    if (!std::isfinite(rightLength2) || rightLength2 < 1e-12f) return;
+    right /= std::sqrt(rightLength2);
+    // Use the camera basis, not eye-to-sprite: all sprites remain parallel to
+    // the image plane, including off-center sprites and rolled cameras.
+    glm::mat4 rotation(1.f);
+    rotation[0] = glm::vec4(-right, 0.f);
+    rotation[1] = glm::vec4(glm::cross(right, forward), 0.f);
+    rotation[2] = glm::vec4(forward, 0.f);
+    float yaw, pitch, roll;
+    glm::extractEulerAngleYXZ(rotation, yaw, pitch, roll);
+    renderable_->setRotation(yaw, pitch, roll);
+}
+
+void Sprite3D::setPivot(float x, float y) {
+    EV_PARAM_CHECK((std::isfinite(x) && std::isfinite(y)), "Sprite3D pivot must be finite");
+    pivotX_ = x;
+    pivotY_ = y;
+    updateFrameUv();
 }
 
 void Sprite3D::setPosition(float x, float y, float z) {
@@ -200,7 +233,10 @@ void Sprite3D::setTint(float r, float g, float b, float a) {
     tintG_ = std::max(0.f, std::min(1.f, g));
     tintB_ = std::max(0.f, std::min(1.f, b));
     tintA_ = std::max(0.f, std::min(1.f, a));
-    if (renderable_) renderable_->setTint(tintR_, tintG_, tintB_, tintA_);
+    if (renderable_) {
+        renderable_->setTint(tintR_, tintG_, tintB_, tintA_);
+        renderable_->getMaterial()->setTint(tintR_, tintG_, tintB_, tintA_);
+    }
 }
 void Sprite3D::setVisible(bool visible) {
     visible_ = visible;

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "scene/editing/SceneEditingTypes.h"
+#include "common/ECS.h"
 #include "scene/editing/SceneEditingCommands.h"
+#include "scene/editing/SceneEditingTypes.h"
 
 #include <map>
 #include <memory>
@@ -106,6 +107,17 @@ public:
     void bindComponentPayloads(SceneComponentPayloadRegistry* registry) { componentPayloads_ = registry; }
     /** @brief Capture deterministic scene content for document persistence. */
     EditorValue snapshotValue() const override;
+    /**
+     * @brief Plan atomic replacement of hierarchy/TRS from a versioned snapshot.
+     * @param snapshot Owning
+     * data input, borrowed only for this call. Schema 1 is accepted;
+     * unknown fields are rejected. Runtime links
+     * and component assets are not serialized.
+     * @return Reversible operation, or validation failure without
+     * mutation.
+     * @thread Owner thread only. No callbacks; the operation owns all input data.
+     */
+    [[nodiscard]] EditorResult<DomainOperation> makeRestore(const EditorValue& snapshot) const;
 
 private:
     friend class ScenePropertyProvider;
@@ -113,6 +125,7 @@ private:
     static EditorResult<SceneTransformValue> parseTransform(const EditorValue& value);
     static EditorResult<SceneObjectSnapshot> parseObject(const EditorValue& value);
     static EditorValue                       objectValue(const SceneObjectSnapshot& object);
+    static EditorResult<std::map<ObjectId, SceneObjectSnapshot>> parseSnapshot(const EditorValue& value);
 
     std::string                             id_;
     std::string                             type_;
@@ -146,12 +159,22 @@ namespace eve::scene_editing {
  * @brief Optional live adapter mirroring editor operations into one SceneHost.
  *
  * Unlike RuntimeWorldTarget's standalone model, this adapter imports retained
- * nodes and commits incremental mutations without rebuilding external links.
+ * nodes and atomically publishes candidate trees while preserving surviving links.
+ * @thread Owner thread only. The
+ * ECS table must outlive the target; a destroyed
+ * host is detected by generation. External host edits require a new
+ * session.
+ * @reentrancy Publishes a single tree_changed event after commit. Observers see
+ * the complete tree; they
+ * must not destroy this target during the callback.
  */
 class SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
 public:
-    /** @brief Import one borrowed SceneHost; the host must outlive this target. */
-    /** @brief Wrap a live scene host. @param host Borrowed host, or null for a staging clone. @lifetime A non-null host must outlive this target. */
+    /** @brief Import a host using a generation handle. @param host Borrowed for
+     * this call, or null for staging.
+     * @throws std::invalid_argument Invalid host data.
+     * @lifetime The ECS table outlives the target; the host
+     * itself may be destroyed. */
     SceneHostEditorTarget(std::string id, scene::SceneHost* host);
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
@@ -159,14 +182,19 @@ public:
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     [[nodiscard]] EditorResult<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
-    /** @brief Return the borrowed live host, or nullptr for a staging clone. @return Borrowed pointer owned externally, or null. @lifetime Valid only while the host outlives this target. */
-    scene::SceneHost* host() const { return host_; }
+    /** @brief Compatibility-only pointer projection of the generation-checked host.
+     * @return Immediate borrowed
+     * pointer, or null for staging/destroyed hosts.
+     * @lifetime Do not retain across host destruction, ECS
+     * mutation or callbacks. */
+    [[nodiscard]] scene::SceneHost*                       host() const;
     EditorResult<std::vector<SceneComponentLinkSnapshot>> componentLinks(
         const ObjectId& object) const override;
 
 private:
     EditorResult<void> synchronizeHost(const SceneTargetBase& desired);
-    scene::SceneHost* host_ = nullptr;
+    ecs::EntityHandle  hostHandle_{};
+    bool               staging_ = false;
 };
 
 /** @brief Backend-neutral placement logic suitable for a Tool, script or command handler. */

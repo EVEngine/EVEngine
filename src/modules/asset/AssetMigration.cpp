@@ -171,6 +171,8 @@ Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
         {"eve.audio", 1},
         {"eve.font", 1},
         {"eve.sprite-animation", 1},
+        {"eve.shader", 1},
+        {"eve.stylize.mesh-vfx", 1},
     };
     const auto found = versions.find(type);
     if (found == versions.end())

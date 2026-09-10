@@ -4,6 +4,7 @@
 #include "asset/AssetPackageStore.h"
 #include "asset/import/AssetImporter.h"
 #include "asset/import/LegacyAnimationImporter.h"
+#include "asset/import/ShaderImporter.h"
 #include "asset/import/UnityImporter.h"
 #include "asset/import/UnitySource.h"
 #include "asset/import/UnrealImporter.h"
@@ -169,7 +170,7 @@ struct AssetArgs final : Handler {
         scanCommand->add_option("input", input)->required();
         importCommand = assetCommand->add_subcommand("import", "Import source content into a canonical .eva");
         importCommand->add_option("input", input)->required();
-        importCommand->add_option("--from", from, "image|gltf|unity|ue5")->required();
+        importCommand->add_option("--from", from, "image|gltf|unity|ue5|shader")->required();
         importCommand->add_option("--out", output)->required();
         importCommand->add_option("--package-id", packageId)->required();
         importCommand->add_option("--name", packageName);
@@ -263,7 +264,18 @@ struct AssetArgs final : Handler {
         Result<PreparedAssetImport> prepared = Result<PreparedAssetImport>::failure(
             Diagnostic::error(DiagnosticCode::Unsupported, "unknown importer", from, {}, "cmd.asset"));
         asset_import::AssetImportLimits limits;
-        if (from == "image" || from == "gltf") {
+        if (from == "shader") {
+            auto source = readFile(input, 8 * 1024 * 1024);
+            if (!source) {
+                prepared.ignore();
+                printFailure(source.status());
+                return 2;
+            }
+            prepared.ignore();
+            prepared = asset_import::prepareShaderImport(
+                identity.value(),
+                std::string_view(reinterpret_cast<const char*>(source.value().data()), source.value().size()));
+        } else if (from == "image" || from == "gltf") {
             auto source = readFile(input, limits.maximumSourceBytes);
             if (!source) { prepared.ignore(); printFailure(source.status()); return 2; }
             if (from == "image") {

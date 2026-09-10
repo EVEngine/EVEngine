@@ -1,0 +1,5 @@
+scene-*.glb
+.pending-*.glb
+current-v1.txt
+.current-v1.tmp
+*.blend1

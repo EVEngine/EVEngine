@@ -130,8 +130,8 @@ inside the importer. Mutation is restricted to the unpublished candidate, which
 is discarded on any failure. Images and materials are budget checked.
 
 Cook retention is distinct from renderer coverage: Model3D directly plays the
-converted GLB, whereas the existing EvpackStaticPrefab reader only applies its
-older material subset. This work does not add a cooked skeletal-scene renderer.
+converted GLB, whereas EvpackStaticPrefab applies the cooked extended materials described in
+[gltf-material-extensions.md](gltf-material-extensions.md). This work does not add a cooked skeletal-scene renderer.
 Full five-slot rendering, sampler parity, and exact UE shader-graph fidelity are
 not established by this two-texture sample. The acceptance suite covers all five
 slots through archive/Cook, missing images, texture transforms and budgets.

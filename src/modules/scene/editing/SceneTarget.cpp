@@ -3,6 +3,8 @@
 #include "scene/editing/SceneComponentPayload.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 namespace eve::scene_editing {
 namespace {
@@ -51,7 +53,11 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
     if (operation.target != TargetId(id_))
         return sceneError<void>(EditorStatus::Rejected, "editor.scene.target-mismatch",
                                 "Scene operation targets another backend");
-    if (operation.type == "scene.object.create.v1") {
+    if (operation.type == "scene.snapshot.restore.v1") {
+        auto parsed = parseSnapshot(operation.payload);
+        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        objects_ = std::move(parsed.value());
+    } else if (operation.type == "scene.object.create.v1") {
         EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
         if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
         const SceneObjectSnapshot& object = parsed.value();
@@ -189,6 +195,8 @@ std::vector<ObjectId> SceneTargetBase::sceneChildren(const ObjectId& parent) con
 }
 
 EditorResult<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjectRequest& request) const {
+    auto validTransform = parseTransform(transformValue(request.transform));
+    if (!validTransform.ok()) return EditorResult<DomainOperation>::failure(validTransform.status());
     if (request.id.empty())
         return sceneError<DomainOperation>(EditorStatus::Rejected, "editor.scene.missing-object-id",
                                            "Scene object id is required");
@@ -198,6 +206,9 @@ EditorResult<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjec
     if (!request.parent.empty() && !objects_.contains(request.parent))
         return sceneError<DomainOperation>(EditorStatus::NotFound, "editor.scene.parent-not-found",
                                            "Scene object parent does not exist");
+    if (request.name.empty())
+        return sceneError<DomainOperation>(EditorStatus::Rejected, "editor.scene.empty-name",
+                                           "Scene name must not be empty");
     SceneObjectSnapshot object{request.id, request.parent, request.name, request.transform};
     DomainOperation     operation;
     operation.type        = "scene.object.create.v1";
@@ -297,6 +308,8 @@ EditorResult<SceneTransformValue> SceneTargetBase::readTransform(const ObjectId&
 
 EditorResult<DomainOperation> SceneTargetBase::makeSetTransform(const ObjectId&            id,
                                                                 const SceneTransformValue& transform) const {
+    auto validTransform = parseTransform(transformValue(transform));
+    if (!validTransform.ok()) return EditorResult<DomainOperation>::failure(validTransform.status());
     auto object = objects_.find(id);
     if (object == objects_.end())
         return sceneError<DomainOperation>(EditorStatus::NotFound, "editor.scene.object-not-found",
@@ -328,6 +341,7 @@ EditorValue SceneTargetBase::snapshotValue() const {
     }
     EditorValue::Object scene;
     scene["schemaVersion"] = 1;
+    scene["schemaId"]      = "eve.scene.hierarchy";
     scene["objects"]       = EditorValue(std::move(objects));
     return EditorValue(std::move(scene));
 }
@@ -347,6 +361,17 @@ EditorValue SceneTargetBase::transformValue(const SceneTransformValue& transform
 }
 
 EditorResult<SceneTransformValue> SceneTargetBase::parseTransform(const EditorValue& value) {
+    const auto* fields = value.getIf<EditorValue::Object>();
+    if (!fields)
+        return sceneError<SceneTransformValue>(EditorStatus::Rejected, "editor.scene.transform-value",
+                                               "Transform must be an object");
+    for (const auto& [key, entry] : *fields) {
+        const auto* number = entry.getIf<double>();
+        if (!number || !std::isfinite(*number) || std::abs(*number) > std::numeric_limits<float>::max() ||
+            (key.starts_with("scale") && static_cast<float>(*number) == 0.f))
+            return sceneError<SceneTransformValue>(EditorStatus::Rejected, "editor.scene.transform-number",
+                                                   "TRS must be finite float-range numbers with nonzero scale");
+    }
     const EditorValue* xValue = field(value, "x");
     const EditorValue* yValue = field(value, "y");
     const EditorValue* zValue = field(value, "z");

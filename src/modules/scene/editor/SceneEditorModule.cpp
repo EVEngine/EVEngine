@@ -1,4 +1,5 @@
 #include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneEditorScriptBindings.h"
 
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
@@ -87,7 +88,10 @@ SceneEditorModule::~SceneEditorModule() {
         registry->unregisterOwner("scene_editing").ignore("scene editor adapter shutdown");
 }
 
-void SceneEditorModule::expose(ssq::Table& table) { table.addClass(name, SceneEditorModule::create, false); }
+void SceneEditorModule::expose(ssq::Table& table) {
+    auto module = table.addClass(name, SceneEditorModule::create, false);
+    exposeSceneEditorSessions(table, module);
+}
 void SceneEditorModule::expose(ssq::Class&) {}
 
 }  // namespace eve::scene_editor

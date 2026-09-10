@@ -20,6 +20,8 @@
 #include <cstdio>
 #include "common/Exception.h"
 
+#include <algorithm>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -92,12 +94,24 @@ Texture *loadTextureSlot(IResourceFactory *gfx, ModelData *model, int matIndex, 
     if (embedded >= 0) return loadEmbeddedTexture(gfx, model, embedded);
     const std::string path = model->getMaterialTexturePath(matIndex, type, 0);
     if (path.empty()) return nullptr;
+    // Imported texture paths are relative to the source model, not the VFS root.
+    // Normalize parent segments (OBJ/MTL commonly uses ../textures/foo.png).
+    std::string uri = model->getUri();
+    if (uri.rfind("file://", 0) == 0) uri.erase(0, 7);
+    // ResourceManager cache keys are normalized VFS paths without a scheme.
+    if (!uri.empty() && uri.find("://") == std::string::npos) {
+        uri                  = uri.substr(0, uri.find('?'));
+        std::string relative = path;
+        std::replace(relative.begin(), relative.end(), '\\', '/');
+        const auto resolved = (std::filesystem::path(uri).parent_path() / relative).lexically_normal();
+        if (auto* texture = loadExternalTexture(gfx, resolved.generic_string())) return texture;
+    }
     return loadExternalTexture(gfx, path);
 }
 
 struct TextureLook {
-    Texture *albedo = nullptr;
-    Texture *normal = nullptr;
+    Texture*    albedo = nullptr;
+    Texture*    normal = nullptr;
     Texture *height = nullptr;
     float tr = 1.f, tg = 1.f, tb = 1.f, ta = 1.f;
     float metallic = 0.f;
