@@ -2,6 +2,11 @@
 
 namespace eve::graphics::shaders {
 
+/** @brief Water fragment shader WGSL source.
+ * @ownership Borrowed immutable string literal; callers must not free it.
+ * @lifetime Static storage duration, valid for the entire process lifetime.
+ * @thread Safe for concurrent reads.
+ */
 inline constexpr const char* kWaterFragWgsl = R"wgsl(
 struct Light3D { posRadius: vec4f, color: vec4f };
 struct Frame {
