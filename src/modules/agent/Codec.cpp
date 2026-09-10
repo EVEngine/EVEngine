@@ -22,9 +22,9 @@ const Value::Object& object(const Value& v, std::initializer_list<std::string_vi
     }
     return *result;
 }
-const Value& required(const Value::Object& o, const std::string& key) {
+const Value& required(const Value::Object& o, const char* key) {
     const auto it = o.find(key);
-    if (it == o.end()) throw ParseFailure("Missing field: " + key);
+    if (it == o.end()) throw ParseFailure(std::string("Missing field: ") + key);
     return it->second;
 }
 std::string string(const Value& v) {
