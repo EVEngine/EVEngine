@@ -27,6 +27,8 @@
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/PrimitiveScriptBindings.h"
+#include "graphics/ShaderScriptBindings.h"
+#include "graphics/CanvasScriptBindings.h"
 #include "graphics/Quad.h"
 #include "graphics/ReflectionProbeCapture.h"
 #include "graphics/ReflectionProbeRegistry.h"
@@ -252,37 +254,7 @@ void Graphics::expose(ssq::Table& table) {
 
     exposePrimitiveScriptBindings(table, cls);
     exposeShaderScriptBindings(table, cls);
-    cls.addFunc("replaceShaderFromGlsl",
-                [vm](Graphics* self, Shader* shader, const std::string& vertex,
-                     const std::string& fragment) {
-                    if (!self || !shader)
-                        return eve::script::projectResult(
-                            vm, Result<void>::failure(Diagnostic::error(
-                                    DiagnosticCode::InvalidArgument,
-                                    "graphics and shader must not be null", "shader", {},
-                                    "graphics.shader_reload.binding")));
-                    return eve::script::projectResult(
-                        vm, self->replaceShaderFromGlsl(*shader, vertex, fragment));
-                });
-    cls.addFunc("replaceShaderFromWgsl",
-                [vm](Graphics* self, Shader* shader, const std::string& vertex,
-                     const std::string& fragment) {
-                    if (!self || !shader)
-                        return eve::script::projectResult(
-                            vm, Result<void>::failure(Diagnostic::error(
-                                    DiagnosticCode::InvalidArgument,
-                                    "graphics and shader must not be null", "shader", {},
-                                    "graphics.shader_reload.binding")));
-                    return eve::script::projectResult(
-                        vm, self->replaceShaderFromWgsl(*shader, vertex, fragment));
-                });
-
-    auto canvasCls =
-        table.addClass<Canvas>("Canvas", std::function<Canvas*()>([]() -> Canvas* { return nullptr; }), true);
-    canvasCls.addFunc("getWidth", &Canvas::getWidth);
-    canvasCls.addFunc("getHeight", &Canvas::getHeight);
-    canvasCls.addFunc("getTexture", &Canvas::getTexture);
-    canvasCls.addFunc("newHDRImageData", &Canvas::newHDRImageData);
+    exposeCanvasScriptBindings(table);
 
 #ifndef EVENGINE_WEBGPU
     auto fontCls =
