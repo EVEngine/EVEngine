@@ -1022,7 +1022,11 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
-CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
+# Full FPS sweeps are opt-in; correctness still covers every ClassicScenes asset.
+# Run FILTER=ClassicScenes.perf.maxFps or INCLUDE_BENCHMARKS=1 to include them.
+INCLUDE_BENCHMARKS ?= 0
+CTEST_BENCHMARK_SEL = $(if $(FILTER),,$(if $(filter 1,$(INCLUDE_BENCHMARKS)),,-LE benchmark))
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/') $(CTEST_BENCHMARK_SEL)
 
 # Retry each failed test once before reporting it (see CI-DEBUG-PLAYBOOK:
 # xvfb display allocation, first-run network fetches and TCP echo timing can

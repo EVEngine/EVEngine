@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Regression tests for third-party patch roots and idempotent application.
 
-The temporary checkouts are cloned from the already downloaded local sources;
+The temporary checkouts contain pinned HEAD blobs from the local sources;
 this test never contacts a remote repository and never mutates the checkout
 used by the engine build.
 """
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -31,18 +30,28 @@ def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProces
     return result
 
 
-def clone(source: Path, destination: Path) -> None:
-    run(
-        [
-            "git",
-            "clone",
-            "--no-local",
-            "--no-hardlinks",
-            "--quiet",
-            str(source),
-            str(destination),
-        ]
-    )
+def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) -> None:
+    """Materialize real upstream inputs without copying unrelated files or history."""
+    paths = {"CMakeLists.txt"}
+    for patch in patches:
+        for line in patch.read_text(encoding="utf-8").splitlines():
+            if line.startswith("--- a/"):
+                paths.add(line.removeprefix("--- a/"))
+    destination.mkdir()
+    for relative in sorted(paths):
+        blob = subprocess.run(
+            ["git", "-C", str(source), "show", f"HEAD:{relative}"],
+            capture_output=True, check=True,
+        ).stdout
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(blob)
+    run(["git", "-C", str(destination), "init", "--quiet"])
+    run(["git", "-C", str(destination), "add", "."])
+    run(["git", "-C", str(destination), "-c", "user.name=Fixture",
+         "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false",
+         "commit", "--quiet", "-m", "Pinned patch inputs"])
+    assert not run(["git", "-C", str(destination), "status", "--porcelain"]).stdout
 
 
 def apply_twice(patch: Path, patch_dir: Path) -> None:
@@ -64,26 +73,33 @@ def main() -> int:
         temporary = Path(raw)
 
         clean_aggregate = temporary / "aggregate-clean"
-        clone(THIRD_PARTY, clean_aggregate)
+        checkout_patch_inputs(THIRD_PARTY, clean_aggregate,
+                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
         apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", clean_aggregate)
 
         # A dirty aggregate checkout is a supported state because other patches
         # and profile preparation may have changed unrelated files. The export
         # patch must remain applicable when its own target files are untouched.
         dirty_aggregate = temporary / "aggregate-dirty"
-        clone(THIRD_PARTY, dirty_aggregate)
-        shutil.copy2(THIRD_PARTY / "CMakeLists.txt", dirty_aggregate / "CMakeLists.txt")
+        checkout_patch_inputs(THIRD_PARTY, dirty_aggregate,
+                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
+        with (dirty_aggregate / "CMakeLists.txt").open("a", encoding="utf-8") as output:
+            output.write("\n# Unrelated local profile configuration\n")
+        assert run(["git", "-C", str(dirty_aggregate), "diff", "--name-only"]).stdout.strip() == "CMakeLists.txt"
         apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", dirty_aggregate)
 
         clean_medialoader = temporary / "medialoader-clean"
-        clone(MEDIALOADER, clean_medialoader)
+        checkout_patch_inputs(MEDIALOADER, clean_medialoader,
+                              [PATCHES / "medialoader-smooth-normals.patch",
+                               PATCHES / "mpg123-signal-handler.patch"])
         apply_twice(PATCHES / "medialoader-smooth-normals.patch", clean_medialoader)
         apply_twice(PATCHES / "mpg123-signal-handler.patch", clean_medialoader)
 
         # A genuine target drift must fail and expose git's diagnostic; it may
         # not be mistaken for an already-applied patch or silently skipped.
         drifted = temporary / "aggregate-drifted"
-        clone(THIRD_PARTY, drifted)
+        checkout_patch_inputs(THIRD_PARTY, drifted,
+                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
         target = drifted / "squirrel" / "squirrel" / "CMakeLists.txt"
         target.write_text(
             target.read_text(encoding="utf-8").replace(

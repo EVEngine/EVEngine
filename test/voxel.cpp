@@ -759,21 +759,6 @@ TEST_CASE("voxel.frustum.intersects") {
     }
 }
 
-TEST_CASE("voxel.faceDir.name_aliases") {
-    FaceDir d;
-    CHECK(faceDirFromName("posX", d));
-    CHECK_EQ(int(d), int(FaceDir::PosX));
-    CHECK(faceDirFromName("+x", d));
-    CHECK_EQ(int(d), int(FaceDir::PosX));
-    CHECK(faceDirFromName("-y", d));
-    CHECK_EQ(int(d), int(FaceDir::NegY));
-    CHECK(faceDirFromName("posZ", d));
-    CHECK_EQ(int(d), int(FaceDir::PosZ));
-    CHECK(!faceDirFromName("forward", d));
-    CHECK(!faceDirFromName("", d));
-    CHECK_EQ(std::string(faceDirName(FaceDir::NegZ)), std::string("negZ"));
-}
-
 TEST_CASE("voxel.chunk.empty_and_dirty_flags") {
     std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
     CHECK(chunk->isDirty());

@@ -762,6 +762,14 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
 
+      - name: Report network phase timings
+        if: always()
+        run: |
+          log=build/macosx-debug/Testing/Temporary/LastTest.log
+          if test -f "$log"; then
+            sed -n '/NetHostPeers .*: .* ms/p' "$log"
+          fi
+
       - name: Configure native Dawn Metal lane
         timeout-minutes: 20
         run: |

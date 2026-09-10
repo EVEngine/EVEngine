@@ -1,6 +1,8 @@
+#include "Fixtures.h"
+#include "ManualPreview.h"
+#include "image/ImageData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 
@@ -231,11 +233,11 @@ TEST_CASE("outline.newMeshCubeAndPipelineConfig") {
 }
 
 TEST_CASE("outline.previewCube") {
-    // Visual check: rotating cube with a screen-space ink outline. Holds the
-    // window open for a few seconds so it can be inspected interactively.
+    // Compare the outline against the same cube without the effect at fixed poses.
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
     openGfxWindow(win, gfx, 420, 360);
+    gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColor(Color(0.12f, 0.13f, 0.16f, 1.f));
 
     RenderControl *rc = gfx->getRenderControl();
@@ -255,7 +257,32 @@ TEST_CASE("outline.previewCube") {
     outline->setNormalThreshold(0.5f);
     outline->setSoftness(0.2f);
 
-    const int frames = 150;  // ~5s at 30 fps
+    for (int pose : {0, 17, 43}) {
+        cube->setRotation(0.15f * float(pose), float(pose) * 0.02f, 0.f);
+        rc->disable("outline");
+        rc->compile();
+        warmPresent(gfx);
+        std::unique_ptr<eve::image::ImageData> plain(gfx->newImageData());
+        REQUIRE(plain != nullptr);
+        rc->enable("outline");
+        rc->compile();
+        warmPresent(gfx);
+        std::unique_ptr<eve::image::ImageData> outlined(gfx->newImageData());
+        REQUIRE(outlined != nullptr);
+        REQUIRE(plain->getWidth() == outlined->getWidth());
+        REQUIRE(plain->getHeight() == outlined->getHeight());
+        int darkenedPixels = 0;
+        for (int y = 0; y < plain->getHeight(); ++y) {
+            for (int x = 0; x < plain->getWidth(); ++x) {
+                const auto before = plain->getPixel(x, y);
+                const auto after  = outlined->getPixel(x, y);
+                if (before.r + before.g + before.b > after.r + after.g + after.b + 0.09f) ++darkenedPixels;
+            }
+        }
+        REQUIRE(darkenedPixels > 8);
+    }
+
+    const int frames = eve::test::manualPreviewEnabled() ? 150 : 0;
     for (int i = 0; i < frames; ++i) {
         cube->setRotation(0.15f * float(i), float(i) * 0.02f, 0.f);
         RenderSystem3D::render(*gfx);
