@@ -27,6 +27,10 @@ namespace {
 
 // Compiler failures must not call Exception's global render-tracer callback:
 // this path also executes on CPU workers without a Graphics lifetime.
+std::runtime_error compileError(const char *message) {
+    return std::runtime_error(message);
+}
+
 template <class... Args>
 std::runtime_error compileError(const char *format, Args... args) {
     const int count = std::snprintf(nullptr, 0, format, args...);
