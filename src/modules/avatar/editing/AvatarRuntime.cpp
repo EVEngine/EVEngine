@@ -37,8 +37,10 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
     auto candidate = std::make_unique<avatar::AvatarInstance>(document.kind());
     if (document.kind() == "live2d" && !candidate->loadLive2DModel(document.sourceAsset()))
         return fail<void>(EditorStatus::Failed, "editor.avatar.live2d", "Live2D backend rejected the Avatar model");
-    if (document.kind() == "vroid" && !candidate->loadVroidModelPath(document.sourceAsset()))
-        return fail<void>(EditorStatus::Failed, "editor.avatar.vroid", "VRoid backend rejected the Avatar model path");
+    if (document.kind() == "vroid") {
+        auto imported = candidate->loadVroidModel(document.sourceAsset());
+        if (!imported.ok()) return EditorResult<void>::failure(imported.status());
+    }
     for (std::size_t i = 0; i < document.layers().size(); ++i) {
         const auto& layer = document.layers()[i];
         if (!candidate->addLayer(layer.name, resolved[i], layer.zIndex) ||

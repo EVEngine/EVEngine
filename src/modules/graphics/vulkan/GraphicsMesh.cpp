@@ -268,6 +268,15 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     mesh->computeBounds(pos.data(), vc);
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vc));
+    auto                   *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    if (mesh->hasGpuSkinning()) {
+        // Morphs change positions/normals only; retain the authored skin influences.
+        auto &source = meshDrawVertices(*gpu);
+        void *mapped = source.map();
+        if (!mapped) return false;
+        std::memcpy(verts.data(), mapped, verts.size() * sizeof(MeshVertex));
+        source.unmap();
+    }
     const auto &uv = mesh->baseUv();
     for (int i = 0; i < vc; ++i) {
         MeshVertex &v = verts[static_cast<size_t>(i)];
@@ -282,7 +291,6 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
             v.uv = {0.f, 0.f};
     }
 
-    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
     // Ring-buffered host-visible VBO: the next copy is kDynamicVertexCopies
     // frames old, so overwriting it never races with in-flight draws — no
     // device-wide wait (see writeDynamicMesh).

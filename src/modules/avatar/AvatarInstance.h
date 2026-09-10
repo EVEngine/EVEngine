@@ -52,6 +52,8 @@ class Tween;
 
 namespace eve::avatar {
 
+class VrmRuntime;
+
 /** @brief Outcome of changing or rebuilding the equipment appearance projection. */
 enum class EquipmentVisualChange {
     Applied,
@@ -172,7 +174,7 @@ public:
     bool defineExpression(const std::string &name, const std::string &spec);
     /** @brief Remove a project-defined expression. */
     bool removeExpression(const std::string& name);
-    /** @brief Return the number of project-defined expressions. */
+    /** @brief Return the number of imported and project-defined expressions. */
     int getExpressionCount() const;
     /** @brief Return a stable sorted expression name, or empty text. */
     std::string getExpressionName(int index) const;
@@ -188,7 +190,35 @@ public:
     void collectLive2DDrawItems(std::vector<graphics::DrawItem2D>& out);
 
     // ---- vroid kind ----
+    /**
+     * @brief Import and atomically replace a complete VRM avatar from a VFS path.
+     * @param path Borrowed for the call; copied on success.
+     * @return Structured import/provider error; failure preserves the previous avatar.
+     * @ownership Avatar owns imported CPU state and releases its GPU resources on replacement/destruction.
+     * @thread Main/render thread before frame submission. Does not invoke callbacks or scripts.
+     * @note Explicit reload rebuilds the entire projection. Unknown VRM versions are rejected.
+     */
+    [[nodiscard]] eve::Result<void> loadVroidModel(std::string_view path);
+    /** @brief Compatibility-only bool projection of loadVroidModel; performs the real import. */
     bool loadVroidModelPath(const std::string &path);
+    /** @brief Number of imported mesh primitives; zero before successful import. */
+    int getVroidMeshCount() const;
+    /** @brief Number of imported VRM spring chains. */
+    int getVroidSpringCount() const;
+    /** @brief Imported VRM specification version, or empty before import. */
+    std::string getVroidVersion() const;
+    /**
+     * @brief Set an imported humanoid bone's local rotation offset in radians.
+     * @param semantic VRM bone semantic, borrowed for the call.
+     * @param yaw Local yaw offset in radians.
+     * @param pitch Local pitch offset in radians.
+     * @param roll Local roll offset in radians.
+     * @return Success or InvalidArgument/NotFound, preserving offsets on failure.
+     * @note Render thread only; applied before gaze and springs, without callbacks.
+     * Offsets are owned by this Avatar and cleared by model replacement.
+     */
+    [[nodiscard]] eve::Result<void> setHumanoidBoneRotation(std::string_view semantic, float yaw, float pitch,
+                                                            float roll);
     bool bindVroidModelData(model3d::ModelData *data);
     /** @brief Register morph target names from ModelData as parameters (weights default 0). */
     int loadMorphNamesFromModel(int meshIndex = 0);
@@ -197,7 +227,18 @@ public:
     void setPosition3D(float x, float y, float z);
     void setRotation3D(float yaw, float pitch, float roll);
     void setScale3D(float sx, float sy, float sz);
-    graphics::Renderable3D *getRenderable3D() const { return renderable3d_; }
+    /**
+     * @brief Borrow the first imported render projection, or the manual projection.
+     * @return Non-owning pointer, or nullptr when no live projection exists.
+     * @lifetime Borrowed until replacement, release or ECS destruction; render thread only.
+     */
+    graphics::Renderable3D* getRenderable3D() const;
+    /**
+     * @brief Borrow the first imported mesh, or the manually bound mesh.
+     * @return Non-owning pointer; nullptr when the imported graphics provider expired.
+     * @ownership Borrowed on the render thread. Import ownership stays with Avatar; lifetime ends on
+     * replacement, release or provider destruction. Manual mesh lifetime is caller-owned.
+     */
     graphics::Mesh *getBoundMesh() const;
     std::string getVroidModelPath() const { return vroidPath_; }
     /** @brief Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
@@ -443,6 +484,7 @@ private:
     ILive2DBackend *live2d_ = nullptr;
 
     // vroid
+    std::unique_ptr<VrmRuntime> vrm_;
     std::string vroidPath_;
     model3d::ModelData *vroidData_ = nullptr;
     graphics::Renderable3D *renderable3d_ = nullptr;

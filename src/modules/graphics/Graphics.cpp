@@ -159,6 +159,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+    retireResourceLifetime();
     // Derived backends detach first, while their virtual releaseMesh boundary
     // is still live. This base path covers host-only Graphics subclasses.
     detachGraphicsArtifactProvider(this);

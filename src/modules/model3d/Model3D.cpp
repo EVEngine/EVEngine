@@ -110,6 +110,8 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
         hint = ensureDotExt(std::move(packedHint));
     }
 
+    if (hint == ".vrm") hint = ".glb";
+
     // Prefer VFS for sidecar resolution when FileData carries a filename.
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs)
