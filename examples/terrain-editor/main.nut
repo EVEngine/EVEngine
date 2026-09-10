@@ -3,6 +3,7 @@
 //   - heightmap (procgen::Heightmap) -> flat-shaded terrain mesh
 //   - orbit camera driven by viewport drag / wheel
 //   - raise/lower brush paints the heightmap, mesh updates in place
+//   - versioned terrain document is atomically saved and restored across runs
 //
 // Run: make run/win32-debug GAME=examples/terrain-editor
 
@@ -25,6 +26,7 @@ persist meshDirty = false
 persist meshCooldown = 0.0
 persist terrainLayers = null
 persist analysisText = "not analyzed"
+persist saveFs = null
 
 heightmapTargets <- eve.HeightmapTargetModule()
 
@@ -32,6 +34,37 @@ const W = 64;
 const H = 64;
 const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
+const DOCUMENT_PATH = "terrain-editor-document-v1.json";
+
+function saveTerrainDocument() {
+    local encoded = heightmapTargets.encodeDocument(hm, CELL, CELL);
+    if (!encoded.ok) {
+        editStatus = "save rejected: " + encoded.status.summary;
+        return;
+    }
+    if (saveFs.writeTextAtomic(DOCUMENT_PATH, encoded.value) == 0) {
+        editStatus = "save failed: app-data directory is not writable";
+        return;
+    }
+    editStatus = "saved versioned terrain document";
+}
+
+function loadTerrainDocument() {
+    local json = saveFs.readText(DOCUMENT_PATH);
+    if (json == "") {
+        editStatus = "no saved terrain document";
+        return false;
+    }
+    local decoded = heightmapTargets.decodeDocument(json, hm);
+    if (!decoded.ok) {
+        editStatus = "load rejected: " + decoded.status.summary;
+        return false;
+    }
+    analyzeTerrainLayers();
+    rebuildMesh();
+    editStatus = "restored versioned terrain document";
+    return true;
+}
 
 function regenTerrain() {
     local paramsResult = procgen.newParams();
@@ -132,7 +165,11 @@ function terrainFromScreen(mx, my) {
 eve_init = function() {
     ui.setTheme("dark");
     ui.setNavKeyboard(true);
+    saveFs = eve.Filesystem();
+    saveFs.setIdentity("terrain-editor", true);
+    saveFs.setupWriteDirectory();
     regenTerrain();
+    loadTerrainDocument();
     setupCamera();
 
     ui.beginBuild();
@@ -144,6 +181,8 @@ eve_init = function() {
     ui.button("Raise (1)", "raise");
     ui.button("Lower (2)", "lower");
     ui.button("Regenerate (R)", "reset");
+    ui.button("Save terrain", "save");
+    ui.button("Reload saved terrain", "load");
     ui.button("Thermal erosion", "thermal");
     ui.button("Hydraulic erosion", "hydraulic");
     ui.button("Analyze rivers/biomes", "analyze");
@@ -158,7 +197,7 @@ eve_init = function() {
     ui.end();
     ui.mountBuildAs("ed");
     ui.setHostPos(12.0, 12.0, 0.0, 0.0);
-    ui.setHostSize(230.0, 300.0);
+    ui.setHostSize(230.0, 350.0);
 };
 
 eve_update = function(dt) {
@@ -229,6 +268,11 @@ eve_update = function(dt) {
             tool = "lower";
         } else if (c == "ed/reset") {
             regenTerrain();
+            editStatus = "regenerated (not saved)";
+        } else if (c == "ed/save") {
+            saveTerrainDocument();
+        } else if (c == "ed/load") {
+            loadTerrainDocument();
         } else if (c == "ed/thermal") {
             if (procgen.erodeTerrainThermal(hm, 20, 0.018, 0.32)) {
                 analyzeTerrainLayers();

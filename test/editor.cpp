@@ -272,6 +272,24 @@ TEST_CASE("editor.heightmap_brush.applies_native_circular_falloff") {
     CHECK_EQ(heightmapTargets.applyBrush(&heightmap, 4.f, 4.f, -1.f, 1.f), 0);
 }
 
+TEST_CASE("editor.heightmap_document.module_round_trips_without_partial_mutation") {
+    eve::heightmap_target::HeightmapTargetModule heightmapTargets;
+    eve::procgen::Heightmap heightmap(3, 2);
+    heightmap.setHeight(1, 1, 42.5F);
+    auto encoded = heightmapTargets.encodeDocument(&heightmap, 2.0F, 3.0F);
+    REQUIRE(encoded.ok());
+    heightmap.setHeight(1, 1, -1.0F);
+    REQUIRE(heightmapTargets.decodeDocument(encoded.value(), &heightmap).ok());
+    CHECK_EQ(heightmap.getWidth(), 3);
+    CHECK_EQ(heightmap.getHeight(), 2);
+    CHECK_EQ(heightmap.height(1, 1), 42.5F);
+
+    const auto before = heightmap.data();
+    auto invalid = heightmapTargets.decodeDocument("{\"schema\":\"wrong\"}", &heightmap);
+    CHECK(!invalid.ok());
+    CHECK_EQ(heightmap.data(), before);
+}
+
 TEST_CASE("editor.script_tool.implements_the_same_session_protocol") {
     ssq::VM vm(1024, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);
