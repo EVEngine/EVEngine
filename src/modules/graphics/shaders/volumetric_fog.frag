@@ -23,10 +23,35 @@ layout(location = 0) out vec4 outColor;
 layout(binding = 0) uniform sampler2D MainTex;
 layout(push_constant) uniform Externals { float data[32]; } u;
 
-float hash12(vec2 p) {
-  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
+float hash13(vec3 p) {
+  p = fract(p * 0.1031);
+  p += dot(p, p.yzx + 33.33);
+  return fract((p.x + p.y) * p.z);
+}
+
+float valueNoise(vec3 p) {
+  vec3 cell = floor(p);
+  vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float n000 = hash13(cell + vec3(0.0, 0.0, 0.0));
+  float n100 = hash13(cell + vec3(1.0, 0.0, 0.0));
+  float n010 = hash13(cell + vec3(0.0, 1.0, 0.0));
+  float n110 = hash13(cell + vec3(1.0, 1.0, 0.0));
+  float n001 = hash13(cell + vec3(0.0, 0.0, 1.0));
+  float n101 = hash13(cell + vec3(1.0, 0.0, 1.0));
+  float n011 = hash13(cell + vec3(0.0, 1.0, 1.0));
+  float n111 = hash13(cell + vec3(1.0, 1.0, 1.0));
+  float nx00 = mix(n000, n100, f.x);
+  float nx10 = mix(n010, n110, f.x);
+  float nx01 = mix(n001, n101, f.x);
+  float nx11 = mix(n011, n111, f.x);
+  return mix(mix(nx00, nx10, f.y), mix(nx01, nx11, f.y), f.z);
+}
+
+float fogNoise(vec3 p) {
+  float coarse = valueNoise(p);
+  float detail = valueNoise(p * 2.07 + vec3(5.2, 1.3, 8.7));
+  return coarse * 0.72 + detail * 0.28;
 }
 
 mat4 loadInvVP() {
@@ -74,14 +99,13 @@ void main() {
 
   vec4 eyeH = invVP * vec4(0.0, 0.0, 0.0, 1.0);
   vec3 camPos = eyeH.xyz / max(eyeH.w, 1e-6);
-  vec3 endPos = reconstructWorld(invVP, fragUV, depth01);
-  vec3 ray = endPos - camPos;
-  float reconDist = length(ray);
-  // Prefer the larger of reconstructed / linear depth so short NDC reconstructions
-  // still accumulate fog when the depth buffer says the hit is far.
-  float maxDist = max(reconDist, linearZ);
-  vec3 rayDir = (reconDist > 1e-4) ? (ray / reconDist)
-                                   : normalize(reconstructWorld(invVP, fragUV, 1.0) - camPos);
+  // MainTex contains linear depth, not device/NDC depth. Reconstruct the view ray
+  // from the far plane and restore the world-space travel distance with near/far.
+  // Feeding linear depth back into invVP makes geometry integrate less than one
+  // world unit while only the sky receives fog.
+  vec3 farPos = reconstructWorld(invVP, fragUV, 1.0);
+  vec3 rayDir = normalize(farPos - camPos);
+  float maxDist = linearZ;
 
   float stepLen = maxDist / float(samples);
   vec3 pos = camPos;
@@ -106,8 +130,13 @@ void main() {
     // Soft floor so elevated cameras still see distance fog.
     heightFactor = max(heightFactor, 0.2);
 
-    float n = 1.0 + (hash12(pos.xz * 0.15 + fragUV * 3.0) - 0.5) * noiseAmount;
-    float dens = density * heightFactor * distFactor * max(n, 0.05);
+    // Coherent world-space noise survives integration as broad wisps; uncorrelated
+    // per-step hashes average into flat grey and shimmer when the camera moves.
+    float n = fogNoise(pos * vec3(0.18, 0.34, 0.18));
+    float wisps = smoothstep(0.24, 0.78, n);
+    float noiseMix = clamp(noiseAmount * 0.5, 0.0, 1.0);
+    float densityShape = mix(1.0, 0.10 + 2.15 * wisps, noiseMix);
+    float dens = density * heightFactor * distFactor * densityShape;
 
     float cosTheta = dot(-rayDir, lightDir);
     float phase = mix(1.0, henyeyGreenstein(cosTheta, g) * 4.0, 0.35);

@@ -1,6 +1,6 @@
 config <- {
-    width = 800
-    height = 600
+    width = 960
+    height = 640
     title = "Bush Lab"
     debug = true
     hotReload = true

@@ -628,12 +628,16 @@ void MeshRecipeRegistry::registerBuiltins() {
     registerRecipe(std::move(tree), generateTreeMesh);
 
     RecipeDescriptor bush = mesh("mesh.bush", "Bush");
-    bush.params.push_back(ParamDescriptor::choice("style", "Style", "mound", {"mound", "upright", "wild"}));
-    bush.params.push_back(ParamDescriptor::choice("leafMode", "Leaf Mode", "mixed", {"mixed", "cards", "blobs"}));
+    bush.params.push_back(ParamDescriptor::choice("style", "Style", "mound", {"mound", "sphere"}));
+    bush.params.push_back(
+        ParamDescriptor::choice("leafMode", "Leaf Mode", "mixed", {"mixed", "cards", "blobs", "none"}));
     bush.params.push_back(ParamDescriptor::floating("height", "Height", 1.4f, 0.3f, 30.f, 0.05f));
     bush.params.push_back(ParamDescriptor::floating("width", "Width", 2.2f, 0.4f, 30.f, 0.05f));
     bush.params.push_back(ParamDescriptor::integer("blobs", "Foliage Blobs", 9, 1, 40));
     bush.params.push_back(ParamDescriptor::floating("leafDensity", "Leaf Density", 0.62f, 0.f, 1.f, 0.01f));
+    bush.params.push_back(ParamDescriptor::floating("lobeScale", "Lobe Scale", 0.68f, 0.35f, 1.25f, 0.01f));
+    bush.params.push_back(
+        ParamDescriptor::floating("irregularity", "Irregularity", 0.62f, 0.f, 1.f, 0.01f));
     addAdvanced(bush, ParamDescriptor::integer("rings", "Rings", 3, 2, 10));
     addAdvanced(bush, ParamDescriptor::integer("radialSegments", "Radial Segments", 7, 4, 24));
     addAdvanced(bush,

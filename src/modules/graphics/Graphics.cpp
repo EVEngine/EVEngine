@@ -687,6 +687,10 @@ void Graphics::expose(ssq::Table& table) {
     fogVolume.addFunc("getAnisotropy", &FogVolume::getAnisotropy);
     fogVolume.addFunc("setEdgeFalloff", &FogVolume::setEdgeFalloff);
     fogVolume.addFunc("getEdgeFalloff", &FogVolume::getEdgeFalloff);
+    fogVolume.addFunc("setNoise", &FogVolume::setNoise);
+    fogVolume.addFunc("getNoiseAmount", &FogVolume::getNoiseAmount);
+    fogVolume.addFunc("getNoiseScale", &FogVolume::getNoiseScale);
+    fogVolume.addFunc("getNoiseSeed", &FogVolume::getNoiseSeed);
 
     auto grassField = table.addClass<GrassField>(
         "GrassField", std::function<GrassField*()>([]() -> GrassField* { return nullptr; }), true);

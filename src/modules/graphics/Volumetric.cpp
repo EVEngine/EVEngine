@@ -717,8 +717,9 @@ void Volumetric::clearFroxelGrid() { atmosphereVolume_->clear(); }
 void Volumetric::injectFroxelHeightFog(float extinction, float albedoR, float albedoG,
                                        float albedoB, float baseHeight, float heightFalloff,
                                        float minWorldY, float maxWorldY) {
-    atmosphereVolume_->injectHeightFog(extinction, glm::vec3(albedoR, albedoG, albedoB),
-                                       baseHeight, heightFalloff, minWorldY, maxWorldY);
+    atmosphereVolume_->injectHeightFogFrustum(extinction, glm::vec3(albedoR, albedoG, albedoB),
+                                              baseHeight, heightFalloff, minWorldY, maxWorldY,
+                                              invViewProj_);
 }
 
 void Volumetric::injectFroxelLocalVolume(FogVolume *volume) {
