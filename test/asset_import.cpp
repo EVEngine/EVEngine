@@ -9,6 +9,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iterator>
 
@@ -87,16 +88,18 @@ private:
     std::uint64_t token = 0;
 };
 
+std::vector<uint8_t> pixelPng() {
+    return {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00,
+            0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00,
+            0x0d, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0xf0, 0x1f, 0x00, 0x05, 0x00, 0x01, 0xff,
+            0x72, 0x9c, 0x52, 0x67, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
+}
+
 }  // namespace
 
 TEST_CASE("asset.import.pngTraversesEvaCookAndEvpack") {
     // Complete 1x1 RGBA PNG. The source is retained losslessly in canonical eve.image.
-    const std::vector<std::uint8_t> png = {
-        0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0x00,0x00,0x00,0x0d,0x49,0x48,0x44,0x52,
-        0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x01,0x08,0x06,0x00,0x00,0x00,0x1f,0x15,0xc4,
-        0x89,0x00,0x00,0x00,0x0d,0x49,0x44,0x41,0x54,0x08,0xd7,0x63,0xf8,0xcf,0xc0,0xf0,
-        0x1f,0x00,0x05,0x00,0x01,0xff,0x72,0x9c,0x52,0x67,0x00,0x00,0x00,0x00,0x49,0x45,
-        0x4e,0x44,0xae,0x42,0x60,0x82};
+    const auto png        = pixelPng();
     auto corruptPng = png;
     corruptPng[45] ^= 1;
     auto corrupt = prepareImageImport({identity("image.corrupt"), "corrupt.png", corruptPng,
@@ -158,11 +161,17 @@ TEST_CASE("asset.import.realGlbDecodesCanonicalMeshAndTraversesRuntimePack") {
     auto bytes = fileBytes(path);
     REQUIRE(!bytes.empty());
     GltfImportRequest request{identity("gltf.test"), "building-block.glb", std::move(bytes), {}, {}};
+    // The geometry fixture omits its external colormap. Supply an explicit test image;
+    // this verifies mesh/package traversal, not the original material appearance.
+    request.externalResources["Textures/colormap.png"] = pixelPng();
     auto prepared = prepareGltfImport(request);
     REQUIRE(prepared.ok());
     REQUIRE(!prepared.value().manifest.assets.empty());
     REQUIRE(entry(prepared.value(), "reports/import.json") != nullptr);
-    CHECK_EQ(prepared.value().sourceMappings.size(), prepared.value().manifest.assets.size());
+    const auto meshCount =
+        std::count_if(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                      [](const auto& a) { return a.type == "eve.mesh"; });
+    REQUIRE_EQ(prepared.value().sourceMappings.size(), size_t(meshCount));
     CHECK_EQ(prepared.value().manifest.assets.front().type, std::string("eve.mesh"));
     auto evaBytes = buildEvaArchive(prepared.value().manifest, prepared.value().entries);
     REQUIRE(evaBytes.ok());
@@ -172,11 +181,17 @@ TEST_CASE("asset.import.realGlbDecodesCanonicalMeshAndTraversesRuntimePack") {
     REQUIRE(cooked.ok());
     auto runtime = parseEvpack(cooked.value().bytes);
     REQUIRE(runtime.ok());
-    CHECK(runtime.value().chunks().size() >= prepared.value().manifest.assets.size() * 2);
-    auto meshBlob = runtime.value().decodeChunk(1, runtime.value().chunks()[1].decodedSize);
-    REQUIRE(meshBlob.ok());
-    REQUIRE(meshBlob.value().size() >= 8);
-    CHECK_EQ(std::string(reinterpret_cast<const char*>(meshBlob.value().data()), 6), std::string("EVMESH"));
+    bool foundMesh = false;
+    for (size_t i = 0; i < runtime.value().chunks().size(); ++i) {
+        const auto& chunk = runtime.value().chunks()[i];
+        if (chunk.type != "eve.mesh" || chunk.kind != EvpackChunkKind::Bulk) continue;
+        auto meshBlob = runtime.value().decodeChunk(i, chunk.decodedSize);
+        REQUIRE(meshBlob.ok());
+        REQUIRE(meshBlob.value().size() >= 8);
+        REQUIRE_EQ(std::string(reinterpret_cast<const char*>(meshBlob.value().data()), 6), std::string("EVMESH"));
+        foundMesh = true;
+    }
+    REQUIRE(foundMesh);
 
     const auto entrypoint = prepared.value().manifest.entrypoints.find("default");
     REQUIRE(entrypoint != prepared.value().manifest.entrypoints.end());

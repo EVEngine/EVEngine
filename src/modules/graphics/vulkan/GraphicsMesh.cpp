@@ -596,6 +596,10 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         if (!shader->gpuHandle) throw Exception("drawMesh: shader has no GPU pipeline");
     }
 
+    if (pbrSurface_ && !shader) {
+        drawPbrMesh(mesh, model, tint);
+        return;
+    }
     auto *gpuMesh = static_cast<GpuMesh *>(mesh->gpuHandle);
     Texture *tex = texture ? texture : whiteTexture;
     if (!tex || !tex->gpuHandle) throw Exception("drawMesh: missing texture");
@@ -753,15 +757,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
     }
     if (mesh->hasGpuSkinning()) {
-        const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-        ubo.skinInfo.x         = static_cast<float>(paletteCount);
-        const auto &palette    = mesh->skinPalette();
-        for (int i = 0; i < paletteCount; ++i) {
-            const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
-            for (int column = 0; column < 4; ++column)
-                for (int row = 0; row < 4; ++row)
-                    ubo.skinBones[i][column][row] = matrix[column * 4 + row];
-        }
+        ubo.skinInfo.x = static_cast<float>(mesh->getSkinPaletteCount());
     }
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
@@ -788,6 +784,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                      fslots.capacity);
         return;
     }
+    uploadSkinPalette(mesh, fslots);
     const size_t slot = fslots.drawIndex++;
     ensureMesh3dStrides();
     const uint32_t uboOffset = uint32_t(slot) * mesh3dUboStride;

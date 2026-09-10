@@ -1,3 +1,4 @@
+#include "common/Exception.h"
 #include "graphics/webgpu/Graphics.h"
 
 #include "graphics/Material.h"
@@ -318,7 +319,8 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
         Mesh *mesh = gpuDrivenMeshes_[instance.meshId];
         Material *material = gpuDrivenMaterials_[instance.materialId];
         if (!mesh || !material || !gpuDrivenMaterialUsable(material)) return false;
-        material->bind(*this);
+        auto bound = material->bind(*this);
+        if (!bound) throw Exception("%s", bound.error()->message().c_str());
         drawMeshShader(mesh, instance.model, material->getAlbedoTexture(),
                        Color(material->getTintR(), material->getTintG(), material->getTintB(),
                              material->getTintA()),
@@ -977,11 +979,9 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
         wgpu::BindGroup bindGroup =
-            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
-                              gpuForTexture(material->getNormalTexture()),
-                              gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depth, nullptr,
-                              frameOffset, shadowOffset, 0);
+            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()), gpuForTexture(material->getNormalTexture()),
+                              gpuForTexture(mesh3dEnvTexture), gpuForTexture(material->getHeightTexture()), depth,
+                              nullptr, frameOffset, shadowOffset, 0, uploadSkinPalette(nullptr));
         const uint32_t offsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, bindGroup, 3, offsets);
         WGPUBindGroupEntry modelEntry{};

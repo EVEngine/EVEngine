@@ -159,6 +159,7 @@ struct AssetArgs final : Handler {
     CLI::App* migrateAnimationCommand = nullptr;
     CLI::App* diffCommand = nullptr;
     std::string from, input, secondInput, output, packageId, packageName = "imported.asset", packageVersion = "1.0.0";
+    bool        strict = false;
     std::string descriptor, terrain, prefab, colorSpace = "srgb", usage = "color", target;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
@@ -179,6 +180,8 @@ struct AssetArgs final : Handler {
         importCommand->add_option("--prefab", prefab, "Unity Prefab relative to input root");
         importCommand->add_option("--color-space", colorSpace, "srgb|linear");
         importCommand->add_option("--usage", usage);
+        importCommand->add_flag("--strict", strict,
+                                "Reject out-of-range glTF material factors instead of clamping with warnings");
         validateCommand = assetCommand->add_subcommand("validate", "Fully validate a .eva or .evpack");
         validateCommand->add_option("input", input)->required();
         inspectCommand = assetCommand->add_subcommand("inspect", "Print package identities and contents");
@@ -298,8 +301,9 @@ struct AssetArgs final : Handler {
                 }
                 prepared.ignore();
                 prepared = asset_import::prepareGltfImport(
-                    {identity.value(), std::filesystem::path(input).filename().string(),
-                     std::move(source).takeValue(), std::move(external), limits});
+                    {identity.value(), std::filesystem::path(input).filename().string(), std::move(source).takeValue(),
+                     std::move(external), limits,
+                     strict ? asset_import::GltfImportMode::Strict : asset_import::GltfImportMode::Permissive});
             }
         } else if (from == "unity" || from == "ue5") {
             auto files = from == "unity" ? readUnityInput(input, limits) : readTree(input, limits.maximumSourceBytes);
@@ -319,8 +323,9 @@ struct AssetArgs final : Handler {
         std::cout << "published " << receipt.value().destination << " package="
                   << receipt.value().packageId.format() << " bytes=" << receipt.value().byteSize << "\n";
         for (const auto& finding : prepared.value().findings)
-            std::cout << "finding " << static_cast<unsigned>(finding.disposition) << " "
-                      << finding.feature << " " << finding.message << "\n";
+            std::cout << (finding.severity == asset_import::ImportSeverity::Warning ? "warning " : "finding ")
+                      << static_cast<unsigned>(finding.disposition) << " " << finding.feature << " " << finding.message
+                      << "\n";
         return 0;
     }
 

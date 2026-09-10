@@ -25,6 +25,9 @@ eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
 # Unified grid: layout/topology + projection. Pure math, no Module class.
 eve_declare_module(NAME grid LAYER 0
                    GROUP 2d 3d web)
+# Resettable domain-test search and CPU policy learning; no renderer dependency.
+eve_declare_module(NAME agent LAYER 0 LIB EVAgent SCRIPT Agent SLOT agent
+                   GROUP 2d 3d web)
 # UI-independent property-access contracts shared by game UI, editor UI and
 # automation hosts. Core headers (PropertyAccess.h) have no renderer or script
 # runtime. The Squirrel reflection adapter lives in squirrel/ so Inspector can

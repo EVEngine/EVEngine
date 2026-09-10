@@ -129,7 +129,7 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
         uri = "file://" + fd->getFilename();
 
-    return new ModelData(std::move(scene), std::move(uri));
+    return new ModelData(std::move(scene), std::move(uri), options.flipUVs);
 }
 
 ModelData *Model3D::newModelDataFromFile(std::string path) {

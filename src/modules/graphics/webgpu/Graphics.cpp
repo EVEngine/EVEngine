@@ -509,6 +509,7 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
     b.texture(18, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
               wgpu::TextureViewDimension::e2D);
     b.sampler(19, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.buffer(21, wgpu::ShaderStage::Vertex, wgpu::BufferBindingType::ReadOnlyStorage, false, 64);
     return b.build(device, "eve_mesh3d");
 }
 
@@ -519,6 +520,7 @@ wgpu::BindGroupLayout Graphics::makeShadowBindGroupLayout() {
     b.texture(1, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
               wgpu::TextureViewDimension::e2D);
     b.sampler(2, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.buffer(3, wgpu::ShaderStage::Vertex, wgpu::BufferBindingType::ReadOnlyStorage, false, 64);
     return b.build(device, "eve_shadow");
 }
 
@@ -532,6 +534,7 @@ wgpu::BindGroupLayout Graphics::makeGbufferBindGroupLayout() {
               wgpu::TextureViewDimension::e2D);
     // 2: sampler
     b.sampler(2, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.buffer(3, wgpu::ShaderStage::Vertex, wgpu::BufferBindingType::ReadOnlyStorage, false, 64);
     return b.build(device, "eve_gbuffer");
 }
 
@@ -2439,10 +2442,10 @@ wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *dept
     return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
 }
 
-wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                            GpuTexture *height, GpuTexture *depth, GpuTexture *sceneColor,
-                                            uint32_t frameUboOffset, uint32_t shadowUboOffset,
-                                            uint32_t pushUboOffset) {
+wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture* albedo, GpuTexture* normal, GpuTexture* env, GpuTexture* height,
+                                            GpuTexture* depth, GpuTexture* sceneColor, uint32_t frameUboOffset,
+                                            uint32_t shadowUboOffset, uint32_t pushUboOffset,
+                                            const wgpu::Buffer& skinBuffer) {
     GpuTexture *a = albedo ? albedo : whiteTexture;
     GpuTexture *n = normal ? normal : flatNormalTexture;
     GpuTexture *e = env ? env : defaultEnvCubemap;
@@ -2484,12 +2487,13 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
                          reinterpret_cast<uintptr_t>(decalParamsView.Get()),
                          reinterpret_cast<uintptr_t>(probe0->view.Get()),
                          reinterpret_cast<uintptr_t>(probe1->view.Get()),
-                         reinterpret_cast<uintptr_t>(c->view.Get())};
+                         reinterpret_cast<uintptr_t>(c->view.Get()),
+                         reinterpret_cast<uintptr_t>(skinBuffer.Get())};
     auto cached = meshBindGroupCache_.find(key);
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[20]{};
+    WGPUBindGroupEntry entries[21]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -2538,13 +2542,16 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[19].binding = 19;
     entries[19].sampler = c->sampler.Get();
 
+    entries[20].binding = 21;
+    entries[20].buffer  = skinBuffer.Get();
+    entries[20].size    = skinBuffer.GetSize();
     (void)frameUboOffset;
     (void)shadowUboOffset;
     (void)pushUboOffset;
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 20;
+    desc.entryCount = 21;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -4438,15 +4445,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
         }
         ubo.lightColor.w = mesh3dEnvIntensity;
-        if (d.mesh && d.mesh->hasGpuSkinning()) {
-            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-            ubo.skinInfo.x = static_cast<float>(count);
-            const auto &palette = d.mesh->skinPalette();
-            for (int i = 0; i < count; ++i) {
-                std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u,
-                            sizeof(glm::mat4));
-            }
-        }
+        if (d.mesh && d.mesh->hasGpuSkinning()) ubo.skinInfo.x = static_cast<float>(d.mesh->getSkinPaletteCount());
+        d.skinBuffer = uploadSkinPalette(d.mesh);
         // X-ray params travel through the Frame UBO (no extra binding). Packed
         // in bindMeshUniforms("xray") order: colorR..G..B, bias, screenW, screenH,
         // rimPower, rimStrength, alpha.
@@ -4490,10 +4490,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             }
         }
         if (!pipe) pipe = getMesh3DPipeline(blend, depthWrite, d.doubleSided, canvasTarget);
-        const bool useClustered = !canvasTarget && !customShader && !d.doubleSided &&
-                                  mesh3dClusteredActive &&
-                                  d.surfaceMode != SurfaceMode::Transparent &&
-                                  mesh3dClusteredPipeline && d.clusteredUboOffset;
+        const bool useClustered = !canvasTarget && !customShader && !d.doubleSided && mesh3dClusteredActive &&
+                                  d.surfaceMode != SurfaceMode::Transparent && mesh3dClusteredPipeline &&
+                                  d.clusteredUboOffset && !d.mesh->hasGpuSkinning();
         if (useClustered) pipe = mesh3dClusteredPipeline;
         if (!pipe) continue;
         pass.SetPipeline(pipe);
@@ -4520,8 +4519,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             offsets[1] = d.shadowUboOffset;
             pass.SetBindGroup(0, bg, 2, offsets);
         } else {
-            bg = makeMeshBindGroup(albedo, normal, env, height, depth, sceneColor,
-                                   d.frameUboOffset, d.shadowUboOffset, d.pushUboOffset);
+            bg = makeMeshBindGroup(albedo, normal, env, height, depth, sceneColor, d.frameUboOffset, d.shadowUboOffset,
+                                   d.pushUboOffset, d.skinBuffer);
             offsets[0] = d.frameUboOffset;
             offsets[1] = d.shadowUboOffset;
             offsets[2] = d.pushUboOffset;
@@ -4548,7 +4547,7 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto &uboArena = currentUboArena();
     if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
-    ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 8448);
+    ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto &d : shadowCascadeDraws[cascade]) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
@@ -4557,17 +4556,13 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
 
         SkinPassUBO ubo;
         ubo.mvp = d.mvp;
-        if (d.mesh->hasGpuSkinning()) {
-            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-            ubo.skinInfo.x = static_cast<float>(count);
-            const auto &palette = d.mesh->skinPalette();
-            std::memcpy(ubo.skinBones, palette.data(), static_cast<size_t>(count) * sizeof(glm::mat4));
-        }
+        if (d.mesh->hasGpuSkinning()) ubo.skinInfo.x = static_cast<float>(d.mesh->getSkinPaletteCount());
+        const auto skinBuffer = uploadSkinPalette(d.mesh);
         uint32_t offset = uboArena.alloc(sizeof(SkinPassUBO), 256);
         queue.WriteBuffer(uboArena.buffer, offset, &ubo, sizeof(ubo));
 
         GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
-        WGPUBindGroupEntry entries[3]{};
+        WGPUBindGroupEntry entries[4]{};
         entries[0].binding = 0;
         entries[0].buffer = uboArena.buffer.Get();
         entries[0].size = sizeof(SkinPassUBO);
@@ -4575,9 +4570,12 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
         entries[1].textureView = albedo->view.Get();
         entries[2].binding = 2;
         entries[2].sampler = albedo->sampler.Get();
+        entries[3].binding     = 3;
+        entries[3].buffer      = skinBuffer.Get();
+        entries[3].size        = skinBuffer.GetSize();
         WGPUBindGroupDescriptor bgd{};
         bgd.layout = shadowSetLayout.Get();
-        bgd.entryCount = 3;
+        bgd.entryCount     = 4;
         bgd.entries = entries;
         wgpu::BindGroup bg = device.CreateBindGroup(
             reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
@@ -4605,7 +4603,7 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
     if (gbufferPassDraws.empty() || gbufferSlots.empty()) return;
     if (!mesh3dGbufferPipeline) createGbufferPipelines();
     auto &uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 8448);
+    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 256);
     for (auto &d : gbufferPassDraws) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
@@ -4629,18 +4627,14 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         };
         const uint32_t packedMotion = motion12(d.motion.x) | (motion12(d.motion.y) << 12);
         ubo.clip = glm::vec4(d.nearZ, d.farZ, float(packedTint), float(packedMotion));
-        if (d.mesh->hasGpuSkinning()) {
-            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-            ubo.skinInfo.x = static_cast<float>(count);
-            const auto &palette = d.mesh->skinPalette();
-            std::memcpy(ubo.skinBones, palette.data(), static_cast<size_t>(count) * sizeof(glm::mat4));
-        }
+        if (d.mesh->hasGpuSkinning()) ubo.skinInfo.x = static_cast<float>(d.mesh->getSkinPaletteCount());
+        const auto skinBuffer = uploadSkinPalette(d.mesh);
 
         uint32_t offset = uboArena.alloc(sizeof(SkinPassUBO), 256);
         queue.WriteBuffer(uboArena.buffer, offset, &ubo, sizeof(ubo));
 
         GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
-        WGPUBindGroupEntry entries[3]{};
+        WGPUBindGroupEntry entries[4]{};
         entries[0].binding = 0;
         entries[0].buffer = uboArena.buffer.Get();
         entries[0].size = sizeof(SkinPassUBO);
@@ -4648,9 +4642,12 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         entries[1].textureView = albedo->view.Get();
         entries[2].binding = 2;
         entries[2].sampler = albedo->sampler.Get();
+        entries[3].binding     = 3;
+        entries[3].buffer      = skinBuffer.Get();
+        entries[3].size        = skinBuffer.GetSize();
         WGPUBindGroupDescriptor bgd{};
         bgd.layout = gbufferSetLayout.Get();
-        bgd.entryCount = 3;
+        bgd.entryCount             = 4;
         bgd.entries = entries;
         wgpu::BindGroup bg = device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&bgd));
         uint32_t offsets[1] = {offset};

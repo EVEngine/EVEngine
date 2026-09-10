@@ -97,3 +97,46 @@ TEST_CASE("asset.migration.sceneV1PreservesUnknownFieldsAndAddsEmptyRenderers") 
     auto rejected = migrateEvaArchive(original);
     REQUIRE(!rejected.ok());
 }
+
+TEST_CASE("asset.migration.materialV1PreservesFieldsAndAdvancesVersion") {
+    auto original                         = legacyImage();
+    original.manifest.assets.front().type = "eve.material";
+    const std::string text = R"({"schema":"eve.material","schemaVersion":1,"metallic":0.4,"vendorExtension":42})";
+    original.entries.front().bytes.assign(text.begin(), text.end());
+    const auto ref = original.manifest.assets.front().asset;
+    original.manifest.dependencies.push_back(
+        {ref, ref, EvaDependencyKind::Editor, "test-schema", {}, "eve.material/1"});
+    auto migrated = migrateEvaArchive(original);
+    REQUIRE(migrated.ok());
+    REQUIRE_EQ(migrated.value().manifest.dependencies.front().expectedType, std::string("eve.material/2"));
+    REQUIRE_EQ(migrated.value().manifest.assets.front().schemaVersion, SchemaVersion(2));
+    auto decoded = Value::fromJson(
+        std::string(migrated.value().entries.front().bytes.begin(), migrated.value().entries.front().bytes.end()));
+    REQUIRE(decoded.ok());
+    const auto& object = *decoded.value().getIf<Value::Object>();
+    REQUIRE_EQ(object.at("metallic").asDouble(), 0.4);
+    REQUIRE_EQ(object.at("vendorExtension").asInt(), int64_t(42));
+    REQUIRE_EQ(object.at("schemaVersion").asInt(), int64_t(2));
+    REQUIRE_EQ(original.entries.front().bytes, std::vector<uint8_t>(text.begin(), text.end()));
+}
+TEST_CASE("asset.migration.meshV1PreservesIdentityAndUvMetadata") {
+    auto original                         = legacyImage();
+    original.manifest.assets.front().type = "eve.mesh";
+    const std::string text = R"({"schema":"eve.mesh","schemaVersion":1,"texcoord0":true,"vendorExtension":42})";
+    original.entries.front().bytes.assign(text.begin(), text.end());
+    const auto ref = original.manifest.assets.front().asset;
+    original.manifest.dependencies.push_back({ref, ref, EvaDependencyKind::Editor, "mesh", {}, "eve.mesh/1"});
+    auto migrated = migrateEvaArchive(original);
+    REQUIRE(migrated.ok());
+    REQUIRE_EQ(migrated.value().manifest.assets.front().asset, ref);
+    REQUIRE_EQ(migrated.value().manifest.assets.front().schemaVersion, SchemaVersion(2));
+    REQUIRE_EQ(migrated.value().manifest.dependencies.front().expectedType, std::string("eve.mesh/2"));
+    auto value = Value::fromJson(
+        std::string(migrated.value().entries.front().bytes.begin(), migrated.value().entries.front().bytes.end()));
+    REQUIRE(value.ok());
+    const auto& object = *value.value().getIf<Value::Object>();
+    REQUIRE(!object.contains("texcoord0"));
+    REQUIRE_EQ(object.at("texcoordSets").getIf<Value::Array>()->at(0).asInt(), int64_t(0));
+    REQUIRE_EQ(object.at("vendorExtension").asInt(), int64_t(42));
+    REQUIRE_EQ(original.entries.front().bytes, std::vector<uint8_t>(text.begin(), text.end()));
+}

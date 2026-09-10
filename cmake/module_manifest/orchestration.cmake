@@ -93,6 +93,10 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
+eve_declare_module(NAME agent_tensor DIR agent/tensor LAYER 6
+                   SCRIPT AgentTensor SLOT agentTensor
+                     DEPS agent tensor gpgpu
+                   GROUP 3d web)
 eve_declare_module(NAME sceneloader_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS sceneloader

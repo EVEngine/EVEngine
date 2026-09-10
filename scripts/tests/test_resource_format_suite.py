@@ -53,7 +53,7 @@ class ResourceSuiteTests(unittest.TestCase):
             root = Path(directory)
             (root / "case.py").write_text(script)
             (root / "CTestTestfile.cmake").write_text(
-                f'add_test(example "{sys.executable}" "{root / "case.py"}")\n' + properties)
+                f'add_test(example "{Path(sys.executable).as_posix()}" "{(root / "case.py").as_posix()}")\n' + properties)
             return suite.run_cases(root, ["example"])
 
     def test_real_ctest_success_has_per_case_evidence(self):
@@ -91,6 +91,17 @@ class ResourceSuiteTests(unittest.TestCase):
                 "sha256": {"pattern.png": "0" * 64}}))
             (fixtures / "pattern.png").write_bytes(b"modified bytes")
             self.assertEqual(suite.fixture_errors(root), ["pattern.png"])
+
+    def test_vrm_routing_has_real_import_contract(self):
+        groups = suite.inventory()
+        self.assertIn('.vrm', groups['model']['advertised_resource_extensions'])
+        self.assertEqual(groups['model']['tests']['avatar.vrm.importMorphGazeSpringAndRollback'],
+                         'test/avatar_vrm_vulkan.cpp')
+        rows = suite.format_coverage(groups, [])
+        vrm = next(row for row in rows if row['id'] == 'model.vrm')
+        self.assertEqual(vrm['importTests'], ['avatar.vrm.importMorphGazeSpringAndRollback'])
+        self.assertEqual(vrm['importStatus'], 'not-run')
+        self.assertEqual(vrm['exportStatus'], 'coverage-missing')
 
     def test_extensions_include_uncovered_routing(self):
         self.assertIn(".dae", suite.inventory()["model"]["advertised_resource_extensions"])

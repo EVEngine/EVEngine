@@ -64,6 +64,35 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from,
         return migrationFailure<Value>(DiagnosticCode::Unsupported,
                                        "asset definition is older than the N-1 compatibility window",
                                        std::string(type));
+    if (type == "eve.mesh" && from.value() == 1 && current.value() == 2) {
+        const auto* object = definition.getIf<Value::Object>();
+        if (!object || !object->contains("schema") || !object->at("schema").isString() ||
+            object->at("schema").asString() != "eve.mesh" || !object->contains("schemaVersion") ||
+            !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 1 ||
+            object->contains("texcoordSets"))
+            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/1 is malformed");
+        auto migrated = *object;
+        if (auto uv = migrated.find("texcoord0"); uv != migrated.end()) {
+            if (!uv->second.isBool())
+                return migrationFailure<Value>(DiagnosticCode::ParseError, "invalid legacy UV metadata");
+            Value::Array sets;
+            if (uv->second.asBool()) sets.emplace_back(int64_t(0));
+            migrated.erase(uv);
+            migrated["texcoordSets"] = Value(std::move(sets));
+        }
+        migrated["schemaVersion"] = Value(int64_t(2));
+        return Result<Value>::success(Value(std::move(migrated)));
+    }
+    if (type == "eve.material" && from.value() == 1 && current.value() == 2) {
+        const auto* object = definition.getIf<Value::Object>();
+        if (!object || !object->contains("schema") || !object->at("schema").isString() ||
+            object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
+            !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 1)
+            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.material/1 is malformed");
+        auto migrated             = *object;
+        migrated["schemaVersion"] = Value(int64_t(2));
+        return Result<Value>::success(Value(std::move(migrated)));
+    }
     if (type == "eve.image" && from.value() == 1 && current.value() == 2)
         return migrateImageV1ToV2(definition);
     if (type == "eve.scene-template" && from.value() == 1 && current.value() == 2) {
@@ -129,10 +158,11 @@ Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
     static const std::map<std::string_view, std::uint64_t> versions = {
         {"eve.image", 2},
         {"eve.texture", 1},
-        {"eve.mesh", 1},
+        {"eve.mesh", 2},
         {"eve.skeleton", 1},
         {"eve.animation-clip", 1},
-        {"eve.material", 1},
+        {"eve.skin", 1},
+        {"eve.material", 2},
         {"eve.scene-template", 2},
         {"eve.terrain", 1},
         {"eve.terrain-material", 1},
@@ -173,6 +203,13 @@ Result<EvaArchive> migrateEvaArchive(EvaArchive source, const EvaArchiveLimits& 
         auto encoded = migrated.value().toJson();
         if (!encoded) return Result<EvaArchive>::failure(encoded.status());
         entry->bytes.assign(encoded.value().begin(), encoded.value().end());
+        if (asset.schemaVersion != current.value()) {
+            const std::string oldType = asset.type + "/" + std::to_string(asset.schemaVersion.value());
+            const std::string newType = asset.type + "/" + std::to_string(current.value().value());
+            for (auto& dependency : source.manifest.dependencies)
+                if (dependency.to.id() == asset.asset.id() && dependency.expectedType == oldType)
+                    dependency.expectedType = newType;
+        }
         asset.schemaVersion = current.value();
         asset.contentHash = sha256(entry->bytes);
     }

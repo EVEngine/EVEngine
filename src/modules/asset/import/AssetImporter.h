@@ -45,6 +45,9 @@ struct ImageImportRequest {
     AssetImportLimits            limits;
 };
 
+/** @brief Strict rejects invalid material factors; permissive clamps finite factors with warnings. */
+enum class GltfImportMode : std::uint8_t { Permissive, Strict };
+
 /** @brief Untrusted `.gltf`/`.glb` input plus explicitly supplied external URI bytes. */
 struct GltfImportRequest {
     ImportPackageIdentity                         package;
@@ -52,6 +55,7 @@ struct GltfImportRequest {
     std::vector<std::uint8_t>                     documentBytes;
     std::map<std::string, std::vector<std::uint8_t>> externalResources;
     AssetImportLimits                             limits;
+    GltfImportMode                                   mode = GltfImportMode::Permissive;
 };
 
 /** @brief Import disposition required for every encountered source feature. */
@@ -62,12 +66,16 @@ enum class ImportDisposition : std::uint8_t {
     Unsupported,
 };
 
+/** @brief Severity of an importer finding, independent of its conversion disposition. */
+enum class ImportSeverity : std::uint8_t { Info, Warning };
+
 /** @brief One auditable source-feature outcome emitted by an importer. */
 struct ImportFinding {
     std::string       sourcePath;
     std::string       feature;
     ImportDisposition disposition = ImportDisposition::Translated;
     std::string       message;
+    ImportSeverity    severity = ImportSeverity::Info;
 };
 
 /** @brief Stable source object to canonical asset identity mapping for reimport diagnostics. */
@@ -94,11 +102,17 @@ struct PreparedAssetImport {
 
 /**
  * @brief Decode triangle primitives from glTF 2.0 into canonical typed mesh blobs.
- * @return Owning candidate with one `eve.mesh` per primitive.
+ * @return Owning candidate with meshes and, when present, PBR materials/images, skeleton, skin bindings and clips.
  * @thread Worker-safe.
  * @reentrancy Does not execute extensions, scripts, callbacks, filesystem or network access.
  * @remarks v1 accepts float POSITION/NORMAL/TEXCOORD_0 and unsigned scalar indices;
- * unsupported primitive modes or sparse/compressed accessors fail explicitly.
+ * Unsupported primitive modes, sparse/compressed accessors, matrix skeletal nodes,
+ * non-LINEAR skeletal channels and
+ * morph animation fail explicitly. All contiguous
+ * weight sets (FLOAT or normalized unsigned bytes/shorts) are
+ * retained. Skeletal data stays in glTF metre/right-handed
+ * coordinates; ancestor nodes are retained in
+ * parent-before-child order.
  */
 [[nodiscard]] Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request);
 

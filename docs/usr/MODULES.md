@@ -11,6 +11,7 @@
 
 ## 运行环境与输入
 
+- [Agent](modules/agent.md)：通用策略学习、动作决策、tensor 推理、Squirrel 接口与轨迹回放。
 - [窗口](modules/window.md)：创建和配置单一游戏窗口。
 - [事件](modules/event.md)：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
 - [响应式编程](modules/rx.md)：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。
