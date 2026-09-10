@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include <bit>
 
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
@@ -14,6 +15,7 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/algorithms/CastleMesh.h"
@@ -261,7 +263,7 @@ bool neighborsOk(int a, int b, const std::set<std::pair<int, int>> &allowed) {
 }
 
 bool terrainAdjacencyOk(const Grid2D &g) {
-    // Ordered elevation band: only self + ±1 neighbors.
+    // Ordered elevation band: only self + 卤1 neighbors.
     static const int band[] = {int(Semantic::Water), int(Semantic::Sand),  int(Semantic::Grass),
                                int(Semantic::Dirt),  int(Semantic::Stone), int(Semantic::Snow)};
     std::set<std::pair<int, int>> allowed;
@@ -2026,7 +2028,7 @@ TEST_CASE("procgen.mesh.marchingcubes.sphere") {
     CHECK(meshNormalsFiniteUnit(mesh));
     // Closed sphere should have non-trivial volume.
     CHECK(std::fabs(meshApproxSignedVolume(mesh)) > 0.05f);
-    // Same seed ⇒ same mesh.
+    // Same seed 鈬?same mesh.
     MeshBuild mesh2;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh2, err));
     CHECK_EQ(mesh.getVertexCount(), mesh2.getVertexCount());
@@ -2218,11 +2220,11 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
         return float(sum / double(w * h));
     };
 
-    // No clouds → fully lit (baseline).
+    // No clouds 鈫?fully lit (baseline).
     gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
     const float lit = meanLuma();
 
-    // Dense, strong clouds → ground visibly darker.
+    // Dense, strong clouds 鈫?ground visibly darker.
     gfx->setCloudShadows(0.9f, 2.0f, 1.5f, 4.f, 0.f, 0.5f, 0.5f);
     const float cloudy = meanLuma();
 
@@ -2232,7 +2234,7 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     std::printf("cloud shadows render: lit=%.3f cloudy=%.3f litAgain=%.3f\n", lit, cloudy, litAgain);
     CHECK_GT(lit, 10.f);            // baseline is lit
     CHECK(cloudy < lit * 0.85f);    // clouds meaningfully darken the ground
-    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again → back to baseline
+    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again 鈫?back to baseline
     win->close();
 }
 
@@ -2465,7 +2467,7 @@ TEST_CASE("procgen.mesh.marchingcubes.noiseReproducibleAndVaries") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.rawDensityPlane") {
-    // Density = y - 0.5 on a 4³ grid → horizontal plane at mid height.
+    // Density = y - 0.5 on a 4鲁 grid 鈫?horizontal plane at mid height.
     const int n = 4;
     std::vector<float> density(size_t(n * n * n));
     for (int z = 0; z < n; ++z) {
@@ -2584,7 +2586,7 @@ TEST_CASE("procgen.mesh.marchingcubes.isolevelAffectsMesh") {
     std::string err;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", lo, a, err));
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", hi, b, err));
-    // Higher isolevel shrinks solid region → fewer / different triangles.
+    // Higher isolevel shrinks solid region 鈫?fewer / different triangles.
     const bool differs =
         a.getVertexCount() != b.getVertexCount() || a.positions() != b.positions();
     CHECK(differs);
@@ -2889,7 +2891,7 @@ TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
     p.worldScale = 64.f;
     p.coverage = 0.5f;
     CloudField a(p), b(p);
-    // Deterministic: same seed → same coverage at the same point/time.
+    // Deterministic: same seed 鈫?same coverage at the same point/time.
     CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), b.coverageAt(3.f, 4.f, 0.f), 1e-5f));
     // Animated: different time drifts the field (for a non-zero wind speed).
     const float t0 = a.coverageAt(3.f, 4.f, 0.f);
@@ -2906,7 +2908,7 @@ TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
         CHECK(c >= 0.f);
         CHECK(c <= 1.f);
     }
-    // Different seed → different field.
+    // Different seed 鈫?different field.
     CloudField::Params q = p;
     q.seed = 100;
     CloudField c(q);
@@ -2924,7 +2926,7 @@ TEST_CASE("procgen.cloud.field.windDriftsInDirection") {
     const float base = f.coverageAt(0.f, 0.f, 0.f);
     const float dt = 1.f;
     CHECK(approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 0.f, 1.f), 1e-2f));
-    // Perpendicular axis is unchanged at that same world offset check fails → drift is 1D.
+    // Perpendicular axis is unchanged at that same world offset check fails 鈫?drift is 1D.
     CHECK(!approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 5.f, 1.f), 1e-2f));
 }
 
@@ -2971,7 +2973,7 @@ TEST_CASE("procgen.cloud.shadow.projection") {
     }
     CHECK(maxF > 0.9f);               // some fully-lit ground
     CHECK(minF < 1.f);                // some coverage darkens ground
-    // Sun below horizon → no cloud shadows.
+    // Sun below horizon 鈫?no cloud shadows.
     sp.sunDirY = -1.f;
     CloudShadow below(sp);
     CHECK_EQ(below.coverageAt(px, pz, 0.f), 0.f);
@@ -3400,7 +3402,7 @@ TEST_CASE("procgen.mesh.linearStructure.segmentsScaleVertexCount") {
     std::string err;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", lo, a, err));
     CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", hi, b, err));
-    // Linear repetition of one unit ⇒ vertex count grows linearly with segments.
+    // Linear repetition of one unit 鈬?vertex count grows linearly with segments.
     CHECK_EQ(3 * a.getVertexCount(), b.getVertexCount());
 }
 
@@ -3788,7 +3790,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     // Blue-ish sky cubemap so reflection is visible.
     [[maybe_unused]] auto *const imageModule        = eve::image::Image::create();
     const int fs = 4;
-    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
+    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces 脳 4脳4 脳 RGBA
     for (int f = 0; f < 6; ++f)
         for (int i = 0; i < fs * fs; ++i) {
             const size_t o = size_t(f) * fs * fs * 4 + size_t(i) * 4;
@@ -3880,7 +3882,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     win->close();
 }
 
-/** Build a unit cube ([-0.5,0.5]³) with per-face UVs in [0,1]². */
+/** Build a unit cube ([-0.5,0.5]鲁) with per-face UVs in [0,1]虏. */
 static Mesh *makeUnitCube(Graphics *gfx) {
     std::vector<float> pos, nrm, uv;
     std::vector<uint32_t> idx;
@@ -3963,7 +3965,7 @@ TEST_CASE("graphics.water.render.plane") {
                     const float ny = dy / len;
                     // t=1 at zenith, t=0 near/below horizon.
                     const float t = std::pow(std::clamp(ny * 0.5f + 0.5f, 0.f, 1.f), 1.5f);
-                    // Pale blue horizon → deep blue zenith.
+                    // Pale blue horizon 鈫?deep blue zenith.
                     const float cr = 0.72f + (0.12f - 0.72f) * t;
                     const float cg = 0.80f + (0.32f - 0.80f) * t;
                     const float cb = 0.90f + (0.72f - 0.90f) * t;
@@ -4442,4 +4444,95 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
     REQUIRE(saveImagePng(*img, outPath));
     std::printf("planar water render saved: %s\n", outPath);
     win->close();
+}
+
+TEST_CASE("procgen.terrain.file.decodeEvtrAndEvtrn") {
+    // EVTR: chunked archive, UNORM16-quantized heights, no metres-per-cell.
+    Heightmap heightmap(19, 13);
+    for (int y = 0; y < heightmap.getHeight(); ++y)
+        for (int x = 0; x < heightmap.getWidth(); ++x)
+            heightmap.setHeight(x, y, 10.f + float(x) * 0.25f + float(y) * 0.5f);
+    const HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 5.f, 10.f);
+    const ClimateMap   climate   = TerrainPipeline::buildClimate(heightmap, hydrology, 10.f, 0.6f);
+    std::vector<uint8_t> evtr;
+    std::string          error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, evtr, &error));
+
+    auto decodedEvtr = decodeTerrainFile(std::span<const std::uint8_t>(evtr.data(), evtr.size()),
+                                         TerrainFileFormat::Auto);
+    REQUIRE(decodedEvtr.ok());
+    const DecodedTerrainFile evtrTerrain = std::move(decodedEvtr).takeValue();
+    CHECK_EQ(evtrTerrain.format, std::string("evtr"));
+    CHECK_EQ(evtrTerrain.heightmap.getWidth(), 19);
+    CHECK_EQ(evtrTerrain.heightmap.getHeight(), 13);
+    // An EVTR archive carries no cell size, so the level owns the spacing.
+    CHECK(!evtrTerrain.hasSpacing);
+    CHECK(std::abs(evtrTerrain.minHeight - 10.f) < 0.01f);
+    CHECK(std::abs(evtrTerrain.maxHeight - (10.f + 18 * 0.25f + 12 * 0.5f)) < 0.01f);
+    // Quantization is UNORM16 over the archive range, so allow one step.
+    for (int y = 0; y < 13; y += 4)
+        for (int x = 0; x < 19; x += 3)
+            CHECK(std::abs(evtrTerrain.heightmap.height(x, y) - heightmap.height(x, y)) < 0.01f);
+
+    // EVTRN: raw float32 heightfield written by the asset importer.
+    auto putU32 = [](std::vector<uint8_t>& out, std::uint32_t value) {
+        for (unsigned shift = 0; shift != 32; shift += 8)
+            out.push_back(static_cast<std::uint8_t>(value >> shift));
+    };
+    auto putF32 = [&putU32](std::vector<uint8_t>& out, float value) {
+        putU32(out, std::bit_cast<std::uint32_t>(value));
+    };
+    constexpr int kWidth = 5, kHeight = 3;
+    std::vector<uint8_t> evtrn = {'E', 'V', 'T', 'R', 'N', 0, 1, 0};
+    putU32(evtrn, kWidth);
+    putU32(evtrn, kHeight);
+    putF32(evtrn, 2.5f);
+    putF32(evtrn, 4.0f);
+    for (int y = 0; y < kHeight; ++y)
+        for (int x = 0; x < kWidth; ++x) putF32(evtrn, float(x) - float(y) * 0.5f);
+
+    auto decodedEvtrn = decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()),
+                                          TerrainFileFormat::Auto);
+    REQUIRE(decodedEvtrn.ok());
+    const DecodedTerrainFile evtrnTerrain = std::move(decodedEvtrn).takeValue();
+    CHECK_EQ(evtrnTerrain.format, std::string("evtrn"));
+    CHECK(evtrnTerrain.hasSpacing);
+    CHECK_EQ(evtrnTerrain.spacingX, 2.5f);
+    CHECK_EQ(evtrnTerrain.spacingZ, 4.0f);
+    CHECK_EQ(evtrnTerrain.heightmap.getWidth(), kWidth);
+    CHECK_EQ(evtrnTerrain.heightmap.getHeight(), kHeight);
+    CHECK_EQ(evtrnTerrain.heightmap.height(4, 2), 3.f);
+    CHECK_EQ(evtrnTerrain.heightmap.height(0, 2), -1.f);
+    CHECK_EQ(evtrnTerrain.minHeight, -1.f);
+    CHECK_EQ(evtrnTerrain.maxHeight, 4.f);
+
+    // A caller that names the format still gets the magic checked.
+    auto mismatched = decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()),
+                                        TerrainFileFormat::Evtr);
+    CHECK(!mismatched.ok());
+    const eve::Diagnostic* mismatchDiagnostic = mismatched.status().primaryDiagnostic();
+    REQUIRE(mismatchDiagnostic != nullptr);
+    CHECK_EQ(int(mismatchDiagnostic->code()), int(eve::DiagnosticCode::ParseError));
+
+    // Unknown magic, truncated payload, and a size/dimension mismatch all fail
+    // rather than returning a partially filled grid.
+    std::vector<uint8_t> unknown = evtrn;
+    unknown[0] = 'X';
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(unknown.data(), unknown.size()),
+                             TerrainFileFormat::Auto)
+               .ok());
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size() - 4),
+                             TerrainFileFormat::Evtrn)
+               .ok());
+    std::vector<uint8_t> wrongCount = evtrn;
+    wrongCount[8] = 9;  // claims nine columns for a payload holding five
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(wrongCount.data(), wrongCount.size()),
+                             TerrainFileFormat::Evtrn)
+               .ok());
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(), TerrainFileFormat::Auto).ok());
+
+    CHECK_EQ(int(parseTerrainFileFormat("EVTRN")), int(TerrainFileFormat::Evtrn));
+    CHECK_EQ(int(parseTerrainFileFormat("evtr")), int(TerrainFileFormat::Evtr));
+    CHECK_EQ(int(parseTerrainFileFormat("")), int(TerrainFileFormat::Auto));
+    CHECK_EQ(int(parseTerrainFileFormat("nonsense")), int(TerrainFileFormat::Auto));
 }
