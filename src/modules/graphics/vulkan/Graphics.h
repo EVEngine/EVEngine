@@ -7,6 +7,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <map>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -18,6 +19,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
@@ -175,7 +177,6 @@ struct Mesh3DUBO {
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
@@ -185,9 +186,8 @@ struct SkinPassUBO {
     glm::mat4 model{1.f};
     glm::vec4 clip{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(SkinPassUBO) == 8352, "SkinPassUBO must match std140 shaders");
+static_assert(sizeof(SkinPassUBO) == 160, "SkinPassUBO must match std140 shaders");
 
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};
@@ -555,6 +555,7 @@ public:
     void              setMesh3DSceneColor(Texture *color) override;
     [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void              setMesh3DMaterial(float metallic, float roughness) override;
+    [[nodiscard]] Result<void>                  setMesh3DPbrSurface(const PbrSurface* surface) override;
     void              setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                                        bool doubleSided, float alphaCutoff,
                                        const std::string &alphaTechnique = "cutoff") override;
@@ -691,6 +692,12 @@ private:
     void          destroyGpuParticleResources();
     void          recordGpuParticleCompute(vk::CommandBuffer cb);
     void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
+    struct PbrResources;
+    static void                                            deletePbrResources(PbrResources* resources);
+    std::unique_ptr<PbrResources, void (*)(PbrResources*)> pbrResources_{nullptr, &deletePbrResources};
+    std::optional<PbrSurface>                              pbrSurface_;
+    void                                                   destroyPbrResources();
+    void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -737,6 +744,7 @@ private:
     void          uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void          ensureMesh3dStrides();
     void          ensureMesh3dRing(Mesh3dFrameSlots &fslots);
+    size_t                  uploadSkinPalette(Mesh* mesh, Mesh3dFrameSlots& fslots);
     vk::DescriptorSet skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots);
     bool prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
                          const glm::mat4 &model, const glm::vec4 &clip,
@@ -957,25 +965,23 @@ private:
         GpuTexture *decalAlbedo = nullptr;
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
+        size_t      paletteSlot      = 0;
         bool operator==(const Mesh3dSetKey &o) const {
-            return albedo == o.albedo && normal == o.normal && env == o.env &&
-                   reflectionProbe0 == o.reflectionProbe0 &&
-                   reflectionProbe1 == o.reflectionProbe1 && height == o.height &&
-                   depth == o.depth && sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo &&
-                   decalNormal == o.decalNormal && decalParams == o.decalParams;
+            return albedo == o.albedo && normal == o.normal && env == o.env && reflectionProbe0 == o.reflectionProbe0 &&
+                   reflectionProbe1 == o.reflectionProbe1 && height == o.height && depth == o.depth &&
+                   sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo && decalNormal == o.decalNormal &&
+                   decalParams == o.decalParams && paletteSlot == o.paletteSlot;
         }
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^
-                   (std::hash<GpuTexture *>()(k.depth) << 4) ^
-                   (std::hash<GpuTexture *>()(k.sceneColor) << 10) ^
-                   (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
-                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^
-                   (std::hash<GpuTexture *>()(k.decalParams) << 7);
+            return std::hash<GpuTexture*>()(k.albedo) ^ (std::hash<GpuTexture*>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture*>()(k.env) << 2) ^ (std::hash<GpuTexture*>()(k.height) << 3) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe0) << 8) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture*>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture*>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture*>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture*>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture*>()(k.decalParams) << 7) ^
+                   k.paletteSlot;
         }
     };
     // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
@@ -991,7 +997,9 @@ private:
         size_t             drawIndex     = 0;
         size_t             lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
-        std::unordered_map<GpuTexture *, vkb::BoundSet> skinSets;
+        std::map<std::pair<size_t, GpuTexture*>, vkb::BoundSet>           skinSets;
+        std::vector<vkb::GenericBuffer>                                   palettes;
+        size_t                                                            activePalette = 0;
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;

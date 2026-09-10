@@ -1,4 +1,5 @@
 #include "graphics/RenderSystem3D.h"
+#include "common/Exception.h"
 #include "common/RenderTrace.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -1112,11 +1113,14 @@ void RenderSystem3D::render(Graphics &gfx) {
         Color    tint(mr->r, mr->g, mr->b, mr->a);
         Shader  *shader = mr->shader;
         if (mat) {
-            mat->bind(gfx);
+            auto bound = mat->bind(gfx);
+            if (!bound) throw Exception("%s", bound.error()->message().c_str());
             albedo = mat->getAlbedoTexture();
             tint   = Color(mat->getTintR(), mat->getTintG(), mat->getTintB(), mat->getTintA());
             shader = mat->effectiveShader();
         } else {
+            auto reset = gfx.setMesh3DPbrSurface(nullptr);
+            if (!reset) throw Exception("%s", reset.error()->message().c_str());
             bindLegacyMaterial(mr);
         }
 
@@ -1191,9 +1195,8 @@ void RenderSystem3D::render(Graphics &gfx) {
         if (gpuDrivenWanted && !useClustered && defaultCam && !opaque.empty()) {
             bool eligible = true;
             for (const CulledItem *it : opaque) {
-                if (it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
-                    it->material->effectiveShader() != nullptr ||
-                    !gfx.gpuDrivenMaterialUsable(it->material)) {
+                if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
+                    it->material->effectiveShader() != nullptr || !gfx.gpuDrivenMaterialUsable(it->material)) {
                     eligible = false;
                     break;
                 }
@@ -1650,7 +1653,8 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
                 lightingEnabled = lit;
             }
             if (item.material) {
-                item.material->bind(gfx);
+                auto bound = item.material->bind(gfx);
+                if (!bound) throw Exception("%s", bound.error()->message().c_str());
                 albedo = item.material->getAlbedoTexture();
                 tint = Color(item.material->getTintR(), item.material->getTintG(),
                              item.material->getTintB(), item.material->getTintA());

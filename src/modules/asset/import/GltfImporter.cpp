@@ -1,8 +1,12 @@
 #include "asset/import/AssetImporter.h"
 
+#include "asset/import/GltfAnimation.h"
+#include "asset/import/GltfDecode.h"
+#include "asset/import/GltfMaterials.h"
 #include "asset/import/ImportCommon.h"
 
 #include <bit>
+#include <charconv>
 #include <cmath>
 #include <cstring>
 #include <limits>
@@ -10,235 +14,26 @@
 namespace eve::asset_import {
 namespace {
 
-const Value* member(const Value::Object& object, std::string_view name) {
-    const auto found = object.find(std::string(name));
-    return found == object.end() ? nullptr : &found->second;
-}
-
-Result<std::uint64_t> unsignedValue(const Value* value, std::string path, bool required = true,
-                                    std::uint64_t fallback = 0) {
-    if (!value && !required) return Result<std::uint64_t>::success(fallback);
-    if (!value || !value->isInt64() || value->asInt() < 0)
-        return detail::failure<std::uint64_t>(DiagnosticCode::ParseError,
-                                              "glTF field must be a non-negative integer", std::move(path));
-    return Result<std::uint64_t>::success(static_cast<std::uint64_t>(value->asInt()));
-}
-
-std::uint32_t little32(std::span<const std::uint8_t> bytes, std::size_t offset) {
-    return std::uint32_t(bytes[offset]) | (std::uint32_t(bytes[offset + 1]) << 8) |
-           (std::uint32_t(bytes[offset + 2]) << 16) | (std::uint32_t(bytes[offset + 3]) << 24);
-}
-
-void put32(std::vector<std::uint8_t>& bytes, std::uint32_t value) {
-    for (unsigned shift = 0; shift != 32; shift += 8) bytes.push_back(static_cast<std::uint8_t>(value >> shift));
-}
-
-void putFloat(std::vector<std::uint8_t>& bytes, float value) { put32(bytes, std::bit_cast<std::uint32_t>(value)); }
-
-struct Document {
-    Value root;
-    std::vector<std::uint8_t> binaryChunk;
-};
-
-Result<Document> parseDocument(const GltfImportRequest& request) {
-    if (request.documentBytes.empty() || request.documentBytes.size() > request.limits.maximumSourceBytes)
-        return detail::failure<Document>(DiagnosticCode::InvalidArgument, "glTF document size is outside limits");
-    std::string json;
-    std::vector<std::uint8_t> binary;
-    const auto bytes = std::span<const std::uint8_t>(request.documentBytes);
-    if (bytes.size() >= 12 && little32(bytes, 0) == 0x46546c67) {
-        if (little32(bytes, 4) != 2 || little32(bytes, 8) != bytes.size() || bytes.size() < 20)
-            return detail::failure<Document>(DiagnosticCode::ParseError, "GLB header is invalid");
-        std::size_t cursor = 12;
-        const std::uint32_t jsonSize = little32(bytes, cursor);
-        const std::uint32_t jsonType = little32(bytes, cursor + 4);
-        cursor += 8;
-        if (jsonType != 0x4e4f534a || jsonSize > bytes.size() - cursor)
-            return detail::failure<Document>(DiagnosticCode::ParseError, "GLB JSON chunk is invalid");
-        json.assign(reinterpret_cast<const char*>(bytes.data() + cursor), jsonSize);
-        while (!json.empty() && (json.back() == ' ' || json.back() == '\0')) json.pop_back();
-        cursor += jsonSize;
-        if (cursor < bytes.size()) {
-            if (bytes.size() - cursor < 8)
-                return detail::failure<Document>(DiagnosticCode::ParseError, "GLB trailing chunk is truncated");
-            const std::uint32_t binarySize = little32(bytes, cursor);
-            const std::uint32_t binaryType = little32(bytes, cursor + 4);
-            cursor += 8;
-            if (binaryType != 0x004e4942 || binarySize > bytes.size() - cursor || cursor + binarySize != bytes.size())
-                return detail::failure<Document>(DiagnosticCode::ParseError, "GLB BIN chunk is invalid");
-            binary.assign(bytes.begin() + cursor, bytes.end());
-        }
-    } else {
-        json.assign(request.documentBytes.begin(), request.documentBytes.end());
-    }
-    auto parsed = Value::fromJson(json);
-    if (!parsed) return Result<Document>::failure(parsed.status());
-    return Result<Document>::success({std::move(parsed).takeValue(), std::move(binary)});
-}
-
-bool safeUri(std::string_view uri, const AssetImportLimits& limits) {
-    if (uri.empty() || uri.size() > limits.maximumStringBytes || uri.front() == '/' ||
-        uri.find('\\') != std::string_view::npos || uri.starts_with("data:") || uri.find(':') != std::string_view::npos)
-        return false;
-    std::size_t start = 0;
-    for (std::size_t index = 0; index <= uri.size(); ++index) {
-        if (index != uri.size() && uri[index] != '/') continue;
-        const auto segment = uri.substr(start, index - start);
-        if (segment.empty() || segment == "." || segment == "..") return false;
-        start = index + 1;
-    }
-    return true;
-}
-
-Result<std::vector<std::span<const std::uint8_t>>> resolveBuffers(
-    const Value::Object& root, const Document& document, const GltfImportRequest& request) {
-    const Value* buffersValue = member(root, "buffers");
-    const auto* buffers = buffersValue ? buffersValue->getIf<Value::Array>() : nullptr;
-    if (!buffers || buffers->empty())
-        return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::ParseError,
-                                                                          "glTF buffers are required", "$.buffers");
-    std::vector<std::span<const std::uint8_t>> result;
-    result.reserve(buffers->size());
-    std::uint64_t totalBytes = 0;
-    for (std::size_t index = 0; index < buffers->size(); ++index) {
-        const auto* object = (*buffers)[index].getIf<Value::Object>();
-        if (!object)
-            return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::ParseError,
-                                                                              "glTF buffer must be an object");
-        auto declared = unsignedValue(member(*object, "byteLength"),
-                                      "$.buffers[" + std::to_string(index) + "].byteLength");
-        if (!declared) return Result<std::vector<std::span<const std::uint8_t>>>::failure(declared.status());
-        std::span<const std::uint8_t> data;
-        const Value* uriValue = member(*object, "uri");
-        if (uriValue) {
-            if (!uriValue->isString() || !safeUri(uriValue->asString(), request.limits))
-                return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::Unsupported,
-                                                                                  "external glTF buffer URI is unsafe or unsupported");
-            const auto found = request.externalResources.find(uriValue->asString());
-            if (found == request.externalResources.end())
-                return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::NotFound,
-                                                                                  "external glTF buffer was not supplied",
-                                                                                  uriValue->asString());
-            data = found->second;
-        } else {
-            if (index != 0 || document.binaryChunk.empty())
-                return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::ParseError,
-                                                                                  "buffer without URI requires the first GLB BIN chunk");
-            data = document.binaryChunk;
-        }
-        if (declared.value() > data.size())
-            return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::ParseError,
-                                                                              "glTF buffer is shorter than byteLength");
-        if (declared.value() > request.limits.maximumSourceBytes ||
-            totalBytes > request.limits.maximumSourceBytes - declared.value())
-            return detail::failure<std::vector<std::span<const std::uint8_t>>>(DiagnosticCode::InvalidArgument,
-                                                                              "glTF buffer budget is exceeded");
-        totalBytes += declared.value();
-        result.push_back(data.first(static_cast<std::size_t>(declared.value())));
-    }
-    return Result<std::vector<std::span<const std::uint8_t>>>::success(std::move(result));
-}
-
-struct Accessor {
-    std::span<const std::uint8_t> buffer;
-    std::size_t offset = 0;
-    std::size_t stride = 0;
-    std::uint32_t count = 0;
-    std::uint32_t componentType = 0;
-    std::uint32_t components = 0;
-};
-
-std::uint32_t componentSize(std::uint32_t type) {
-    if (type == 5120 || type == 5121) return 1;
-    if (type == 5122 || type == 5123) return 2;
-    if (type == 5125 || type == 5126) return 4;
-    return 0;
-}
-
-Result<Accessor> accessorAt(const Value::Object& root,
-                            const std::vector<std::span<const std::uint8_t>>& buffers,
-                            std::uint64_t accessorIndex, const AssetImportLimits& limits) {
-    const auto* accessors = member(root, "accessors") ? member(root, "accessors")->getIf<Value::Array>() : nullptr;
-    const auto* views = member(root, "bufferViews") ? member(root, "bufferViews")->getIf<Value::Array>() : nullptr;
-    if (!accessors || !views || accessorIndex >= accessors->size())
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF accessor index is invalid");
-    const auto* object = (*accessors)[accessorIndex].getIf<Value::Object>();
-    if (!object || member(*object, "sparse"))
-        return detail::failure<Accessor>(DiagnosticCode::Unsupported, "sparse or malformed glTF accessor is unsupported");
-    auto viewIndex = unsignedValue(member(*object, "bufferView"), "accessor.bufferView");
-    auto count = unsignedValue(member(*object, "count"), "accessor.count");
-    auto component = unsignedValue(member(*object, "componentType"), "accessor.componentType");
-    auto accessorOffset = unsignedValue(member(*object, "byteOffset"), "accessor.byteOffset", false, 0);
-    if (!viewIndex || !count || !component || !accessorOffset)
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF accessor fields are invalid");
-    if (viewIndex.value() >= views->size() || count.value() == 0 ||
-        count.value() > std::max(limits.maximumVerticesPerPrimitive, limits.maximumIndicesPerPrimitive))
-        return detail::failure<Accessor>(DiagnosticCode::InvalidArgument, "glTF accessor exceeds limits");
-    const Value* typeValue = member(*object, "type");
-    if (!typeValue || !typeValue->isString())
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF accessor type is missing");
-    std::uint32_t components = 0;
-    if (typeValue->asString() == "SCALAR") components = 1;
-    else if (typeValue->asString() == "VEC2") components = 2;
-    else if (typeValue->asString() == "VEC3") components = 3;
-    else if (typeValue->asString() == "VEC4") components = 4;
-    else return detail::failure<Accessor>(DiagnosticCode::Unsupported, "glTF accessor shape is unsupported");
-    const auto* view = (*views)[viewIndex.value()].getIf<Value::Object>();
-    if (!view) return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF bufferView is malformed");
-    auto bufferIndex = unsignedValue(member(*view, "buffer"), "bufferView.buffer");
-    auto viewOffset = unsignedValue(member(*view, "byteOffset"), "bufferView.byteOffset", false, 0);
-    auto viewLength = unsignedValue(member(*view, "byteLength"), "bufferView.byteLength");
-    auto byteStride = unsignedValue(member(*view, "byteStride"), "bufferView.byteStride", false, 0);
-    if (!bufferIndex || !viewOffset || !viewLength || !byteStride || bufferIndex.value() >= buffers.size())
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF bufferView fields are invalid");
-    const std::uint32_t elementSize = componentSize(static_cast<std::uint32_t>(component.value())) * components;
-    const std::uint64_t stride = byteStride.value() == 0 ? elementSize : byteStride.value();
-    if (elementSize == 0 || stride < elementSize || stride > 252 ||
-        viewOffset.value() > buffers[bufferIndex.value()].size() ||
-        viewLength.value() > buffers[bufferIndex.value()].size() - viewOffset.value() ||
-        accessorOffset.value() > viewLength.value())
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF accessor layout is invalid");
-    const std::uint64_t required = (count.value() - 1) * stride + elementSize;
-    if (required > viewLength.value() - accessorOffset.value())
-        return detail::failure<Accessor>(DiagnosticCode::ParseError, "glTF accessor range is truncated");
-    return Result<Accessor>::success({buffers[bufferIndex.value()],
-                                      static_cast<std::size_t>(viewOffset.value() + accessorOffset.value()),
-                                      static_cast<std::size_t>(stride), static_cast<std::uint32_t>(count.value()),
-                                      static_cast<std::uint32_t>(component.value()), components});
-}
-
-Result<float> readFloat(const Accessor& accessor, std::uint32_t element, std::uint32_t component) {
-    if (accessor.componentType != 5126 || component >= accessor.components)
-        return detail::failure<float>(DiagnosticCode::Unsupported, "mesh attribute must use FLOAT components");
-    const std::size_t offset = accessor.offset + std::size_t(element) * accessor.stride + component * 4;
-    const float value = std::bit_cast<float>(little32(accessor.buffer, offset));
-    if (!std::isfinite(value))
-        return detail::failure<float>(DiagnosticCode::ParseError, "mesh attribute contains non-finite values");
-    return Result<float>::success(value);
-}
-
-Result<std::uint32_t> readIndex(const Accessor& accessor, std::uint32_t element) {
-    if (accessor.components != 1)
-        return detail::failure<std::uint32_t>(DiagnosticCode::ParseError, "index accessor must be SCALAR");
-    const std::size_t offset = accessor.offset + std::size_t(element) * accessor.stride;
-    if (accessor.componentType == 5121) return Result<std::uint32_t>::success(accessor.buffer[offset]);
-    if (accessor.componentType == 5123)
-        return Result<std::uint32_t>::success(std::uint32_t(accessor.buffer[offset]) |
-                                              (std::uint32_t(accessor.buffer[offset + 1]) << 8));
-    if (accessor.componentType == 5125) return Result<std::uint32_t>::success(little32(accessor.buffer, offset));
-    return detail::failure<std::uint32_t>(DiagnosticCode::Unsupported,
-                                          "indices must use UNSIGNED_BYTE, UNSIGNED_SHORT or UNSIGNED_INT");
-}
+using namespace gltf;
 
 struct PrimitiveOutput {
     std::vector<std::uint8_t> blob;
     std::uint32_t vertexCount = 0;
     std::uint32_t indexCount = 0;
     bool hasNormals = false;
-    bool hasTexcoords = false;
+    std::vector<uint32_t>     texcoordSets;
     float minimum[3] = {};
     float maximum[3] = {};
 };
+
+Result<float> readUv(const Accessor& uv, uint32_t vertex, uint32_t axis) {
+    if (uv.componentType == 5126) return readFloat(uv, vertex, axis);
+    const size_t   offset = uv.offset + size_t(vertex) * uv.stride + axis * componentSize(uv.componentType);
+    const uint32_t value  = uv.componentType == 5121
+                                ? uv.buffer[offset]
+                                : uint32_t(uv.buffer[offset]) | (uint32_t(uv.buffer[offset + 1]) << 8);
+    return Result<float>::success(float(value) / (uv.componentType == 5121 ? 255.f : 65535.f));
+}
 
 Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::Object& primitive,
                                         const std::vector<std::span<const std::uint8_t>>& buffers,
@@ -256,7 +51,7 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
     if (!positionIndex) return Result<PrimitiveOutput>::failure(positionIndex.status());
     auto positions = accessorAt(root, buffers, positionIndex.value(), limits);
     if (!positions) return Result<PrimitiveOutput>::failure(positions.status());
-    if (positions.value().components != 3 || positions.value().componentType != 5126 ||
+    if (positions.value().count == 0 || positions.value().components != 3 || positions.value().componentType != 5126 ||
         positions.value().count > limits.maximumVerticesPerPrimitive)
         return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported,
                                                 "POSITION must be a bounded FLOAT VEC3 accessor");
@@ -271,16 +66,25 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
             return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported, "NORMAL must match POSITION");
         normals = std::move(decoded).takeValue();
     }
-    std::optional<Accessor> texcoords;
-    if (const Value* texcoord = member(*attributes, "TEXCOORD_0")) {
-        auto texcoordIndex = unsignedValue(texcoord, "primitive.attributes.TEXCOORD_0");
+    std::map<uint32_t, Accessor> texcoords;
+    for (const auto& [name, texcoord] : *attributes) {
+        if (!name.starts_with("TEXCOORD_")) continue;
+        const std::string_view suffix(name.data() + 9, name.size() - 9);
+        uint32_t               set    = 0;
+        const auto             parsed = std::from_chars(suffix.data(), suffix.data() + suffix.size(), set);
+        if (parsed.ec != std::errc{} || parsed.ptr != suffix.data() + suffix.size() || std::to_string(set) != suffix)
+            return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError, "invalid UV set semantic");
+        auto texcoordIndex = unsignedValue(&texcoord, "primitive.attributes." + name);
         if (!texcoordIndex) return Result<PrimitiveOutput>::failure(texcoordIndex.status());
         auto decoded = accessorAt(root, buffers, texcoordIndex.value(), limits);
         if (!decoded) return Result<PrimitiveOutput>::failure(decoded.status());
-        if (decoded.value().components != 2 || decoded.value().componentType != 5126 ||
-            decoded.value().count != positions.value().count)
-            return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported, "TEXCOORD_0 must match POSITION");
-        texcoords = std::move(decoded).takeValue();
+        const auto& uv = decoded.value();
+        if (uv.components != 2 || uv.count != positions.value().count ||
+            !((uv.componentType == 5126 && !uv.normalized) ||
+              ((uv.componentType == 5121 || uv.componentType == 5123) && uv.normalized)))
+            return detail::failure<PrimitiveOutput>(
+                DiagnosticCode::Unsupported, "UV sets must match POSITION and use FLOAT or normalized unsigned VEC2");
+        texcoords.emplace(set, std::move(decoded).takeValue());
     }
     std::vector<std::uint32_t> indices;
     if (const Value* indicesValue = member(primitive, "indices")) {
@@ -288,7 +92,8 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         if (!index) return Result<PrimitiveOutput>::failure(index.status());
         auto accessor = accessorAt(root, buffers, index.value(), limits);
         if (!accessor) return Result<PrimitiveOutput>::failure(accessor.status());
-        if (accessor.value().count > limits.maximumIndicesPerPrimitive || accessor.value().count % 3 != 0)
+        if (accessor.value().count == 0 || accessor.value().count > limits.maximumIndicesPerPrimitive ||
+            accessor.value().count % 3 != 0)
             return detail::failure<PrimitiveOutput>(DiagnosticCode::InvalidArgument, "triangle index count is invalid");
         indices.reserve(accessor.value().count);
         for (std::uint32_t item = 0; item < accessor.value().count; ++item) {
@@ -305,18 +110,22 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         indices.resize(positions.value().count);
         for (std::uint32_t index = 0; index < indices.size(); ++index) indices[index] = index;
     }
-    const std::uint64_t decodedSize = 24 + std::uint64_t(positions.value().count) *
-        (12 + (normals ? 12 : 0) + (texcoords ? 8 : 0)) + std::uint64_t(indices.size()) * 4;
+    const std::uint64_t decodedSize =
+        24 + uint64_t(texcoords.size()) * 4 +
+        std::uint64_t(positions.value().count) * (12 + (normals ? 12 : 0) + uint64_t(texcoords.size()) * 8) +
+        std::uint64_t(indices.size()) * 4;
     if (decodedSize > limits.maximumDecodedBytes || decodedSize > std::numeric_limits<std::size_t>::max())
         return detail::failure<PrimitiveOutput>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds decoded budget");
     PrimitiveOutput output;
     output.vertexCount = positions.value().count;
     output.indexCount = static_cast<std::uint32_t>(indices.size());
     output.hasNormals = normals.has_value();
-    output.hasTexcoords = texcoords.has_value();
-    output.blob.insert(output.blob.end(), {'E', 'V', 'M', 'E', 'S', 'H', 0, 1});
+    for (const auto& [set, uv] : texcoords) output.texcoordSets.push_back(set);
+    output.blob.insert(output.blob.end(), {'E', 'V', 'M', 'E', 'S', 'H', 0, 2});
     put32(output.blob, output.vertexCount); put32(output.blob, output.indexCount);
-    put32(output.blob, (output.hasNormals ? 1u : 0u) | (output.hasTexcoords ? 2u : 0u)); put32(output.blob, 0);
+    put32(output.blob, output.hasNormals ? 1u : 0u);
+    put32(output.blob, uint32_t(texcoords.size()));
+    for (auto set : output.texcoordSets) put32(output.blob, set);
     for (std::uint32_t vertex = 0; vertex < output.vertexCount; ++vertex) {
         for (std::uint32_t axis = 0; axis < 3; ++axis) {
             auto value = readFloat(positions.value(), vertex, axis);
@@ -331,11 +140,12 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
             if (!value) return Result<PrimitiveOutput>::failure(value.status());
             putFloat(output.blob, value.value());
         }
-        if (texcoords) for (std::uint32_t axis = 0; axis < 2; ++axis) {
-            auto value = readFloat(*texcoords, vertex, axis);
-            if (!value) return Result<PrimitiveOutput>::failure(value.status());
-            putFloat(output.blob, value.value());
-        }
+        for (const auto& [set, uv] : texcoords)
+            for (std::uint32_t axis = 0; axis < 2; ++axis) {
+                auto value = readUv(uv, vertex, axis);
+                if (!value) return Result<PrimitiveOutput>::failure(value.status());
+                putFloat(output.blob, value.value());
+            }
     }
     for (const auto index : indices) put32(output.blob, index);
     return Result<PrimitiveOutput>::success(std::move(output));
@@ -354,6 +164,16 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
     if (!document) return Result<PreparedAssetImport>::failure(document.status());
     const auto* root = document.value().root.getIf<Value::Object>();
     if (!root) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF root must be an object");
+    if (const auto* required = member(*root, "extensionsRequired")) {
+        const auto* extensions = required->getIf<Value::Array>();
+        if (!extensions)
+            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
+                                                        "extensionsRequired must be an array");
+        for (const auto& extension : *extensions)
+            if (!extension.isString() || !gltf::supportsMaterialExtension(extension.asString()))
+                return detail::failure<PreparedAssetImport>(
+                    DiagnosticCode::Unsupported, "required glTF extension is not supported", "extensionsRequired");
+    }
     const auto* assetValue = member(*root, "asset");
     const auto* asset = assetValue ? assetValue->getIf<Value::Object>() : nullptr;
     const Value* version = asset ? member(*asset, "version") : nullptr;
@@ -370,6 +190,7 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
     if (!manifestResult) return Result<PreparedAssetImport>::failure(manifestResult.status());
     PreparedAssetImport result;
     result.manifest = std::move(manifestResult).takeValue();
+    result.manifest.provenance["importerVersion"] = Value(std::int64_t(2));
     std::uint32_t assetCount = 0;
     std::uint64_t decodedTotal = 0;
     for (std::size_t meshIndex = 0; meshIndex < meshes->size(); ++meshIndex) {
@@ -385,6 +206,10 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
             const auto* primitive = (*primitives)[primitiveIndex].getIf<Value::Object>();
             if (!primitive)
                 return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF primitive is malformed");
+            if (member(*primitive, "targets"))
+                return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
+                                                            "morph targets cannot be represented by the canonical mesh",
+                                                            "meshes.primitives.targets");
             auto decoded = decodePrimitive(*root, *primitive, buffers.value(), request.limits);
             if (!decoded) return Result<PreparedAssetImport>::failure(decoded.status());
             if (decoded.value().blob.size() > request.limits.maximumDecodedBytes ||
@@ -400,12 +225,15 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
             const std::string definitionPath = base + "asset.json";
             const std::string blobPath = base + "mesh.bin";
             Value::Object definition;
-            definition["schema"] = Value("eve.mesh"); definition["schemaVersion"] = Value(std::int64_t(1));
+            definition["schema"]        = Value("eve.mesh");
+            definition["schemaVersion"] = Value(std::int64_t(2));
             definition["topology"] = Value("triangles");
             definition["vertexCount"] = Value(static_cast<std::int64_t>(decoded.value().vertexCount));
             definition["indexCount"] = Value(static_cast<std::int64_t>(decoded.value().indexCount));
             definition["positions"] = Value(true); definition["normals"] = Value(decoded.value().hasNormals);
-            definition["texcoord0"] = Value(decoded.value().hasTexcoords);
+            Value::Array uvSets;
+            for (auto set : decoded.value().texcoordSets) uvSets.emplace_back(int64_t(set));
+            definition["texcoordSets"]     = Value(std::move(uvSets));
             definition["coordinateSystem"] = Value("right-handed-x-right-y-up-minus-z-forward");
             definition["unit"] = Value("meter"); definition["frontFace"] = Value("counter-clockwise");
             definition["boundsMin"] = Value(vector3(decoded.value().minimum));
@@ -414,11 +242,14 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
             auto encoded = Value(std::move(definition)).toJson();
             if (!encoded) return Result<PreparedAssetImport>::failure(encoded.status());
             std::string definitionText = std::move(encoded).takeValue();
-            result.manifest.assets.push_back({std::move(reference).takeValue(), "eve.mesh", SchemaVersion(1),
-                                              definitionPath,
-                                              detail::sha256(std::span<const std::uint8_t>(
-                                                  reinterpret_cast<const std::uint8_t*>(definitionText.data()),
-                                                  definitionText.size())), {"mesh", "source:gltf2"}});
+            result.manifest.assets.push_back(
+                {std::move(reference).takeValue(),
+                 "eve.mesh",
+                 SchemaVersion(2),
+                 definitionPath,
+                 detail::sha256(std::span<const std::uint8_t>(
+                     reinterpret_cast<const std::uint8_t*>(definitionText.data()), definitionText.size())),
+                 {"mesh", "source:gltf2"}});
             if (result.manifest.entrypoints.empty()) {
                 auto entrypoint = detail::assetRef(id);
                 if (!entrypoint) return Result<PreparedAssetImport>::failure(entrypoint.status());
@@ -436,10 +267,50 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
                                        "triangle primitive converted to canonical EVMESH"});
         }
     }
+    auto animation = gltf::appendAnimation(request, *root, buffers.value(), result);
+    if (!animation) return Result<PreparedAssetImport>::failure(animation.status());
+    auto materials = gltf::appendMaterials(request, *root, buffers.value(), result);
+    if (!materials) return Result<PreparedAssetImport>::failure(materials.status());
+    if (const auto* used = member(*root, "extensionsUsed")) {
+        const auto* extensions = used->getIf<Value::Array>();
+        if (!extensions)
+            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "extensionsUsed must be an array");
+        for (const auto& extension : *extensions) {
+            if (!extension.isString())
+                return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
+                                                            "extension name must be a string");
+            const bool translated = gltf::supportsMaterialExtension(extension.asString());
+            result.findings.push_back({request.sourceName, extension.asString(),
+                                       translated ? ImportDisposition::Translated : ImportDisposition::Unsupported,
+                                       translated ? "material extension parameters and texture bindings translated"
+                                                  : "unknown optional extension"});
+        }
+    }
+    for (std::size_t meshIndex = 0; meshIndex < meshes->size(); ++meshIndex) {
+        const auto& mesh       = *(*meshes)[meshIndex].getIf<Value::Object>();
+        const auto& primitives = *member(mesh, "primitives")->getIf<Value::Array>();
+        for (const auto& value : primitives) {
+            const auto& primitive  = *value.getIf<Value::Object>();
+            const auto& attributes = *member(primitive, "attributes")->getIf<Value::Object>();
+            for (const auto& [key, unused] : attributes) {
+                (void)unused;
+                if (key == "POSITION" || key == "NORMAL" || key.starts_with("TEXCOORD_")) continue;
+                if (key.starts_with("JOINTS_") || key.starts_with("WEIGHTS_")) {
+                    if (!member(*root, "skins"))
+                        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
+                                                                    "joint attributes require a skin binding", key);
+                    continue;
+                }
+                result.findings.push_back({request.sourceName, key, ImportDisposition::Unsupported,
+                                           "vertex attribute is not represented by canonical EVMESH/2"});
+            }
+        }
+    }
     result.manifest.provenance["sourceName"] = Value(request.sourceName);
     result.manifest.provenance["sourceHash"] = Value(detail::sha256(request.documentBytes));
     result.manifest.provenance["sourceCoordinateSystem"] = Value("gltf2-right-handed-y-up");
-    auto report = detail::finalizeImportReport(result, request.package, "gltf", "2.x");
+    auto report = detail::finalizeImportReport(result, request.package, "gltf", "2.x",
+                                               {{"strict", Value(request.mode == GltfImportMode::Strict)}});
     if (!report) return Result<PreparedAssetImport>::failure(report.status());
     return Result<PreparedAssetImport>::success(std::move(result));
 }

@@ -1,5 +1,6 @@
 #include "asset/graphics/EvpackStaticPrefab.h"
 #include "asset/RuntimeDefinition.h"
+#include "asset/graphics/CookedMaterial.h"
 #include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackImageLoader.h"
 #include "asset/scene/EvpackSceneTemplateLoader.h"
@@ -21,65 +22,7 @@ Result<T> fail(std::string message) {
     return Result<T>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "asset.graphics.prefab"));
 }
-struct MaterialData {
-    graphics::Color         color{1.f, 1.f, 1.f, 1.f};
-    float                   metallic = 0.f, roughness = 1.f;
-    std::optional<AssetRef> image;
-    bool                    transparent = false;
-    graphics::BlendMode     blend       = graphics::BlendMode::Alpha;
-};
-Result<MaterialData> material(const asset::EvpackResourceReader& reader, const AssetRef& ref,
-                              const asset::EvpackCapabilities& caps) {
-    auto payload = reader.read(ref, "eve.material/1", caps, 1024 * 1024);
-    if (!payload) return Result<MaterialData>::failure(payload.status());
-    if (payload.value().chunks.size() != 1) return fail<MaterialData>("material requires exactly one definition");
-    auto decoded = asset::decodeRuntimeDefinition(payload.value().chunks.front().bytes);
-    if (!decoded) return Result<MaterialData>::failure(decoded.status());
-    const auto* object = decoded.value().getIf<Value::Object>();
-    if (!object) return fail<MaterialData>("material definition must be an object");
-    auto field = [&](const char* key) -> const Value* {
-        const auto found = object->find(key);
-        return found == object->end() ? nullptr : &found->second;
-    };
-    auto equal = [&](const char* key, const char* expected) {
-        const auto* value = field(key);
-        return value && value->isString() && value->asString() == expected;
-    };
-    const auto* version = field("schemaVersion");
-    if (!equal("schema", "eve.material") || !version || !version->isInt64() || version->asInt() != 1 ||
-        !equal("shadingModel", "pbr") || (!equal("surfaceMode", "opaque") && !equal("surfaceMode", "transparent")))
-        return fail<MaterialData>("unsupported material definition");
-    auto scalar = [](const Value* value, float& output) {
-        if (!value || !value->isNumeric()) return false;
-        double number = value->isInt64() ? double(value->asInt()) : value->asDouble();
-        if (!std::isfinite(number) || number < 0 || number > 1) return false;
-        output = float(number);
-        return true;
-    };
-    MaterialData out;
-    out.transparent = equal("surfaceMode", "transparent");
-    if (out.transparent) {
-        if (!equal("blendMode", "alpha") && !equal("blendMode", "premultiplied"))
-            return fail<MaterialData>("invalid transparent blend mode");
-        if (equal("blendMode", "premultiplied")) out.blend = graphics::BlendMode::Premultiplied;
-    }
-    const auto*  color    = field("baseColor");
-    const auto*  channels = color ? color->getIf<Value::Array>() : nullptr;
-    if (!channels || channels->size() != 4 || !scalar(&(*channels)[0], out.color.r) ||
-        !scalar(&(*channels)[1], out.color.g) || !scalar(&(*channels)[2], out.color.b) ||
-        !scalar(&(*channels)[3], out.color.a) || !scalar(field("metallic"), out.metallic) ||
-        !scalar(field("roughness"), out.roughness))
-        return fail<MaterialData>("invalid material factors");
-    if (const auto* image = field("baseColorTexture")) {
-        if (!image->isString()) return fail<MaterialData>("invalid material image reference");
-        auto parsed = AssetRef::parse(image->asString());
-        if (!parsed) return Result<MaterialData>::failure(parsed.status());
-        out.image = std::move(parsed).takeValue();
-    }
-    if (out.image && out.transparent && out.blend == graphics::BlendMode::Premultiplied)
-        return fail<MaterialData>("premultiplied texture alpha is unsupported");
-    return Result<MaterialData>::success(std::move(out));
-}
+using MaterialData = detail::CookedMaterial;
 }  // namespace
 
 struct EvpackStaticPrefab::Impl {
@@ -87,6 +30,7 @@ struct EvpackStaticPrefab::Impl {
     graphics::IImageResourceFactory& images;
     // Factory ABI leases: only passed back to the same factories or synchronous draw calls.
     std::map<std::string, graphics::Mesh*>    meshLeases;
+    std::map<std::string, std::vector<uint32_t>> meshUvSets;
     std::map<std::string, graphics::Texture*> imageLeases;
     struct Draw {
         glm::mat4          transform;
@@ -154,24 +98,32 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
     EvpackImageLoader    imageLoader(reader, images);
     for (const auto& binding : scene.value().renderers) {
         if (!binding.enabled || !transforms.contains(binding.object)) continue;
-        auto parameters = material(reader, binding.material, caps);
+        auto parameters = detail::readCookedMaterial(reader, binding.material, caps);
         if (!parameters) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(parameters.status());
         const auto meshKey = binding.mesh.format();
         if (!out->impl_->meshLeases.contains(meshKey)) {
-            auto loaded = meshLoader.loadMesh(binding.mesh, caps);
+            auto loaded = meshLoader.loadMesh(binding.mesh, caps, {}, 0, true);
             if (!loaded) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(loaded.status());
             out->impl_->meshLeases.emplace(meshKey, loaded.value().mesh);
+            out->impl_->meshUvSets.emplace(meshKey, loaded.value().availableTexcoordSets);
         }
         graphics::Texture* image = nullptr;
-        if (parameters.value().image) {
-            const auto imageKey = parameters.value().image->format();
+        for (size_t role = 0; role < 11; role++) {
+            if (!parameters.value().images[role]) continue;
+            const auto& sets     = out->impl_->meshUvSets.at(meshKey);
+            auto        selected = parameters.value().surface.textures[role].texcoord;
+            if (std::find(sets.begin(), sets.end(), selected) == sets.end())
+                return fail<std::unique_ptr<EvpackStaticPrefab>>("material references missing mesh UV channel");
+            const auto& ref      = *parameters.value().images[role];
+            const auto  imageKey = ref.format();
             if (!out->impl_->imageLeases.contains(imageKey)) {
-                auto loaded = imageLoader.load(*parameters.value().image, caps);
+                auto loaded = imageLoader.load(ref, caps);
                 if (!loaded) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(loaded.status());
                 out->impl_->imageLeases.emplace(imageKey, loaded.value().texture);
             }
-            image = out->impl_->imageLeases.at(imageKey);
+            parameters.value().surface.textures[role].texture = out->impl_->imageLeases.at(imageKey);
         }
+        image = parameters.value().surface.textures[0].texture;
         out->impl_->draws.push_back({transforms.at(binding.object), out->impl_->meshLeases.at(meshKey), image,
                                      std::move(parameters).takeValue()});
     }
@@ -197,9 +149,13 @@ Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<
     });
     for (auto index : order) {
         const auto& draw = impl_->draws[index];
-        gfx.setMesh3DSurface(
-            draw.material.transparent ? graphics::SurfaceMode::Transparent : graphics::SurfaceMode::Opaque,
-            draw.material.blend, !draw.material.transparent, false, 0.5f, "cutoff");
+        gfx.setMesh3DSurface(draw.material.transparent ? graphics::SurfaceMode::Transparent
+                             : draw.material.masked    ? graphics::SurfaceMode::Masked
+                                                       : graphics::SurfaceMode::Opaque,
+                             draw.material.blend, !draw.material.transparent, draw.material.doubleSided,
+                             draw.material.alphaCutoff, "cutoff");
+        auto bound = gfx.setMesh3DPbrSurface(&draw.material.surface);
+        if (!bound) return bound;
         gfx.setMesh3DMaterial(draw.material.metallic, draw.material.roughness);
         gfx.setMesh3DNormalTexture(nullptr);
         gfx.setMesh3DHeightTexture(nullptr);
@@ -208,13 +164,8 @@ Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<
         gfx.setMesh3DParallax(0.f);
         gfx.setMesh3DShadowReceive(true);
         auto color = draw.material.color;
-        if (draw.material.transparent && draw.material.blend == graphics::BlendMode::Premultiplied) {
-            color.r *= color.a;
-            color.g *= color.a;
-            color.b *= color.a;
-        }
         gfx.drawMesh(draw.mesh, instance * draw.transform, draw.image, color);
     }
-    return Result<void>::success();
+    return gfx.setMesh3DPbrSurface(nullptr);
 }
 }  // namespace eve::asset_graphics

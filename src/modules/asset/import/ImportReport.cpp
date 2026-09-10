@@ -74,10 +74,12 @@ Result<void> finalizeImportReport(PreparedAssetImport& prepared,
     for (const auto& finding : prepared.findings) {
         const std::string disposition = dispositionName(finding.disposition);
         counts[disposition] = Value(counts.at(disposition).asInt() + 1);
-        findings.emplace_back(Value::Object{{"sourcePath", Value(finding.sourcePath)},
-                                            {"feature", Value(finding.feature)},
-                                            {"disposition", Value(disposition)},
-                                            {"message", Value(finding.message)}});
+        findings.emplace_back(
+            Value::Object{{"sourcePath", Value(finding.sourcePath)},
+                          {"feature", Value(finding.feature)},
+                          {"disposition", Value(disposition)},
+                          {"severity", Value(finding.severity == ImportSeverity::Warning ? "warning" : "info")},
+                          {"message", Value(finding.message)}});
     }
     report["counts"] = Value(std::move(counts));
     report["findings"] = Value(std::move(findings));

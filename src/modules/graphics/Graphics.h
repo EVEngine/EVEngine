@@ -32,6 +32,8 @@
 struct aiMesh;
 
 namespace eve::graphics {
+struct PbrSurface;
+
 
 class AmbientOcclusion;
 class AntiAliasing;
@@ -1009,6 +1011,17 @@ public:
 
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Copy a validated extended surface for subsequent draws; null resets to legacy shading.
+     * @param surface Borrowed snapshot, consumed synchronously on the graphics thread.
+     * @return Unsupported when a backend has no extended renderer; reset always succeeds.
+     * No pointer to the snapshot is retained; its borrowed textures must outlive queued draws.
+     */
+    [[nodiscard]] virtual Result<void> setMesh3DPbrSurface(const PbrSurface* surface) {
+        if (!surface) return Result<void>::success();
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "extended PBR material rendering is unavailable on this backend"));
+    }
+
     /** @brief Select pipeline state for subsequent mesh draws. */
     virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                                   bool doubleSided, float alphaCutoff,

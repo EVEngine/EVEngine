@@ -64,6 +64,8 @@ def _export(request: dict) -> dict:
     output_directory = Path(request["outputDirectory"]).resolve()
     output_directory.mkdir(parents=True, exist_ok=True)
     options = unreal.GLTFExportOptions()
+    options.set_editor_property("texture_image_format", unreal.GLTFTextureImageFormat.PNG)
+    options.set_editor_property("bake_material_inputs", unreal.GLTFMaterialBakeMode.USE_MESH_DATA)
     options.set_editor_property("export_vertex_skin_weights", True)
     options.set_editor_property("export_preview_mesh", True)
     options.set_editor_property("export_animation_sequences", True)

@@ -412,7 +412,7 @@ void Graphics::createMesh3DPipeline() {
     // Vulkan NDC), so frontFace is Clockwise while mesh winding stays CCW in object space.
     vkb::DescriptorSetLayoutBuilder layoutBuilder;
     mesh3dSetLayoutUnique =
-        layoutBuilder
+        layoutBuilder.buffer(21, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
@@ -434,11 +434,10 @@ void Graphics::createMesh3DPipeline() {
 
     vkb::DescriptorSetLayoutBuilder skinLayoutBuilder;
     skinPassSetLayoutUnique =
-        skinLayoutBuilder
+        skinLayoutBuilder.buffer(2, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     skinPassSetLayout = *skinPassSetLayoutUnique;
     skinPassPipelineLayout = createPipelineLayout(device, skinPassSetLayout);
@@ -844,14 +843,13 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             // Match the FrameGraph render pass used to record this pipeline:
             // imported G-buffer targets begin undefined and leave sampled, so
             // only the subpass-to-reader dependency is materialized.
-            .addDependency(
-                0, VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
-                    vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
+            .addDependency(0, VK_SUBPASS_EXTERNAL,
+                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                               vk::PipelineStageFlagBits::eLateFragmentTests,
+                           vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                           vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                           vk::AccessFlagBits::eShaderRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -1432,6 +1430,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     const vk::RenderPass targetHandle = vk::RenderPass(target);
     if (targetHandle == scenePassPipelineTarget && samples == scenePassPipelineSamples) return;
     device->waitIdle();
+    destroyPbrResources();
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dTransparentPipeline);
@@ -1577,11 +1576,14 @@ void Graphics::materializeSceneColorResolve() {
     if (renderControl_ && renderControl_->getGBuffer()->isValid())
         motion = renderControl_->getGBuffer()->getVelocityTexture();
     Texture *postProcessed = prepareFinalSceneTexture(src, motion);
-    Shader *resolveShader = prepareSceneColorResolveShader(postProcessed);
-    if (resolveShader) {
-        TexturedBatch resolve{postProcessed, nullptr, resolveShader, BlendMode::Alpha, Batcher{}};
+    if (postProcessed) {
+        // AA and exposure are already applied. Use the final tone-map pipeline;
+        // UNORM swapchains also require explicit linear-to-sRGB encoding.
+        const bool attachmentEncodesSrgb =
+            swapchain.image_format == vk::Format::eB8G8R8A8Srgb || swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
+        TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
         resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
-                                      Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+                                      Color(1.f, 1.f, 1.f, attachmentEncodesSrgb ? 0.f : 65536.f), 0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }
     solidBatches = std::move(savedSolid);

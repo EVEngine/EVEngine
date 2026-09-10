@@ -1,3 +1,4 @@
+#include "common/Exception.h"
 #include "graphics/webgpu/Graphics.h"
 
 #include "graphics/Material.h"
@@ -318,7 +319,8 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
         Mesh *mesh = gpuDrivenMeshes_[instance.meshId];
         Material *material = gpuDrivenMaterials_[instance.materialId];
         if (!mesh || !material || !gpuDrivenMaterialUsable(material)) return false;
-        material->bind(*this);
+        auto bound = material->bind(*this);
+        if (!bound) throw Exception("%s", bound.error()->message().c_str());
         drawMeshShader(mesh, instance.model, material->getAlbedoTexture(),
                        Color(material->getTintR(), material->getTintG(), material->getTintB(),
                              material->getTintA()),

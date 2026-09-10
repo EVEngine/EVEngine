@@ -10,9 +10,15 @@
 #include "graphics/Texture.h"
 #include "image/Image.h"
 
+#include <assimp/GltfMaterial.h>
+#include <assimp/material.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include "common/Exception.h"
 
 #include <memory>
 #include <string>
@@ -99,7 +105,103 @@ struct TextureLook {
     std::string alphaMode = "OPAQUE";
     float alphaCutoff = 0.5f;
     bool doubleSided = false;
+    bool                 extendedPbr = false;
+    graphics::PbrSurface pbr;
 };
+
+void extendedLook(IResourceFactory* gfx, ModelData* model, int index, TextureLook& look,
+                  const ModelRenderOptions& options) {
+    const auto* scene = model->getScene();
+    if (!scene || index < 0 || unsigned(index) >= scene->mNumMaterials) return;
+    const auto* material = scene->mMaterials[index];
+    aiString    alpha;
+    if (material->Get(AI_MATKEY_GLTF_ALPHAMODE, alpha) != AI_SUCCESS) return;
+    look.extendedPbr = true;
+    look.ta          = model->getMaterialBaseColorA(index);
+    auto& p          = look.pbr;
+    auto  scalar     = [&](const char* key, unsigned type, unsigned slot, float fallback) {
+        float value = fallback;
+        material->Get(key, type, slot, value);
+        if (!std::isfinite(value)) throw eve::Exception("nonfinite imported material factor %s", key);
+        return value;
+    };
+    auto unit = [&](const char* key, unsigned type, unsigned slot, float fallback) {
+        float value = scalar(key, type, slot, fallback);
+        if (value < 0 || value > 1)
+            std::fprintf(stderr, "[model3d] warning %s=%g clamped to [0,1]\n", key, double(value));
+        return std::clamp(value, 0.f, 1.f);
+    };
+    p.specularFactor = unit(AI_MATKEY_SPECULAR_FACTOR, 1);
+    aiColor3D color(1, 1, 1);
+    material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+    p.specularColor = {color.r, color.g, color.b};
+    color           = {0, 0, 0};
+    material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+    p.emissive             = {color.r, color.g, color.b};
+    p.emissiveStrength     = scalar(AI_MATKEY_EMISSIVE_INTENSITY, 1);
+    p.ior                  = scalar(AI_MATKEY_REFRACTI, 1.5f);
+    p.clearcoatFactor      = unit(AI_MATKEY_CLEARCOAT_FACTOR, 0);
+    p.clearcoatRoughness   = unit(AI_MATKEY_CLEARCOAT_ROUGHNESS_FACTOR, 0);
+    p.anisotropyStrength   = unit(AI_MATKEY_ANISOTROPY_FACTOR, 0);
+    p.normalScale          = scalar(AI_MATKEY_GLTF_TEXTURE_SCALE(aiTextureType_NORMALS, 0), 1);
+    p.clearcoatNormalScale = scalar(AI_MATKEY_GLTF_TEXTURE_SCALE(aiTextureType_CLEARCOAT, 2), 1);
+    p.occlusionStrength    = unit("$tex.file.strength", aiTextureType_LIGHTMAP, 0, 1);
+    int shading            = 0;
+    material->Get(AI_MATKEY_SHADING_MODEL, shading);
+    p.unlit                                          = shading == aiShadingMode_Unlit;
+    const std::pair<aiTextureType, unsigned> roles[] = {
+        {aiTextureType_BASE_COLOR, 0}, {aiTextureType_UNKNOWN, 0},  {aiTextureType_NORMALS, 0},
+        {aiTextureType_LIGHTMAP, 0},   {aiTextureType_EMISSIVE, 0}, {aiTextureType_SPECULAR, 0},
+        {aiTextureType_SPECULAR, 1},   {aiTextureType_NONE, 0},     {aiTextureType_CLEARCOAT, 0},
+        {aiTextureType_CLEARCOAT, 1},  {aiTextureType_CLEARCOAT, 2}};
+    for (size_t i = 0; i < 11; i++) {
+        if ((i == 0 && !options.importAlbedo) || ((i == 2 || i == 10) && !options.importNormalMaps)) continue;
+        const auto [type, slot] = roles[i];
+        if (type == aiTextureType_NONE) continue;
+        aiString         path;
+        unsigned         uv      = 0;
+        aiTextureMapMode wrap[2] = {aiTextureMapMode_Wrap, aiTextureMapMode_Wrap};
+        if (material->GetTexture(type, slot, &path, nullptr, &uv, nullptr, nullptr, wrap) != AI_SUCCESS) continue;
+        auto& binding = p.textures[i];
+        if (i == 0 && look.albedo)
+            binding.texture = look.albedo;
+        else if (i == 2 && look.normal)
+            binding.texture = look.normal;
+        else if (path.length > 1 && path.C_Str()[0] == '*')
+            binding.texture = loadEmbeddedTexture(gfx, model, std::stoi(path.C_Str() + 1));
+        else
+            binding.texture = loadExternalTexture(gfx, path.C_Str());
+        if (!binding.texture) throw eve::Exception("cannot load material texture %s", path.C_Str());
+        binding.texcoord = uv;
+        auto wrapEnum    = [](aiTextureMapMode mode) {
+            return mode == aiTextureMapMode_Clamp ? 33071u : mode == aiTextureMapMode_Mirror ? 33648u : 10497u;
+        };
+        binding.wrapS = wrapEnum(wrap[0]);
+        binding.wrapT = wrapEnum(wrap[1]);
+        int filter    = 9987;
+        material->Get(AI_MATKEY_GLTF_MAPPINGFILTER_MIN(type, slot), filter);
+        binding.minFilter = filter;
+        filter            = 9729;
+        material->Get(AI_MATKEY_GLTF_MAPPINGFILTER_MAG(type, slot), filter);
+        binding.magFilter = filter;
+        aiUVTransform transform;
+        if (material->Get(AI_MATKEY_UVTRANSFORM(type, slot), transform) == AI_SUCCESS) {
+            // First undo the optional postprocess, then Assimp's glTF origin/center conversion.
+            if (model->hasFlippedUvs()) {
+                transform.mRotation      = -transform.mRotation;
+                transform.mTranslation.y = -transform.mTranslation.y;
+            }
+            const float r = -transform.mRotation, c = std::cos(r), sn = std::sin(r);
+            const float sx = transform.mScaling.x, sy = transform.mScaling.y;
+            binding.rotation = r;
+            binding.scale    = {sx, sy};
+            binding.offset   = {transform.mTranslation.x - .5f * sx * (-c + sn + 1),
+                                1 - sy - transform.mTranslation.y + .5f * sy * (sn + c - 1)};
+        }
+    }
+    look.albedo = p.textures[0].texture;
+    look.normal = p.textures[2].texture;
+}
 
 TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, const ModelRenderOptions &options,
                          std::unordered_map<int, TextureLook> &cache) {
@@ -127,6 +229,7 @@ TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, 
         if (options.importHeightMaps)
             look.height = loadTextureSlot(gfx, model, matIndex, "height");
     }
+    extendedLook(gfx, model, matIndex, look, options);
     cache.emplace(matIndex, look);
     return look;
 }
@@ -180,6 +283,22 @@ Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIn
         material->setSurfaceMode("transparent");
     else
         material->setSurfaceMode("opaque");
+    if (look.extendedPbr) {
+        auto configured = material->setPbrSurface(look.pbr);
+        if (!configured) throw eve::Exception("%s", configured.error()->message().c_str());
+        for (unsigned channel = 0; channel < AI_MAX_NUMBER_OF_TEXTURECOORDS; channel++) {
+            if (!ai->mTextureCoords[channel]) continue;
+            std::vector<float> values;
+            values.reserve(size_t(ai->mNumVertices) * 2);
+            for (unsigned v = 0; v < ai->mNumVertices; v++) {
+                values.push_back(ai->mTextureCoords[channel][v].x);
+                values.push_back(model->hasFlippedUvs() ? ai->mTextureCoords[channel][v].y
+                                                        : 1 - ai->mTextureCoords[channel][v].y);
+            }
+            auto attached = mesh->setTexcoordSet(channel, values);
+            if (!attached) throw eve::Exception("%s", attached.error()->message().c_str());
+        }
+    }
     ent->setMaterial(material);
     return ent;
 }

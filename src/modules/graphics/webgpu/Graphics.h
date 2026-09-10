@@ -62,7 +62,6 @@ struct Mesh3DUBO {
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
@@ -82,9 +81,8 @@ struct SkinPassUBO {
     glm::mat4 model{1.f};
     glm::vec4 clip{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(SkinPassUBO) == 8352);
+static_assert(sizeof(SkinPassUBO) == 160);
 
 /**
  * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
@@ -517,6 +515,7 @@ private:
         bool shadowReceive = true;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
+        wgpu::Buffer skinBuffer;
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
@@ -621,10 +620,9 @@ private:
     wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth,
                                        GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
                                        GpuTexture *specular = nullptr);
-    wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                      GpuTexture *height, GpuTexture *depth, GpuTexture *sceneColor,
-                                      uint32_t frameUboOffset, uint32_t shadowUboOffset,
-                                      uint32_t pushUboOffset);
+    wgpu::BindGroup makeMeshBindGroup(GpuTexture* albedo, GpuTexture* normal, GpuTexture* env, GpuTexture* height,
+                                      GpuTexture* depth, GpuTexture* sceneColor, uint32_t frameUboOffset,
+                                      uint32_t shadowUboOffset, uint32_t pushUboOffset, const wgpu::Buffer& skinBuffer);
     wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
                                                  GpuTexture *env, GpuTexture *height,
                                                  GpuTexture *depth, wgpu::TextureView aoView,
@@ -658,8 +656,14 @@ private:
         uint64_t capacity = 0;
         uint64_t used = 0;
         uint32_t alloc(uint64_t size, uint64_t alignment);
-        void reset() { used = 0; }
+        std::vector<wgpu::Buffer> palettes;
+        size_t                    paletteIndex = 0;
+        void                      reset() {
+            used         = 0;
+            paletteIndex = 0;
+        }
     };
+    wgpu::Buffer uploadSkinPalette(Mesh* mesh);
     UboArena &currentUboArena();
     void ensureUboArena(UboArena &arena, uint64_t bytes);
 
@@ -1132,10 +1136,9 @@ private:
     // views and shadow resources. Dynamic offsets reuse a group within one
     // frame slot; the buffer identity prevents a group from retaining another
     // in-flight slot's UBO arena.
-    using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t>;
+    using MeshBindGroupKey =
+        std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                   uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

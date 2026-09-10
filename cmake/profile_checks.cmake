@@ -11,6 +11,40 @@ if(NOT EVENGINE_BUILD_PROFILE_CHECKS)
     return()
 endif()
 
+if(TARGET eve AND TARGET EVGraphics)
+    add_executable(eve_skin_palette_check
+        "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+        "${CMAKE_SOURCE_DIR}/test/graphics_skin_palette.cpp"
+        "${CMAKE_SOURCE_DIR}/test/graphics_skin_palette_render.cpp")
+    target_compile_features(eve_skin_palette_check PRIVATE cxx_std_20)
+    get_target_property(_eve_skin_host_libraries eve LINK_LIBRARIES)
+    target_link_libraries(eve_skin_palette_check PRIVATE ${_eve_skin_host_libraries}
+        zeroerr eve_engine_includes)
+    add_test(NAME profile.skin_palette COMMAND eve_skin_palette_check)
+    add_executable(eve_pbr_surface_check
+        "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+        "${CMAKE_SOURCE_DIR}/test/graphics_pbr_surface.cpp"
+        "${CMAKE_SOURCE_DIR}/test/model3d_gltf_uv.cpp")
+    target_compile_features(eve_pbr_surface_check PRIVATE cxx_std_20)
+    target_link_libraries(eve_pbr_surface_check PRIVATE ${_eve_skin_host_libraries}
+        zeroerr eve_engine_includes)
+    add_test(NAME profile.pbr_surface COMMAND eve_pbr_surface_check)
+    if(TARGET EVAsset_import AND TARGET EVAsset_graphics)
+        add_executable(eve_material_compat_check
+            "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_import_unity_native.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_graphics_loader.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_import.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp")
+        target_compile_definitions(eve_material_compat_check PRIVATE EVE_TEST_MESH_UPLOAD=1)
+        target_compile_features(eve_material_compat_check PRIVATE cxx_std_20)
+        target_link_libraries(eve_material_compat_check PRIVATE ${_eve_skin_host_libraries}
+            zeroerr eve_engine_includes)
+        add_test(NAME profile.material_compat COMMAND eve_material_compat_check)
+    endif()
+endif()
+
 set(_eve_profile_check_sources
     "${CMAKE_SOURCE_DIR}/test/profile/public_headers_common.cpp"
     "${CMAKE_SOURCE_DIR}/test/profile/public_headers_domains.cpp")
@@ -72,3 +106,26 @@ if(BUILD_TESTING)
 endif()
 
 message(STATUS "Independent profile checks enabled for '${EVENGINE_PROFILE}'")
+
+# The glTF admission boundary is data-only even when the CLI/import module is
+# excluded. Exercise the real importer and archive/Cook path in that profile.
+if(TARGET EVAsset)
+    add_executable(eve_gltf_animation_check
+        "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_animation.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_migration.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfImporter.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfAnimation.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfDecode.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfMaterials.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/ImageImporter.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/asset/import/ImportReport.cpp")
+    target_compile_features(eve_gltf_animation_check PRIVATE cxx_std_20)
+    eve_thirdparty_libs(_eve_gltf_libraries ${EVE_THIRDPARTY_GROUPS})
+    eve_append_system_libraries(_eve_gltf_system_libraries)
+    target_link_libraries(eve_gltf_animation_check PRIVATE EVAsset EVData EVCommon zeroerr eve_engine_includes
+        ${_eve_gltf_libraries} ${_eve_gltf_system_libraries})
+    add_test(NAME profile.gltf_animation COMMAND eve_gltf_animation_check)
+endif()

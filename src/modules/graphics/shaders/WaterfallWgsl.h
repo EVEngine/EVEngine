@@ -10,7 +10,7 @@ struct Frame {
     lights: array<Light3D, 8>, texBomb: vec4f, parallax: vec4f,
     surface: vec4f, view: mat4x4f, clipInfo: vec4f, cloud: vec4f, cloudWind: vec4f,
     envProbeCenter: vec4f, envProbeExtent: vec4f, skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>, reflectionProbeCenter: array<vec4f, 2>,
+    reflectionProbeCenter: array<vec4f, 2>,
     reflectionProbeExtent: array<vec4f, 2>,
 };
 struct FSIn {
