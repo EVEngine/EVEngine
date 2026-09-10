@@ -287,3 +287,17 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 下列绑定用于 HDR 图像、反射探针采集/注册、天空环境、曝光、Bloom 与反射链质量控制：
 
 `applyConfiguredToCamera`、`applyToCamera`、`clearReflectionProbe`、`configureInfluence`、`filterAndPublish`、`getActiveCubemap`、`getAdaptiveFaceBudget`、`getAdaptiveFilterSamples`、`getBloomIntensity`、`getBloomThreshold`、`getCaptureClusteredLighting`、`getCaptureFarDistance`、`getCaptureLodDistanceScale`、`getCaptureMask`、`getCaptureTransparent`、`getCenterX`、`getCenterY`、`getCenterZ`、`getCount`、`getEnvProbeCenterX`、`getEnvProbeCenterY`、`getEnvProbeCenterZ`、`getEnvProbeExtentX`、`getEnvProbeExtentY`、`getEnvProbeExtentZ`、`getEnvironmentLighting`、`getEnvironmentLightingIntensity`、`getExposure`、`getFaceCanvas`、`getGpuBudgetMs`、`getInfluenceBlendDistance`、`getInfluenceExtentX`、`getInfluenceExtentY`、`getInfluenceExtentZ`、`getInfluenceIntensity`、`getInfluencePriority`、`getLastCandidateCount`、`getLastCapturedFaceCount`、`getLastFilterSampleCount`、`getLastPublishedCount`、`getLastSelectedCount`、`getMaxRoughness`、`getPendingFaceCount`、`getPostProcessQuality`、`getPublishedRevision`、`getReflectionCaptureEnabled`、`getReflectionCaptureMask`、`getReflectionProbeCount`、`getReflectionQuality`、`getRefreshInterval`、`getResolution`、`getResolutionScale`、`getRevision`、`getSelectionHysteresis`、`getSkyB`、`getSkyFaceColor`、`getSkyFaceTexture`、`getSkyFaceTextureScale`、`getSkyG`、`getSkyIntensity`、`getSkyR`、`getSmoothedGpuDurationMs`、`getStagedRevision`、`getStagingCubemap`、`getThickness`、`getTotalCapturedFaceCount`、`getUpdateMode`、`hasEnvProbe`、`isAutoExposure`、`isCaptureComplete`、`isCapturePending`、`isRecaptureQueued`、`newHDRImageData`、`newReflectionProbeCapture`、`newReflectionProbeRegistry`、`queueCapture`、`queueCaptureAABB`、`remove`、`reportGpuDurationMs`、`requestCapture`、`setAutoExposure`、`setBloom`、`setCaptureClusteredLighting`、`setCaptureLodDistanceScale`、`setCaptureMask`、`setCaptureTransparent`、`setEnvironmentLighting`、`setExposure`、`setGpuBudgetMs`、`setMaxRoughness`、`setReflectionCaptureEnabled`、`setReflectionCaptureMask`、`setReflectionProbe`、`setReflectionQuality`、`setRefreshInterval`、`setResolutionScale`、`setSelectionHysteresis`、`setSkyColor`、`setSkyFaceColor`、`setSkyFaceTexture`、`setSkyFaceTextureScale`、`setUpdateMode`、`stageCapturedFaces`、`tick`、`tickAdaptive`、`updateCamera`。
+
+### 预编译网格 Shader 与画布快照
+
+`gfx.loadMeshShaderSpv(vertexPath, fragmentPath)` 从 VFS 加载 Vulkan SPIR-V，返回统一 Result。
+空 vertexPath 使用默认 Mesh3D 顶点着色器；fragmentPath 必填。成功后 `value` 是 Graphics
+所有的借用 Shader，只在 Graphics 生命周期内使用。调用者须预先编译匹配 Mesh3D 布局的程序。
+加载失败返回诊断，不修改已有材质。仅在渲染/VM owner 线程同步调用。
+
+`canvas.readPixels()` 返回独立 RGBA8 ImageData 的 Result；成功时脚本拥有 `value`，
+之后修改或清空画布不影响快照。调用前先提交离屏绘制批次；此操作等待 GPU，适合验证、
+导出，不适合每帧执行。失败返回诊断，不改变画布。HDR 使用既有独立接口。
+
+Vulkan RGBA8 画布在分次提交之间保留像素，显式 clear 在下一次绘制提交时执行。
+参考 `examples/ink-arena`，可用片元着色器和 alpha 混合在 GPU 上累积表面墨迹。
