@@ -1412,6 +1412,11 @@ private:
     size_t deferredGraphRecordedSlot_ = 0;
     /** @brief (Re)build one deferred FrameGraph per slot from current targets. */
     void buildDeferredFrameGraphs();
+    /** @brief On the render thread, wait for submitted work and release graph
+     * borrowers before replacing their
+     * engine-owned shadow/G-buffer targets.
+     */
+    void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */

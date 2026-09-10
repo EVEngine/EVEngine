@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "stylize" / "shaders"
 
 FRAGS = [
+    "anime_mesh.frag",
     "cartoon_post.frag",
     "watercolor_post.frag",
     "ink_post.frag",
