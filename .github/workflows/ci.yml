@@ -1032,7 +1032,7 @@ jobs:
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
-            xvfb
+            xvfb ffmpeg python3-pil
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -1107,15 +1107,35 @@ jobs:
           path: build/third-party-binary/linux-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
+      - name: Verify resource format fixture integrity
+        timeout-minutes: 5
+        run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
+
       - name: Run linux unit tests
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
         run: |
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
+
+      - name: Verify resource test results without skipped or warning-only cases
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" python3 scripts/resource_format_suite.py \
+            --build-dir build/linux-debug --report build/resource-format-report.json
+
+      - name: Independently decode resource image exports
+        timeout-minutes: 5
+        run: |
+          /usr/bin/python3 scripts/check_resource_format_exports.py build/resource-format-exports \
+            --report build/resource-format-export-report.json
 
       - name: Run headless GPU tests without Xvfb
         timeout-minutes: 15

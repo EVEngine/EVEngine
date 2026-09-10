@@ -674,9 +674,11 @@ void computeRotatedSize(int srcW, int srcH, float c, float s, bool expand, int &
 			maxY = std::max(maxY, oy);
 		}
 	}
-	dstW = std::max(1, (int)std::ceil(maxX - minX));
-	dstH = std::max(1, (int)std::ceil(maxY - minY));
-	dstCx = dstW * 0.5f;
+        // A float quarter-turn can push an integral extent one ULP upward.
+        // Discard that rounding residue before expanding to whole pixels.
+        dstW  = std::max(1, (int)std::ceil(std::nextafter(maxX - minX, 0.f)));
+        dstH  = std::max(1, (int)std::ceil(std::nextafter(maxY - minY, 0.f)));
+        dstCx = dstW * 0.5f;
 	dstCy = dstH * 0.5f;
 }
 
