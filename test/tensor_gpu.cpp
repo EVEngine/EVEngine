@@ -40,18 +40,17 @@ using namespace eve::tensor;
 
 namespace {
 
-/** GPU tensor tests need a live Vulkan device; headless init is enough. */
-bool tryInitHeadlessGfx() {
+/** GPU tensor tests need a live device; headless init is enough. */
+void initHeadlessGfx(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT) {
     auto *gfx = eve::graphics::Graphics::create();
-    if (!gfx) return false;
+    REQUIRE(gfx != nullptr);
     gfx->initHeadless(320, 240);
-    return true;
 }
 
 }  // namespace
 
 TEST_CASE("tensor.gpu.fusedElementwiseChain") {
-    if (!tryInitHeadlessGfx()) return;
+    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
     auto                 *tf = TF::create();
     std::unique_ptr<Func> fn(tf->func());
     Tensor               *x = fn->input2(4, 4);
@@ -73,7 +72,7 @@ TEST_CASE("tensor.gpu.fusedElementwiseChain") {
 }
 
 TEST_CASE("tensor.gpu.softmaxLayernormConv") {
-    if (!tryInitHeadlessGfx()) return;
+    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
     auto                   *tf = TF::create();
     std::unique_ptr<Tensor> w(tf->fill4(2, 1, 3, 3, 0.1f));
 
@@ -100,7 +99,7 @@ TEST_CASE("tensor.gpu.softmaxLayernormConv") {
 }
 
 TEST_CASE("tensor.gpu.transformerBlockInference") {
-    if (!tryInitHeadlessGfx()) return;
+    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
     auto       *tf = TF::create();
     const int   B = 1, T = 4, D = 8, C = 3;
     const float scale = 1.f / std::sqrt(float(D));
@@ -165,7 +164,7 @@ TEST_CASE("tensor.gpu.transformerBlockInference") {
 }
 
 TEST_CASE("tensor.gpu.sdpaMatchesCpu") {
-    if (!tryInitHeadlessGfx()) return;
+    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
     auto                   *tf = TF::create();
     const int               B = 1, H = 1, T = 4, S = 4, D = 8;
     std::unique_ptr<Tensor> q(tf->randomNormal4(B, H, T, D));
@@ -186,7 +185,8 @@ TEST_CASE("tensor.gpu.sdpaMatchesCpu") {
 
 namespace {
 
-void checkGpuGraphMatchesEager(TF *tf, const std::function<Tensor *(Tensor *)> &build, Tensor *feed, const char *name) {
+void checkGpuGraphMatchesEager(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, TF *tf,
+                               const std::function<Tensor *(Tensor *)> &build, Tensor *feed, const char *name) {
     std::unique_ptr<Func> fn(tf->func());
     Tensor               *in     = fn->input3(1, 4, 8);
     Tensor               *outSym = build(in);
@@ -210,7 +210,7 @@ void checkGpuGraphMatchesEager(TF *tf, const std::function<Tensor *(Tensor *)> &
 }  // namespace
 
 TEST_CASE("tensor.gpu.stageBisect") {
-    if (!tryInitHeadlessGfx()) return;
+    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
     auto                   *tf = TF::create();
     const int               T = 4, D = 8;
     std::unique_ptr<Tensor> x(tf->randomNormal3(1, T, D));
@@ -234,8 +234,8 @@ TEST_CASE("tensor.gpu.stageBisect") {
         return tf->layernorm(r, 1e-5f);
     };
 
-    checkGpuGraphMatchesEager(tf, stage1, x.get(), "stage1");
-    checkGpuGraphMatchesEager(tf, stage2, x.get(), "stage2");
-    checkGpuGraphMatchesEager(tf, stage3, x.get(), "stage3");
-    checkGpuGraphMatchesEager(tf, stage4, x.get(), "stage4");
+    checkGpuGraphMatchesEager(_ZEROERR_TEST_CONTEXT, tf, stage1, x.get(), "stage1");
+    checkGpuGraphMatchesEager(_ZEROERR_TEST_CONTEXT, tf, stage2, x.get(), "stage2");
+    checkGpuGraphMatchesEager(_ZEROERR_TEST_CONTEXT, tf, stage3, x.get(), "stage3");
+    checkGpuGraphMatchesEager(_ZEROERR_TEST_CONTEXT, tf, stage4, x.get(), "stage4");
 }
