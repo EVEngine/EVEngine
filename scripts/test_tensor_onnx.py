@@ -25,8 +25,10 @@ def main():
     parser.add_argument('--kokoro', type=Path)
     parser.add_argument('--gpu', action='store_true')
     args = parser.parse_args()
-    if args.gpu: os.environ['EVE_ONNX_GPU']='1'
-    else: os.environ.pop('EVE_ONNX_GPU',None)
+    if args.gpu:
+        os.environ['EVE_ONNX_GPU'] = '1'
+    else:
+        os.environ.pop('EVE_ONNX_GPU', None)
     args.work.mkdir(parents=True, exist_ok=True)
     probe = str(args.probe.resolve())
     results = []
