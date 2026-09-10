@@ -415,12 +415,14 @@ void Graphics::createMesh3DPipeline() {
         layoutBuilder
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(4, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment, 1)
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(6, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(7, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
@@ -512,6 +514,7 @@ void Graphics::createMesh3DClusteredPipeline() {
 }
 
 void Graphics::destroyShadowResources() {
+    resetDeferredFrameGraphs();
     destroyPipeline(device, shadowPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
     destroyPipeline(device, shadowAlphaPipeline);
@@ -546,6 +549,7 @@ void Graphics::destroyShadowResources() {
 }
 
 void Graphics::destroyGBufferResources() {
+    resetDeferredFrameGraphs();
     gbufferPassActive = false;
     gbufferPending = false;
     gbufferPassDraws.clear();
@@ -945,14 +949,14 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        gpu.width         = gbufW;
+        gpu.height        = gbufH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width       = gbufW;
+        tex.height      = gbufH;
+        tex.pixelWidth  = gbufW;
+        tex.pixelHeight = gbufH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : gbufferSlots) {
@@ -963,7 +967,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
-    createGpuDrivenVisResources(width, height);
+    createGpuDrivenVisResources(gbufW, gbufH);
 }
 
 void Graphics::ensureDecalUnitBox() {
@@ -1488,9 +1492,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                 createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
         } else {
-            g->mesh3dPipeline =
-                createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
-                                          g->pipelineLayout, target, samples);
+            g->mesh3dPipeline = createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                                          g->pipelineLayout, target, samples, g->owner->meshBlend,
+                                                          g->owner->meshDepthWrite, g->owner->meshDoubleSided);
             g->mesh3dXrayPipeline =
                 createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);

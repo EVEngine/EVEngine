@@ -81,12 +81,14 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
     def test_classic_assets_report_skips_and_full_fps_sweep_is_labeled(self):
         entries = [("ClassicScenes.perf.maxFps", "ClassicScenes.cpp", 20),
                    ("ClassicScenes.duck.flythroughConfigs", "ClassicScenes.cpp", 40),
-                   ("other.case", "other.cpp", 10)]
+                   ("other.case", "other.cpp", 10),
+                   ("resourceFormats.image.png", "resource_format_image.cpp", 12)]
         result, generated = self.discover(entries, "plain")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('"ClassicScenes.perf.maxFps" PROPERTIES LABELS "benchmark"', generated)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION'), 2)
         self.assertNotIn('"other.case" PROPERTIES SKIP', generated)
+        self.assertIn('"resourceFormats.image.png" PROPERTIES FAIL_REGULAR_EXPRESSION', generated)
 
     def test_duplicate_names_report_both_sources_before_registration(self):
         for listing_format in ("plain", "legacy"):

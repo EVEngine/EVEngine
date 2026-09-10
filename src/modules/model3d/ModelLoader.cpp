@@ -36,12 +36,11 @@ std::string extensionOf(const std::string &path) {
 
 bool isModelPath(const std::string &path) {
     const std::string ext = extensionOf(path);
-    return ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".dae" ||
-           ext == ".3ds" || ext == ".blend" || ext == ".stl" || ext == ".ply" || ext == ".x" ||
-           ext == ".lwo" || ext == ".lws" || ext == ".md5mesh" || ext == ".md5anim" ||
-           ext == ".b3d" || ext == ".csm" || ext == ".irr" || ext == ".irrmesh" || ext == ".md2" ||
-           ext == ".md3" || ext == ".ms3d" || ext == ".smd" || ext == ".vta" || ext == ".bvh" ||
-           ext == ".ac" || ext == ".off" || ext == ".raw" || ext == ".ter" || ext == ".nff" ||
+    return ext == ".obj" || ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".vrm" || ext == ".dae" ||
+           ext == ".3ds" || ext == ".blend" || ext == ".stl" || ext == ".ply" || ext == ".x" || ext == ".lwo" ||
+           ext == ".lws" || ext == ".md5mesh" || ext == ".md5anim" || ext == ".b3d" || ext == ".csm" || ext == ".irr" ||
+           ext == ".irrmesh" || ext == ".md2" || ext == ".md3" || ext == ".ms3d" || ext == ".smd" || ext == ".vta" ||
+           ext == ".bvh" || ext == ".ac" || ext == ".off" || ext == ".raw" || ext == ".ter" || ext == ".nff" ||
            ext == ".ndo" || ext == ".evmodel";
 }
 
@@ -114,13 +113,13 @@ public:
         if (!fs) fs = filesystem::Filesystem::create();
         if (!fs) return nullptr;
 
-        if (extensionOf(path) == ".evmodel") {
+        if (extensionOf(path) == ".evmodel" || extensionOf(path) == ".vrm") {
             filesystem::FileData *packedRaw = fs->read(path);
             if (!packedRaw) return nullptr;
             eve::ref<filesystem::FileData> packed(packedRaw);
             Model3D *module = ModuleManager::getInstance<Model3D>("Model3D");
             if (!module) module = Model3D::create();
-            return module->newModelData(packed.get(), ".evmodel", options);
+            return module->newModelData(packed.get(), extensionOf(path), options);
         }
 
         EveFileSystem eveFs(fs);

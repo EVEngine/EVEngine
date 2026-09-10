@@ -34,6 +34,7 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/ShaderScriptBindings.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
@@ -159,6 +160,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+    retireResourceLifetime();
     // Derived backends detach first, while their virtual releaseMesh boundary
     // is still live. This base path covers host-only Graphics subclasses.
     detachGraphicsArtifactProvider(this);
@@ -249,6 +251,7 @@ void Graphics::expose(ssq::Table& table) {
     const auto vm = table.getHandle();
 
     exposePrimitiveScriptBindings(table, cls);
+    exposeShaderScriptBindings(table, cls);
     cls.addFunc("replaceShaderFromGlsl",
                 [vm](Graphics* self, Shader* shader, const std::string& vertex,
                      const std::string& fragment) {

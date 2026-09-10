@@ -19,6 +19,16 @@ bool TerrainStreamingCache::open(const uint8_t *data, size_t size, std::string *
     return true;
 }
 
+Result<void> TerrainStreamingCache::openSource(
+    std::shared_ptr<const ITerrainArchiveSource> source) {
+    TerrainAsset next;
+    auto opened = next.openSource(std::move(source));
+    if (!opened) return opened;
+    asset_ = std::move(next);
+    resident_.clear();
+    return Result<void>::success();
+}
+
 void TerrainStreamingCache::clear() { resident_.clear(); }
 
 TerrainStreamStats TerrainStreamingCache::streamAround(int worldX, int worldY, int radius,
@@ -40,11 +50,14 @@ TerrainStreamStats TerrainStreamingCache::streamAround(int worldX, int worldY, i
 
     struct Request { int x, y; int64_t distanceSq; };
     std::vector<Request> requests;
-    for (const TerrainChunkEntry &entry : asset_.chunks()) {
-        const int64_t dx = int64_t(entry.chunkX) - centerX, dy = int64_t(entry.chunkY) - centerY;
-        const int64_t distanceSq = dx * dx + dy * dy;
-        if (distanceSq <= radiusSq && !getChunk(entry.chunkX, entry.chunkY))
-            requests.push_back({entry.chunkX, entry.chunkY, distanceSq});
+    for (int dy = -radius; dy <= radius; ++dy) {
+        for (int dx = -radius; dx <= radius; ++dx) {
+            const int64_t distanceSq = int64_t(dx) * dx + int64_t(dy) * dy;
+            if (distanceSq > radiusSq) continue;
+            const int chunkX = centerX + dx, chunkY = centerY + dy;
+            if (asset_.findChunk(chunkX, chunkY) && !getChunk(chunkX, chunkY))
+                requests.push_back({chunkX, chunkY, distanceSq});
+        }
     }
     std::sort(requests.begin(), requests.end(), [](const Request &a, const Request &b) {
         return std::tie(a.distanceSq, a.y, a.x) < std::tie(b.distanceSq, b.y, b.x);

@@ -38,10 +38,12 @@ static const char kNoUvCubeObj[] =
     "f 1 2 3\n"
     "f 1 3 4\n";
 
-eve::model3d::ModelData *loadObj(const char *text) {
+eve::model3d::ModelData *loadObj(const char *text, bool flipUVs = true) {
     auto *mod = eve::model3d::Model3D::create();
     eve::data::ByteData data(text, std::char_traits<char>::length(text));
-    return mod->newModelData(&data, ".obj");
+    eve::model3d::ModelLoadOptions options;
+    options.flipUVs = flipUVs;
+    return mod->newModelData(&data, ".obj", options);
 }
 
 float length3(float x, float y, float z) { return std::sqrt(x * x + y * y + z * z); }
@@ -95,7 +97,8 @@ TEST_CASE("model3d.normals.applyUnknownKindFails") {
 }
 
 TEST_CASE("model3d.normals.bakeObjectSpaceCorner") {
-    std::unique_ptr<eve::model3d::ModelData> md(loadObj(kUvQuadObj));
+    // This oracle uses the source OBJ UVs; default import flips V.
+    std::unique_ptr<eve::model3d::ModelData> md(loadObj(kUvQuadObj, false));
     REQUIRE(md.get() != nullptr);
     REQUIRE(md->applyVertexNormalsFrom(0, "radial", 0.f, 0.f, 0.f).ok());
 

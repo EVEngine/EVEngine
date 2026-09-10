@@ -123,6 +123,12 @@ foreach(_basename IN LISTS _bundle_files)
         string(APPEND _content
           "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"benchmark\")\n")
       endif()
+      if(_name MATCHES "^resourceFormats\\.")
+        # Helpers must receive TestContext, but fail closed if a future helper
+        # logs an assertion without propagating it to zeroerr's exit status.
+        string(APPEND _content
+          "set_tests_properties(\"${_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"Assertion Failed\")\n")
+      endif()
     endif()
   endforeach()
 endforeach()

@@ -86,6 +86,30 @@ using eve::graphics::Color;
 using namespace eve::procgen;
 using namespace eve::graphics;
 
+namespace {
+class TrackingTerrainSource final : public ITerrainArchiveSource {
+public:
+    explicit TrackingTerrainSource(std::vector<std::uint8_t> bytes) : bytes_(std::move(bytes)) {}
+    std::uint64_t size() const noexcept override { return bytes_.size(); }
+    eve::Result<std::vector<std::uint8_t>> read(std::uint64_t offset,
+                                                std::size_t length) const override {
+        if (offset > bytes_.size() || length > bytes_.size() - std::size_t(offset))
+            return eve::Result<std::vector<std::uint8_t>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "tracking source out of bounds"));
+        ++readCount;
+        bytesRead += length;
+        return eve::Result<std::vector<std::uint8_t>>::success(std::vector<std::uint8_t>(
+            bytes_.begin() + std::ptrdiff_t(offset),
+            bytes_.begin() + std::ptrdiff_t(offset + length)));
+    }
+    mutable std::size_t readCount = 0;
+    mutable std::size_t bytesRead = 0;
+
+private:
+    std::vector<std::uint8_t> bytes_;
+};
+}  // namespace
+
 TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
     Params p;
     p.setInt("width", 38);
@@ -1525,6 +1549,38 @@ TEST_CASE("procgen.terrain.streaming.budgetEvictionAndCrossChunkSampling") {
     CHECK(std::abs(sample.height - 69.f) < 0.002f);
     TerrainStreamStats noOp = stream.streamAround(0, 0, -1, 0, &error);
     CHECK_EQ(noOp.resident, 1);
+}
+
+TEST_CASE("procgen.terrain.streaming.randomAccessReadsOnlyMetadataAndResidentChunks") {
+    Heightmap heightmap(256, 256);
+    for (int y = 0; y < 256; ++y)
+        for (int x = 0; x < 256; ++x)
+            heightmap.setHeight(x, y, float((x * 17 + y * 31) % 251) / 250.0F);
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 0.45F, 0.5F);
+    const ClimateMap climate = TerrainPipeline::buildClimate(heightmap, hydrology, 0.5F, 0.5F);
+    std::vector<std::uint8_t> archive;
+    std::string error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 16, archive, &error));
+    auto source = std::make_shared<TrackingTerrainSource>(std::move(archive));
+
+    TerrainStreamingCache stream;
+    auto opened = stream.openSource(source);
+    REQUIRE(opened.ok());
+    CHECK_EQ(source->readCount, std::size_t(2));
+    CHECK(source->bytesRead < source->size() / 4);
+    const std::size_t metadataBytes = source->bytesRead;
+
+    const auto loaded = stream.streamAround(128, 128, 1, 2, &error);
+    CHECK_EQ(loaded.loaded, 2);
+    CHECK_EQ(loaded.resident, 2);
+    CHECK_EQ(source->readCount, std::size_t(4));
+    CHECK(source->bytesRead > metadataBytes);
+    CHECK(source->bytesRead < source->size() / 2);
+    const std::size_t stableReads = source->readCount;
+    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 3);
+    CHECK_EQ(source->readCount, stableReads + 3);
+    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 0);
+    CHECK_EQ(source->readCount, stableReads + 3);
 }
 
 TEST_CASE("procgen.terrain.streaming.crossChunkHydrologyTraceAndHalo") {

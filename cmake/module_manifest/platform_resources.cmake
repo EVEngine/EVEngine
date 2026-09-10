@@ -7,7 +7,7 @@ eve_declare_module(NAME window REQUIRED LAYER 1 SCRIPT Window SLOT win
                    THIRDPARTY sdl2)
 eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    DEPS filesystem
-                   THIRDPARTY medialoader_image
+                   THIRDPARTY medialoader_image webp
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME asset_import LAYER 1
                    DEPS asset data cmdline

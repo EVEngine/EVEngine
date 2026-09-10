@@ -176,6 +176,16 @@ public:
 
     /** @brief Renderer backend id used by sibling modules (e.g. Gpgpu). */
     virtual std::string getBackendName() const = 0;
+    /**
+     * @brief Observe this provider's resource lifetime without extending it.
+     * @return Weak token; expiry
+     * invalidates all borrowed resources from this provider.
+     * @ownership Graphics alone owns the token. Consumers
+     * must never retain a strong lock.
+     * @thread Main/render thread only; no concurrent provider destruction or
+     * callbacks.
+     */
+    [[nodiscard]] std::weak_ptr<const void> resourceLifetime() const;
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this
@@ -1454,6 +1464,16 @@ public:
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     /**
+     * @brief Prepare a custom mesh shader's blend, depth and culling state.
+     * @return Success, Unsupported, or a structured validation failure.
+     * @note Render thread only, before submission. Shader ownership is unchanged.
+     * Failure preserves existing pipelines. Does not invoke callbacks.
+     */
+    [[nodiscard]] virtual eve::Result<void> configureMeshShaderSurface(Shader &, BlendMode, bool, bool) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh surface state is unavailable"));
+    }
+    /**
      * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
      * @param vertGlsl Vertex shader source.
      * @param fragGlsl Fragment shader source.
@@ -1790,6 +1810,7 @@ protected:
 
     /** @brief FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
     Shader *prepareSceneColorResolveShader(Texture *scene);
+    void    retireResourceLifetime() const;
 };
 
 }  // namespace eve::graphics

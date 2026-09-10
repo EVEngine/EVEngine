@@ -1,0 +1,15 @@
+diff --git a/sound/Mpg123Decoder.cpp b/sound/Mpg123Decoder.cpp
+--- a/sound/Mpg123Decoder.cpp
++++ b/sound/Mpg123Decoder.cpp
+@@ -147,7 +147,10 @@
+ 			channels = 2;
+ 
+ 		// Force signed 16-bit output.
+-		mpg123_param(handle, MPG123_FLAGS, (channels == 2 ? MPG123_FORCE_STEREO : MPG123_MONO_MIX), 0);
++		// Preserve default gapless/delay compensation across seek and rewind.
++        ret = mpg123_param(handle, MPG123_ADD_FLAGS, (channels == 2 ? MPG123_FORCE_STEREO : MPG123_MONO_MIX), 0);
++        if (ret != MPG123_OK)
++            throw Exception("Could not set decoder channel flags.");
+ 		mpg123_format_none(handle);
+ 		mpg123_format(handle, rate, channels, MPG123_ENC_SIGNED_16);
+ 

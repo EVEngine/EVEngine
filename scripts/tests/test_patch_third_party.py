@@ -89,11 +89,15 @@ def main() -> int:
         apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", dirty_aggregate)
 
         clean_medialoader = temporary / "medialoader-clean"
-        checkout_patch_inputs(MEDIALOADER, clean_medialoader,
-                              [PATCHES / "medialoader-smooth-normals.patch",
-                               PATCHES / "mpg123-signal-handler.patch"])
-        apply_twice(PATCHES / "medialoader-smooth-normals.patch", clean_medialoader)
-        apply_twice(PATCHES / "mpg123-signal-handler.patch", clean_medialoader)
+        medialoader_patches = [
+            PATCHES / "medialoader-smooth-normals.patch",
+            PATCHES / "mpg123-signal-handler.patch",
+            PATCHES / "medialoader-image-formats.patch",
+            PATCHES / "medialoader-audio-gapless.patch",
+        ]
+        checkout_patch_inputs(MEDIALOADER, clean_medialoader, medialoader_patches)
+        for patch in medialoader_patches:
+            apply_twice(patch, clean_medialoader)
 
         # A genuine target drift must fail and expose git's diagnostic; it may
         # not be mistaken for an already-applied patch or silently skipped.

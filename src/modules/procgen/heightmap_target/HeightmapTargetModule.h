@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
 
 #include <memory>
 #include <string>
@@ -43,6 +44,11 @@ public:
     /** @brief Compatibility projection that updates a smooth-normal preview mesh. @thread Render-thread only. */
     bool updateSmoothMesh(graphics::Mesh* mesh, graphics::Graphics* graphics, procgen::Heightmap* heightmap,
                           float cellSize, float heightScale) const;
+    /** @brief Encode an editable heightmap as the versioned terrain editor JSON document. */
+    [[nodiscard]] Result<std::string> encodeDocument(const procgen::Heightmap* heightmap, float spacingX,
+                                                     float spacingZ) const;
+    /** @brief Atomically replace a heightmap from a validated terrain editor JSON document. */
+    [[nodiscard]] Result<void> decodeDocument(std::string_view json, procgen::Heightmap* heightmap) const;
 };
 
 }  // namespace eve::heightmap_target

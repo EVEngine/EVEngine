@@ -492,7 +492,7 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     if (w == 0 || h == 0) return nullptr;
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
-    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
+    if (gbufferPending) recordDeferredFrameGraph();
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
@@ -545,7 +545,7 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     const uint32_t w = uint32_t(decalWidth);
     const uint32_t h = uint32_t(decalHeight);
     if (w == 0 || h == 0) return nullptr;
-    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
+    if (gbufferPending) recordDeferredFrameGraph();
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
