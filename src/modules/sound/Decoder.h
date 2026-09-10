@@ -15,7 +15,9 @@ namespace sound {
 
 /**
  * @brief Streaming audio decoder (medialoader-backed).
- * Owns the raw encoded bytes and decodes incrementally via decode().
+ * Owns the raw encoded bytes and decodes incrementally via decode(). Clones
+ * share immutable encoded storage and own independent playback positions.
+ * Each decoder is thread-affine; calls on one instance must be serialized.
  */
 class Decoder : public Object {
 public:
@@ -23,7 +25,13 @@ public:
     Decoder(std::unique_ptr<medialoader::Decoder> impl, std::vector<char> ownedData);
     ~Decoder() override;
 
-    /** @brief Duplicates the decoder (each clone keeps its own position). */
+    /**
+     * @brief Creates a caller-owned decoder positioned at the start of the stream.
+     * @return Independent playback state retaining the encoded storage even after
+     * this decoder is destroyed. Either instance may be destroyed first.
+     * @throws eve::Exception if the provider cannot clone the decoder.
+     * @reentrancy Does not invoke application callbacks.
+     */
     Decoder *clone() const;
 
     /** @brief Decodes the next chunk; returns bytes produced (0 = end/error). */
@@ -51,8 +59,12 @@ public:
     medialoader::Decoder *getImpl() { return impl.get(); }
 
 private:
-    std::unique_ptr<medialoader::Decoder> impl;
-    std::vector<char> ownedData;
+    Decoder(std::unique_ptr<medialoader::Decoder> impl, std::shared_ptr<const std::vector<char>> ownedData);
+
+    // Providers borrow these bytes. Declare storage first so it outlives impl's
+    // destructor, including when this is the last clone.
+    std::shared_ptr<const std::vector<char>> ownedData;
+    std::unique_ptr<medialoader::Decoder>    impl;
 };
 
 }  // namespace sound

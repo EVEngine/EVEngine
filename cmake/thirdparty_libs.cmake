@@ -70,6 +70,9 @@ function(eve_thirdparty_libs out_var)
                 list(APPEND _libs medialoader_image)
             endif()
 
+        elseif(g STREQUAL "webp")
+            list(APPEND _libs webpdemux)
+
         elseif(g STREQUAL "medialoader_model")
             if(_win_debug)
                 list(APPEND _libs medialoader_modelmdd)

@@ -18,6 +18,7 @@ set(EVE_TP_ORDER
     squirrel
     sdl2
     medialoader_image
+    webp
     medialoader_model
     medialoader_sound
     assimp

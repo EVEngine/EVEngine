@@ -1,6 +1,7 @@
 
 
 #include "Image.h"
+#include "WebPHandler.h"
 #include "common/Exception.h"
 #include "common/Resource.h"
 #include "common/config.h"
@@ -30,16 +31,10 @@ Image::Image()
 
 	float16Init(); // Makes sure half-float conversions can be used.
 
-	formatHandlers = {
-		new PNGHandler,
-		new STBHandler,
-		new EXRHandler,
-		new DDSHandler,
-		new PVRHandler,
-		new KTXHandler,
-		new PKMHandler,
-		new ASTCHandler,
-	};
+        formatHandlers = {
+            new PNGHandler, new WebPHandler, new STBHandler, new EXRHandler,  new DDSHandler,
+            new PVRHandler, new KTXHandler,  new PKMHandler, new ASTCHandler,
+        };
 }
 
 Image::~Image()

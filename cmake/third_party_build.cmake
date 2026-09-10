@@ -276,6 +276,17 @@ function(check_third_party_project name repo)
         -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-smooth-normals.patch
         -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
         -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Independent image fixtures cover memory-backed BMP and GIF first-frame decoding.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-image-formats.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-audio-gapless.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
     # Second patch: export squirrel/ssq symbols from the win32 host binary
     # (paths relative to the third-party aggregate root).
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
