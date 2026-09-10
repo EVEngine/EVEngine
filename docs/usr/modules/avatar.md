@@ -149,8 +149,7 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
   `getAnimationEventPayload()` 读取。
 - VRM 运行时语义：`mapHumanoidBone` / `autoMapHumanoidBones` 把标准 humanoid
   名称映射到当前动画骨架；`mapViseme` / `setViseme` 把口型语义映射到真实 mesh
-  morph，并在切换口型时清零上一个通道。当前不解析 VRM 扩展元数据；导入器重做前可由
-  游戏脚本或加载插件提供映射。`getHumanoidBoneName(semantic)` 返回已映射骨骼名。
+  morph，并在切换口型时清零上一个通道。`loadVroidModel` 自动读取 VRM 扩展；手动绑定模型仍可使用这些映射接口。`getHumanoidBoneName(semantic)` 返回已映射骨骼名。
 - VRM LookAt：`setLookAtTarget(x, y, z)` 设置世界空间注视点，
   `setLookAtWeight(weight)` 控制影响强度，`clearLookAtTarget()` 关闭注视；运行时会限制
   头部偏航和俯仰，并叠加到当前动画 Pose。
@@ -176,5 +175,47 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
 
 - 头像实例由脚本持有（`newImageAvatar()` 等返回）；模块级 `update/render` 遍历全部实例。
 - Image 层的 `Texture` 引用由 Graphics 持有，传给 `addLayer` 的纹理需保持有效。
-- VRoid 路径绑定的是 `Model3D` 数据 + `Renderable3D`；`bakeMorphs` 把 morph 权重
-  烘焙进网格，热重载后需重新绑定。
+- 导入式 VRoid 独占模型、动画骨架、全部网格与材质；`release()` 或成功替换会释放它们。
+  ECS 投影使用带代数的 Handle，投影先销毁也可以安全清理；Graphics 销毁后不再访问 GPU 资源。
+
+
+## VRM 1.0 一键导入
+
+`loadVroidModel(path)` 是规范入口，返回脚本 Result（`ok`、`status`）；失败保留原模型、
+参数与投影。`loadVroidModelPath(path)` 仅为兼容旧调用的 bool 包装，也会执行真实导入。
+路径由 Filesystem 解析，文件可以是带 VRMC_vrm 1.0 扩展的 `.vrm` 或 `.glb`。
+普通 GLB 使用 Model3D 加载；旧 VRM 0.x 返回版本诊断，不会伪装成完整 VRM 导入。
+
+```squirrel
+local avatar = eve.Avatar().newVroidAvatar();
+local result = avatar.loadVroidModel("model.vrm");
+if (!result.ok) throw result.status.summary;
+avatar.setExpression("happy");
+avatar.setLookAtTarget(0.0, 1.5, 2.0);
+// Each frame, on the rendering thread:
+avatar.update(dt);
+avatar.sync();
+```
+
+`getVroidVersion()`、`getVroidMeshCount()`、`getVroidSpringCount()` 查询已导入版本、
+绘制网格数与弹簧链数。`getExpressionCount()` / `getExpressionName(index)` 枚举表情。
+`setParameter(name, weight)` 混合表情；`setExpression(name)` 切换预设。
+导入绑定支持全部 primitive 的 morph、材质颜色和 UV 变换，以及 binary、blink/mouth/lookAt override。
+`setHumanoidBoneRotation(semantic, yaw, pitch, roll)` 返回 Result，以弧度设置骨骼局部旋转偏移。
+`setLookAtTarget` 依据文件的 bone/expression 模式和内外、上下范围控制视线。
+
+Vulkan MToon 使用原始贴图，支持明暗分区、法线、发光、MatCap、边缘光、
+透明/裁切/深度写入、渲染顺序、世界/屏幕描边、纹理变换与 UV 动画。
+当前贴图采用保留原分辨率的图集与双线性采样，不提供 mipmap；图集尺寸上限 16384。
+其他图形后端返回明确失败。仅接受内嵌图像和 UV0；蒙皮需显式 inverseBindMatrices。
+未知可选字段忽略，未知 schema 版本拒绝。
+
+弹簧骨骼读取中心节点、关节参数及显式碰撞组，支持球体/胶囊碰撞。
+模拟时间由 `update(dt)` 注入，无随机源；相同初始状态和 dt 序列产生相同结果（跨平台浮点容差），
+不承诺不同帧率完全相同。超过 0.25 秒的步长重置粒子，每步最多模拟 0.05 秒。
+重载通过重新导入重建运行时；运行时粒子状态不持久化。
+
+所有导入、更新、同步和释放在渲染线程调用，不执行用户回调。
+导入后的骨架与网格由 Avatar 管理，旧 `bindAnim*` / `bindVroidModelData` 拒绝替换其内部指针；
+旧 `setMesh` / `setTexture` 不覆盖导入资源。手动创建的 VRoid Avatar 保留原有低层绑定方式。
+完整示例见 `examples/vrm-avatar`。

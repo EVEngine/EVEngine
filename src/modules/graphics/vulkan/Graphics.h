@@ -510,6 +510,8 @@ public:
     Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
                                   const std::string &fragWgsl) override;
     bool releaseShader(Shader *shader) override;
+    eve::Result<void> configureMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite,
+                                                 bool doubleSided) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,

@@ -69,7 +69,7 @@ endif()
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
 # binary. Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp)
+  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()

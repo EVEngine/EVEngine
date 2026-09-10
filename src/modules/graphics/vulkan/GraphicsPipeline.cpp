@@ -415,12 +415,14 @@ void Graphics::createMesh3DPipeline() {
         layoutBuilder.buffer(21, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(4, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment, 1)
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(6, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(7, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
@@ -1490,9 +1492,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                 createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
         } else {
-            g->mesh3dPipeline =
-                createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
-                                          g->pipelineLayout, target, samples);
+            g->mesh3dPipeline = createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                                          g->pipelineLayout, target, samples, g->owner->meshBlend,
+                                                          g->owner->meshDepthWrite, g->owner->meshDoubleSided);
             g->mesh3dXrayPipeline =
                 createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
