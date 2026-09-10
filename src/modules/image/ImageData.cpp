@@ -679,7 +679,7 @@ void computeRotatedSize(int srcW, int srcH, float c, float s, bool expand, int &
         dstW  = std::max(1, (int)std::ceil(std::nextafter(maxX - minX, 0.f)));
         dstH  = std::max(1, (int)std::ceil(std::nextafter(maxY - minY, 0.f)));
         dstCx = dstW * 0.5f;
-	dstCy = dstH * 0.5f;
+        dstCy = dstH * 0.5f;
 }
 
 struct PixelBuffer {

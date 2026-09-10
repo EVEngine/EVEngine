@@ -64,7 +64,7 @@ private:
     // Providers borrow these bytes. Declare storage first so it outlives impl's
     // destructor, including when this is the last clone.
     std::shared_ptr<const std::vector<char>> ownedData;
-    std::unique_ptr<medialoader::Decoder> impl;
+    std::unique_ptr<medialoader::Decoder>    impl;
 };
 
 }  // namespace sound
