@@ -611,59 +611,72 @@ TEST_CASE("voxel.render.fullChunkSixFacesOrbitPixel") {
     CHECK(luma(mid) > 0.05f);
 }
 
-TEST_CASE("voxel.render.wide32x1_rect") {
+TEST_CASE("voxel.render.thinRectanglesAcrossAxes") {
     hideLeftover3D();
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 320, 200);
+    openGfxWindow(win, gfx, 320, 220);
     tinyHud(gfx);
     gfx->setScreenReadbackEnabled(true);
-
-    uint32_t        packed = PackedRect::pack(0, 0, 0, 32, 1, 1).bits;
-    Texture        *atlas  = makeSolid(gfx, 230, 180, 40);
-    const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(16.f, 10.f, 16.f);
-    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(16.f, 0.f, 0.5f), glm::vec3(0, 0, -1));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp   = proj * view;
-
-    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
+    struct Rectangle {
+        int         width, height;
+        const char *direction;
+        glm::vec3   eye, target, up;
+        uint8_t     red, green, blue;
+        Color       background;
+        float       minLuma;
+    };
+    // The +Y face lies at y=1; aim at its center rather than the plane below it.
+    const Rectangle cases[] = {
+        {32,
+         1,
+         "posY",
+         {16.f, 10.f, 16.f},
+         {16.f, 1.f, 0.5f},
+         {0, 0, -1},
+         230,
+         180,
+         40,
+         Color(0.05f, 0.06f, 0.08f, 1.f),
+         0.05f},
+        {1,
+         32,
+         "posX",
+         {20.f, 16.f, 0.5f},
+         {1.f, 16.f, 0.5f},
+         {0, 1, 0},
+         200,
+         60,
+         200,
+         Color(0.05f, 0.05f, 0.07f, 1.f),
+         0.04f},
+    };
+    for (const auto &input : cases) {
+        std::printf("thin face=%s size=%dx%d\n", input.direction, input.width, input.height);
+        const uint32_t packed = PackedRect::pack(0, 0, 0, input.width, input.height, 1).bits;
+        Texture       *atlas  = makeSolid(gfx, input.red, input.green, input.blue);
+        REQUIRE(atlas != nullptr);
+        const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+        const glm::mat4 vp     = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f) *
+                             glm::lookAtRH(input.eye, input.target, input.up);
+        gfx->setBackgroundColor(input.background);
+        gfx->begin3DFrame();
+        REQUIRE(gfx->had3DThisFrame());
         gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 1);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, input.direction, atlas, 1);
+        RenderSystem::render(*gfx);
+        const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(luma(mid) > input.minLuma);
+        REQUIRE(mid.r > 0.1f);
+        if (input.green > input.blue) {
+            REQUIRE(mid.g > mid.b);
+            REQUIRE(mid.r > mid.b);
+        } else {
+            REQUIRE(mid.b > mid.g);
+            REQUIRE(mid.r > mid.g);
+        }
     }
-    RenderSystem::render(*gfx);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.05f);
-}
-
-TEST_CASE("voxel.render.tall1x32_side") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 280, 220);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-
-    uint32_t    packed = PackedRect::pack(0, 0, 0, 1, 32, 1).bits;  // ±X: w along Z, h along Y
-    Texture    *atlas  = makeSolid(gfx, 200, 60, 200);
-    const float aspect =
-        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(20.f, 16.f, 0.5f);
-    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(1.f, 16.f, 0.5f), glm::vec3(0, 1, 0));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp = proj * view;
-
-    gfx->setBackgroundColor(Color(0.05f, 0.05f, 0.07f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
-        gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posX", atlas, 1);
-    }
-    RenderSystem::render(*gfx);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.04f);
+    win->close();
 }
 
 TEST_CASE("voxel.render.negXWallFromLeft") {

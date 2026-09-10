@@ -1,31 +1,56 @@
 #include "VoxelRenderFixtures.h"
 
-TEST_CASE("voxel.render.emptyInstancesNoCrash") {
+TEST_CASE("voxel.render.emptyInstanceInputsAreNoOps") {
     hideLeftover3D();
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 160, 120);
+    openGfxWindow(win, gfx, 200, 150);
     tinyHud(gfx);
     gfx->setScreenReadbackEnabled(true);
-
+    Texture *white = makeSolid(gfx, 255, 255, 255);
+    REQUIRE(white != nullptr);
+    const uint32_t  packed = PackedRect::pack(0, 0, 0, 1, 1, 0).bits;
     const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::mat4 view   = glm::lookAtRH(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    const glm::mat4 proj   = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp     = proj * view;
-
-    gfx->setBackgroundColor(Color(0.1f, 0.1f, 0.12f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
+    const glm::mat4 vp     = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f) *
+                         glm::lookAtRH(glm::vec3(0.5f, 0.5f, 5.f), glm::vec3(0.5f, 0.5f, 1.f), glm::vec3(0, 1, 0));
+    struct EmptyInput {
+        const uint32_t *data;
+        int             count;
+        const char     *direction;
+        Texture        *atlas;
+    };
+    const EmptyInput inputs[] = {{nullptr, 0, "posZ", nullptr},
+                                 {nullptr, 10, "posY", white},
+                                 {nullptr, 0, "posY", white},
+                                 {&packed, 0, "posZ", nullptr}};
+    const Color      background(0.1f, 0.1f, 0.12f, 1.f);
+    for (const auto &input : inputs) {
+        std::printf("empty input null=%d count=%d face=%s atlas=%d\n", input.data == nullptr, input.count,
+                    input.direction, input.atlas != nullptr);
+        gfx->setBackgroundColor(background);
+        gfx->begin3DFrame();
+        REQUIRE(gfx->had3DThisFrame());
         gfx->setMesh3DViewProj(vp);
-        // count == 0 must be a no-op.
-        gfx->drawVoxelFaceInstances(nullptr, 0, 0.f, 0.f, 0.f, "posZ", nullptr, 1);
-        uint32_t dummy = PackedRect::pack(0, 0, 0, 1, 1, 0).bits;
-        // Also tolerate a single instance draw.
-        gfx->drawVoxelFaceInstances(&dummy, 1, 0.f, 0.f, 0.f, "posZ", nullptr, 1);
+        gfx->drawVoxelFaceInstances(input.data, input.count, 0.f, 0.f, 0.f, input.direction, input.atlas, 1);
+        RenderSystem::render(*gfx);
+        const Color empty = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(std::fabs(empty.r - background.r) < 0.01f);
+        REQUIRE(std::fabs(empty.g - background.g) < 0.01f);
+        REQUIRE(std::fabs(empty.b - background.b) < 0.01f);
+
+        // A no-op must not prevent a subsequent valid draw in the same frame.
+        gfx->begin3DFrame();
+        REQUIRE(gfx->had3DThisFrame());
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(input.data, input.count, 0.f, 0.f, 0.f, input.direction, input.atlas, 1);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posZ", nullptr, 1);
+        RenderSystem::render(*gfx);
+        const Color drawn = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(drawn.r > 0.2f);
+        REQUIRE(drawn.g > 0.2f);
+        REQUIRE(drawn.b > 0.2f);
     }
-    RenderSystem::render(*gfx);
-    Color c = gfx->getPixel(1, 1);
-    CHECK(c.a >= 0.f);
+    win->close();
 }
 
 TEST_CASE("voxel.render.multiBatchSameFrame") {
@@ -388,26 +413,6 @@ TEST_CASE("voxel.render.manualAllSixDirsOneFrame") {
     RenderSystem::render(*gfx);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.03f);
-}
-
-TEST_CASE("voxel.render.nullPackedPointerNoCrash") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 200, 150);
-    tinyHud(gfx);
-
-    Texture        *atlas  = makeSolid(gfx, 255, 255, 255);
-    const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::mat4 vp     = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f) *
-                         glm::lookAtRH(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
-        gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(nullptr, 10, 0.f, 0.f, 0.f, "posY", atlas, 1);
-        gfx->drawVoxelFaceInstances(nullptr, 0, 0.f, 0.f, 0.f, "posY", atlas, 1);
-    }
-    RenderSystem::render(*gfx);
 }
 
 TEST_CASE("voxel.render.remeshIncreasesThenDecreasesRects") {

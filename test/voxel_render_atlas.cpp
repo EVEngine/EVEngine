@@ -45,21 +45,24 @@ TEST_CASE("voxel.render.nullAtlasUsesWhite") {
     hideLeftover3D();
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 240, 180);
+    openGfxWindow(win, gfx, 320, 240);
     tinyHud(gfx);
     gfx->setScreenReadbackEnabled(true);
-
-    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
-    for (int z = 0; z < 2; ++z)
-        for (int y = 0; y < 2; ++y)
-            for (int x = 0; x < 2; ++x) world->setVoxel(x, y, z, 1);
-    world->remeshDirty();
-
-    const glm::vec3 eye(1.f, 1.f, 8.f);
-    const glm::vec3 target(1.f, 1.f, 1.f);
-    renderVoxelFrame(gfx, world.get(), nullptr, 1, eye, target, 100.f, true);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.05f);
+    for (int size : {2, 4}) {
+        std::printf("null atlas cube size=%d\n", size);
+        std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+        fillCube(world.get(), 0, 0, 0, size, 1);
+        world->remeshDirty();
+        const float center = float(size) * 0.5f;
+        renderVoxelFrame(gfx, world.get(), nullptr, 1, glm::vec3(center, center, float(size * 2 + 4)),
+                         glm::vec3(center), 100.f, true);
+        const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(luma(mid) > 0.05f);
+        REQUIRE(mid.r > 0.2f);
+        REQUIRE(mid.g > 0.2f);
+        REQUIRE(mid.b > 0.2f);
+    }
+    win->close();
 }
 
 TEST_CASE("voxel.render.tilesPerRowAtlasSample") {
@@ -69,58 +72,30 @@ TEST_CASE("voxel.render.tilesPerRowAtlasSample") {
     openGfxWindow(win, gfx, 320, 240);
     tinyHud(gfx);
     gfx->setScreenReadbackEnabled(true);
-
-    // 2×2 atlas: index 1 (col1,row0) = pure green.
-    uint8_t px[16] = {
-        200, 40,  40,  255,  // 0 red
-        40,  200, 40,  255,  // 1 green
-        40,  40,  200, 255,  // 2 blue
-        200, 200, 40,  255,  // 3 yellow
+    struct Sample {
+        int     size;
+        int     tile;
+        uint8_t blue;
     };
-    Texture *atlas = gfx->newTexture(2, 2, px);
-
-    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
-    // tex id 1 → green tile
-    for (int z = 0; z < 3; ++z)
-        for (int y = 0; y < 3; ++y)
-            for (int x = 0; x < 3; ++x) world->setVoxel(x, y, z, 1);
-    world->remeshDirty();
-
-    const glm::vec3 eye(1.5f, 1.5f, 10.f);
-    const glm::vec3 target(1.5f, 1.5f, 1.5f);
-    renderVoxelFrame(gfx, world.get(), atlas, 2, eye, target, 100.f, true);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(mid.g > mid.r);
-    CHECK(mid.g > mid.b);
-    CHECK(mid.g > 0.1f);
-}
-
-TEST_CASE("voxel.render.tilesPerRowBlueTile") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 320, 240);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-
-    uint8_t px[16] = {
-        200, 40, 40, 255, 40, 200, 40, 255, 40, 40, 220, 255, 200, 200, 40, 255,
-    };
-    Texture *atlas = gfx->newTexture(2, 2, px);
-
-    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
-    // tex id 2 → blue (row1,col0)
-    for (int z = 0; z < 4; ++z)
-        for (int y = 0; y < 4; ++y)
-            for (int x = 0; x < 4; ++x) world->setVoxel(x, y, z, 2);
-    world->remeshDirty();
-
-    const glm::vec3 eye(2.f, 2.f, 12.f);
-    renderVoxelFrame(gfx, world.get(), atlas, 2, eye, glm::vec3(2.f, 2.f, 2.f), 100.f, true);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(mid.b > mid.r);
-    CHECK(mid.b > mid.g);
-    CHECK(mid.b > 0.1f);
+    for (const auto sample : {Sample{3, 1, 200}, Sample{4, 2, 220}}) {
+        std::printf("2x2 atlas tile=%d\n", sample.tile);
+        const uint8_t px[16] = {200, 40, 40, 255, 40, 200, 40, 255, 40, 40, sample.blue, 255, 200, 200, 40, 255};
+        Texture      *atlas  = gfx->newTexture(2, 2, px);
+        REQUIRE(atlas != nullptr);
+        std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+        fillCube(world.get(), 0, 0, 0, sample.size, sample.tile);
+        world->remeshDirty();
+        const float center = float(sample.size) * 0.5f;
+        renderVoxelFrame(gfx, world.get(), atlas, 2, glm::vec3(center, center, float(sample.size * 2 + 4)),
+                         glm::vec3(center), 100.f, true);
+        const Color mid      = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        const float dominant = sample.tile == 1 ? mid.g : mid.b;
+        const float other    = sample.tile == 1 ? mid.b : mid.g;
+        REQUIRE(dominant > mid.r);
+        REQUIRE(dominant > other);
+        REQUIRE(dominant > 0.1f);
+    }
+    win->close();
 }
 
 TEST_CASE("voxel.render.alternatingAtlasFrames") {
@@ -385,31 +360,55 @@ TEST_CASE("voxel.render.manualDrawDifferentTexIndices") {
     CHECK(cBlue.b > cBlue.g);
 }
 
-TEST_CASE("voxel.render.maxTex127_on16WideAtlas") {
+TEST_CASE("voxel.render.atlasBoundaryIndices") {
     hideLeftover3D();
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
     tinyHud(gfx);
     gfx->setScreenReadbackEnabled(true);
-
-    Texture        *atlas  = makeTileAtlas(gfx, 16, 8);
-    uint32_t        packed = PackedRect::pack(0, 0, 0, 4, 4, 127).bits;
-    const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(2.f, 10.f, 2.f);
-    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0, 0, -1));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp   = proj * view;
-
-    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
+    struct Sample {
+        int   columns;
+        int   rows;
+        int   tile;
+        int   size;
+        float eyeY;
+    };
+    // Index zero is valid in packed faces even though voxel zero means air.
+    // Keep the first tile, a wide-atlas row edge, and the maximum packed index.
+    for (const auto sample : {Sample{4, 4, 0, 4, 10.f}, Sample{32, 2, 31, 3, 8.f}, Sample{16, 8, 127, 4, 10.f}}) {
+        std::printf("atlas columns=%d rows=%d tile=%d\n", sample.columns, sample.rows, sample.tile);
+        std::vector<uint8_t> pixels(size_t(sample.columns * sample.rows * 4), 0);
+        for (size_t i = 3; i < pixels.size(); i += 4) pixels[i] = 255;
+        // tilesPerRow divides both UV axes; rows is the texture's pixel height,
+        // not an independently configurable number of logical tile rows.
+        const int    pixelRow = (sample.tile / sample.columns) * sample.rows / sample.columns;
+        const size_t target   = size_t((pixelRow * sample.columns + sample.tile % sample.columns) * 4);
+        pixels[target]        = 220;
+        pixels[target + 1]    = 40;
+        pixels[target + 2]    = 40;
+        Texture *atlas        = gfx->newTexture(sample.columns, sample.rows, pixels.data());
+        REQUIRE(atlas != nullptr);
+        gfx->setTextureSampler(atlas, TextureSampler::nearest());
+        const uint32_t  packed = PackedRect::pack(0, 0, 0, sample.size, sample.size, sample.tile).bits;
+        const float     center = float(sample.size) * 0.5f;
+        const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+        const glm::mat4 view =
+            glm::lookAtRH(glm::vec3(center, sample.eyeY, center), glm::vec3(center, 0.f, center), glm::vec3(0, 0, -1));
+        const glm::mat4 vp = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f) * view;
+        gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+        gfx->begin3DFrame();
+        REQUIRE(gfx->had3DThisFrame());
         gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 16);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, sample.columns);
+        RenderSystem::render(*gfx);
+        const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(luma(mid) > 0.04f);
+        REQUIRE(mid.r > mid.g);
+        REQUIRE(mid.r > mid.b);
+        REQUIRE(mid.r > 0.08f);
     }
-    RenderSystem::render(*gfx);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.04f);
+    win->close();
 }
 
 TEST_CASE("voxel.render.fourTexBlocksSameFrame") {
@@ -445,36 +444,6 @@ TEST_CASE("voxel.render.fourTexBlocksSameFrame") {
     RenderSystem::render(*gfx);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.03f);
-}
-
-TEST_CASE("voxel.render.packedTex0_samplesFirstAtlasTile") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 320, 240);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-
-    // Packed tex 0 is a valid atlas index even though voxel air is also 0.
-    Texture        *atlas  = makeTileAtlas(gfx, 4, 4);
-    uint32_t        packed = PackedRect::pack(0, 0, 0, 4, 4, 0).bits;  // tile 0 = red
-    const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(2.f, 10.f, 2.f);
-    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0, 0, -1));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp   = proj * view;
-
-    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
-        gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 4);
-    }
-    RenderSystem::render(*gfx);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(mid.r > mid.g);
-    CHECK(mid.r > mid.b);
-    CHECK(mid.r > 0.08f);
 }
 
 TEST_CASE("voxel.render.atlasYellowThenMagentaSwap") {
@@ -532,50 +501,6 @@ TEST_CASE("voxel.render.twoChunksDifferentAtlasTiles") {
     renderVoxelFrame(gfx, world.get(), atlas, 4, glm::vec3(34.f, 2.f, 14.f), glm::vec3(34.f, 2.f, 2.f), 100.f, true);
     Color blue = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     REQUIRE(blue.b > blue.g);
-}
-
-TEST_CASE("voxel.render.atlas32wide_tex31") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 300, 220);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-
-    Texture        *atlas  = makeTileAtlas(gfx, 32, 2);  // 64 tiles
-    uint32_t        packed = PackedRect::pack(0, 0, 0, 3, 3, 31).bits;
-    const float     aspect = float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(1.5f, 8.f, 1.5f);
-    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(1.5f, 0.f, 1.5f), glm::vec3(0, 0, -1));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    const glm::mat4 vp   = proj * view;
-
-    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
-        gfx->setMesh3DViewProj(vp);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 32);
-    }
-    RenderSystem::render(*gfx);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.04f);
-}
-
-TEST_CASE("voxel.render.drawVisibleNullAtlasWhite") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx, 280, 200);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-
-    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
-    fillCube(world.get(), 0, 0, 0, 4, 1);
-    world->remeshDirty();
-    const glm::vec3 eye(2.f, 2.f, 12.f);
-    renderVoxelFrame(gfx, world.get(), nullptr, 1, eye, glm::vec3(2.f, 2.f, 2.f), 100.f, true);
-    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.05f);
 }
 
 TEST_CASE("voxel.render.multiFrameAtlasSwapStable") {

@@ -22,7 +22,7 @@ TEST_CASE("voxel.faceDir.name_aliases") {
         }
         REQUIRE(std::string(faceDirName(expected.direction)) == expected.canonical);
     }
-    for (const char* invalid : {"forward", "", "+", "pos", "+w"}) {
+    for (const char* invalid : {"forward", "", "+", "pos", "+w", "PosX", "x+"}) {
         FaceDir    actual{};
         const bool parsed = faceDirFromName(invalid, actual);
         REQUIRE(!parsed);

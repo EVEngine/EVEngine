@@ -323,11 +323,32 @@ TEST_CASE("cmdline.versionPrintsVersion") {
     CHECK(cap.out().find('v') == 0);
 }
 
-TEST_CASE("cmdline.unknownCommandFails") {
-    CaptureStreams cap;
-    const int      rc = runCli({"eve", "frobnicate"});
-    CHECK(rc != 0);
-    CHECK(cap.all().find("not expected") != std::string::npos);
+TEST_CASE("cmdline.invalidArgumentsReportErrors") {
+    struct InvalidArguments {
+        const char*              name;
+        std::vector<std::string> arguments;
+        int                      exitCode;  // -1 means any nonzero code, matching the parser contract.
+        const char*              message;
+    };
+    const InvalidArguments cases[] = {
+        {"unknown command", {"eve", "frobnicate"}, -1, "not expected"},
+        {"missing platform", {"eve", "build"}, 2, "missing platform"},
+        {"unknown platform", {"eve", "build", "-p", "nonsense"}, 2, "unknown platform"},
+        {"unsupported platform", {"eve", "get", "ios"}, 2, "not implemented"},
+    };
+    for (const auto& input : cases) {
+        std::cout << "CLI input: " << input.name << '\n';
+        int         rc = 0;
+        std::string output;
+        {
+            CaptureStreams cap;
+            rc     = runCli(input.arguments);
+            output = cap.all();
+        }
+        REQUIRE(rc != 0);
+        if (input.exitCode != -1) REQUIRE_EQ(rc, input.exitCode);
+        REQUIRE(output.find(input.message) != std::string::npos);
+    }
 }
 
 TEST_CASE("cmdline.createScaffoldsGame") {
@@ -538,20 +559,6 @@ TEST_CASE("cmdline.buildAndroidReportsUnsignedApk") {
     std::filesystem::remove_all(tools, ec);
     std::filesystem::remove_all(game, ec);
     std::filesystem::remove_all(out, ec);
-}
-
-TEST_CASE("cmdline.buildMissingPlatformFails") {
-    CaptureStreams cap;
-    const int      rc = runCli({"eve", "build"});
-    CHECK(rc == 2);
-    CHECK(cap.all().find("missing platform") != std::string::npos);
-}
-
-TEST_CASE("cmdline.buildUnknownPlatformFails") {
-    CaptureStreams cap;
-    const int      rc = runCli({"eve", "build", "-p", "nonsense"});
-    CHECK(rc == 2);
-    CHECK(cap.all().find("unknown platform") != std::string::npos);
 }
 
 TEST_CASE("cmdline.buildMissingAndroidSdkFails") {
@@ -884,11 +891,4 @@ TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
     std::filesystem::remove_all(missingOut, ec);
     std::filesystem::remove_all(cyclic, ec);
     std::filesystem::remove_all(cyclicOut, ec);
-}
-
-TEST_CASE("cmdline.getUnsupportedPlatformFails") {
-    CaptureStreams cap;
-    const int      rc = runCli({"eve", "get", "ios"});
-    CHECK(rc == 2);
-    CHECK(cap.all().find("not implemented") != std::string::npos);
 }
