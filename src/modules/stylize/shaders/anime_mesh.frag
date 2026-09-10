@@ -45,4 +45,3 @@ void main() {
     color=mix(color,base.rgb,clamp(u.data[13],0.0,1.0));
     outColor=vec4(color,base.a);
 }
-
