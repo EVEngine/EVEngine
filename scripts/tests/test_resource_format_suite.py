@@ -53,7 +53,7 @@ class ResourceSuiteTests(unittest.TestCase):
             root = Path(directory)
             (root / "case.py").write_text(script)
             (root / "CTestTestfile.cmake").write_text(
-                f'add_test(example "{sys.executable}" "{root / "case.py"}")\n' + properties)
+                f'add_test(example "{Path(sys.executable).as_posix()}" "{(root / "case.py").as_posix()}")\n' + properties)
             return suite.run_cases(root, ["example"])
 
     def test_real_ctest_success_has_per_case_evidence(self):

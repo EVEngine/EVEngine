@@ -7,7 +7,7 @@ layout(set=0,binding=0,std140) uniform Params {
  vec4 emissive; vec4 specular; vec4 coat; vec4 misc;
  Light lights[8];
  vec4 uvTransform[11]; // offset xy, scale zw
- UvInfo uvInfo[11]; // rotation, storage offset (-1 uses vertex UV0), present, reserved
+ UvInfo uvInfo[11]; // rotation, stream offset (-1 uses vertex UV0), present, reserved
 } u;
 
 layout(set=0,binding=1) uniform sampler2D maps[11];

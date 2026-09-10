@@ -88,6 +88,11 @@ uniforms, UV buffers and joint palettes remain alive through the frame fence.
 Descriptor pools, sampler caches and pipelines are renderer-owned and released
 before device destruction; swapchain recreation invalidates the cache. UV offsets
 are unsigned integers, independent of floating-point precision and channel count.
+The Vulkan PBR pipeline binds eleven vertex UV streams, one per texture role,
+sharing uploaded channels when their selections match. These use attribute
+locations 5 through 15 alongside the five standard mesh attributes; absent
+channels use vertex UV0 and a valid dummy binding. No mesh UV-set index limit is
+introduced by the fixed number of material roles.
 
 Colors use their semantic transfer function: source base/emissive/specular-color
 textures are decoded from sRGB, data maps remain linear, and already-linear Cook

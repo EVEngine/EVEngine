@@ -27,6 +27,35 @@ vk::SamplerAddressMode addressMode(uint32_t value) {
            : value == 33648 ? vk::SamplerAddressMode::eMirroredRepeat
                             : vk::SamplerAddressMode::eRepeat;
 }
+vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, const vkb::BuiltRenderPass& pass,
+                               vk::SampleCountFlagBits samples, BlendMode blend, bool depthWrite, bool doubleSided) {
+    ShaderModulePair shaders(device, embeddedSpirv(pbr_surface_vert_spv), embeddedSpirv(pbr_surface_frag_spv));
+    auto             input = vkb::VertexInputStateBuilder();
+    input.addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>();
+    // Five mesh attributes plus eleven material UV streams fit Vulkan's minimum
+    // sixteen vertex attributes. Each role can select any canonical mesh UV set.
+    for (uint32_t i = 0; i < 11; ++i) {
+        input.input_bindings.emplace_back(i + 1, 2 * sizeof(float), vk::VertexInputRate::eVertex);
+        input.input_attributes.emplace_back(i + 5, i + 1, vk::Format::eR32G32Sfloat, 0);
+    }
+    auto attachment        = makeBlendAttachment(blend);
+    attachment.blendEnable = blend != BlendMode::Opaque;
+    vk::PipelineColorBlendStateCreateInfo color{};
+    color.attachmentCount = 1;
+    color.pAttachments    = &attachment;
+    return device.createPipeline()
+        .useClassicPipeline(shaders.vert, shaders.frag)
+        .setPipelineLayout(layout)
+        .setVertexInputState(input)
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                       doubleSided ? vk::CullModeFlagBits::eNone : vk::CullModeFlagBits::eBack,
+                       vk::FrontFace::eCounterClockwise)
+        .setMultisampler(false, samples)
+        .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
+        .setColorBlending(color)
+        .build(pass);
+}
 }  // namespace
 struct Graphics::PbrResources {
     struct Draw {
@@ -74,10 +103,9 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         const auto both     = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
         const auto fragment = vk::ShaderStageFlagBits::eFragment;
         const auto vertex   = vk::ShaderStageFlagBits::eVertex;
-        std::array<vk::DescriptorSetLayoutBinding, 7> bindings{
+        std::array<vk::DescriptorSetLayoutBinding, 6> bindings{
             {{0, vk::DescriptorType::eUniformBuffer, 1, both},
              {1, vk::DescriptorType::eCombinedImageSampler, 11, fragment},
-             {2, vk::DescriptorType::eStorageBuffer, 1, vertex},
              {3, vk::DescriptorType::eStorageBuffer, 1, vertex},
              {4, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
              {5, vk::DescriptorType::eUniformBuffer, 1, fragment},
@@ -99,7 +127,7 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     auto& draw = *draws[index];
     if (!draw.pool) {
         std::array<vk::DescriptorPoolSize, 3> sizes{{{vk::DescriptorType::eUniformBuffer, 2},
-                                                     {vk::DescriptorType::eStorageBuffer, 2},
+                                                     {vk::DescriptorType::eStorageBuffer, 1},
                                                      {vk::DescriptorType::eCombinedImageSampler, 13}}};
         vk::DescriptorPoolCreateInfo          info{};
         info.maxSets       = 1;
@@ -132,7 +160,8 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     for (int i = 0; i < std::min(mesh3dLighting.count, 8); ++i) u.lights[i] = mesh3dLighting.lights[i];
     u.lights[0].color.w = mesh3dEnvTexture ? mesh3dEnvIntensity : 0;
     std::map<uint32_t, size_t>              offsets;
-    std::vector<float>                      coordinates;
+    // Binding a valid dummy stream also covers roles using the mesh vertex UV0.
+    std::vector<float>                      coordinates(size_t(mesh->getVertexCount()) * 2, 0.f);
     std::array<vk::DescriptorImageInfo, 11> images;
     for (size_t i = 0; i < 11; ++i) {
         const auto& b      = s.textures[i];
@@ -180,7 +209,7 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         updateRingLocal(buffer, 0, data, bytes);
     };
     upload(draw.uniform, vk::BufferUsageFlagBits::eUniformBuffer, &u, sizeof(u));
-    upload(draw.uv, vk::BufferUsageFlagBits::eStorageBuffer, coordinates.data(), coordinates.size() * sizeof(float));
+    upload(draw.uv, vk::BufferUsageFlagBits::eVertexBuffer, coordinates.data(), coordinates.size() * sizeof(float));
     const glm::mat4 identity(1);
     upload(draw.skin, vk::BufferUsageFlagBits::eStorageBuffer, skinned ? mesh->skinPalette().data() : &identity[0][0],
            skinned ? mesh->skinPalette().size() * sizeof(float) : sizeof(identity));
@@ -197,27 +226,27 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     vk::DescriptorImageInfo envInfo{env->sampler, env->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal};
     vk::DescriptorImageInfo shadowInfo{shadowSampler, currentShadowArrayView(),
                                        currentShadowMap().image.currentLayout()};
-    std::array<vk::DescriptorBufferInfo, 4> buffers{{{draw.uniform.buffer, 0, sizeof(u)},
-                                                     {draw.uv.buffer, 0, draw.uv.size},
+    std::array<vk::DescriptorBufferInfo, 3> buffers{{{draw.uniform.buffer, 0, sizeof(u)},
                                                      {draw.skin.buffer, 0, draw.skin.size},
                                                      {draw.shadow.buffer, 0, sizeof(shadow)}}};
-    std::array<vk::WriteDescriptorSet, 7>   writes{};
-    for (uint32_t i = 0; i < 7; i++) {
+    std::array<vk::WriteDescriptorSet, 6>   writes{};
+    const std::array<uint32_t, 6>           bindings{0, 1, 3, 4, 5, 6};
+    for (size_t i = 0; i < writes.size(); ++i) {
         writes[i].dstSet          = draw.set;
-        writes[i].dstBinding      = i;
+        writes[i].dstBinding      = bindings[i];
         writes[i].descriptorCount = 1;
     }
-    for (auto [binding, buff] : std::array<std::pair<int, int>, 4>{{{0, 0}, {2, 1}, {3, 2}, {5, 3}}}) {
-        writes[binding].descriptorType =
-            (binding == 0 || binding == 5) ? vk::DescriptorType::eUniformBuffer : vk::DescriptorType::eStorageBuffer;
-        writes[binding].pBufferInfo = &buffers[buff];
+    for (auto [write, buffer] : std::array<std::pair<int, int>, 3>{{{0, 0}, {2, 1}, {4, 2}}}) {
+        writes[write].descriptorType =
+            write == 2 ? vk::DescriptorType::eStorageBuffer : vk::DescriptorType::eUniformBuffer;
+        writes[write].pBufferInfo = &buffers[buffer];
     }
-    writes[1].descriptorType = writes[4].descriptorType = writes[6].descriptorType =
+    writes[1].descriptorType = writes[3].descriptorType = writes[5].descriptorType =
         vk::DescriptorType::eCombinedImageSampler;
     writes[1].descriptorCount = 11;
     writes[1].pImageInfo      = images.data();
-    writes[4].pImageInfo      = &envInfo;
-    writes[6].pImageInfo      = &shadowInfo;
+    writes[3].pImageInfo      = &envInfo;
+    writes[5].pImageInfo      = &shadowInfo;
     device->updateDescriptorSets(writes, {});
     const auto& rp = offscreen3DPassOpen ? (offscreen3DHDRActive ? hdrOffscreen3DRenderPass : offscreen3DRenderPass)
                                          : activeScenePass();
@@ -230,13 +259,18 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     auto        found       = r.pipelines.find(key);
     if (found == r.pipelines.end())
         found = r.pipelines
-                    .emplace(key, createMesh3DStylePipeline(embeddedSpirv(pbr_surface_vert_spv),
-                                                            embeddedSpirv(pbr_surface_frag_spv), r.layout, rp, samples,
-                                                            blend, depthWrite, mesh3dSurfaceDoubleSided))
+                    .emplace(key, createPbrPipeline(device, r.layout, rp, samples, blend, depthWrite,
+                                                    mesh3dSurfaceDoubleSided))
                     .first;
     auto& cb = currentPresentCb();
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, found->second);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.layout, 0, 1, &draw.set, 0, nullptr);
+    std::array<vk::Buffer, 11> uvBuffers;
+    uvBuffers.fill(draw.uv.buffer);
+    std::array<vk::DeviceSize, 11> uvOffsets{};
+    for (size_t i = 0; i < uvOffsets.size(); ++i)
+        if (u.uvInfo[i].offset != UINT32_MAX) uvOffsets[i] = vk::DeviceSize(u.uvInfo[i].offset) * 2 * sizeof(float);
+    cb.bindVertexBuffers(1, uvBuffers, uvOffsets);
     drawIndexedMesh(cb, *static_cast<GpuMesh*>(mesh->gpuHandle));
     lastMesh3dPipeline          = vk::Pipeline{};
     lastMesh3dClusteredPipeline = vk::Pipeline{};
