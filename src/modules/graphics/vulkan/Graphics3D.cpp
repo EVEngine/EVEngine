@@ -114,6 +114,7 @@ void Graphics::begin3DFrame() {
         auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
         fslots.drawIndex = 0;
+        fslots.activePalette = 0;
         ensureMesh3dRing(fslots);
         auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
@@ -296,6 +297,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
         auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
         fslots.drawIndex = 0;
+        fslots.activePalette = 0;
         ensureMesh3dRing(fslots);
         auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
@@ -676,65 +678,6 @@ void Graphics::setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) {
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
 
 void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
-
-vk::DescriptorSet Graphics::skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots) {
-    auto it = fslots.skinSets.find(albedo);
-    if (it != fslots.skinSets.end()) return it->second;
-    vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool = descriptorPool;
-    alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &skinPassSetLayout;
-    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
-    vkb::DescriptorSetUpdater updater(1, 1, 0);
-    updater.beginDescriptorSet(unbound)
-        .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, sizeof(SkinPassUBO))
-        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->imageView()))
-        .update(device.instance);
-    vkb::BoundSet bound = std::move(unbound).publish();
-    auto [inserted, ignored] = fslots.skinSets.emplace(albedo, bound);
-    return inserted->second;
-}
-
-bool Graphics::prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
-                               const glm::mat4 &model, const glm::vec4 &clip,
-                               vk::DescriptorSet &set, uint32_t &uboOffset) {
-    if (!mesh || !mesh->hasGpuSkinning()) return false;
-    auto &fslots = currentMesh3dFrameSlots();
-    // A 3D frame can inherit an already-open present command buffer (for
-    // example, when script-side 2D clear work precedes render3D).  In that
-    // path begin3DFrame may not have initialized this slot yet.  Allocate the
-    // empty slot lazily before the first skinned draw; no recorded command can
-    // reference it while capacity is zero.
-    if (!fslots.uboRing.buffer || fslots.capacity == 0) ensureMesh3dRing(fslots);
-    if (fslots.drawIndex >= fslots.capacity) {
-        std::fprintf(stderr, "[vulkan] skin pass UBO ring exhausted (%zu draws); draw skipped\n",
-                     fslots.capacity);
-        return false;
-    }
-    SkinPassUBO ubo;
-    ubo.mvp = mvp;
-    ubo.model = model;
-    ubo.clip = clip;
-    const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-    ubo.skinInfo.x = static_cast<float>(paletteCount);
-    const auto &palette = mesh->skinPalette();
-    for (int i = 0; i < paletteCount; ++i) {
-        const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
-        for (int column = 0; column < 4; ++column)
-            for (int row = 0; row < 4; ++row)
-                ubo.skinBones[i][column][row] = matrix[column * 4 + row];
-    }
-    const size_t slot = fslots.drawIndex++;
-    ensureMesh3dStrides();
-    uboOffset = uint32_t(slot) * mesh3dUboStride;
-    updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
-    Texture *texture = albedo ? albedo : whiteTexture;
-    if (!texture || !texture->gpuHandle) return false;
-    set = skinPassSetFor(static_cast<GpuTexture *>(texture->gpuHandle), fslots);
-    return bool(set);
-}
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
@@ -1154,6 +1097,8 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     GpuTexture *probe1 = probeTexture(1);
     Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
                      decalAlbedo, decalNormal, decalParams};
+    key.paletteSlot = fslots.activePalette;
+    if (fslots.palettes.empty()) uploadSkinPalette(nullptr, fslots);
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
@@ -1167,6 +1112,8 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
+        .beginBuffers(21, 0, vk::DescriptorType::eStorageBuffer)
+        .buffer(fslots.palettes[fslots.activePalette].buffer, 0, fslots.palettes[fslots.activePalette].capacity)
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)

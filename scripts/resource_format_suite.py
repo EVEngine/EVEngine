@@ -181,6 +181,10 @@ def main():
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     print(f"{report['status']}: {sum(len(g['tests']) for g in groups.values())} source tests; {args.report}")
+    if report.get("error"):
+        print(report["error"], file=sys.stderr)
+    if report.get("fixture_errors"):
+        print("Fixture hash mismatch: " + ", ".join(report["fixture_errors"]), file=sys.stderr)
     return code
 
 

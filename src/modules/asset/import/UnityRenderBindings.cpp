@@ -243,7 +243,7 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                                                      asset::EvaDependencyKind::RuntimeRequired,
                                                      prefix + ".mesh",
                                                      {},
-                                                     "eve.mesh/1",
+                                                     "eve.mesh/2",
                                                      {}});
                 out.manifest.dependencies.push_back({sceneId.value(),
                                                      materialRef,

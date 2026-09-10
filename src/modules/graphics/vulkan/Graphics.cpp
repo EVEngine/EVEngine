@@ -301,6 +301,7 @@ Graphics::~Graphics() {
         return;
     }
     device->waitIdle();
+    destroyPbrResources();
     deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
@@ -708,6 +709,7 @@ void Graphics::onNativeWindowDestroyed() {
 }
 
 void Graphics::destroySwapchainResources() {
+    destroyPbrResources();
     presentRecording = {};
     swapchainPass = {};
     presentModel.destroy();

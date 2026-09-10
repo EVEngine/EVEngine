@@ -1,6 +1,7 @@
+#include "Fixtures.h"
+#include "SceneColor.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <assimp/matrix4x4.h>
@@ -107,12 +108,13 @@ void warmPresent(Graphics *gfx, int frames = 2) {
     }
 }
 
-float meanLumaRegion(Graphics *gfx, int x0, int y0, int x1, int y1, int step = 4) {
+float meanLumaRegion(Graphics* gfx, int x0, int y0, int x1, int y1, int step = 4, bool sceneLinear = false) {
     double sum = 0.0;
     int n = 0;
     for (int y = y0; y < y1; y += step) {
         for (int x = x0; x < x1; x += step) {
-            sum += luma(gfx->getPixel(x, y));
+            const auto pixel = gfx->getPixel(x, y);
+            sum += luma(sceneLinear ? testSceneLinearColor(pixel) : pixel);
             ++n;
         }
     }
@@ -656,8 +658,8 @@ TEST_CASE("RenderScenes.ibl.metalBrighterThanDielectric") {
 
     const int w = gfx->getWidth();
     const int h = gfx->getHeight();
-    const float metalL = meanLumaRegion(gfx, w / 8, h / 3, w * 3 / 8, h * 2 / 3);
-    const float dielL = meanLumaRegion(gfx, w * 5 / 8, h / 3, w * 7 / 8, h * 2 / 3);
+    const float metalL = meanLumaRegion(gfx, w / 8, h / 3, w * 3 / 8, h * 2 / 3, 4, true);
+    const float dielL  = meanLumaRegion(gfx, w * 5 / 8, h / 3, w * 7 / 8, h * 2 / 3, 4, true);
     std::printf("RenderScenes.ibl metalL=%.3f dielL=%.3f\n", metalL, dielL);
     REQUIRE(metalL > dielL + 0.02f);
 

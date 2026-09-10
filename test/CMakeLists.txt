@@ -273,6 +273,10 @@ else()
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
     EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  if(TARGET EVAsset_graphics)
+    # The full resource suite inventories the graphics UV upload contract too.
+    target_compile_definitions(unit_test PRIVATE EVE_TEST_MESH_UPLOAD=1)
+  endif()
 
   # A real shared library exercises native loading and C++ module registration
   # instead of testing only loader failures. It resolves engine symbols from

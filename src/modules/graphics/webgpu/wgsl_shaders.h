@@ -164,7 +164,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 )wgsl";
 
 // ---- Mesh3D (full PBR, layout matches Mesh3DUBO / ShadowUBO) --------------
-inline const char *kMesh3DVertWgsl = R"wgsl(
+/** @brief Immutable shader source. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DVertWgsl = R"wgsl(
+@group(0) @binding(21) var<storage, read> skinBones: array<mat4x4f>;
+
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -197,7 +200,6 @@ struct Frame {
     envProbeCenter: vec4f,
     envProbeExtent: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
     reflectionProbeCenter: array<vec4f, 2>,
     reflectionProbeExtent: array<vec4f, 2>,
 };
@@ -230,10 +232,10 @@ fn vs_main(in: VSIn) -> VSOut {
     var localPos = vec4f(in.pos, 1.0);
     var localNormal = in.normal;
     if (ubo.skinInfo.x > 0.5) {
-        let skin = in.weights.x * ubo.skinBones[in.joints.x]
-                 + in.weights.y * ubo.skinBones[in.joints.y]
-                 + in.weights.z * ubo.skinBones[in.joints.z]
-                 + in.weights.w * ubo.skinBones[in.joints.w];
+        let skin = in.weights.x * skinBones[in.joints.x]
+                 + in.weights.y * skinBones[in.joints.y]
+                 + in.weights.z * skinBones[in.joints.z]
+                 + in.weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
         localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
     }
@@ -1063,7 +1065,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 )wgsl";
 
 // ---- Mesh3D depth-only shadow --------------------------------------------------
-inline const char *kMesh3DShadowVertWgsl = R"wgsl(
+/** @brief Immutable shader source. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DShadowVertWgsl = R"wgsl(
+@group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
+
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1076,17 +1081,16 @@ struct Push {
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
     var localPos = vec4f(in.pos, 1.0);
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * pc.skinBones[in.joints.x]
-                 + in.weights.y * pc.skinBones[in.joints.y]
-                 + in.weights.z * pc.skinBones[in.joints.z]
-                 + in.weights.w * pc.skinBones[in.joints.w];
+        let skin = in.weights.x * skinBones[in.joints.x]
+                 + in.weights.y * skinBones[in.joints.y]
+                 + in.weights.z * skinBones[in.joints.z]
+                 + in.weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
     }
     let clipPos = pc.mvp * localPos;
@@ -1095,7 +1099,10 @@ fn vs_main(in: VSIn) -> @builtin(position) vec4f {
 }
 )wgsl";
 
-inline const char *kMesh3DShadowAlphaVertWgsl = R"wgsl(
+/** @brief Immutable shader source. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DShadowAlphaVertWgsl = R"wgsl(
+@group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
+
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1108,7 +1115,6 @@ struct Push {
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -1120,10 +1126,10 @@ fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     var localPos = vec4f(in.pos, 1.0);
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * pc.skinBones[in.joints.x]
-                 + in.weights.y * pc.skinBones[in.joints.y]
-                 + in.weights.z * pc.skinBones[in.joints.z]
-                 + in.weights.w * pc.skinBones[in.joints.w];
+        let skin = in.weights.x * skinBones[in.joints.x]
+                 + in.weights.y * skinBones[in.joints.y]
+                 + in.weights.z * skinBones[in.joints.z]
+                 + in.weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
     }
     let clipPos = pc.mvp * localPos;
@@ -1143,7 +1149,10 @@ fn fs_main(@location(0) uv: vec2f) {
 )wgsl";
 
 // ---- GBuffer pass (normal / linear-depth / albedo) -------------------------
-inline const char *kMesh3DGbufferVertWgsl = R"wgsl(
+/** @brief Immutable shader source. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DGbufferVertWgsl = R"wgsl(
+@group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
+
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1156,7 +1165,6 @@ struct Push {
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -1181,10 +1189,10 @@ fn vs_main(in: VSIn) -> VSOut {
     var localPos = vec4f(in.pos, 1.0);
     var localNormal = in.normal;
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * pc.skinBones[in.joints.x]
-                 + in.weights.y * pc.skinBones[in.joints.y]
-                 + in.weights.z * pc.skinBones[in.joints.z]
-                 + in.weights.w * pc.skinBones[in.joints.w];
+        let skin = in.weights.x * skinBones[in.joints.x]
+                 + in.weights.y * skinBones[in.joints.y]
+                 + in.weights.z * skinBones[in.joints.z]
+                 + in.weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
         localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
     }
@@ -1211,7 +1219,6 @@ struct Push {
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
 };
 struct GBufOut {
     @location(0) normal: vec4f,
@@ -1255,7 +1262,6 @@ struct Push {
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
 };
 struct GBufOut {
     @location(0) normal: vec4f,

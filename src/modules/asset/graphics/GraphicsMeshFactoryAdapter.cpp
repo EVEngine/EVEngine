@@ -1,6 +1,7 @@
 #include "asset/graphics/EvpackGraphicsLoader.h"
 
 #include "graphics/IResourceFactory.h"
+#include "graphics/Mesh.h"
 
 namespace eve::asset_graphics {
 namespace {
@@ -32,6 +33,12 @@ Result<void> GraphicsMeshFactoryAdapter::releaseMesh(graphics::Mesh* mesh) {
         return failure<void>(DiagnosticCode::Failed,
                              "graphics backend rejected mesh release");
     return Result<void>::success();
+}
+
+Result<void> GraphicsMeshFactoryAdapter::setMeshTexcoords(graphics::Mesh* mesh, std::uint32_t set,
+                                                          std::span<const float> values) {
+    if (!mesh) return failure<void>(DiagnosticCode::InvalidArgument, "null mesh");
+    return mesh->setTexcoordSet(set, values);
 }
 
 }  // namespace eve::asset_graphics

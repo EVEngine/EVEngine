@@ -128,7 +128,7 @@ public:
             auto scene = loader.loadFromPath(path.c_str(), toMedialoader(options));
             if (scene.empty())
                 throw eve::Exception("Could not load model: %s", path.c_str());
-            return new ModelData(std::move(scene), "file://" + path);
+            return new ModelData(std::move(scene), "file://" + path, options.flipUVs);
         } catch (const medialoader::Exception &e) {
             throw eve::Exception("%s", e.what());
         }

@@ -1,6 +1,7 @@
+#include "Fixtures.h"
+#include "SceneColor.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include "procgen/heightmap/TerrainSampler.h"
 
@@ -207,7 +208,8 @@ TEST_CASE("voxel.render.vertexAoDarkensPixels") {
     const Color bright = renderVoxelAoSample(gfx, atlas, 0xFFu);
     const Color dark = renderVoxelAoSample(gfx, atlas, 0x00u);
     REQUIRE(luma(bright) > 0.25f);
-    REQUIRE(luma(dark) < luma(bright) * 0.6f);
+    // AO multiplies linear radiance; ACES and sRGB compress the displayed ratio.
+    REQUIRE(luma(testSceneLinearColor(dark)) < luma(testSceneLinearColor(bright)) * 0.6f);
 }
 
 // NOTE: Graphics is a process-wide singleton — reuse one window for these cases.

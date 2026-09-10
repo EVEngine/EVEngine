@@ -36,7 +36,15 @@ struct SurfaceUv {
  */
 class ModelData : public Resource {
 public:
-    explicit ModelData(medialoader::ModelScene scene, std::string uri = "");
+    /** @brief Own a decoded scene and the UV postprocessing state used to produce it.
+     * @param scene Transferred owning Assimp scene.
+     * @param uri Resource identity, copied into the resource owner.
+     * @param uvFlipped Whether aiProcess_FlipUVs was applied after format decoding.
+     * @thread Creation/adoption follow the owning resource thread; no callbacks.
+     */
+    explicit ModelData(medialoader::ModelScene scene, std::string uri = "", bool uvFlipped = false);
+    /** @brief Whether the loader applied the UV-flip postprocess to this owned scene. */
+    bool hasFlippedUvs() const noexcept { return uvFlipped_; }
     ~ModelData() override;
 
     bool empty() const;
@@ -230,6 +238,7 @@ private:
     const aiMaterial *materialAt(int matIndex) const;
 
     medialoader::ModelScene scene;
+    bool                    uvFlipped_ = false;
 };
 
 }  // namespace model3d
