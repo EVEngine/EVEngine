@@ -85,6 +85,8 @@ public:
     void drawConsolePanel();
 
     bool isAttached() const { return vm_ != nullptr; }
+    /** @brief True when errors also flow through Runtime::setErrorHandler. */
+    bool runtimeBound() const { return runtime_ != nullptr; }
     bool renderTraceEnabled() const { return renderTraceEnabled_; }
     bool sampleLocals() const { return sampleLocals_; }
     void setSampleLocals(bool on) { sampleLocals_ = on; }

@@ -33,6 +33,8 @@ void Mouse::expose(ssq::Class& cls) {
     cls.addFunc("isGrabbed", &Mouse::isGrabbed);
     cls.addFunc("setRelativeMode", &Mouse::setRelativeMode);
     cls.addFunc("getRelativeMode", &Mouse::getRelativeMode);
+    cls.addFunc("getMovementX", [](Mouse *m) -> float { return m ? float(m->getMovementX()) : 0.f; });
+    cls.addFunc("getMovementY", [](Mouse *m) -> float { return m ? float(m->getMovementY()) : 0.f; });
 }
 
 }  // namespace eve::mouse

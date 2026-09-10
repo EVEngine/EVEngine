@@ -88,12 +88,19 @@ void nativeDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQ
                                static_cast<int>(line), funcname ? funcname : "");
 }
 
-/** Runtime error handler: uncaught script errors are routed to DevTool. */
+/** Runtime error handler: captures the live stack; notifies DevTool when needed. */
 SQInteger runtimeErrorHook(HSQUIRRELVM v) {
     if (!g_active) return 0;
-    // Capture the full context (message + live call stack) so Runtime::execute
-    // can enrich the ScriptException it throws once the call unwinds.
+    // Capture while the throw-site stack is still intact (including caught
+    // throws when sq_notifyallexceptions is on).
     eve::script::ScriptErrorContext ctx = eve::script::captureScriptError(v);
+    // When attached through Runtime, uncaught errors are reported by the
+    // Runtime error sink after unwind. Notifying here as well would treat
+    // expected catches (file_exists, migrate_instance) as debugger errors.
+    if (g_active->runtimeBound()) {
+        eve::script::setLastScriptError(v, std::move(ctx));
+        return 0;
+    }
     const std::string msg = ctx.empty() ? std::string("script error")
                                         : eve::script::formatScriptError(ctx);
     try {
@@ -129,9 +136,9 @@ void DevTool::attach(eve::Runtime& runtime, bool sampleLocals) {
     attach(runtime.vm(), sampleLocals);
     runtime_ = &runtime;
     // Route Runtime-boundary errors into the slicer/report. The VM error hook
-    // covers uncaught script errors; this sink catches the rest — compile,
-    // reflect and unload failures, plus any uncaught error the hook already
-    // marked reported() so we skip it and avoid slicing twice.
+    // only captures the stack when this Runtime sink is bound; this handler
+    // reports compile / reflect / unload failures and uncaught execute errors
+    // exactly once.
     runtime.setErrorHandler([this](const eve::ScriptException& error) {
         if (error.reported()) return;
         try {
@@ -175,6 +182,7 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     Debugger::instance().setPump([this]() { pumpWhilePaused(); });
 
     sq_enabledebuginfo(vm_, SQTrue);
+    sq_notifyallexceptions(vm_, SQTrue);
     sq_setnativedebughook(vm_, nativeDebugHook);
     // Route uncaught script errors into the debugger (break-on-error aware).
     sq_newclosure(vm_, runtimeErrorHook, 0);
@@ -713,17 +721,25 @@ std::string DevTool::notifyError(const std::string& errorMessage,
                                  const std::vector<std::string>& hintVars) {
     SourceLoc site;
     if (vm_) {
-        // When called from the uncaught-error hook, level 0 is the native hook
-        // itself and level 1 is the throwing script frame, so this already
-        // lands on the exact throw site (before the stack unwinds). When called
-        // from a script catch (eve.dev.reportError), level 1 is the catch
-        // statement that reported the error (the game script when load.nut
-        // calls the native reporter directly).
-        SQStackInfos si;
-        if (SQ_SUCCEEDED(sq_stackinfos(vm_, 1, &si))) {
-            if (si.source) site.source = si.source;
-            site.line = static_cast<int>(si.line);
-            if (si.funcname) site.function = si.funcname;
+        // Prefer the stack captured at throw time. reportError runs from a
+        // script catch, so sq_stackinfos(level 1) is the catch site (load.nut)
+        // rather than the original throw in main.nut.
+        if (const auto* ctx = eve::script::peekLastScriptError(vm_)) {
+            if (!ctx->stack.empty() &&
+                (errorMessage.find(ctx->message) != std::string::npos ||
+                 ctx->message.find(errorMessage) != std::string::npos)) {
+                site.source = ctx->source;
+                site.line = ctx->line;
+                site.function = ctx->function;
+            }
+        }
+        if (site.empty()) {
+            SQStackInfos si;
+            if (SQ_SUCCEEDED(sq_stackinfos(vm_, 1, &si))) {
+                if (si.source) site.source = si.source;
+                site.line = static_cast<int>(si.line);
+                if (si.funcname) site.function = si.funcname;
+            }
         }
     }
     markErrorUses(site, hintVars);

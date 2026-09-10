@@ -185,6 +185,14 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
 }
 
 void Graphics::recordDeferredFrameGraph() {
+    // Voxel / script begin3DFrame paths never fill G-buffer or CSM. Submitting
+    // the empty four-pass graph every frame still waits on the JobSystem and
+    // can hitch the orbit camera (MAILBOX then shows a newer pose, then an
+    // older in-flight image — a short reverse jump).
+    if (!gbufferPending && shadowPendingMask == 0) {
+        dropPendingOffscreenPasses();
+        return;
+    }
     const size_t slot = currentFrameSlot();
     if (deferredGraphRecorded_ && deferredGraphRecordedSlot_ == slot) {
         // render3D can be called several times per script frame (e.g. the

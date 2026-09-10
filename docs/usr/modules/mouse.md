@@ -33,7 +33,8 @@ mouse.setRelativeMode(true);   // 光标锁定并隐藏，只报告相对移动
 mouse.setRelativeMode(false);  // 恢复绝对坐标
 ```
 
-相对模式下 `getX()` / `getY()` 返回累积位置；如需逐帧增量，应在 `eve_update` 内记录上一帧值求差。
+相对模式下不要用 `setPosition` 回中再对 `getX()` 求差：Windows 上 warp 会注入反向位移，视角会先转再弹回。
+每帧在 `eve_update` 里先调 `getMovementX()` 再调 `getMovementY()`（前者从 SDL 取相对位移并锁存 Y）。
 `setGrabbed(bool)` / `isGrabbed()` 控制窗口鼠标抓取（平台行为差异见 `mouse/sdl/Mouse.cpp`）。
 
 ## 常见问题
@@ -46,7 +47,7 @@ mouse.setRelativeMode(false);  // 恢复绝对坐标
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `getName()`、`getX()`、`getY()`、`setX()`、`setY()`、`setPosition()`、`isDown()`、
+- `getName()`、`getX()`、`getY()`、`getMovementX()`、`getMovementY()`、`setX()`、`setY()`、`setPosition()`、`isDown()`、
   `setVisible()`、`isVisible()`、`setGrabbed()`、`isGrabbed()`、`setRelativeMode()`、`getRelativeMode()`
 
 ## 使用要点

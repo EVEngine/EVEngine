@@ -216,12 +216,12 @@ Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
 void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, float g, float b, float a) {
     Texture* scene = getSceneColorTexture();
     if (!scene) return;
-    // Scene color A is linear view-depth, not opacity. The default textured
-    // blit multiplies that into SrcAlpha, so the planet composites against
-    // the dark clear color and looks dim. Use the same opaque FXAA resolve
-    // as the engine auto-composite path (aa shader writes alpha = 1).
-    Texture *resolved = prepareFinalSceneTexture(scene);
-    drawTexturedRectShaderUV(resolved, nullptr, x, y, w, h, 0.f, 0.f, 1.f, 1.f,
+    // Queue a scene-color blit at this 2D overlay slot so present() owns
+    // AA/Bloom/Exposure + ACES. Running prepareFinalSceneTexture here would
+    // setCanvas() (ending the still-open scene pass and queueing auto-resolve)
+    // then blit the HDR result through the LDR textured pipeline *on top of*
+    // the auto ACES composite — two fullscreen 3D quads that strobe.
+    drawTexturedRectShaderUV(scene, nullptr, x, y, w, h, 0.f, 0.f, 1.f, 1.f,
                              Color(r, g, b, a), false, BlendMode::Opaque);
 }
 
@@ -363,9 +363,16 @@ void Graphics::expose(ssq::Table& table) {
     auto cam = table.addClass<Camera3D>("Camera3D",
                                         std::function<Camera3D*()>([]() { return Camera3D::createCamera(); }), false);
     cam.addFunc("setEye", &Camera3D::setEye);
+    cam.addFunc("getEyeX", &Camera3D::getEyeX);
+    cam.addFunc("getEyeY", &Camera3D::getEyeY);
+    cam.addFunc("getEyeZ", &Camera3D::getEyeZ);
     cam.addFunc("setTarget", &Camera3D::setTarget);
+    cam.addFunc("getTargetX", &Camera3D::getTargetX);
+    cam.addFunc("getTargetY", &Camera3D::getTargetY);
+    cam.addFunc("getTargetZ", &Camera3D::getTargetZ);
     cam.addFunc("setUp", &Camera3D::setUp);
     cam.addFunc("setFov", &Camera3D::setFov);
+    cam.addFunc("getFov", &Camera3D::getFov);
     cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
     cam.addFunc("setPerspective", &Camera3D::setPerspective);
     cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
