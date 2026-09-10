@@ -250,7 +250,6 @@ RenderControl* Graphics::getRenderControl() {
 void Graphics::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
-    const auto vm = table.getHandle();
 
     exposePrimitiveScriptBindings(table, cls);
     exposeShaderScriptBindings(table, cls);
