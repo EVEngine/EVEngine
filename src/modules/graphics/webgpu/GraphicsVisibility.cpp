@@ -468,11 +468,9 @@ void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
         GpuTexture *depthTex = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                        : flatDepthTexture3D;
         wgpu::BindGroup frameGroup =
-            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
-                              gpuForTexture(material->getNormalTexture()),
-                              gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depthTex, nullptr,
-                              frameOffset, shadowOffset, 0);
+            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()), gpuForTexture(material->getNormalTexture()),
+                              gpuForTexture(mesh3dEnvTexture), gpuForTexture(material->getHeightTexture()), depthTex,
+                              nullptr, frameOffset, shadowOffset, 0, uploadSkinPalette(nullptr));
         const uint32_t frameOffsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, frameGroup, 3, frameOffsets);
         WGPUBindGroupEntry entries[4]{};
@@ -557,11 +555,9 @@ void Graphics::flushGpuDrivenResolve(wgpu::RenderPassEncoder pass) {
         GpuTexture *depthTex = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                        : flatDepthTexture3D;
         wgpu::BindGroup frameGroup =
-            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
-                              gpuForTexture(material->getNormalTexture()),
-                              gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depthTex, nullptr,
-                              frameOffset, shadowOffset, 0);
+            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()), gpuForTexture(material->getNormalTexture()),
+                              gpuForTexture(mesh3dEnvTexture), gpuForTexture(material->getHeightTexture()), depthTex,
+                              nullptr, frameOffset, shadowOffset, 0, uploadSkinPalette(nullptr));
         const uint32_t frameOffsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, frameGroup, 3, frameOffsets);
         WGPUBindGroupEntry entries[6]{};

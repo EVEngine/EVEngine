@@ -108,17 +108,27 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
     s.textures[0].texture   = texture;
     s.textures[0].minFilter = 9728;
     s.textures[0].magFilter = 9728;
-    auto red                = render(s);
-    s.textures[0].texcoord  = 1;
-    auto green              = render(s);
+    // Begin with the vertex UV0 path so the first UV1 draw also exercises buffer growth.
+    auto red               = render(s);
+    s.textures[0].texcoord = 1;
+    const auto firstGreen  = render(s);
+    s.textures[0].texcoord = 0;
+    REQUIRE_EQ(difference(red, render(s)), size_t(0));
+    s.textures[0].texcoord          = 1;
+    auto         green              = render(s);
     const size_t center             = (64 * 128 + 64) * 4;
     std::fprintf(stderr, "PBR UV0 RGB=%u,%u,%u UV1 RGB=%u,%u,%u changed=%zu\n", unsigned(red[center]),
                  unsigned(red[center + 1]), unsigned(red[center + 2]), unsigned(green[center]),
                  unsigned(green[center + 1]), unsigned(green[center + 2]), difference(red, green));
-    REQUIRE(difference(red, green) > 1000);
+
     s.textures[0].texcoord = 0;
     s.textures[0].offset   = {.8f, 0};
     auto transformed       = render(s);
+    std::fprintf(stderr, "PBR first UV1 RGB=%u,%u,%u transformed UV0 RGB=%u,%u,%u\n", unsigned(firstGreen[center]),
+                 unsigned(firstGreen[center + 1]), unsigned(firstGreen[center + 2]), unsigned(transformed[center]),
+                 unsigned(transformed[center + 1]), unsigned(transformed[center + 2]));
+    REQUIRE(difference(red, green) > 1000);
+    REQUIRE_EQ(difference(firstGreen, green), size_t(0));
     REQUIRE_EQ(difference(green, transformed), size_t(0));
     // Every frame owns its parameter and descriptor snapshot; repeated changes must stay deterministic.
     s.textures[0].offset = {0, 0};

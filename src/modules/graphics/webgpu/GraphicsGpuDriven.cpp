@@ -979,11 +979,9 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
         wgpu::BindGroup bindGroup =
-            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
-                              gpuForTexture(material->getNormalTexture()),
-                              gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depth, nullptr,
-                              frameOffset, shadowOffset, 0);
+            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()), gpuForTexture(material->getNormalTexture()),
+                              gpuForTexture(mesh3dEnvTexture), gpuForTexture(material->getHeightTexture()), depth,
+                              nullptr, frameOffset, shadowOffset, 0, uploadSkinPalette(nullptr));
         const uint32_t offsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, bindGroup, 3, offsets);
         WGPUBindGroupEntry modelEntry{};

@@ -1,3 +1,5 @@
+#include <assimp/material.h>
+#include <assimp/scene.h>
 #include <cmath>
 #include <filesystem>
 #include "graphics/Graphics.h"
@@ -30,4 +32,20 @@ TEST_CASE("model3d.gltfUvOriginAndTransformSurviveLoader") {
         REQUIRE(std::abs(binding.offset[0] - .13f) < .00001f);
         REQUIRE(std::abs(binding.offset[1] - .27f) < .00001f);
     }
+}
+
+TEST_CASE("model3d.missingPreviewTextureRetainsMaterialFactors") {
+    auto* gfx = eve::graphics::Graphics::create();
+    gfx->initHeadless(128, 128);
+    const auto               source = std::filesystem::path(__FILE__).parent_path() / "fixtures/model3d/uv-origin.gltf";
+    medialoader::ModelLoader loader;
+    auto                     scene = loader.loadFromPath(source.string().c_str(), {});
+    eve::model3d::ModelData  model(std::move(scene));
+    auto*                    material = model.getScene()->mMaterials[0];
+    aiString                 missing("missing-preview-texture.png");
+    material->AddProperty(&missing, AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0));
+    material->AddProperty(&missing, AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0));
+    auto* entity = eve::model3d::buildRenderable(*gfx, &model, 0);
+    REQUIRE(entity != nullptr);
+    REQUIRE(entity->getMaterial()->pbrSurface().textures[0].texture == nullptr);
 }

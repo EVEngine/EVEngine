@@ -88,12 +88,7 @@ Texture *loadExternalTexture(IResourceFactory *gfx, const std::string &path) {
     }
 }
 
-Texture *loadTextureSlot(IResourceFactory *gfx, ModelData *model, int matIndex, const std::string &type) {
-    if (model->getMaterialTextureSlotCount(matIndex, type) <= 0) return nullptr;
-    const int embedded = model->getMaterialTextureEmbeddedIndex(matIndex, type, 0);
-    if (embedded >= 0) return loadEmbeddedTexture(gfx, model, embedded);
-    const std::string path = model->getMaterialTexturePath(matIndex, type, 0);
-    if (path.empty()) return nullptr;
+Texture* loadModelTexture(IResourceFactory* gfx, ModelData* model, const std::string& path) {
     // Imported texture paths are relative to the source model, not the VFS root.
     // Normalize parent segments (OBJ/MTL commonly uses ../textures/foo.png).
     std::string uri = model->getUri();
@@ -107,6 +102,15 @@ Texture *loadTextureSlot(IResourceFactory *gfx, ModelData *model, int matIndex, 
         if (auto* texture = loadExternalTexture(gfx, resolved.generic_string())) return texture;
     }
     return loadExternalTexture(gfx, path);
+}
+
+Texture* loadTextureSlot(IResourceFactory* gfx, ModelData* model, int matIndex, const std::string& type) {
+    if (model->getMaterialTextureSlotCount(matIndex, type) <= 0) return nullptr;
+    const int embedded = model->getMaterialTextureEmbeddedIndex(matIndex, type, 0);
+    if (embedded >= 0) return loadEmbeddedTexture(gfx, model, embedded);
+    const std::string path = model->getMaterialTexturePath(matIndex, type, 0);
+    if (path.empty()) return nullptr;
+    return loadModelTexture(gfx, model, path);
 }
 
 struct TextureLook {
@@ -184,8 +188,14 @@ void extendedLook(IResourceFactory* gfx, ModelData* model, int index, TextureLoo
         else if (path.length > 1 && path.C_Str()[0] == '*')
             binding.texture = loadEmbeddedTexture(gfx, model, std::stoi(path.C_Str() + 1));
         else
-            binding.texture = loadExternalTexture(gfx, path.C_Str());
-        if (!binding.texture) throw eve::Exception("cannot load material texture %s", path.C_Str());
+            binding.texture = loadModelTexture(gfx, model, path.C_Str());
+        if (!binding.texture) {
+            // Model3D preview preserves the legacy factor-only material when an
+            // external resource is absent. Canonical asset admission remains strict.
+            std::fprintf(stderr, "[model3d] warning: missing material texture %s (model %s); using material factors\n",
+                         path.C_Str(), model->getUri().c_str());
+            continue;
+        }
         binding.texcoord = uv;
         auto wrapEnum    = [](aiTextureMapMode mode) {
             return mode == aiTextureMapMode_Clamp ? 33071u : mode == aiTextureMapMode_Mirror ? 33648u : 10497u;
