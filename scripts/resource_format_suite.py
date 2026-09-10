@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FAMILIES = {
     "image": ["resource_format_image.cpp", "image.cpp", "image_script.cpp", "asset_graphics_loader.cpp"],
     "sound": ["resource_decoder_lifetime.cpp", "resource_format_sound.cpp", "sound.cpp", "audio.cpp", "editor_audio_import_diagnostics.cpp"],
-    "model": ["resource_format_model.cpp", "model3d.cpp", "model3d_normals.cpp", "medialoader_model_link.cpp", "avatar_vrm.cpp"],
+    "model": ["resource_format_model.cpp", "model3d.cpp", "model3d_normals.cpp", "medialoader_model_link.cpp", "avatar_vrm_vulkan.cpp"],
     "font": ["font.cpp", "graphics_font.cpp"],
     "map": ["map.cpp", "resource_format_map.cpp"],
     "asset": [p.name for p in sorted((ROOT / "test").glob("asset_*.cpp"))],

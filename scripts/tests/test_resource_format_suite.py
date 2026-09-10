@@ -92,6 +92,17 @@ class ResourceSuiteTests(unittest.TestCase):
             (fixtures / "pattern.png").write_bytes(b"modified bytes")
             self.assertEqual(suite.fixture_errors(root), ["pattern.png"])
 
+    def test_vrm_routing_has_real_import_contract(self):
+        groups = suite.inventory()
+        self.assertIn('.vrm', groups['model']['advertised_resource_extensions'])
+        self.assertEqual(groups['model']['tests']['avatar.vrm.importMorphGazeSpringAndRollback'],
+                         'test/avatar_vrm_vulkan.cpp')
+        rows = suite.format_coverage(groups, [])
+        vrm = next(row for row in rows if row['id'] == 'model.vrm')
+        self.assertEqual(vrm['importTests'], ['avatar.vrm.importMorphGazeSpringAndRollback'])
+        self.assertEqual(vrm['importStatus'], 'not-run')
+        self.assertEqual(vrm['exportStatus'], 'coverage-missing')
+
     def test_extensions_include_uncovered_routing(self):
         self.assertIn(".dae", suite.inventory()["model"]["advertised_resource_extensions"])
 

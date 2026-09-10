@@ -1,10 +1,16 @@
 #include "graphics/ShaderScriptBindings.h"
-#include <cstdint>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <vector>
-#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
+#include "common/SquirrelBinding.h"
+#include "common/BorrowedRef.h"
+#include "filesystem/Filesystem.h"
+#include "filesystem/FileData.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <cstring>
+#include <exception>
+#include <memory>
+#include <vector>
 
 namespace eve::graphics {
 namespace {
@@ -23,7 +29,55 @@ Result<std::vector<uint32_t>> shaderWords(ssq::Array array) {
     }
     return Result<std::vector<uint32_t>>::success(std::move(words));
 }
-}  // namespace
+
+Result<std::vector<std::uint32_t>> readStage(const std::string& path) {
+    try {
+        auto* fs = filesystem::Filesystem::create();
+        std::unique_ptr<filesystem::FileData> bytes(fs->read(path));
+        if (!bytes || bytes->getSize() < 20 || bytes->getSize() % 4 != 0)
+            return Result<std::vector<std::uint32_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "SPIR-V must contain a complete word-aligned header", path));
+        std::vector<std::uint32_t> words(bytes->getSize() / 4);
+        std::memcpy(words.data(), bytes->getData(), bytes->getSize());
+        if (words[0] != 0x07230203)
+            return Result<std::vector<std::uint32_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "SPIR-V magic mismatch", path));
+        return Result<std::vector<std::uint32_t>>::success(std::move(words));
+    } catch (const std::exception& error) {
+        return Result<std::vector<std::uint32_t>>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), path));
+    }
+}
+
+// The existing Graphics factory owns the shader; this adapter only borrows it.
+ResultRef<Shader> loadMeshShader(Graphics& graphics, const std::string& vertex,
+                                  const std::string& fragment) {
+    if (graphics.getBackendName() != "vulkan")
+        return ResultRef<Shader>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "SPIR-V mesh shaders require the Vulkan backend", "backend"));
+    if (fragment.empty())
+        return ResultRef<Shader>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "fragment path must not be empty", "fragment"));
+    std::vector<std::uint32_t> vert;
+    if (!vertex.empty()) {
+        auto decoded = readStage(vertex);
+        if (!decoded) return ResultRef<Shader>::failure(decoded.status());
+        vert = std::move(decoded).takeValue();
+    }
+    auto frag = readStage(fragment);
+    if (!frag) return ResultRef<Shader>::failure(frag.status());
+    try {
+        auto* shader = graphics.newMeshShaderFromSpv(vert, frag.value());
+        if (!shader)
+            return ResultRef<Shader>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "Mesh shader allocation failed", "shader"));
+        return ResultRef<Shader>::success(std::ref(*shader));
+    } catch (const std::exception& error) {
+        return ResultRef<Shader>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader"));
+    }
+}
+} // namespace
 
 void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
     const auto vm = table.getHandle();
@@ -39,5 +93,40 @@ void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
             if (!frag.ok()) return eve::script::projectResult(vm, Result<void>::failure(frag.status()));
             return eve::script::projectResult(vm, graphics->replaceShaderFromSpv(*shader, vert.value(), frag.value()));
         });
+    cls.addFunc("replaceShaderFromGlsl",
+                [vm](Graphics* self, Shader* shader, const std::string& vertex,
+                     const std::string& fragment) {
+                    if (!self || !shader)
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "graphics and shader must not be null", "shader", {},
+                                    "graphics.shader_reload.binding")));
+                    return eve::script::projectResult(
+                        vm, self->replaceShaderFromGlsl(*shader, vertex, fragment));
+                });
+    cls.addFunc("replaceShaderFromWgsl",
+                [vm](Graphics* self, Shader* shader, const std::string& vertex,
+                     const std::string& fragment) {
+                    if (!self || !shader)
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "graphics and shader must not be null", "shader", {},
+                                    "graphics.shader_reload.binding")));
+                    return eve::script::projectResult(
+                        vm, self->replaceShaderFromWgsl(*shader, vertex, fragment));
+                });
+
+
+    cls.addFunc("loadMeshShaderSpv", [vm](Graphics* self, const std::string& vertex,
+                                         const std::string& fragment) {
+        auto result = loadMeshShader(*self, vertex, fragment);
+        if (!result) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        auto projected = eve::script::projectStatusResult(vm, result.status(), true, true);
+        projected.set("value", &result.value().get());
+        projected.set("ownership", std::string("borrowed-from-graphics"));
+        return projected;
+    });
 }
-}  // namespace eve::graphics
+} // namespace eve::graphics

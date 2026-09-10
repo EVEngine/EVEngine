@@ -4,6 +4,7 @@
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/SolidPipeline.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/Light.h"
 #include "graphics/AmbientOcclusion.h"
@@ -87,58 +88,6 @@
 namespace eve::graphics::vulkan {
 
 namespace {
-
-vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
-                                      vk::PipelineLayout layout,
-                                      BlendMode mode = BlendMode::Opaque) {
-    if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
-        mode == BlendMode::Multiply) {
-        // cbs/attachments must outlive build(); the builder must stay a single
-        // expression — copying the builder into a named local leaves its
-        // shader-stage pName pointers dangling into the temporary's storage.
-        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
-                                                                       makeBlendAttachment(mode));
-        vk::PipelineColorBlendStateCreateInfo cbs{};
-        cbs.logicOpEnable = false;
-        cbs.attachmentCount = 1;
-        cbs.pAttachments = attachments.data();
-        return device.createPipeline()
-            .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<ColorVertex>()
-                                     .addAttributeDescription<ColorVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                           vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-            .setColorBlending(cbs)
-            .build(renderPass);
-    }
-    if (mode == BlendMode::Alpha) {
-        return device.createPipeline()
-            .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<ColorVertex>()
-                                     .addAttributeDescription<ColorVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                           vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-            .setAlphaBlending(1)
-            .build(renderPass);
-    }
-    // Opaque: keep the original single-expression chain (no explicit blend state).
-    return device.createPipeline()
-        .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
-        .setPipelineLayout(layout)
-        .setVertexInputState(vkb::VertexInputStateBuilder()
-                                 .addInputBinding<ColorVertex>()
-                                 .addAttributeDescription<ColorVertex>())
-        .setDynamicStatesViewportScissor()
-        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
-                       vk::FrontFace::eCounterClockwise)
-        .build(renderPass);
-}
 
 vk::Pipeline createPrimitive3DPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
                                        vk::PipelineLayout layout, PrimitiveDepthMode depth, BlendMode blend,
@@ -2058,99 +2007,6 @@ vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &ver
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
     return pipe;
-}
-
-void Graphics::ensureOffscreenPipelines() {
-    if (offscreenRenderPass) return;
-
-    vkb::RenderPassBuilder rpBuilder = device.createRenderPass();
-    offscreenRenderPass =
-        rpBuilder.addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
-            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal))
-            .addDependency(VK_SUBPASS_EXTERNAL, 0)
-            .build();
-
-    offscreenSolidPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout);
-    offscreenSolidAlphaPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Alpha);
-    offscreenAdditiveSolidPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Additive);
-    offscreenPremultipliedSolidPipeline = createSolidColorPipeline(
-        device, offscreenRenderPass, pipelineLayout, BlendMode::Premultiplied);
-    offscreenMultiplySolidPipeline = createSolidColorPipeline(
-        device, offscreenRenderPass, pipelineLayout, BlendMode::Multiply);
-
-    // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
-    auto tvert = embeddedSpirv(textured_vert_spv);
-    auto tfrag = embeddedSpirv(textured_frag_spv);
-    offscreenTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout);
-    offscreenAdditiveTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
-                                    BlendMode::Additive);
-    offscreenPremultipliedTexPipeline = createTexturedStylePipeline(
-        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Premultiplied);
-    offscreenMultiplyTexPipeline = createTexturedStylePipeline(
-        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Multiply);
-    offscreenOpaqueTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
-                                    BlendMode::Opaque);
-
-    if (lit2dPipelineLayout) {
-        auto lvert = embeddedSpirv(lit2d_vert_spv);
-        auto lfrag = embeddedSpirv(lit2d_frag_spv);
-        offscreenLitPipeline =
-            createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout);
-    }
-
-    // Lazily create offscreen pipelines for any custom shaders already loaded.
-    for (auto &sh : ownedShaders) ensureShaderOffscreenPipeline(sh.get());
-}
-
-void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
-    if (!shader || !shader->gpuHandle || !offscreenRenderPass) return;
-    // Mesh3D SPIR-V / layout is incompatible with the 2D textured offscreen pass.
-    if (shader->getKind() == Shader::Kind::eMesh3D) return;
-    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
-    if (gpu->isMesh3D || gpu->offscreenPipeline) return;
-    gpu->offscreenPipeline = createTexturedStylePipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
-                                                         offscreenRenderPass, shaderPipelineLayout);
-    gpu->offscreenOpaquePipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), offscreenRenderPass,
-        shaderPipelineLayout, BlendMode::Opaque);
-}
-
-void Graphics::ensureHdrOffscreenPipelines() {
-    if (hdrOffscreenRenderPass) return;
-    hdrOffscreenRenderPass =
-        device.createRenderPass()
-            .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
-            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
-                0, vk::ImageLayout::eColorAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-
-    auto vert = embeddedSpirv(textured_vert_spv);
-    auto frag = embeddedSpirv(textured_frag_spv);
-    hdrOffscreenTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout);
-    hdrOffscreenOpaqueTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Opaque);
-    for (auto &shader : ownedShaders) ensureShaderHdrOffscreenPipeline(shader.get());
-}
-
-void Graphics::ensureShaderHdrOffscreenPipeline(Shader *shader) {
-    if (!shader || !shader->gpuHandle || !hdrOffscreenRenderPass) return;
-    if (shader->getKind() == Shader::Kind::eMesh3D) return;
-    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
-    if (gpu->isMesh3D || gpu->hdrOffscreenPipeline) return;
-    gpu->hdrOffscreenPipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
-        shaderPipelineLayout);
-    gpu->hdrOffscreenOpaquePipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
-        shaderPipelineLayout, BlendMode::Opaque);
 }
 
 Texture *Graphics::getTexture() { return nullptr; }

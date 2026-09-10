@@ -560,6 +560,19 @@
       "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
     },
     {
+      "id": "model.vrm",
+      "family": "model",
+      "extensions": [
+        ".vrm"
+      ],
+      "importTests": [
+        "avatar.vrm.importMorphGazeSpringAndRollback"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "VRM 1.0 model import with humanoid, morph, gaze, spring and rollback coverage; no native VRM export API"
+    },
+    {
       "id": "model.vta",
       "family": "model",
       "extensions": [
@@ -582,22 +595,6 @@
       "exportTests": [],
       "exportMode": "not-a-native-export-api",
       "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
-    },
-    {
-      "id": "model.vrm",
-      "family": "model",
-      "extensions": [
-        ".vrm"
-      ],
-      "importTests": [
-        "avatar.vrm.parseVersionAndHumanoid",
-        "avatar.vrm.rejectTruncatedAndUnknownVersion",
-        "avatar.vrm.rejectInvalidNodeReference",
-        "avatar.vrm.graphicsBackendSupportIsExplicit"
-      ],
-      "exportTests": [],
-      "exportMode": "not-a-native-export-api",
-      "scope": "VRM 1.0 metadata and humanoid validation; Vulkan model loading with explicit unsupported-backend result."
     }
   ]
 }
