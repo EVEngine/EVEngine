@@ -114,17 +114,25 @@ struct GpuProgram::Impl {
     std::vector<gpgpu::GpuBuffer *> slotBuffer;   // arena slot -> buffer
     std::vector<gpgpu::GpuBuffer *> placeholderBuffers;
     std::vector<int> placeholderSizes;
-    std::vector<gpgpu::GpuBuffer *> ownedBuffers;  // every allocated buffer (cleanup)
+    std::vector<std::unique_ptr<gpgpu::GpuBuffer>> ownedBuffers;
     std::map<int, gpgpu::GpuBuffer *> qScalesByNode;  // quantized const node -> scales
     gpgpu::GpuBuffer *outputBuffer = nullptr;
     int outputSize = 0;
     std::unique_ptr<gpgpu::Sequence> sequence;
     std::unique_ptr<gpgpu::GpuBuffer> outputStaging;
 
+    ~Impl() {
+        // Retire command/descriptor references before their owning buffers.
+        sequence.reset();
+        groups.clear();
+        outputStaging.reset();
+    }
+
     gpgpu::GpuBuffer *alloc(int byteSize) {
-        auto *buf = gpgpu->newBuffer(byteSize, "storage");
-        ownedBuffers.push_back(buf);
-        return buf;
+        auto  buffer   = std::unique_ptr<gpgpu::GpuBuffer>(gpgpu->newBuffer(byteSize, "storage"));
+        auto* borrowed = buffer.get();
+        ownedBuffers.push_back(std::move(buffer));
+        return borrowed;
     }
 
     /** Bind real arena buffers once at build time; bindings persist across runs. */
