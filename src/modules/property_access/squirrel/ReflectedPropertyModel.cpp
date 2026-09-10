@@ -1,16 +1,13 @@
-#include "scriptmodel/ReflectedPropertyModel.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <utility>
 
-namespace eve::scriptmodel {
+namespace eve::property_access {
 namespace {
 
 using eve::Value;
-using property_access::PropertyDescriptor;
-using property_access::PropertyFlag;
-using property_access::PropertyKind;
 
 PropertyKind propertyKind(const ReflectedMember &member) {
     if (member.attrString("editor") == "combo" && !member.attrOptions("options").empty())
@@ -65,13 +62,13 @@ PropertyFlag propertyFlags(const ReflectedMember &member) {
 ReflectedValue toReflectedValue(const Value &value) {
     ReflectedValue result;
     if (const auto *boolean = value.getIf<bool>()) {
-        result.kind = ReflectedValueKind::Bool;
+        result.kind    = ReflectedValueKind::Bool;
         result.boolean = *boolean;
     } else if (const auto *integer = value.getIf<std::int64_t>()) {
-        result.kind = ReflectedValueKind::Integer;
+        result.kind    = ReflectedValueKind::Integer;
         result.integer = *integer;
     } else if (const auto *number = value.getIf<double>()) {
-        result.kind = ReflectedValueKind::Float;
+        result.kind     = ReflectedValueKind::Float;
         result.floating = *number;
     } else if (const auto *text = value.getIf<std::string>()) {
         result.kind = ReflectedValueKind::String;
@@ -80,34 +77,33 @@ ReflectedValue toReflectedValue(const Value &value) {
     return result;
 }
 
-const char *scriptValidationCode(const std::string &presentationCode) {
-    if (presentationCode == "property_access.property.read-only") return "scriptmodel.property.read-only";
-    if (presentationCode == "property_access.property.type") return "scriptmodel.property.type";
-    if (presentationCode == "property_access.property.choice") return "scriptmodel.property.choice";
-    if (presentationCode == "property_access.property.finite") return "scriptmodel.property.finite";
-    if (presentationCode == "property_access.property.minimum") return "scriptmodel.property.minimum";
-    if (presentationCode == "property_access.property.maximum") return "scriptmodel.property.maximum";
-    return "scriptmodel.property.validation";
+const char *scriptValidationCode(const std::string &sharedCode) {
+    if (sharedCode == "property_access.property.read-only") return "property_access.script.read-only";
+    if (sharedCode == "property_access.property.type") return "property_access.script.type";
+    if (sharedCode == "property_access.property.choice") return "property_access.script.choice";
+    if (sharedCode == "property_access.property.finite") return "property_access.script.finite";
+    if (sharedCode == "property_access.property.minimum") return "property_access.script.minimum";
+    if (sharedCode == "property_access.property.maximum") return "property_access.script.maximum";
+    return "property_access.script.validation";
 }
 
-property_access::WriteResult validationFailure(const property_access::WriteResult &validation) {
-    return property_access::WriteResult::reject(scriptValidationCode(validation.code), validation.message);
+WriteResult validationFailure(const WriteResult &validation) {
+    return WriteResult::reject(scriptValidationCode(validation.code), validation.message);
 }
 
 }  // namespace
 
 struct ReflectedPropertyModel::ObserverState {
     struct Entry {
-        std::uint64_t id = 0;
+        std::uint64_t  id = 0;
         ChangeCallback callback;
     };
-    std::uint64_t nextId = 1;
+    std::uint64_t      nextId = 1;
     std::vector<Entry> entries;
 };
 
 ReflectedPropertyModel::ReflectedPropertyModel(Runtime &runtime, ssq::Object instance)
-    : runtime_(&runtime), instance_(std::move(instance)),
-      observers_(std::make_shared<ObserverState>()) {
+    : runtime_(&runtime), instance_(std::move(instance)), observers_(std::make_shared<ObserverState>()) {
     rebuildSchema();
     refresh();
 }
@@ -122,42 +118,36 @@ void ReflectedPropertyModel::rebuildSchema() {
     for (const ReflectedMember &member : runtime_->reflectInstance(instance_)) {
         if (member.method) continue;
         PropertyDescriptor descriptor;
-        descriptor.path = member.name;
+        descriptor.path        = member.name;
         descriptor.displayName = member.attrString("label", member.name);
-        descriptor.description = member.attrString(
-            "tooltip", member.attrString("description"));
-        descriptor.category = member.attrString(
-            "category", ownerClass(*runtime_, schema_.typeId, member.name));
-        descriptor.kind = propertyKind(member);
-        descriptor.flags = propertyFlags(member);
+        descriptor.description = member.attrString("tooltip", member.attrString("description"));
+        descriptor.category    = member.attrString("category", ownerClass(*runtime_, schema_.typeId, member.name));
+        descriptor.kind        = propertyKind(member);
+        descriptor.flags       = propertyFlags(member);
         descriptor.defaultValue = convertValue(member.name, member.value);
-        descriptor.numeric.minimum = member.findAttribute("min")
-                                         ? std::optional<double>(member.attrFloat("min"))
-                                         : std::nullopt;
-        descriptor.numeric.maximum = member.findAttribute("max")
-                                         ? std::optional<double>(member.attrFloat("max"))
-                                         : std::nullopt;
-        descriptor.numeric.step = member.findAttribute("step")
-                                      ? std::optional<double>(member.attrFloat("step"))
-                                      : std::nullopt;
-        descriptor.numeric.units = member.attrString("units");
+        descriptor.numeric.minimum =
+            member.findAttribute("min") ? std::optional<double>(member.attrFloat("min")) : std::nullopt;
+        descriptor.numeric.maximum =
+            member.findAttribute("max") ? std::optional<double>(member.attrFloat("max")) : std::nullopt;
+        descriptor.numeric.step =
+            member.findAttribute("step") ? std::optional<double>(member.attrFloat("step")) : std::nullopt;
+        descriptor.numeric.units     = member.attrString("units");
         descriptor.numeric.precision = static_cast<int>(member.attrFloat("precision", 3.f));
-        descriptor.choices = member.attrOptions("options");
-        descriptor.presenterHint = member.attrString("editor");
+        descriptor.choices           = member.attrOptions("options");
+        descriptor.presenterHint     = member.attrString("editor");
         schema_.properties.push_back(std::move(descriptor));
     }
     ++revision_;
 }
 
-Value ReflectedPropertyModel::convertValue(const std::string &path,
-                                           const ReflectedValue &value) const {
+Value ReflectedPropertyModel::convertValue(const std::string &path, const ReflectedValue &value) const {
     switch (value.kind) {
         case ReflectedValueKind::Bool: return Value(value.boolean);
         case ReflectedValueKind::Integer: return Value(value.integer);
         case ReflectedValueKind::Float: return Value(value.floating);
         case ReflectedValueKind::String: return Value(value.text);
         case ReflectedValueKind::Array: {
-            Value::Array result;
+            Value::Array      result;
             const std::size_t count = runtime_->arraySize(instance_, path);
             result.reserve(count);
             for (std::size_t index = 0; index < count; ++index) {
@@ -205,33 +195,30 @@ std::optional<Value> ReflectedPropertyModel::read(const std::string &path) const
     return convertValue(path, runtime_->readProperty(instance_, path));
 }
 
-property_access::WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &value) {
+WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &value) {
     auto descriptor = schema_.find(path);
-    if (!descriptor)
-        return property_access::WriteResult::reject("scriptmodel.property.missing", "Property is not reflected");
-    const property_access::WriteResult validation = property_access::validatePropertyValue(descriptor->get(), value);
+    if (!descriptor) return WriteResult::reject("property_access.script.missing", "Property is not reflected");
+    const WriteResult validation = validatePropertyValue(descriptor->get(), value);
     if (!validation.accepted) return validationFailure(validation);
 
     ReflectedValue reflected = toReflectedValue(value);
     if (reflected.empty())
-        return property_access::WriteResult::reject("scriptmodel.property.type", "Unsupported property value type");
+        return WriteResult::reject("property_access.script.type", "Unsupported property value type");
     if (!runtime_->writeProperty(instance_, path, reflected))
-        return property_access::WriteResult::reject("scriptmodel.property.write",
-                                                    "Runtime rejected the property write");
+        return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
     const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
-    const auto found = cachedValues_.find(path);
+    const auto  found   = cachedValues_.find(path);
     if (found == cachedValues_.end() || found->second != applied) emit(path, applied);
-    return property_access::WriteResult::success();
+    return WriteResult::success();
 }
 
-property_access::Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {
+Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {
     const std::uint64_t id = observers_->nextId++;
     observers_->entries.push_back({id, std::move(callback)});
     std::weak_ptr<ObserverState> weak = observers_;
-    return property_access::Subscription([weak, id]() {
+    return Subscription([weak, id]() {
         if (const auto state = weak.lock())
-            std::erase_if(state->entries,
-                          [id](const ObserverState::Entry &entry) { return entry.id == id; });
+            std::erase_if(state->entries, [id](const ObserverState::Entry &entry) { return entry.id == id; });
     });
 }
 
@@ -240,17 +227,16 @@ void ReflectedPropertyModel::refresh() {
         const std::optional<Value> current = read(descriptor.path);
         if (!current) continue;
         const auto found = cachedValues_.find(descriptor.path);
-        if (found == cachedValues_.end() || found->second != *current)
-            emit(descriptor.path, *current);
+        if (found == cachedValues_.end() || found->second != *current) emit(descriptor.path, *current);
     }
 }
 
 void ReflectedPropertyModel::emit(const std::string &path, const Value &value) {
     cachedValues_[path] = value;
-    const property_access::PropertyChange change{path, value, ++revision_};
-    const auto snapshot = observers_->entries;
+    const PropertyChange change{path, value, ++revision_};
+    const auto           snapshot = observers_->entries;
     for (const ObserverState::Entry &entry : snapshot)
         if (entry.callback) entry.callback(change);
 }
 
-}  // namespace eve::scriptmodel
+}  // namespace eve::property_access

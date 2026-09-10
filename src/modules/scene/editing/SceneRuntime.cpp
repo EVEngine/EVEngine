@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <utility>
 
 namespace eve::scene_editing {
@@ -50,10 +51,6 @@ scene::SceneNode runtimeNode(const SceneObjectSnapshot& object) {
     return node;
 }
 
-bool sameTransform(const SceneTransformValue& left, const SceneTransformValue& right) {
-    return left == right;
-}
-
 bool hostMatches(scene::SceneHost* host, const SceneObjectSnapshot& object) {
     const int index = host->findIndexById(object.id.value());
     scene::SceneNode* node = host->getNode(index);
@@ -71,21 +68,27 @@ bool hostMatches(scene::SceneHost* host, const SceneObjectSnapshot& object) {
 }  // namespace
 
 SceneHostEditorTarget::SceneHostEditorTarget(std::string id, scene::SceneHost* host)
-    : SceneTargetBase(std::move(id), "runtime-scene-host"), host_(host) {
-    if (!host_) return;
-    const auto tree = host_->tree();
-    for (const scene::SceneNode& node : tree->nodes) {
-        CreateSceneObjectRequest request;
-        request.id = ObjectId(node.id);
-        request.parent = node.parent >= 0 ? ObjectId(tree->nodes[size_t(node.parent)].id) : ObjectId{};
-        request.name = node.name;
-        request.transform = {node.x, node.y, node.z, node.pitch, node.yaw, node.roll,
-                             node.sx, node.sy, node.sz};
-        auto operation = makeCreate(request);
-        if (operation.ok()) {
+    : SceneTargetBase(std::move(id), "runtime-scene-host"), hostHandle_(ecs::handle_of(host)), staging_(!host) {
+    if (!host) return;
+    const auto            tree = host->tree();
+    std::set<std::string> imported;
+    while (imported.size() < tree->nodes.size()) {
+        const auto before = imported.size();
+        for (const scene::SceneNode& node : tree->nodes) {
+            if (imported.contains(node.id)) continue;
+            if (node.parent >= 0 && !imported.contains(tree->nodes.at(size_t(node.parent)).id)) continue;
+            CreateSceneObjectRequest request;
+            request.id        = ObjectId(node.id);
+            request.parent    = node.parent >= 0 ? ObjectId(tree->nodes[size_t(node.parent)].id) : ObjectId{};
+            request.name      = node.name;
+            request.transform = {node.x, node.y, node.z, node.pitch, node.yaw, node.roll, node.sx, node.sy, node.sz};
+            auto operation    = makeCreate(request);
+            if (!operation.ok()) throw std::invalid_argument("Scene host contains invalid editing data");
             auto applied = SceneTargetBase::applyDomainOperation(operation.value());
-            applied.ignore();
+            if (!applied.ok()) throw std::invalid_argument("Scene host could not be imported");
+            imported.insert(node.id);
         }
+        if (before == imported.size()) throw std::invalid_argument("Scene host contains invalid hierarchy");
     }
     clearDirtyRegion();
 }
@@ -98,10 +101,11 @@ void* SceneHostEditorTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::componentLinks(
     const ObjectId& object) const {
-    if (!host_)
+    auto* live = host();
+    if (!live)
         return liveError<std::vector<SceneComponentLinkSnapshot>>(EditorStatus::Unsupported,
             "editor.scene.live-host-required", "Component links are unavailable on a staging target");
-    auto nodeResult = host_->findById(object.value());
+    auto nodeResult = live->findById(object.value());
     if (!nodeResult.ok() || !nodeResult.value())
         return liveError<std::vector<SceneComponentLinkSnapshot>>(EditorStatus::NotFound,
             "editor.scene.component-object-not-found", "Live scene object does not exist: " + object.value());
@@ -116,7 +120,7 @@ EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::com
 }
 
 EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOperation& operation) {
-    if (!host_) return SceneTargetBase::applyDomainOperation(operation);
+    if (staging_) return SceneTargetBase::applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged)
@@ -129,98 +133,92 @@ EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOpera
 
 std::unique_ptr<IDomainOperationTarget> SceneHostEditorTarget::cloneDomainState() const {
     auto result = std::make_unique<SceneHostEditorTarget>(*this);
-    result->host_ = nullptr;
+    result->hostHandle_ = {};
+    result->staging_    = true;
     return result;
 }
 
+scene::SceneHost* SceneHostEditorTarget::host() const {
+    return dynamic_cast<scene::SceneHost*>(ecs::try_get(hostHandle_));
+}
+
 EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase& desiredTarget) {
-    if (!host_)
-        return liveError<void>(EditorStatus::Rejected, "editor.scene.live-host-required",
-                               "Live scene host is unavailable");
+    auto* live = host();
+    if (!live)
+        return liveError<void>(EditorStatus::NotFound, "editor.scene.live-host-required",
+                               "Live scene host has been destroyed");
     const auto current = collect(*this);
     const auto desired = collect(desiredTarget);
+    const auto tree    = live->tree();
+    if (tree->nodes.size() != current.size())
+        return liveError<void>(EditorStatus::Conflict, "editor.scene.live-host-diverged",
+                               "Live scene structure changed; start a new editing session");
     for (const auto& [id, object] : current) {
-        static_cast<void>(object);
-        if (!hostMatches(host_, object))
+        if (!hostMatches(live, object))
             return liveError<void>(EditorStatus::Conflict, "editor.scene.live-host-diverged",
-                                   "Live SceneHost changed outside this editor target: " + id.value());
-        if (!desired.contains(id) && host_->getChildCountById(id.value()) != 0)
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-delete-not-leaf",
-                                   "Live SceneHost object gained children before deletion: " + id.value());
+                                   "Live scene changed outside this target: " + id.value());
+        const auto* node = live->getNode(live->findIndexById(id.value()));
+        if (!desired.contains(id) && (!node->links.empty() || node->objectId != 0))
+            return liveError<void>(EditorStatus::Rejected, "editor.scene.live-delete-attached",
+                                   "Detach domain links and behaviors before deleting this node");
     }
+    // Validate the whole candidate before publishing any host mutation.
+    auto valid = desiredTarget.makeRestore(desiredTarget.snapshotValue());
+    if (!valid.ok()) return EditorResult<void>::failure(valid.status());
+    scene::SceneHost::Tree  candidate;
+    std::map<ObjectId, int> indices;
     for (const auto& [id, object] : desired) {
-        if (!current.contains(id) && host_->hasNode(id.value()))
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-id-conflict",
-                                   "Live SceneHost already contains newly-created id: " + id.value());
-        if (object.transform.scaleX == 0.0 || object.transform.scaleY == 0.0 || object.transform.scaleZ == 0.0)
-            return liveError<void>(EditorStatus::Rejected, "editor.scene.live-zero-scale",
-                                   "Live SceneHost rejects zero scale: " + id.value());
-    }
-
-    for (const auto& [id, object] : current) {
-        static_cast<void>(object);
-        if (!desired.contains(id) && host_->removeLeaf(id.value()) != scene::SceneMutationStatus::Applied)
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-delete-failed",
-                                   "Live SceneHost rejected leaf deletion: " + id.value());
-    }
-    std::set<ObjectId> pending;
-    for (const auto& [id, object] : desired)
-        if (!current.contains(id)) pending.insert(id);
-    while (!pending.empty()) {
-        bool progressed = false;
-        for (auto iterator = pending.begin(); iterator != pending.end();) {
-            const SceneObjectSnapshot& object = desired.at(*iterator);
-            if (!object.parent.empty() && !host_->hasNode(object.parent.value())) {
-                ++iterator;
-                continue;
-            }
-            if (host_->appendNode(runtimeNode(object), object.parent.value()) != scene::SceneMutationStatus::Applied)
-                return liveError<void>(EditorStatus::Conflict, "editor.scene.live-create-failed",
-                                       "Live SceneHost rejected object creation: " + object.id.value());
-            iterator = pending.erase(iterator);
-            progressed = true;
+        scene::SceneNode node = runtimeNode(object);
+        const int        old  = live->findIndexById(id.value());
+        if (old >= 0) {
+            node                 = *live->getNode(old);
+            const auto transform = runtimeNode(object);
+            node.name            = object.name;
+            node.x               = transform.x;
+            node.y               = transform.y;
+            node.z               = transform.z;
+            node.pitch           = transform.pitch;
+            node.yaw             = transform.yaw;
+            node.roll            = transform.roll;
+            node.sx              = transform.sx;
+            node.sy              = transform.sy;
+            node.sz              = transform.sz;
         }
-        if (!progressed)
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-parent-order",
-                                   "Live SceneHost could not resolve created object parents");
+        node.parent = node.firstChild = node.nextSibling = -1;
+        node.localDirty = node.subtreeDirty = true;
+        indices.emplace(id, static_cast<int>(candidate.nodes.size()));
+        candidate.nodes.push_back(std::move(node));
     }
+    std::map<int, int> tails;
     for (const auto& [id, object] : desired) {
-        const auto old = current.find(id);
-        if (old != current.end() && old->second.parent != object.parent &&
-            !host_->setParentById(id.value(), object.parent.value()))
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-reparent-failed",
-                                   "Live SceneHost rejected object reparent: " + id.value());
-        if (old == current.end() || old->second.name != object.name)
-            if (host_->renameNode(id.value(), object.name) != scene::SceneMutationStatus::Applied)
-                return liveError<void>(EditorStatus::Conflict, "editor.scene.live-rename-failed",
-                                       "Live SceneHost rejected object rename: " + id.value());
-        if (old == current.end() || !sameTransform(old->second.transform, object.transform)) {
-            const SceneTransformValue& transform = object.transform;
-            if (host_->setLocalTransform(id.value(), static_cast<float>(transform.x),
-                                          static_cast<float>(transform.y), static_cast<float>(transform.z),
-                                          static_cast<float>(transform.rotationY),
-                                          static_cast<float>(transform.rotationX),
-                                          static_cast<float>(transform.rotationZ),
-                                          static_cast<float>(transform.scaleX),
-                                          static_cast<float>(transform.scaleY),
-                                          static_cast<float>(transform.scaleZ)) !=
-                scene::SceneMutationStatus::Applied)
-                return liveError<void>(EditorStatus::Conflict, "editor.scene.live-transform-failed",
-                                       "Live SceneHost rejected object transform: " + id.value());
-        }
+        const int index               = indices.at(id);
+        const int parent              = object.parent.empty() ? -1 : indices.at(object.parent);
+        candidate.nodes[index].parent = parent;
+        if (tails.contains(parent))
+            candidate.nodes[tails.at(parent)].nextSibling = index;
+        else if (parent >= 0)
+            candidate.nodes[parent].firstChild = index;
+        else
+            candidate.root = index;
+        tails[parent] = index;
     }
-    return eve::editing::applied<void>();
+    *live->tree() = std::move(candidate);
+    return editing::applied<void>();
 }
 
 EditorResult<void> SceneHostEditorTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
-    if (!staged)
+    if (!staged || staged->targetId() != targetId())
         return liveError<void>(EditorStatus::Conflict, "editor.scene.live-candidate-mismatch",
                                "Live scene candidate has an incompatible type");
     EditorResult<void> synchronized = synchronizeHost(*staged);
     if (!synchronized.ok()) return synchronized;
-    return SceneTargetBase::commitDomainState(std::move(candidate));
+    auto committed = SceneTargetBase::commitDomainState(std::move(candidate));
+    if (!committed.ok()) return committed;
+    // Observers run only after both published host and transaction baseline agree.
+    if (auto* live = host()) live->fireEvent("tree_changed", "");
+    return editing::applied<void>();
 }
 
 }  // namespace eve::scene_editing

@@ -23,7 +23,9 @@ using eve::Color;
  * @brief ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem
  * batch-draws atlas quads (or solid debug colors when no texture).
  *
- * GID 0 = empty. Tiled flip flags (high bits) are masked on read/draw.
+ * GID 0 = empty. Integer tile APIs preserve all 32 bits, including Tiled flip
+ * flags. A negative int is a signed transport of those bits, not an erase code.
+ * Use tileGid() to inspect the identity without flags, and 0 to erase.
  */
 class TileLayer : public ecs::Entity {
 public:

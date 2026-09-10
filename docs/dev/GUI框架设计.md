@@ -124,10 +124,10 @@ flowchart TB
 
 依赖只允许自上而下，View 不直接认识 Squirrel VM，Editor 命令也不进入通用模型层：
 
-1. `presentation`：`Value`、`PropertySchema`、`IPropertyModel`、订阅与校验结果；纯 C++、
-   无 UI/VM/Editor 依赖。
-2. `scriptmodel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
-   适配为同一个 `IPropertyModel`；Editor 写入只产生 command intent。
+1. `property_access`：`PropertySchema`、`IPropertyAccess`、订阅与校验结果；核心头文件纯 C++、
+   无 UI/VM/Editor 依赖。Squirrel 反射适配器在同模块 `squirrel/` 子目录。
+2. `property_access::ReflectedPropertyModel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
+   适配为同一个 `IPropertyAccess`；Editor 写入只产生 command intent。
 3. `ui::PropertyView`：只消费 schema/value，选择控件、生成稳定 ID、双向写回并按 revision
    增量同步；既可嵌入游戏 UI，也可嵌入编辑器面板。
 4. `Inspector`、游戏 HUD、Editor shell：组合 View、命令、权限与目标选择；不复制属性控件。

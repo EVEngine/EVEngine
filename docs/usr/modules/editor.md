@@ -423,9 +423,18 @@ snapshot/load 保证失败不污染当前文档。启用 `definitions` 时，`De
 ### Live Scene 与 Prefab
 
 启用 `scene` 时，`SceneHostEditorTarget` 会导入真实 retained SceneHost，并把通用 hierarchy/TRS
-operation 作为增量 mutation 提交。新增、叶节点删除、改名、重挂和 TRS 不会 remount 整棵树，已有
-render/physics/audio link 因而保留；提交前会比较 mirror 与 live host，检测到游戏侧外部修改时返回
-Conflict，不会静默覆盖。
+operation 在候选树中验证后原子发布，保留同 ID 节点的 render/physics/audio link。
+提交前会比较 mirror 与 live host，检测到游戏侧外部修改时返回 Conflict，不会静默覆盖。
+节点地址和 arena index 不跨事务保持稳定，宿主应按 ID 重新解析；发布后发出一次 `tree_changed`。
+删除仍带 Link 或行为的节点会被拒绝，由对应领域先解除关联。
+
+`SceneEditorSession` 是不依赖 UI 的命令与历史组合组件。Squirrel 使用
+`eve.SceneEditorModule().createLiveSession(targetId, hostName)`，或使用 `createSession(targetId)`
+创建纯文档会话；检查返回值的 `ok` 后持有 `value`。会话支持 `execute`、`undo`、`redo`、
+`snapshot`、`saveJson`、`restoreJson`，并可通过 `restrictCommands` 限制游戏内宿主开放的命令。
+保存只包含版本化层级、名称与 TRS；场景组件和资源继续由各领域保存。
+参见 [开发工具示例](../../../examples/scene-editor/README.md) 和
+[游戏内建造示例](../../../examples/scene-builder-game/README.md)。UI、输入、选择集与文件位置均由宿主控制。
 
 `ScenePrefabService` 从任意 scene target 捕获一个子树，生成稳定 source-id 的 prefab snapshot。
 实例化计划把 source id 映射为 `<instance>/<source>`，可与普通 transaction/undo 共用；

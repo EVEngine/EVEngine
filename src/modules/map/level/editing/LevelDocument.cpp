@@ -12,7 +12,17 @@ LevelDocument::LevelDocument(int width, int height, float tileWidth, float tileH
         throw Exception("LevelDocument: dimensions and tile size must be positive");
 }
 
-std::string LevelDocument::nextId(const char* prefix) { return std::string(prefix) + std::to_string(nextId_++); }
+std::string LevelDocument::nextId(const char* prefix) {
+    for (;;) {
+        std::string candidate = std::string(prefix) + std::to_string(nextId_++);
+        bool        occupied  = false;
+        for (const auto& layer : layers_) {
+            occupied = occupied || layer.id == candidate;
+            for (const auto& object : layer.objects) occupied = occupied || object.id == candidate;
+        }
+        if (!occupied) return candidate;
+    }
+}
 
 void LevelDocument::resize(int width, int height) {
     if (width < 1 || height < 1) throw Exception("LevelDocument::resize: dimensions must be positive");

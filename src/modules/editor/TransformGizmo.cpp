@@ -14,7 +14,7 @@ namespace {
 
 constexpr float kPi = 3.14159265358979323846f;
 constexpr float kAxisHitRadius = 0.12f;
-constexpr float kPlaneHitSize = 0.25f;
+constexpr float kPlaneHitSize  = 0.42f;
 constexpr float kRingThickness = 0.08f;
 
 float snapValue(float v, float step) {
@@ -150,7 +150,7 @@ void TransformGizmo::rebuildParts() {
         parts_.push_back(p);
     };
 
-    if (mode_ == "translate") {
+    if (mode_ == "translate" || mode_ == "scale") {
         addAxis("x", 0, "axis");
         addAxis("y", 1, "axis");
         addAxis("z", 2, "axis");
@@ -177,7 +177,7 @@ void TransformGizmo::rebuildParts() {
         c.origin = origin;
         c.dir = {0.f, 1.f, 0.f};
         c.length = 0.f;
-        c.radius = size_ * 0.06f;
+        c.radius = size_ * (mode_ == "scale" ? 0.08f : 0.06f);
         colorForAxis(c.axis, c.color);
         parts_.push_back(c);
     } else if (mode_ == "rotate") {
@@ -188,18 +188,6 @@ void TransformGizmo::rebuildParts() {
             p.length = 0.f;
             p.radius = size_;
         }
-    } else if (mode_ == "scale") {
-        addAxis("x", 0, "axis");
-        addAxis("y", 1, "axis");
-        addAxis("z", 2, "axis");
-        Part u;
-        u.kind = "center";
-        u.axis = "xyz";
-        u.origin = origin;
-        u.dir = {0.f, 1.f, 0.f};
-        u.radius = size_ * 0.08f;
-        colorForAxis(u.axis, u.color);
-        parts_.push_back(u);
     } else {  // bound
         const char *names[] = {"bx", "by", "bz", "bnx", "bny", "bnz"};
         glm::vec3 centers[6] = {
@@ -292,7 +280,7 @@ float TransformGizmo::hitPlane(const glm::vec3 &ro, const glm::vec3 &rd, int pla
     float u = glm::dot(d, axisWorld(a0));
     float v = glm::dot(d, axisWorld(a1));
     float lim = size_ * kPlaneHitSize;
-    float lo = size_ * 0.05f;
+    float lo  = size_ * 0.18f;
     if (u < lo || v < lo || u > lim || v > lim) return -1.f;
     outT = t;
     return 0.f;
@@ -379,6 +367,10 @@ std::string TransformGizmo::pick(float ox, float oy, float oz, float dx, float d
             consider(i == 0 ? "x" : i == 1 ? "y" : "z", s, t);
         }
         glm::vec3 oc = ro - position_;
+        float     tp;
+        if (hitPlane(ro, rd, 3, tp) >= 0.f) consider("xy", 0.f, tp);
+        if (hitPlane(ro, rd, 6, tp) >= 0.f) consider("yz", 0.f, tp);
+        if (hitPlane(ro, rd, 5, tp) >= 0.f) consider("xz", 0.f, tp);
         float rad = size_ * 0.08f;
         float b = glm::dot(oc, rd);
         float c = glm::dot(oc, oc) - rad * rad;
@@ -467,6 +459,10 @@ bool TransformGizmo::beginDrag(const std::string &axis, float ox, float oy, floa
         }
         if (axis == "xyz") {
             dragPlaneNormal_ = -rd;
+            // Screen-up projected into the camera-facing plane, independent of
+            // the previously dragged axis. Uniform scaling preserves proportions.
+            const glm::vec3 up(0.f, 1.f, 0.f);
+            dragAxisDir_ = safeNormalize(up - rd * glm::dot(up, rd), glm::vec3(1.f, 0.f, 0.f));
         }
     } else {  // rotate
         int ai = axis == "x" ? 0 : axis == "y" ? 1 : 2;
@@ -510,7 +506,18 @@ bool TransformGizmo::updateDrag(float ox, float oy, float oz, float dx, float dy
             move = delta;
         }
         position_ = dragStartPos_ + move;
-        applySnapTranslate(position_);
+        if (activeAxis_ == "xyz") {
+            applySnapTranslate(position_);
+        } else {
+            position_ = dragStartPos_;
+            for (int i = 0; i < 3; ++i) {
+                if (activeAxis_.find("xyz"[i]) == std::string::npos) continue;
+                const auto  axis  = axisWorld(i);
+                const float start = glm::dot(dragStartPos_, axis);
+                const float end   = start + glm::dot(move, axis);
+                position_ += axis * (snapValue(end, snapTranslate_[i]) - start);
+            }
+        }
     } else if (mode_ == "rotate") {
         glm::vec3 from = safeNormalize(dragStartHit_ - position_, dragAxisDir_);
         glm::vec3 to = safeNormalize(hit - position_, from);
@@ -528,23 +535,16 @@ bool TransformGizmo::updateDrag(float ox, float oy, float oz, float dx, float dy
         else
             rotation_.z = dragStartRot_.z + ang;
     } else if (mode_ == "scale") {
-        float dist = glm::dot(delta, dragAxisDir_);
-        float factor = 1.f + dist / std::max(size_, 1e-3f);
-        if (activeAxis_ == "xyz") {
-            float s = applySnapScale(std::max(0.01f, dragStartScale_.x * factor));
-            scale_ = {s, s, s};
-        } else {
-            scale_ = dragStartScale_;
-            float s = applySnapScale(std::max(0.01f, (activeAxis_ == "x"   ? dragStartScale_.x
-                                                      : activeAxis_ == "y" ? dragStartScale_.y
-                                                                           : dragStartScale_.z) *
-                                                         factor));
-            if (activeAxis_ == "x")
-                scale_.x = s;
-            else if (activeAxis_ == "y")
-                scale_.y = s;
-            else
-                scale_.z = s;
+        scale_ = dragStartScale_;
+        const float uniform =
+            std::max(0.01f, applySnapScale(1.f + glm::dot(delta, dragAxisDir_) / std::max(size_, 1e-3f)));
+        for (int i = 0; i < 3; ++i) {
+            if (activeAxis_.find("xyz"[i]) == std::string::npos) continue;
+            const float factor =
+                activeAxis_ == "xyz"
+                    ? uniform
+                    : std::max(0.01f, applySnapScale(1.f + glm::dot(delta, axisWorld(i)) / std::max(size_, 1e-3f)));
+            scale_[i] = dragStartScale_[i] * factor;
         }
     } else {  // bound — move corresponding face by translating position / expanding bounds
         float dist = glm::dot(delta, dragAxisDir_);

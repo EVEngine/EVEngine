@@ -7,12 +7,37 @@
 
 - **真实位移（深坑）**：最终地形高度 = 地形 + 雪深 × 缩放，重建/原地更新
   高度图网格，脚印和弹坑是真实几何凹陷（轮廓、阴影、相交都正确）。
-- **POM 微细节**：雪深网格上传为材质的 height texture（R 通道，白 = 隆起），
-  配合 `Renderable3D.setHeightTexture` + `setParallax` 做视差遮蔽映射，
-  补足网格分辨率给不了的脚印纹理、小雪球痕与雪面颗粒。
-- **恢复**：`addSnowfall` 逐帧抬升雪深，配合节流重建形成“路被雪重新盖住”。
+- **可选 POM**：雪深网格可上传为 height texture（R 通道，白 = 隆起）。
+  它与几何使用相同分辨率，不会凭空增加颗粒细节；示例只使用小于网格尺寸的偏移。
+  `setParallax` 的 scale 是 UV 单位。近景示例默认关闭，P 键可启用约 1 mm 的偏移。
+- **恢复**：`addSnowfall` 按完整模拟 dt 抬升雪深，形成“路被雪重新盖住”。
 
 演示场景见 `examples/snow`（`eve run examples/snow`）。
+
+示例在每帧结束时统一同步脏雪场，自动脚印、鼠标交互、重置和降雪都经过同一路径。
+降雪按每帧完整 dt 累计；按住鼠标不会逐帧重复挖坑。网格已包含雪面坡度，
+因此示例使用几何法线，不再叠加同一雪深生成的强法线贴图。
+当前前向输出是 LDR，太阳强度与环境补光需留出余量，避免白雪被裁成纯白。
+
+### 自适应近景示例
+
+`examples/snow/adaptive_mesh.nut` 从 257×257 的雪深网格构建四叉树显示网格。
+近景区域为 3.2×3.2 米，精细格为 1.25 cm，平坦区域可合并到 20 cm。
+细分由雪深的 min/max 金字塔和地形插值误差控制，脚印完全落在粗块内部也不会漏检。
+法线采样邻域一起细分，避免大三角形把坑壁法线拉成放射状条纹。
+粗细块使用共享的边缘顶点和中心扇形三角形拼接，没有裙边或互相重叠的补片。
+恢复和重置后重新合并；同一个 Mesh 原地更新顶点和索引。
+这是基于表面变化的几何细分，尚不包含按屏幕像素误差选择 LOD。
+
+默认展示五个鞋印，固定近景机位；O 键切换环绕。鞋印有收窄的腰部、鞋跟沟槽、
+浅纹路及平滑堆雪边缘。压实雪保持冷白色，只有雪深接近零才渐变成露土颜色。
+雪深网格是唯一模拟状态，四叉树和渲染数组均为可重建投影。
+
+运行实际渲染回归（需要可用的显示与 Vulkan 环境）：
+`python scripts/check_snow_example.py --eve build/win32-debug/src/engine/eve.exe --validation`。
+它会验证脚印、弹坑、降雪时间累计、POM 开关、重置、三角形数减少与网格合并，
+并检查所有内部边恰好被两个三角形共享，将引擎截图与日志写入
+`build/snow-regression/`。
 
 ## 基本用法
 
@@ -37,24 +62,20 @@ snow.applyToHeightmap(sf, terrainHm, outHm, 0.09);   // out = terrain + snow*sca
 heightmapTargets.updateSmoothMesh(terrainMesh, gfx, outHm, CELL, HSCALE);
 // 用 Smooth 变体：顶点法线来自高度场梯度，坑壁连续着色而不是平直三角片
 
-// 5. POM 微细节：同一雪场导出三张纹理——albedo（雪/地颜色）、normal（深度梯度
-//    法线，让坑壁被光照出来）、height（R = 雪深，白 = 隆起）
+// 5. 颜色与可选的小幅 POM；坡度法线由上面的平滑网格提供。
 local texA = snow.uploadTexture(sf, gfx, "albedo");   // 只建一次
-local texN = snow.uploadTexture(sf, gfx, "normal");
 local texH = snow.uploadTexture(sf, gfx, "height");
 terrainEnt.setTexture(texA);
-terrainEnt.setNormalTexture(texN);
 terrainEnt.setHeightTexture(texH);
-terrainEnt.setParallax(0.06, 8.0, 32.0);              // scale / minLayers / maxLayers
+terrainEnt.setParallax(0.001, 8.0, 32.0);             // scale / minLayers / maxLayers
 // 6. 阴影：给太阳创建带 castShadow 的 Light3D 平行光（旧 setDirectionalLight 不投影）
 local sun = eve.Light3D();
 sun.setType("dir");
 sun.setDirection(-0.55, 0.62, 0.40);
-sun.setColor(1.02, 1.00, 0.97, 1.45);
+sun.setColor(1.0, 0.97, 0.92, 0.85);
 sun.setCastShadow(true);
 // 雪变脏后原地更新（指针不变，无新纹理分配）：
 snow.updateTexture(sf, texA, gfx, "albedo");
-snow.updateTexture(sf, texN, gfx, "normal");
 snow.updateTexture(sf, texH, gfx, "height");
 ```
 

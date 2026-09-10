@@ -84,7 +84,16 @@ struct EditorTargetCoordinator::Impl {
             return coordinatorError<TransactionReceipt>(appended.code(), "editor.target.append-failed",
                                                          "Could not stage the editing operation");
         }
-        return selected->transactions.commit();
+        auto committed = selected->transactions.commit();
+        if (!committed.ok()) {
+            // This coordinator owns the one-shot batch; callers cannot retry or
+            // discard it themselves. Leave the existing undo history usable.
+            auto discarded = selected->transactions.discard();
+            if (!discarded.ok())
+                return coordinatorError<TransactionReceipt>(EditorStatus::Failed, "editor.target.discard-failed",
+                                                            "Could not discard a rejected commit");
+        }
+        return committed;
     }
 
     EditorCommandService* commands = nullptr;
