@@ -115,6 +115,9 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
         }
         std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
         REQUIRE(image != nullptr);
+        // ImageData uses framebuffer pixels; grid layout uses logical window units.
+        const float   pixelScaleX = float(image->getWidth()) / float(gfx->getWidth());
+        const float   pixelScaleY = float(image->getHeight()) / float(gfx->getHeight());
         std::set<int> semantics;
         int           matchingCells = 0;
         for (int y = 0; y < grid.getHeight(); ++y) {
@@ -122,8 +125,8 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
                 const int semantic = grid.getCell(x, y);
                 semantics.insert(semantic);
                 const auto expected = colorForSemantic(semantic);
-                const auto actual =
-                    image->getPixel(int(originX + (float(x) + 0.5f) * cell), int(originY + (float(y) + 0.5f) * cell));
+                const auto actual   = image->getPixel(int((originX + (float(x) + 0.5f) * cell) * pixelScaleX),
+                                                      int((originY + (float(y) + 0.5f) * cell) * pixelScaleY));
                 if (std::fabs(actual.r - expected.r) < 0.08f && std::fabs(actual.g - expected.g) < 0.08f &&
                     std::fabs(actual.b - expected.b) < 0.08f)
                     ++matchingCells;

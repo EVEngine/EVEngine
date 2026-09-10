@@ -198,7 +198,11 @@ void checkGpuGraphMatchesEager(TF *tf, const std::function<Tensor *(Tensor *)> &
     REQUIRE_EQ(out->getRank(), ref->getRank());
     REQUIRE_EQ(out->getSize(), ref->getSize());
     float worst = 0.f;
-    for (int i = 0; i < out->getSize(); ++i) worst = std::max(worst, std::fabs(out->get(i) - ref->get(i)));
+    for (int i = 0; i < out->getSize(); ++i) {
+        const float error = std::fabs(out->get(i) - ref->get(i));
+        REQUIRE(std::isfinite(error));
+        worst = std::max(worst, error);
+    }
     if (worst >= 1e-3f) fprintf(stderr, "stage %s worst=%.6g\n", name, double(worst));
     REQUIRE_LT(worst, 1e-3f);
 }
