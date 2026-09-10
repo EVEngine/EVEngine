@@ -224,6 +224,8 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
+    load_image_webp()
     load_asset_zstd()
     load_asset_utf8proc()
     load_webgpu_backend()

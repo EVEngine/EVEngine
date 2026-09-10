@@ -1,0 +1,587 @@
+{
+  "schema": "evengine.resource-format-contracts",
+  "version": 1,
+  "unknownFields": "reject",
+  "formats": [
+    {
+      "id": "image.bmp",
+      "family": "image",
+      "extensions": [
+        ".bmp"
+      ],
+      "importTests": [
+        "resourceFormats.image.bmp.independentPixels"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.exr",
+      "family": "image",
+      "extensions": [
+        ".exr"
+      ],
+      "importTests": [
+        "resourceFormats.image.exr.independentPixels"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.gif",
+      "family": "image",
+      "extensions": [
+        ".gif"
+      ],
+      "importTests": [
+        "resourceFormats.image.gif.independentPixels",
+        "resourceFormats.image.gif.animatedFirstFrame"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.hdr",
+      "family": "image",
+      "extensions": [
+        ".hdr"
+      ],
+      "importTests": [
+        "resourceFormats.image.hdr.independentPixels",
+        "resourceFormats.image.hdr.truncatedPayloadIsRejected"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.jpeg",
+      "family": "image",
+      "extensions": [
+        ".jpeg"
+      ],
+      "importTests": [
+        "resourceFormats.image.jpeg.independentPixels"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.jpg",
+      "family": "image",
+      "extensions": [
+        ".jpg"
+      ],
+      "importTests": [
+        "resourceFormats.image.jpg.independentPixels"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.png",
+      "family": "image",
+      "extensions": [
+        ".png"
+      ],
+      "importTests": [
+        "resourceFormats.image.png.independentPixels"
+      ],
+      "exportTests": [
+        "resourceFormats.image.png.rgba8Export",
+        "resourceFormats.image.png.rgba16Export"
+      ],
+      "exportMode": "native",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.tga",
+      "family": "image",
+      "extensions": [
+        ".tga"
+      ],
+      "importTests": [
+        "resourceFormats.image.tga.independentPixels"
+      ],
+      "exportTests": [
+        "resourceFormats.image.tga.rgba8Export"
+      ],
+      "exportMode": "native",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "image.webp",
+      "family": "image",
+      "extensions": [
+        ".webp"
+      ],
+      "importTests": [
+        "resourceFormats.image.webp.independentPixels",
+        "resourceFormats.image.webp.animatedFirstFrame",
+        "resourceFormats.image.webp.lossyPixels",
+        "resourceFormats.image.webp.truncatedPayloadIsRejected"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "ImageData 静态像素；动画容器只取首帧"
+    },
+    {
+      "id": "sound.flac",
+      "family": "sound",
+      "extensions": [
+        ".flac"
+      ],
+      "importTests": [
+        "resourceFormats.sound.flac.independentPcmAndStreaming"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.it",
+      "family": "sound",
+      "extensions": [
+        ".it"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.mod",
+      "family": "sound",
+      "extensions": [
+        ".mod"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.mp3",
+      "family": "sound",
+      "extensions": [
+        ".mp3"
+      ],
+      "importTests": [
+        "resourceFormats.sound.mp3.independentPcmAndStreaming"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.ogg",
+      "family": "sound",
+      "extensions": [
+        ".ogg"
+      ],
+      "importTests": [
+        "resourceFormats.sound.ogg.independentPcmAndStreaming"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.s3m",
+      "family": "sound",
+      "extensions": [
+        ".s3m"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.wav",
+      "family": "sound",
+      "extensions": [
+        ".wav"
+      ],
+      "importTests": [
+        "resourceFormats.sound.wav.independentPcmAndStreaming"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "sound.xm",
+      "family": "sound",
+      "extensions": [
+        ".xm"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "PCM 解码与流式读取"
+    },
+    {
+      "id": "model.3ds",
+      "family": "model",
+      "extensions": [
+        ".3ds"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.ac",
+      "family": "model",
+      "extensions": [
+        ".ac"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.b3d",
+      "family": "model",
+      "extensions": [
+        ".b3d"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.blend",
+      "family": "model",
+      "extensions": [
+        ".blend"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.bvh",
+      "family": "model",
+      "extensions": [
+        ".bvh"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.csm",
+      "family": "model",
+      "extensions": [
+        ".csm"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.dae",
+      "family": "model",
+      "extensions": [
+        ".dae"
+      ],
+      "importTests": [
+        "resourceFormats.model.dae.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.evmodel",
+      "family": "model",
+      "extensions": [
+        ".evmodel"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.fbx",
+      "family": "model",
+      "extensions": [
+        ".fbx"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.glb",
+      "family": "model",
+      "extensions": [
+        ".glb"
+      ],
+      "importTests": [
+        "resourceFormats.model.glb.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.gltf",
+      "family": "model",
+      "extensions": [
+        ".gltf"
+      ],
+      "importTests": [
+        "resourceFormats.model.gltf.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.irr",
+      "family": "model",
+      "extensions": [
+        ".irr"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.irrmesh",
+      "family": "model",
+      "extensions": [
+        ".irrmesh"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.lwo",
+      "family": "model",
+      "extensions": [
+        ".lwo"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.lws",
+      "family": "model",
+      "extensions": [
+        ".lws"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.md2",
+      "family": "model",
+      "extensions": [
+        ".md2"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.md3",
+      "family": "model",
+      "extensions": [
+        ".md3"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.md5anim",
+      "family": "model",
+      "extensions": [
+        ".md5anim"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.md5mesh",
+      "family": "model",
+      "extensions": [
+        ".md5mesh"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.ms3d",
+      "family": "model",
+      "extensions": [
+        ".ms3d"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.ndo",
+      "family": "model",
+      "extensions": [
+        ".ndo"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.nff",
+      "family": "model",
+      "extensions": [
+        ".nff"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.obj",
+      "family": "model",
+      "extensions": [
+        ".obj"
+      ],
+      "importTests": [
+        "resourceFormats.model.obj.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.off",
+      "family": "model",
+      "extensions": [
+        ".off"
+      ],
+      "importTests": [
+        "resourceFormats.model.off.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.ply",
+      "family": "model",
+      "extensions": [
+        ".ply"
+      ],
+      "importTests": [
+        "resourceFormats.model.ply.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.raw",
+      "family": "model",
+      "extensions": [
+        ".raw"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.smd",
+      "family": "model",
+      "extensions": [
+        ".smd"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.stl",
+      "family": "model",
+      "extensions": [
+        ".stl"
+      ],
+      "importTests": [
+        "resourceFormats.model.stl.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.ter",
+      "family": "model",
+      "extensions": [
+        ".ter"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.vta",
+      "family": "model",
+      "extensions": [
+        ".vta"
+      ],
+      "importTests": [],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    },
+    {
+      "id": "model.x",
+      "family": "model",
+      "extensions": [
+        ".x"
+      ],
+      "importTests": [
+        "resourceFormats.model.x.independentTriangle"
+      ],
+      "exportTests": [],
+      "exportMode": "not-a-native-export-api",
+      "scope": "模型几何导入；原格式导出不是 bakeModel 的含义"
+    }
+  ]
+}

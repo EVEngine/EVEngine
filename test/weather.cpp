@@ -4,6 +4,9 @@
 #include "weather/Weather.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/Material.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "window/Window.h"
 
 #include <cmath>
@@ -23,6 +26,21 @@ TEST_CASE("weather.backendShaderInitialization") {
 
     Weather weather;
     weather.init(graphics);
+    // The renderer reads the material's albedo when a material is present.
+    // Attaching the texture only to Renderable3D silently samples white.
+    int  texturedFields = 0;
+    auto fields         = ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::MeshRenderer>();
+    for (auto it = fields.begin(); it != fields.end(); ++it) {
+        auto [renderer] = *it;
+        if (!renderer->material) continue;
+        auto *texture = renderer->material->getAlbedoTexture();
+        if (!texture) continue;
+        CHECK(texture->getPixelWidth() > 1);
+        CHECK(texture->getPixelHeight() > 1);
+        CHECK(!renderer->material->getCastShadow());
+        ++texturedFields;
+    }
+    CHECK(texturedFields == 2);
     weather.setPreset("storm");
     weather.strike();
     weather.update(1.f / 60.f, graphics);
@@ -45,6 +63,10 @@ TEST_CASE("weather.presetRoundTrip") {
     CHECK(w.getPreset() == "snow");
     w.setPreset("fog");
     CHECK(w.getPreset() == "fog");
+    w.setPreset("wind");
+    CHECK(w.getPreset() == "wind");
+    w.setPreset("blizzard");
+    CHECK(w.getPreset() == "blizzard");
 }
 
 TEST_CASE("weather.unknownPresetIgnored") {

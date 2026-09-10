@@ -79,6 +79,8 @@ def main() -> int:
         clone(MEDIALOADER, clean_medialoader)
         apply_twice(PATCHES / "medialoader-smooth-normals.patch", clean_medialoader)
         apply_twice(PATCHES / "mpg123-signal-handler.patch", clean_medialoader)
+        apply_twice(PATCHES / "medialoader-image-formats.patch", clean_medialoader)
+        apply_twice(PATCHES / "medialoader-audio-gapless.patch", clean_medialoader)
 
         # A genuine target drift must fail and expose git's diagnostic; it may
         # not be mistaken for an already-applied patch or silently skipped.

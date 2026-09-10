@@ -118,13 +118,15 @@ local boxResult = gfx.newPrimitiveAabb3D(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0, 1.0, 1.
 
 ```squirrel
 local result = gfx.replaceShaderFromGlsl(shader, vertexSource, fragmentSource);
+// Vulkan SPIR-V：gfx.replaceShaderFromSpv(shader, vertexWords, fragmentWords)
+// words 数组须为 uint32 范围整数；先用 spirv-val 验证字节码。返回 Result，失败保留旧管线。
 // WebGPU 后端使用：gfx.replaceShaderFromWgsl(shader, vertexSource, fragmentSource)
 if (!result.ok) {
     print(result.diagnostics);
 }
 ```
 
-两个接口都返回统一的结构化 `Result`，调用方必须检查 `ok` 或显式忽略结果。编译或
+这些接口都返回统一的结构化 `Result`，调用方必须检查 `ok` 或显式忽略结果。编译或
 管线创建失败时，原 `Shader` facade、已声明 uniform 以及上一份可用管线保持不变，
 因此编辑器可继续显示最后一次成功的效果。空的 vertex source 表示沿用引擎默认顶点
 阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是

@@ -31,6 +31,8 @@ class StyleRecipe;
  *
  * Built-in style ids (string, no enums):
  *   - "cartoon"    — cel post (+ mesh)
+ *   - "anime"      — albedo-preserving character mesh, skin and anisotropic
+ * hair controls
  *   - "watercolor" — paper / bleed post
  *   - "ink"        — ink-wash post (+ mesh)
  *   - "pixel"      — pixel-art post
@@ -38,8 +40,9 @@ class StyleRecipe;
  *
  * Extension points (keep these stable):
  *   - newPass / newPassFromShader — wrap built-in or custom SPIR-V post shaders
- *   - newMeshShader — object-space variants (cartoon/ink today)
- *   - StyleChain — multi-pass ping-pong (separable blur, outline+shade, …)
+ *   - newMeshShader — object-space variants including anime, cartoon and ink
+ *   - StyleChain — multi-pass
+ * ping-pong (separable blur, outline+shade, …)
  *   - supports(style, feature) — "post" | "mesh" | "cpu" | "gbuffer"
  *     ("gbuffer" is true when depth or normal inputs are required)
  *   - getStyleParam* — introspect push-constant knobs for tooling / UI

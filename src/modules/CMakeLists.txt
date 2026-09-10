@@ -652,3 +652,8 @@ if(_has_ui)
   target_include_directories(EVUI BEFORE PUBLIC
     ${EVENGINE_VKBUILDER_INCLUDE_DIR})
 endif()
+
+# WebP headers remain private to the image codec implementation.
+if(TARGET EVImage)
+  target_link_libraries(EVImage PRIVATE webpdemux)
+endif()

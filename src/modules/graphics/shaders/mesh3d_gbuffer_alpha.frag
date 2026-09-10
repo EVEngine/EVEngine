@@ -26,7 +26,8 @@ void main() {
     if (sampled.a < 0.05) discard;
 
     vec3 n = normalize(vWorldNormal);
-    float z = clamp(vNdcZ, 0.0, 1.0);
+    // Post-divide depth must not undergo perspective interpolation again.
+    float z = clamp(gl_FragCoord.z, 0.0, 1.0);
     float nearZ = max(pc.clip.x, 1e-4);
     float farZ = max(pc.clip.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);

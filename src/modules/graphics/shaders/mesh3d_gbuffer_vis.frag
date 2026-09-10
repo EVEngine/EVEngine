@@ -92,7 +92,8 @@ void main() {
     outNormal = vec4(normalize(vWorldNormal) * 0.5 + 0.5,
                      float(rough3 | (metal3 << 3)) / 255.0);
 
-    float z = clamp(vNdcZ, 0.0, 1.0);
+    // Post-divide depth must not undergo perspective interpolation again.
+    float z = clamp(gl_FragCoord.z, 0.0, 1.0);
     float nearZ = max(ubo.clipInfo.x, 1e-4);
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);
