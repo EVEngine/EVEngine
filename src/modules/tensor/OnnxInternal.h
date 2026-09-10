@@ -57,9 +57,9 @@ inline size_t count(const std::vector<int64_t>& shape) {
     if (shape.size() > 6) throw Failure("ONNX rank exceeds six", DiagnosticCode::Unsupported);
     size_t n = 1;
     for (int64_t d : shape) {
-        if (d < 0 || d > INT32_MAX || (d && n > (128u * 1024u * 1024u) / d))
+        if (d < 0 || d > INT32_MAX || (d && n > (128u * 1024u * 1024u) / static_cast<size_t>(d)))
             throw Failure("Invalid or excessive tensor shape");
-        n *= d;
+        n *= static_cast<size_t>(d);
     }
     return n;
 }

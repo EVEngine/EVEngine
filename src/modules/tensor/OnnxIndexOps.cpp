@@ -103,7 +103,7 @@ std::optional<std::vector<RuntimeTensor>> executeIndex(const Node& n, const std:
                 std::memcpy(out.bytes.data() + source * bytes, updates.bytes.data() + i * bytes, bytes);
             }
         } else {
-            if (idx.shape.empty() || idx.shape.back() < 1 || idx.shape.back() > x.shape.size())
+            if (idx.shape.empty() || idx.shape.back() < 1 || static_cast<size_t>(idx.shape.back()) > x.shape.size())
                 throw Failure("ScatterND index rank mismatch");
             const size_t         depth = idx.shape.back();
             std::vector<int64_t> expected(idx.shape.begin(), idx.shape.end() - 1);

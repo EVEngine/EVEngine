@@ -148,16 +148,16 @@ std::vector<Value> control(const Node& n, const std::vector<Value>& in, const Va
     if (n.op == "SequenceAt") {
         const auto& s = seq(0);
         int64_t     i = scalar(1);
-        if (i < 0) i += s.size();
-        if (i < 0 || i >= s.size()) throw Failure("SequenceAt out of bounds");
+        if (i < 0) i += static_cast<int64_t>(s.size());
+        if (i < 0 || static_cast<size_t>(i) >= s.size()) throw Failure("SequenceAt out of bounds");
         return {s[i]};
     }
     if (n.op == "SequenceInsert") {
         auto s = seq(0);
         if (s.size() >= 100000) throw Failure("Sequence length limit exceeded");
-        int64_t i = in.size() > 2 ? scalar(2) : s.size();
-        if (i < 0) i += s.size();
-        if (i < 0 || i > s.size()) throw Failure("SequenceInsert out of bounds");
+        int64_t i = in.size() > 2 ? scalar(2) : static_cast<int64_t>(s.size());
+        if (i < 0) i += static_cast<int64_t>(s.size());
+        if (i < 0 || static_cast<size_t>(i) > s.size()) throw Failure("SequenceInsert out of bounds");
         const auto& t = in.at(1).tensor();
         if (in[0].sequenceElement != t.element) throw Failure("Sequence element dtype mismatch");
         s.insert(s.begin() + i, in[1]);

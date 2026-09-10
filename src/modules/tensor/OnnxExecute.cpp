@@ -289,9 +289,10 @@ std::vector<RuntimeTensor> execute(const Node& n, const std::vector<const Runtim
                     if (infer != -1) throw Failure("Multiple inferred dimensions");
                     infer = static_cast<int>(i);
                 } else {
-                    if (shape[i] < 0 || shape[i] > INT32_MAX || (shape[i] && known > 128u * 1024u * 1024u / shape[i]))
+                    if (shape[i] < 0 || shape[i] > INT32_MAX ||
+                        (shape[i] && known > 128u * 1024u * 1024u / static_cast<size_t>(shape[i])))
                         throw Failure("Reshape overflow");
-                    known *= shape[i];
+                    known *= static_cast<size_t>(shape[i]);
                 }
             }
             if (infer >= 0) {
@@ -359,7 +360,8 @@ std::vector<RuntimeTensor> execute(const Node& n, const std::vector<const Runtim
     if (n.op == "Softmax") {
         auto               xd = dims(x);
         std::vector<float> out(a.size());
-        kernels::softmax(a.data(), xd.data(), xd.size(), axis(attr(n, "axis", -1), xd.size()), false, out.data());
+        kernels::softmax(a.data(), xd.data(), static_cast<int>(xd.size()), axis(attr(n, "axis", -1), xd.size()), false,
+                         out.data());
         return single(make(OnnxElement::Float32, x.shape, out));
     }
     static const std::map<std::string, OpType> unary{
@@ -369,7 +371,7 @@ std::vector<RuntimeTensor> execute(const Node& n, const std::vector<const Runtim
     auto op = unary.find(n.op);
     if (op == unary.end()) throw Failure("Unsupported operator", DiagnosticCode::Unsupported);
     std::vector<float> out(a.size());
-    kernels::unaryOp(op->second, a.data(), a.size(), out.data(), 0, 0);
+    kernels::unaryOp(op->second, a.data(), static_cast<int>(a.size()), out.data(), 0, 0);
     return single(make(OnnxElement::Float32, x.shape, out));
 }
 }  // namespace eve::tensor::onnx_detail
