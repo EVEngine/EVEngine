@@ -34,6 +34,10 @@ make run/win32-debug GAME=examples/anime-character-lab
 直接导入此 FBX 的大量独立网格在本机曾发生上传停滞；这个场景使用显式静态转换规避它，
 没有宣称修好了通用 FBX 上传问题。
 
+未准备本地模型时（例如干净的 CI checkout），日志给出资产准备说明并保持场景运行，
+不宣称角色已经加载；已有文件无法解码仍作为错误报告。可连接这个场景执行
+`python examples/anime-character-lab/verify.py --expect-missing-assets` 验证该状态。
+
 控制：`1` 新材质，`2` 旧 cartoon，`3` 全身/近景，`4/5/6` 主光/侧光/背光，`A/D` 环绕。
 两种材质共享纹理、相机、几何、灯光、描边和抗锯齿设置。
 近景关闭地台以免遮挡角色细节，全身保留地台接收投影。

@@ -10,6 +10,7 @@ import time
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--port", type=int, default=7537)
+    parser.add_argument("--expect-missing-assets", action="store_true")
     parser.add_argument("--output", type=Path, default=Path(__file__).parent / "verification")
     args = parser.parse_args()
     output = args.output.resolve()
@@ -50,6 +51,15 @@ def main():
                 if "no presented frame" not in str(error) or attempt == 9:
                     raise
                 time.sleep(0.1)
+
+    if args.expect_missing_assets:
+        script('''
+if(lab.assetMessage=="" || lab.data!=null || lab.ready || lab.parts.len()!=0 || lab.frame<10)
+    throw "Expected a running missing-assets state with no loaded character";
+''')
+        capture("missing-assets")
+        print("PASS: missing assets report preparation instructions without reporting character readiness")
+        return
 
     script('if(!lab.ready)throw "Wait for [anime-lab] ready before verification";')
     try:

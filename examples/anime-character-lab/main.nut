@@ -1,6 +1,6 @@
 // Reproducible static character look-development scene. Assets remain local.
 lab <- { data=null, parts=[], anime=[], legacy=null, textures={}, camera=null, ground=null, sun=null,
-         frame=0, mode="anime", portrait=true, yaw=0.947, light=0, ready=false };
+         frame=0, mode="anime", portrait=true, yaw=0.947, light=0, ready=false, assetMessage="" };
 
 function setView(portrait) {
     lab.portrait=portrait;
@@ -84,10 +84,17 @@ eve_init = function() {
     lab.ground.setScale(100.0,0.04,100.0);lab.ground.setPosition(0.0,-0.02,0.0);
     lab.ground.setTint(0.33,0.39,0.48,1.0);lab.ground.setCastShadow(false);
     lab.ground.setVisible(!lab.portrait);
+    if(!file_exists("assets/witch.obj")) {
+        lab.assetMessage="Model assets are not prepared. Run prepare.py as described in README.md, then restart.";
+        print("[anime-lab] assets missing: "+lab.assetMessage+"\n");
+        return;
+    }
     lab.data=model3d.newModelDataFromFile("assets/witch.obj");
+    if(lab.data==null)throw "The prepared witch.obj exists but could not be decoded";
 };
 eve_update = function(dt) {
     lab.frame++;
+    if(lab.data==null)return;
     if(lab.parts.len()<lab.data.getMeshCount())loadPart(lab.parts.len());
     else if(!lab.ready) { lab.ready=true;print("[anime-lab] ready; 1 anime / 2 legacy / 3 framing / 4-6 lights / A,D orbit\n"); }
     if(key_just_pressed("1"))setStyle("anime");
