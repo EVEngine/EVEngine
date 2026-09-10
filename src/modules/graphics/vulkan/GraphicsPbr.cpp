@@ -35,7 +35,7 @@ vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, c
     // Five mesh attributes plus eleven material UV streams fit Vulkan's minimum
     // sixteen vertex attributes. Each role can select any canonical mesh UV set.
     for (uint32_t i = 0; i < 11; ++i) {
-        input.input_bindings.emplace_back(i + 1, 2 * sizeof(float), vk::VertexInputRate::eVertex);
+        input.input_bindings.emplace_back(i + 1, uint32_t(2 * sizeof(float)), vk::VertexInputRate::eVertex);
         input.input_attributes.emplace_back(i + 5, i + 1, vk::Format::eR32G32Sfloat, 0);
     }
     auto attachment        = makeBlendAttachment(blend);
