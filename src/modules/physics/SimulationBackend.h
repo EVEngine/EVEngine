@@ -40,6 +40,7 @@ enum class SimulationBackendDomain {
     World3D,
     Cloth2D,
     Cloth3D,
+    Rope3D,
     SurfaceFluid,
 };
 
