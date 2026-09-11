@@ -117,7 +117,7 @@ foreach(_basename IN LISTS _bundle_files)
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.
         string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing;ClassicScenes.*: soft-skip\")\n")
+          "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
       endif()
       if(_name STREQUAL "ClassicScenes.perf.maxFps")
         string(APPEND _content

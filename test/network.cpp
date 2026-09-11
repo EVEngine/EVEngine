@@ -843,7 +843,7 @@ TEST_CASE("network.NetHostPeers") {
                      std::chrono::duration<double, std::milli>(now - phaseStart).count());
         phaseStart = now;
     };
-    auto* net = eve::network::Network::create();
+    auto*       net = eve::network::Network::create();
     std::string hostGot, clientGot;
     int connectedPeer = -1;
     int disconnectedPeer = -1;

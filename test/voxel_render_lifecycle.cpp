@@ -1,3 +1,4 @@
+#include "SceneColor.h"
 #include "VoxelRenderFixtures.h"
 
 TEST_CASE("voxel.render.emptyInstanceInputsAreNoOps") {
@@ -24,6 +25,12 @@ TEST_CASE("voxel.render.emptyInstanceInputsAreNoOps") {
                                  {nullptr, 0, "posY", white},
                                  {&packed, 0, "posZ", nullptr}};
     const Color      background(0.1f, 0.1f, 0.12f, 1.f);
+    // Compare against the actual cleared frame, including the backend's display transform.
+    gfx->setBackgroundColor(background);
+    gfx->begin3DFrame();
+    REQUIRE(gfx->had3DThisFrame());
+    RenderSystem::render(*gfx);
+    const Color cleared = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     for (const auto &input : inputs) {
         std::printf("empty input null=%d count=%d face=%s atlas=%d\n", input.data == nullptr, input.count,
                     input.direction, input.atlas != nullptr);
@@ -34,9 +41,9 @@ TEST_CASE("voxel.render.emptyInstanceInputsAreNoOps") {
         gfx->drawVoxelFaceInstances(input.data, input.count, 0.f, 0.f, 0.f, input.direction, input.atlas, 1);
         RenderSystem::render(*gfx);
         const Color empty = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-        REQUIRE(std::fabs(empty.r - background.r) < 0.01f);
-        REQUIRE(std::fabs(empty.g - background.g) < 0.01f);
-        REQUIRE(std::fabs(empty.b - background.b) < 0.01f);
+        REQUIRE(std::fabs(empty.r - cleared.r) < 0.01f);
+        REQUIRE(std::fabs(empty.g - cleared.g) < 0.01f);
+        REQUIRE(std::fabs(empty.b - cleared.b) < 0.01f);
 
         // A no-op must not prevent a subsequent valid draw in the same frame.
         gfx->begin3DFrame();
@@ -202,9 +209,9 @@ TEST_CASE("voxel.render.editRemeshChangesPixels") {
     // Empty world → dark
     world->remeshDirty();
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 200.f, true);
-    CHECK_EQ(world->getVisibleRectCount(), 0);
+    REQUIRE_EQ(world->getVisibleRectCount(), 0);
     Color empty = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(empty) < 0.2f);
+    REQUIRE(luma(testSceneLinearColor(empty)) < 0.2f);
 
     for (int z = 0; z < 8; ++z)
         for (int y = 0; y < 8; ++y)
@@ -212,7 +219,7 @@ TEST_CASE("voxel.render.editRemeshChangesPixels") {
     world->remeshDirty();
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 200.f, true);
     Color filled = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(filled) > luma(empty) + 0.03f);
+    REQUIRE(luma(filled) > luma(empty) + 0.03f);
 }
 
 TEST_CASE("voxel.render.emptyWorldDrawVisible") {
@@ -228,9 +235,9 @@ TEST_CASE("voxel.render.emptyWorldDrawVisible") {
     const glm::vec3             eye(0.f, 0.f, 5.f);
     const glm::vec3             target(0.f, 0.f, 0.f);
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 100.f, true);
-    CHECK_EQ(world->getVisibleBatchCount(), 0);
+    REQUIRE_EQ(world->getVisibleBatchCount(), 0);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) < 0.25f);
+    REQUIRE(luma(testSceneLinearColor(mid)) < 0.25f);
 }
 
 TEST_CASE("voxel.render.manyChunksBatched") {
@@ -344,14 +351,14 @@ TEST_CASE("voxel.render.removeVoxelsDarkens") {
 
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 100.f, true);
     Color filled = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(filled) > 0.08f);
+    REQUIRE(luma(filled) > 0.08f);
 
     world->clear();
     world->remeshDirty();
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 100.f, true);
     Color empty = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(empty) < luma(filled));
-    CHECK(luma(empty) < 0.22f);
+    REQUIRE(luma(empty) < luma(filled));
+    REQUIRE(luma(testSceneLinearColor(empty)) < 0.22f);
 }
 
 TEST_CASE("voxel.render.stressHundredsOfInstances") {

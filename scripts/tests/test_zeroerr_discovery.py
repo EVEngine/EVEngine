@@ -87,6 +87,7 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('"ClassicScenes.perf.maxFps" PROPERTIES LABELS "benchmark"', generated)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION'), 2)
+        self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION "ClassicScenes.*: missing"'), 2)
         self.assertNotIn('"other.case" PROPERTIES SKIP', generated)
         self.assertIn('"resourceFormats.image.png" PROPERTIES FAIL_REGULAR_EXPRESSION', generated)
 

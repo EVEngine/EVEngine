@@ -9,6 +9,7 @@
 #include <limits>
 #include <sstream>
 
+#include <Poco/SHA2Engine.h>
 #include <zlib.h>
 
 #if defined(_WIN32)
@@ -268,40 +269,16 @@ std::string eveSdkBaseUrl() {
 }
 
 std::string fileSha256(const std::string& path) {
-    std::error_code ec;
-    const auto      tmp = std::filesystem::temp_directory_path(ec) / "eve-sha256.txt";
-    if (ec) return "";
-    const std::string cmd =
-#if defined(_WIN32)
-        "certutil -hashfile \"" + path + "\" SHA256 > \"" + tmp.string() + "\"";
-#else
-        "sha256sum \"" + path + "\" > \"" + tmp.string() + "\"";
-#endif
-    if (runShell(cmd) != 0) return "";
-    std::ifstream in(tmp);
-    std::string   line, hex;
-    while (std::getline(in, line)) {
-        std::istringstream iss(line);
-        std::string        tok;
-        while (iss >> tok) {
-            if (tok.size() != 64) continue;
-            bool ok = true;
-            for (const char c : tok) {
-                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-                      (c >= 'A' && c <= 'F'))) {
-                    ok = false;
-                    break;
-                }
-            }
-            if (ok) {
-                hex = lower(tok);
-                break;
-            }
-        }
-        if (!hex.empty()) break;
+    std::ifstream in(path, std::ios::binary);
+    if (!in) return "";
+    Poco::SHA2Engine digest(Poco::SHA2Engine::SHA_256);
+    char             buffer[16384];
+    while (in) {
+        in.read(buffer, sizeof(buffer));
+        if (in.gcount() > 0) digest.update(buffer, static_cast<std::size_t>(in.gcount()));
     }
-    std::filesystem::remove(tmp, ec);
-    return hex;
+    if (in.bad()) return "";
+    return Poco::DigestEngine::digestToHex(digest.digest());
 }
 
 namespace {

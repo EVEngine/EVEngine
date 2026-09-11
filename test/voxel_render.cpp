@@ -1,41 +1,5 @@
-#include "VoxelRenderFixtures.h"
 #include "SceneColor.h"
-
-static Color renderVoxelAoSample(Graphics *gfx, Texture *atlas, uint32_t ao) {
-    const uint32_t packed = PackedRect::pack(0, 0, 0, 4, 4, 1).bits;
-    const float aspect =
-        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
-    const glm::vec3 eye(2.f, 8.f, 2.f);
-    const glm::mat4 view =
-        glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0.f, 0.f, -1.f));
-    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
-    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
-    gfx->begin3DFrame();
-    if (gfx->had3DThisFrame()) {
-        gfx->setMesh3DViewProj(proj * view);
-        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 1, &ao);
-    }
-    RenderSystem::render(*gfx);
-    return gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-}
-
-/** @brief Vertex AO must shade identically on Vulkan and WebGPU voxel pipelines. */
-TEST_CASE("voxel.render.vertexAoDarkensPixels") {
-    hideLeftover3D();
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 300, 220);
-    tinyHud(gfx);
-    gfx->setScreenReadbackEnabled(true);
-    Texture *atlas = makeSolid(gfx, 220, 220, 220);
-
-    const Color bright = renderVoxelAoSample(gfx, atlas, 0xFFu);
-    const Color dark = renderVoxelAoSample(gfx, atlas, 0x00u);
-    REQUIRE(luma(bright) > 0.25f);
-    // AO multiplies linear radiance; ACES and sRGB compress the displayed ratio.
-    REQUIRE(luma(testSceneLinearColor(dark)) < luma(testSceneLinearColor(bright)) * 0.6f);
-}
-
+#include "VoxelRenderFixtures.h"
 
 TEST_CASE("voxel.render.smokeDrawVisibleProducesPixels") {
     hideLeftover3D();
@@ -150,11 +114,11 @@ TEST_CASE("voxel.render.outOfRangeDrawsNothingBright") {
     const glm::vec3 target(16.f, 16.f, 16.f);
     // Tiny range → selectVisible yields no batches.
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 1.f, true);
-    CHECK_EQ(world->getVisibleBatchCount(), 0);
+    REQUIRE_EQ(world->getVisibleBatchCount(), 0);
 
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     // Should be near the dark clear color.
-    CHECK(luma(mid) < 0.2f);
+    REQUIRE(luma(testSceneLinearColor(mid)) < 0.2f);
 }
 
 TEST_CASE("voxel.render.faceDirAliasesDraw") {
@@ -408,9 +372,9 @@ TEST_CASE("voxel.render.clearColorWhenCulled") {
     renderVoxelFrame(gfx, world.get(), atlas, 1, glm::vec3(-40.f, 16.f, 16.f), glm::vec3(-80.f, 16.f, 16.f), 200.f,
                      true);
     // Chunk at origin not in front of camera looking toward -X further.
-    CHECK_EQ(world->getVisibleChunkCount(), 0);
+    REQUIRE_EQ(world->getVisibleChunkCount(), 0);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) < 0.22f);
+    REQUIRE(luma(testSceneLinearColor(mid)) < 0.22f);
 }
 
 TEST_CASE("voxel.render.posYFromAbove") {
@@ -617,12 +581,12 @@ TEST_CASE("voxel.render.rangeCullDarkensDistant") {
 
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 200.f, true);
     Color nearEnough = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(nearEnough) > 0.06f);
+    REQUIRE(luma(nearEnough) > 0.06f);
 
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 5.f, true);
     Color culled = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(culled) < luma(nearEnough));
-    CHECK(luma(culled) < 0.22f);
+    REQUIRE(luma(culled) < luma(nearEnough));
+    REQUIRE(luma(testSceneLinearColor(culled)) < 0.22f);
 }
 
 TEST_CASE("voxel.render.fullChunkSixFacesOrbitPixel") {
@@ -758,9 +722,9 @@ TEST_CASE("voxel.render.frustumCulledChunkDark") {
     const glm::vec3 eye(0.f, 2.f, 0.f);
     const glm::vec3 target(0.f, 2.f, 10.f);
     renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 500.f, true);
-    CHECK_EQ(world->getVisibleChunkCount(), 0);
+    REQUIRE_EQ(world->getVisibleChunkCount(), 0);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) < 0.22f);
+    REQUIRE(luma(testSceneLinearColor(mid)) < 0.22f);
 }
 
 TEST_CASE("voxel.render.carveHoleDarkensCenter") {

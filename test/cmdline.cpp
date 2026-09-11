@@ -631,12 +631,16 @@ TEST_CASE("cmdline.getAndroidInstallsEveSdkFromRelease") {
     ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
     ScopedEnv javaEnv("JAVA_HOME", tools.string());  // skip JDK download
 
+    int         installRc = -1;
+    std::string installOutput;
     {
         CaptureStreams cap;
-        const int      rc = runCli({"eve", "get", "android"});
-        REQUIRE(rc == 0);
-        CHECK(cap.out().find("installed at") != std::string::npos);
+        installRc     = runCli({"eve", "get", "android"});
+        installOutput = cap.all();
     }
+    if (installRc != 0) std::cerr << installOutput;
+    REQUIRE(installRc == 0);
+    CHECK(installOutput.find("installed at") != std::string::npos);
 
     const auto eveSdk = installRoot / "android";
     std::error_code ec;

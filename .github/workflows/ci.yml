@@ -463,6 +463,17 @@ jobs:
           -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
           --output-on-failure
 
+      - name: Run native Dawn Tensor contracts
+        # Ten isolated cases also pay the software adapter's initialization cost.
+        timeout-minutes: 30
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^tensor\.gpu\.'
+          --output-on-failure
+
       - name: Compare Vulkan and WebGPU parity images
         timeout-minutes: 5
         shell: pwsh
@@ -813,7 +824,7 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: |
           ctest --test-dir build/webgpu-macos \
-            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels)|tensor\.gpu\.|voxel\.render\.(faceDirAliasesDraw|atlasBoundaryIndices|emptyInstanceInputsAreNoOps|thinRectanglesAcrossAxes)|outline\.previewCube|procgen\.render\.dungeonCaveMazePreview)' \
             --output-on-failure
 
   macos-release:

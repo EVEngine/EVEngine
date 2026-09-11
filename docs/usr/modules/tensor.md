@@ -43,19 +43,24 @@ CompiledFunction；run 接收 eager feed 并返回 eager 输出。shape 与 dtyp
    bias + 激活后置融合、按生命周期做静态内存规划（不重叠的中间结果复用同一块
    显存）。
 2. **专用 kernel 代码生成**（`KernelGen`）：每个融合组生成一份形状全部烘焙为
-   常量的 GLSL；softmax/layernorm 使用两遍 kernel；SDPA 使用共享内存的融合
+   常量的着色器：Vulkan 使用 GLSL，WebGPU 直接生成 WGSL。softmax/layernorm 使用两遍 kernel；SDPA 使用共享内存的融合
    attention；matmul 提供 naive 与 16x16 tiled 两种模板。
 3. **进程内 GLSL→SPIR-V 编译**：Windows 上链接 Vulkan SDK 的 shaderc
    （glslang + SPIRV-Tools）静态库，不依赖外部 glslc.exe；找不到 shaderc 时回退
-   到调用 glslc。
+   到调用 glslc。WebGPU 将 WGSL 直接交给 Dawn／浏览器编译，不需要 glslc。
 4. **matmul 自动调优**：编译时对 naive / tiled 两种变体各计时 5 次，选择更快者。
 5. **整图单次提交**（`GpuBackend` + `gpgpu::Sequence`）：一次 `run()` 把
    placeholder 上传、所有融合组的 kernel dispatch、输出回读录制进同一个
    command buffer，`submit()` 一次完成——而不是每个 kernel 各提交等待一次。
    对 transformer 这类几十个 kernel 的推理图，可省掉几十次 GPU 提交往返。
 
-当没有 Vulkan 设备或图无法降级到 GPU 时，`compile()` 自动回退到 CPU 参考解释器，
+当没有可用计算设备或图无法生成 GPU 内核时，`compile()` 自动回退到 CPU 参考解释器，
 `getDevice()` 返回 `"gpu"` 或 `"cpu"`。
+
+WebGPU 对重复输入共用一个存储声明，例如 `sdpa(q, q, q)`，避免绑定重叠的可写区域。
+量化权重上传补齐到四字节边界，补齐字节不参与张量计算。两后端与 eager 使用相同的形状、
+索引及双线性缩放像素中心约定；共享数值回归要求有限结果并使用明确的浮点容差。
+
 
 ## 目标导向指南
 
@@ -101,7 +106,7 @@ GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/tensor_llm.c
 
 - 与 numpy 参考实现逐位置对比 softmax 概率：最大差 3e-7，top-1 一致 16/16；
 - 编译路径（`func()` + `compile()`）与 eager 完全一致（logit 差 0），device 为
-  cpu 或 gpu（有 Vulkan 窗口时）；
+  cpu 或 gpu（设备已初始化时）；
 - 贪婪生成与 numpy 参考 24/24 token 一致，CPU eager 约 100 ms/token。
 
 示例输出（prompt：*Once upon a time, there was a little*）：
@@ -139,7 +144,7 @@ local wq = tf.quantizeWeight(W, "fp16");        // fp16 为纯 half 存储，无
 - `int8` / `int4`：对称量化 + per-group block scale（int4 两元素/字节）。
 
 支持量化的使用点：matmul 的权重输入（B）、embedding 表、lm_head（transpose 后）。
-GPU 侧在生成的 GLSL kernel 内联反量化（naive matmul 与 embedding），不落回
+GPU 侧在生成的 GLSL／WGSL kernel 内联反量化（naive matmul 与 embedding），不落回
 fp32 缓冲；LN 的 scale/bias 与线性 bias 建议保持 fp32（测试默认如此）。
 
 TinyStories 模型全矩阵量化（group=64）实测（top-1 贪婪一致率 vs fp32，16 个
@@ -164,7 +169,7 @@ GPU 编译路径），资产缺失时自动跳过。
 - 对 symbolic Tensor 调用 `get()`。
 - matmul 内维度不一致；rank 3 批处理要求 batch 相同。
 - 每帧重新 func/compile，而不是复用 CompiledFunction。
-- GPU 编译需要已创建 Vulkan 窗口（`gpgpu.isAvailable()` 为真）；否则回退 CPU。
+- GPU 编译需要已初始化 Vulkan 或 WebGPU 设备（`gpgpu.isAvailable()` 为真）；否则回退 CPU。
 - `argmax`/`cast("int32")` 得到 int32 dtype 张量，脚本读取仍返回 float。
 
 ## API 快查
@@ -231,7 +236,7 @@ GPU 编译路径），资产缺失时自动跳过。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 - 张量支持 rank 1–6，dtype 为 float32 / int32；二元运算支持广播。
-- GPU 路径：`compile()` 需要已初始化的 Vulkan Graphics（先创建窗口）。Windows
+- GPU 路径：`compile()` 需要已初始化的 Vulkan 或 WebGPU Graphics，窗口或 headless 初始化均可。Windows
   上 GLSL→SPIR-V 由链接进引擎的 shaderc 静态库完成，不需要安装 glslc。
 
 **源码：** [`src/modules/tensor/`](../../../src/modules/tensor/)（含
