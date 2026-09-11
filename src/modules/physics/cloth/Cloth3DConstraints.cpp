@@ -189,7 +189,7 @@ void Cloth3D::solveVolumeConstraint(float dt) {
         const Vec3      ga = cross(bv, cv);
         const Vec3      gb = cross(cv, av);
         const Vec3      gc = cross(av, bv);
-        for (const auto [index, gradient] :
+        for (const auto& [index, gradient] :
              {std::pair{triangle.v[0], ga}, std::pair{triangle.v[1], gb}, std::pair{triangle.v[2], gc}}) {
             gradients[static_cast<size_t>(index)].x += gradient.x / 6.f;
             gradients[static_cast<size_t>(index)].y += gradient.y / 6.f;
