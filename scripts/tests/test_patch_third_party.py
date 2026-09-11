@@ -41,11 +41,13 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
     for relative in sorted(paths):
         blob = subprocess.run(
             ["git", "-C", str(source), "show", f"HEAD:{relative}"],
-            capture_output=True, check=True,
+            capture_output=True, check=True, text=True, encoding="utf-8",
         ).stdout
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(blob)
+        # Match the platform-native checkout used by the patch file itself.
+        # In particular, Git for Windows materializes both as CRLF.
+        target.write_text(blob, encoding="utf-8")
     run(["git", "-C", str(destination), "init", "--quiet"])
     run(["git", "-C", str(destination), "add", "."])
     run(["git", "-C", str(destination), "-c", "user.name=Fixture",
