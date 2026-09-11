@@ -243,7 +243,9 @@ eve_update = function(dt) {
         } else if (!venomDone && !venomCapturePending) {
             venomDone = true;
             print("[venom] auto demo complete\n");
-            win.close();
+            // Prefer the load.nut bootBench early-exit so the window is not
+            // destroyed mid-frame (win.close() here segfaults under Vulkan).
+            eve.bootBench = true;
             return;
         }
     } else if (venomPlaying) {

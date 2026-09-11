@@ -57,3 +57,15 @@ On launch the demo auto-plays coverage `0 → 1`, writes PNGs under
 - `shaders/venom.frag` — coverage / goo / edge shader
 - `config.nut` — window + modules
 - `captures/` — PNG outputs from the auto demo
+
+## Captures
+
+Auto-demo frames (Lavapipe + Xvfb):
+
+| coverage | file |
+| --- | --- |
+| 0% | `captures/venom-00-c0.png` |
+| 28% | `captures/venom-01-c28.png` |
+| 55% | `captures/venom-02-c55.png` |
+| 82% | `captures/venom-03-c82.png` |
+| 100% | `captures/venom-04-c100.png` |
