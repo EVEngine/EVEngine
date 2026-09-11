@@ -1337,7 +1337,7 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      - name: Build linux debug (ASan+UBSan)
+      - name: Build linux RelWithDebInfo (ASan+UBSan)
         # A cold full-profile sanitizer build now takes just over 40 minutes
         # after the asset pipeline modules and tests were added.
         timeout-minutes: 55
@@ -1353,14 +1353,13 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        # The 3994-case process-isolated suite reached case 3935 at the former
-        # 75-minute guard (run 34374871170). Keep all tests and sanitizer checks,
-        # with bounded headroom for the remaining GPU cases and runner variance.
+        # Keep every case process-isolated, but use all CPUs exposed by the
+        # GitHub runner instead of hard-coding a runner-size assumption.
         timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS="$(nproc)"
 
   linux-coverage:
     name: Linux (Coverage)
