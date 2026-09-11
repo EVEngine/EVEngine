@@ -126,10 +126,15 @@ ui.end();
 ```squirrel
 ui.beginRow("tools", 4.0);
 ui.iconButton("pointer", "", "select");
+ui.setItemSelected(true); // 当前工具使用主题激活色
 ui.iconButton("move", "", "move");
 ui.iconButton("paint-brush", "Paint", "paint");
 ui.end();
 ```
+
+`setItemSelected(true)` 为刚加入的普通按钮或图标按钮设置选中外观；工具切换后用既有的
+`setChecked(id, selected)` 更新已挂载控件。选中态只是 UI 投影，工具的权威状态仍由
+`EditorToolbar` 或具体编辑器 session 持有。
 
 ### 组合桌面编辑器控件
 
@@ -236,7 +241,7 @@ ui.setItemAccessibility("button", "Save scene", "");
 - `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
 - `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
 - `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
 - `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
