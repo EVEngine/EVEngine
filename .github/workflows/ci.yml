@@ -1017,7 +1017,7 @@ jobs:
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
           # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
@@ -1034,6 +1034,8 @@ jobs:
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -1270,9 +1272,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    # Allow the 55-minute build and 90-minute test guards plus toolchain setup
-    # and cache reporting, including a cold sanitizer build.
-    timeout-minutes: 180
+    # Allow the 100-minute cold optimized sanitizer build and 90-minute test
+    # guards plus dependency/toolchain setup and cache reporting.
+    timeout-minutes: 270
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1295,7 +1297,7 @@ jobs:
         # Sanitizer jobs use the same full dependency set as the debug lane.
         timeout-minutes: 20
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
@@ -1312,6 +1314,8 @@ jobs:
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -1341,10 +1345,10 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      - name: Build linux debug (ASan+UBSan)
-        # A cold full-profile sanitizer build now takes just over 40 minutes
-        # after the asset pipeline modules and tests were added.
-        timeout-minutes: 55
+      - name: Build linux RelWithDebInfo (ASan+UBSan)
+        # PRs cannot populate the shared sccache. A new compiler flag set is
+        # therefore a cold build; run 34596121051 reached 67% after 55 minutes.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1357,14 +1361,13 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        # The 3994-case process-isolated suite reached case 3935 at the former
-        # 75-minute guard (run 34374871170). Keep all tests and sanitizer checks,
-        # with bounded headroom for the remaining GPU cases and runner variance.
+        # Keep every case process-isolated, but use all CPUs exposed by the
+        # GitHub runner instead of hard-coding a runner-size assumption.
         timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS="$(nproc)"
 
   linux-coverage:
     name: Linux (Coverage)
