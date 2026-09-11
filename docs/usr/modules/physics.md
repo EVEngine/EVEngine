@@ -114,7 +114,8 @@ Sweep Cast 沿运动方向使用四分之一网格单元的最大步长并对首
 ### 布料（2D，像素空间）
 
 ```squirrel
-local cloth = physics.newCloth(18, 12, 14.0, 48.0, 36.0); // cols, rows, spacing, origin
+local clothModule = eve.Cloth();
+local cloth = clothModule.newCloth(18, 12, 14.0, 48.0, 36.0); // cols, rows, spacing, origin
 cloth.setGravity(0, 980);
 cloth.setBounds(0, 0, 800, 600);
 cloth.setStiffness(0.9);
@@ -131,7 +132,8 @@ cloth.draw(gfx);
 ### 布料 3D（米制空间）
 
 ```squirrel
-local cloth3 = physics.newCloth3D(16, 12, 0.4, -3.0, 3.2, -2.0); // cols, rows, spacing, origin(X,Y,Z)
+local clothModule = eve.Cloth();
+local cloth3 = clothModule.newCloth3D(16, 12, 0.4, -3.0, 3.2, -2.0); // cols, rows, spacing, origin(X,Y,Z)
 cloth3.setGravity(0, -9.8, 0);       // 米 / s²，+Y 向上
 cloth3.setCollideWorld(world3);      // 与 Box3D 非 sensor shape 碰撞
 cloth3.setParticleSize(0.12);        // 自碰撞半径 / 碰撞厚度
@@ -175,7 +177,7 @@ cloth->setWindVelocity(2.f, 0.f, 1.f);
 cloth->update(dt);
 ```
 
-任意网格使用 `ClothModel::fromTriangles(positions, indices, inverseMasses)`；`positions` 是紧密排列的 XYZ，`inverseMasses` 中的 `0` 表示固定粒子。输入索引越界、退化三角形、负质量或非流形边会整体拒绝，不会发布半成品模型。模型可序列化为严格版本化的 `eve.cloth-model/1` Definition，并由 `asset/physics` 的 `EvpackClothModelLoader` 从 `.evpack` 加载；未知字段和未知版本都会拒绝。当前 Squirrel 的 `newCloth3D(...)` 保持兼容，并已在内部走同一个 `ClothModel` 网格烘焙路径。
+任意网格使用 `ClothModel::fromTriangles(positions, indices, inverseMasses)`；`positions` 是紧密排列的 XYZ，`inverseMasses` 中的 `0` 表示固定粒子。输入索引越界、退化三角形、负质量或非流形边会整体拒绝，不会发布半成品模型。模型可序列化为严格版本化的 `eve.cloth-model/1` Definition，并由 `asset/physics` 的 `EvpackClothModelLoader` 从 `.evpack` 加载；未知字段和未知版本都会拒绝。Squirrel 的规范入口是独立的 `eve.Cloth()` 子模块，`newCloth3D(...)` 在内部走同一个 `ClothModel` 网格烘焙路径。
 
 ### Obi Cloth 6.4 核心覆盖边界
 
@@ -214,7 +216,8 @@ cloth->update(dt);
 `newClothGPU(cols, rows, spacing, originX, originY)` 创建与 `Cloth` 同接口的 GPU 布料：Verlet 积分和距离约束全部跑在 Vulkan compute shader 里（每粒子一个线程 + 双缓冲 Jacobi 约束迭代），每帧回读位置用于绘制。适合大批量粒子：
 
 ```squirrel
-local clothG = physics.newClothGPU(40, 30, 8.0, 40.0, 30.0); // 1200 粒子
+local clothModule = eve.Cloth();
+local clothG = clothModule.newClothGPU(40, 30, 8.0, 40.0, 30.0); // 1200 粒子
 clothG.setGravity(0, 980);
 clothG.setBounds(0, 0, 800, 600);
 clothG.setStiffness(0.9);
@@ -863,7 +866,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 ### 可交互布料（2D / 3D）
 
-1. `newCloth(cols, rows, spacing, originX, originY)`（2D 像素）或 `newCloth3D(cols, rows, spacing, originX, originY, originZ)`（3D 米）— 默认钉住顶行。
+1. 通过 `eve.Cloth()` 子模块调用 `newCloth(cols, rows, spacing, originX, originY)`（2D 像素）或 `newCloth3D(cols, rows, spacing, originX, originY, originZ)`（3D 米）— 默认钉住顶行。
 2. `setBounds` 限制摆动范围；`applyForce` 可作风场。
 3. `grabAt` / `moveGrab` / `releaseGrab` 做鼠标拖拽；`pin` / `unpin` 控制固定点。
 4. `setSelfCollision(true)` 开启自碰撞（3D 含三角面级）；`setMaxFoldAngle` / `setFoldStiffness` 控制折角限制（3D 为相邻三角面二面角）。

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "physics/ClothModel.h"
+#include "physics/cloth/ClothModel.h"
 #include "physics/SimulationBackend.h"
 
 #include <cstdint>
@@ -88,33 +88,33 @@ public:
     /** @brief Set XPBD stretch compliance in m/N; zero preserves legacy PBD. */
     void setStretchCompliance(float compliance);
     /** @brief Return XPBD stretch compliance in m/N. */
-    [[nodiscard]] float getStretchCompliance() const { return stretchCompliance_; }
+    [[nodiscard]] float getStretchCompliance() const;
     /** @brief Set XPBD shear compliance in m/N; zero preserves legacy PBD. */
     void setShearCompliance(float compliance);
     /** @brief Return XPBD shear compliance in m/N. */
-    [[nodiscard]] float getShearCompliance() const { return shearCompliance_; }
+    [[nodiscard]] float getShearCompliance() const;
     /** @brief Set XPBD distance-bend compliance in m/N; zero preserves legacy PBD. */
     void setBendCompliance(float compliance);
     /** @brief Return XPBD distance-bend compliance in m/N. */
-    [[nodiscard]] float getBendCompliance() const { return bendCompliance_; }
+    [[nodiscard]] float getBendCompliance() const;
 
     /** @brief Set tether maximum-length scale; zero disables tethers, one uses baked lengths. */
     void setTetherScale(float scale);
     /** @brief Return the current tether length scale. */
-    [[nodiscard]] float getTetherScale() const { return tetherScale_; }
+    [[nodiscard]] float getTetherScale() const;
     /** @brief Set XPBD tether compliance in m/N. */
     void setTetherCompliance(float compliance);
     /** @brief Return XPBD tether compliance in m/N. */
-    [[nodiscard]] float getTetherCompliance() const { return tetherCompliance_; }
+    [[nodiscard]] float getTetherCompliance() const;
 
     /** @brief Set closed-mesh target volume ratio; zero disables volume solving. */
     void setPressure(float pressure);
     /** @brief Return the closed-mesh target volume ratio. */
-    [[nodiscard]] float getPressure() const { return pressure_; }
+    [[nodiscard]] float getPressure() const;
     /** @brief Set XPBD closed-volume compliance in m^3/N. */
     void setVolumeCompliance(float compliance);
     /** @brief Return XPBD closed-volume compliance. */
-    [[nodiscard]] float getVolumeCompliance() const { return volumeCompliance_; }
+    [[nodiscard]] float getVolumeCompliance() const;
     /** @brief Return current signed mesh volume, or zero for an open model. */
     [[nodiscard]] float getCurrentVolume() const;
 
@@ -169,28 +169,28 @@ public:
     /** @brief Configure cloth contact friction and restitution in [0,1]. */
     void setCollisionMaterial(float friction, float restitution);
     /** @brief Return cloth-side Coulomb friction. */
-    [[nodiscard]] float getCollisionFriction() const { return collisionFriction_; }
+    [[nodiscard]] float getCollisionFriction() const;
     /** @brief Return cloth-side restitution. */
-    [[nodiscard]] float getCollisionRestitution() const { return collisionRestitution_; }
+    [[nodiscard]] float getCollisionRestitution() const;
     /** @brief Configure symmetric category/mask filtering for World3D contacts. */
     void setCollisionFilter(uint64_t categoryBits, uint64_t maskBits);
     /** @brief Return cloth collision category bits. */
-    [[nodiscard]] uint64_t getCollisionCategoryBits() const { return collisionCategoryBits_; }
+    [[nodiscard]] uint64_t getCollisionCategoryBits() const;
     /** @brief Return cloth collision mask bits. */
-    [[nodiscard]] uint64_t getCollisionMaskBits() const { return collisionMaskBits_; }
+    [[nodiscard]] uint64_t getCollisionMaskBits() const;
 
     /** @brief Set automatic structural-edge tear strain; zero disables, values must exceed one. */
     void setTearThreshold(float strain);
     /** @brief Return the automatic tear strain threshold, or zero when disabled. */
-    [[nodiscard]] float getTearThreshold() const { return tearThreshold_; }
+    [[nodiscard]] float getTearThreshold() const;
     /** @brief Limit automatic structural tears per simulation substep. */
     void setMaxTearsPerStep(int count);
     /** @brief Return the automatic tear budget per substep. */
-    [[nodiscard]] int getMaxTearsPerStep() const { return maxTearsPerStep_; }
+    [[nodiscard]] int getMaxTearsPerStep() const;
     /** @brief Tear an existing structural edge. @throws eve::Exception if the edge cannot tear. */
     void tearConstraint(int particleA, int particleB);
     /** @brief Return the cumulative number of torn structural constraints. */
-    [[nodiscard]] int getTornConstraintCount() const { return tornConstraintCount_; }
+    [[nodiscard]] int getTornConstraintCount() const;
 
     void pin(int index);
     void unpin(int index);
@@ -322,13 +322,13 @@ public:
     int   getRows() const { return rows_; }
     int   getParticleCount() const { return static_cast<int>(particles_.size()); }
     /** @brief Return the current render/collision triangle count, reduced by tearing. */
-    [[nodiscard]] int getTriangleCount() const { return static_cast<int>(triangles_.size()); }
+    [[nodiscard]] int getTriangleCount() const;
     /** @brief Return the current distance-constraint count. */
-    [[nodiscard]] int getDistanceConstraintCount() const { return static_cast<int>(links_.size()); }
+    [[nodiscard]] int getDistanceConstraintCount() const;
     /** @brief Return baked geodesic tether count. */
-    [[nodiscard]] int getTetherConstraintCount() const { return static_cast<int>(tethers_.size()); }
+    [[nodiscard]] int getTetherConstraintCount() const;
     /** @brief Return active skin-constraint count. */
-    [[nodiscard]] int getSkinConstraintCount() const { return static_cast<int>(skinConstraints_.size()); }
+    [[nodiscard]] int getSkinConstraintCount() const;
     /** @brief Return active attachment count. */
     [[nodiscard]] int getAttachmentCount() const { return static_cast<int>(attachments_.size()); }
     float getParticleX(int index) const;

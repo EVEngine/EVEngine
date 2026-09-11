@@ -1,4 +1,4 @@
-#include "physics/ClothModel.h"
+#include "physics/cloth/ClothModel.h"
 
 #include <algorithm>
 #include <cmath>

@@ -16,6 +16,7 @@
 // ============================================================================
 
 persist physics = null
+persist clothModule = null
 persist world3 = null
 persist cloth = null
 persist grabbing = false
@@ -47,6 +48,7 @@ function mousePressed() {
 
 function buildScene() {
     if (physics == null) physics = eve.Physics();
+    if (clothModule == null) clothModule = eve.Cloth();
 
     if (world3 == null) {
         world3 = physics.newWorld3D(0.0, -9.8, 0.0, true);
@@ -62,7 +64,7 @@ function buildScene() {
     }
 
     if (cloth == null) {
-        cloth = physics.newCloth3D(16, 12, 0.4, -3.0, CLOTH_TOP_Y, -2.0);
+        cloth = clothModule.newCloth3D(16, 12, 0.4, -3.0, CLOTH_TOP_Y, -2.0);
         cloth.setGravity(0.0, -9.8, 0.0);
         cloth.setStiffness(0.9);
         cloth.setIterations(5);

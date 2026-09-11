@@ -1,5 +1,5 @@
-#include "physics/Cloth3D.h"
-#include "physics/ClothModel.h"
+#include "physics/cloth/Cloth3D.h"
+#include "physics/cloth/ClothModel.h"
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"

@@ -1,6 +1,6 @@
 #include "asset/RuntimeDefinition.h"
 #include "asset/physics/EvpackClothModel.h"
-#include "physics/Cloth3D.h"
+#include "physics/cloth/Cloth3D.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

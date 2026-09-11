@@ -3,7 +3,7 @@
 /** @file EvpackClothModel.h @brief Runtime package adapter for cloth models. */
 
 #include "asset/EvpackResourceReader.h"
-#include "physics/ClothModel.h"
+#include "physics/cloth/ClothModel.h"
 
 namespace eve::asset_physics {
 

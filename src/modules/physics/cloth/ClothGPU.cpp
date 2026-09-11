@@ -1,4 +1,4 @@
-#include "physics/ClothGPU.h"
+#include "physics/cloth/ClothGPU.h"
 
 #include "common/Exception.h"
 #include "gpgpu/ComputeShader.h"

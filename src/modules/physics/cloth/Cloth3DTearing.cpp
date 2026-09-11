@@ -1,4 +1,4 @@
-#include "physics/Cloth3D.h"
+#include "physics/cloth/Cloth3D.h"
 
 #include "common/Exception.h"
 
@@ -9,6 +9,10 @@
 #include <vector>
 
 namespace eve::physics {
+
+float Cloth3D::getTearThreshold() const { return tearThreshold_; }
+int Cloth3D::getMaxTearsPerStep() const { return maxTearsPerStep_; }
+int Cloth3D::getTornConstraintCount() const { return tornConstraintCount_; }
 
 void Cloth3D::setTearThreshold(float strain) {
     tearThreshold_ = std::isfinite(strain) && strain > 1.f ? strain : 0.f;

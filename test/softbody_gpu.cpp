@@ -6,7 +6,8 @@
 #include "gpgpu/GpuBuffer.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
-#include "physics/ClothGPU.h"
+#include "physics/cloth/ClothGPU.h"
+#include "physics/cloth/ClothModule.h"
 #include "physics/Physics.h"
 #include "window/Window.h"
 
@@ -47,7 +48,7 @@ TEST_CASE("softbody.gpu.clothFallsAndPinsHold") {
     auto *mod = Physics::create();
     std::unique_ptr<ClothGPU> cloth;
     try {
-        cloth = std::unique_ptr<ClothGPU>(mod->newClothGPU(8, 6, 10.f, 100.f, 40.f));
+        cloth = std::unique_ptr<ClothGPU>(eve::cloth::Cloth::create()->newClothGPU(8, 6, 10.f, 100.f, 40.f));
     } catch (...) {
         return;  // no shader compiler — skip
     }
@@ -129,7 +130,7 @@ TEST_CASE("softbody.gpu.clothSelfCollisionSeparates") {
     auto *mod = Physics::create();
     std::unique_ptr<ClothGPU> cloth;
     try {
-        cloth = std::unique_ptr<ClothGPU>(mod->newClothGPU(10, 8, 12.f, 20.f, 20.f));
+        cloth = std::unique_ptr<ClothGPU>(eve::cloth::Cloth::create()->newClothGPU(10, 8, 12.f, 20.f, 20.f));
     } catch (...) {
         return;
     }
@@ -174,7 +175,7 @@ TEST_CASE("softbody.gpu.clothLargeSelfCollision") {
     auto *mod = Physics::create();
     std::unique_ptr<ClothGPU> cloth;
     try {
-        cloth = std::unique_ptr<ClothGPU>(mod->newClothGPU(100, 80, 12.f, 20.f, 20.f));
+        cloth = std::unique_ptr<ClothGPU>(eve::cloth::Cloth::create()->newClothGPU(100, 80, 12.f, 20.f, 20.f));
     } catch (...) {
         return;
     }

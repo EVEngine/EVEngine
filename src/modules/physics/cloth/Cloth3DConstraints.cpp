@@ -1,4 +1,4 @@
-#include "physics/Cloth3D.h"
+#include "physics/cloth/Cloth3D.h"
 
 #include "common/Exception.h"
 
@@ -7,6 +7,22 @@
 #include <vector>
 
 namespace eve::physics {
+
+float Cloth3D::getStretchCompliance() const { return stretchCompliance_; }
+float Cloth3D::getShearCompliance() const { return shearCompliance_; }
+float Cloth3D::getBendCompliance() const { return bendCompliance_; }
+float Cloth3D::getTetherScale() const { return tetherScale_; }
+float Cloth3D::getTetherCompliance() const { return tetherCompliance_; }
+float Cloth3D::getPressure() const { return pressure_; }
+float Cloth3D::getVolumeCompliance() const { return volumeCompliance_; }
+float Cloth3D::getCollisionFriction() const { return collisionFriction_; }
+float Cloth3D::getCollisionRestitution() const { return collisionRestitution_; }
+uint64_t Cloth3D::getCollisionCategoryBits() const { return collisionCategoryBits_; }
+uint64_t Cloth3D::getCollisionMaskBits() const { return collisionMaskBits_; }
+int Cloth3D::getTriangleCount() const { return static_cast<int>(triangles_.size()); }
+int Cloth3D::getDistanceConstraintCount() const { return static_cast<int>(links_.size()); }
+int Cloth3D::getTetherConstraintCount() const { return static_cast<int>(tethers_.size()); }
+int Cloth3D::getSkinConstraintCount() const { return static_cast<int>(skinConstraints_.size()); }
 namespace {
 
 struct Vec3 {

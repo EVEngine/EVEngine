@@ -5,9 +5,11 @@ function check(cond, msg) {
 function basic() {
     local p = eve.Physics();
     check(p.getName() == "Physics", "module name");
+    local clothModule = eve.Cloth();
+    check(clothModule.getName() == "Cloth", "cloth module name");
 
     // ---- 2D cloth ----
-    local c = p.newCloth(8, 6, 10.0, 0.0, 0.0);
+    local c = clothModule.newCloth(8, 6, 10.0, 0.0, 0.0);
     check(c.getParticleCount() == 48, "2d particle count");
     check(c.isPinned(0), "2d top-left pinned");
     check(c.getMaxFoldAngle() == 90.0, "2d default fold angle");
@@ -51,7 +53,7 @@ function basic() {
     c.destroy();
 
     // ---- 3D cloth ----
-    local c3 = p.newCloth3D(8, 6, 0.5, 0.0, 3.0, 0.0);
+    local c3 = clothModule.newCloth3D(8, 6, 0.5, 0.0, 3.0, 0.0);
     check(c3.getParticleCount() == 48, "3d particle count");
     check(c3.getBackendName() == "cpu" && c3.supportsFeature("runtime_tearing"), "3d backend capabilities");
     check(c3.isPinned(7), "3d top row pinned");
@@ -133,7 +135,7 @@ function basic() {
 
     // Surface-aware aerodynamics: wind normal to the initial XZ sheet moves
     // free particles while the pinned top row remains fixed.
-    local windCloth = p.newCloth3D(4, 4, 0.5, 0.0, 0.0, 0.0);
+    local windCloth = clothModule.newCloth3D(4, 4, 0.5, 0.0, 0.0, 0.0);
     windCloth.setGravity(0.0, 0.0, 0.0);
     windCloth.setSelfCollision(false);
     windCloth.setFoldStiffness(0.0);

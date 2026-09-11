@@ -52,9 +52,14 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+# Cloth is a host-owned physics satellite: rigid-body physics stays usable in
+# trimmed builds without cloth topology, rendering, or compute backends.
+eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLOT cloth
+                   DEPS physics graphics gpgpu
+                   GROUP 2d 3d web)
 # Typed package bridge kept outside the physics domain core.
 eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
-                   DEPS asset physics
+                   DEPS asset physics_cloth
                    GROUP 3d web)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
