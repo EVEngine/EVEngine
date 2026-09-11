@@ -85,6 +85,7 @@ class Quad;
 class RenderControl;
 class Renderable2D;
 class AlphaMask;
+class MapFog;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -1610,6 +1611,11 @@ public:
     Outline *newOutline();
     /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
     AlphaMask *newAlphaMask();
+    /**
+     * @brief Create a script-owned SLG / large-map war-fog overlay (dual cloud + mask).
+     * @lifetime Caller owns the MapFog*; its Shader is owned by Graphics.
+     */
+    MapFog *newMapFog();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;
