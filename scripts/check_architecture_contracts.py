@@ -348,7 +348,7 @@ POINTER_API = re.compile(
     r"^\s*(?:(?:\[\[nodiscard(?:\([^]]*\))?\]\]\s*)?"
     r"(?:static|virtual|inline|constexpr|explicit|const)\s+)*"
     r"(?:[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*(?:\s*<[^;{}()]+>)?\s*)?\*\s*"
-    r"(?:[A-Za-z_]\w*)?\s*(?:\(|;|=)"
+    r"[A-Za-z_]\w*\s*(?:\(|;|=)"
 )
 # A bool query is a legitimate API shape when its name follows the project's
 # query vocabulary.  Keep this list deliberately lexical: this checker does

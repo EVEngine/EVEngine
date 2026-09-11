@@ -69,6 +69,21 @@ public:
     void injectHeightFog(float baseExtinction, const glm::vec3 &albedo, float baseHeight,
                          float heightFalloff, float minWorldY, float maxWorldY);
 
+    /**
+     * @brief Add exponential-height fog by reconstructing each froxel in the active camera frustum.
+     * @param baseExtinction Extinction coefficient at baseHeight.
+     * @param albedo Single-scattering albedo in [0,1].
+     * @param baseHeight World height where density is baseExtinction.
+     * @param heightFalloff Exponential falloff per world unit.
+     * @param minWorldY Lowest world height that receives fog.
+     * @param maxWorldY Highest world height that receives fog.
+     * @param invViewProj Inverse projection-view matrix for the active camera.
+     */
+    void injectHeightFogFrustum(float baseExtinction, const glm::vec3 &albedo,
+                                float baseHeight, float heightFalloff, float minWorldY,
+                                float maxWorldY,
+                                const glm::mat4 &invViewProj);
+
     /** @brief Voxelize one analytic local volume over the supplied world bounds. */
     void injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
                            const glm::vec3 &worldMax);

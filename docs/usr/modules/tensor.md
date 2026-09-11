@@ -164,6 +164,26 @@ fp8/fp4 的 block scale 取 `maxAbs / 格式最大幅值`（e4m3=240、e2m1=6）
 量化正确性由 `tensor.quant.*` 与 `tensor.llm.quantizedDtypes` 测试覆盖（含
 GPU 编译路径），资产缺失时自动跳过。
 
+## C++ 原生 ONNX 导入与量化 GPU 推理
+
+`tensor/OnnxModel.h` 直接导入 ONNX，保留 int8/uint8 权重、仿射 scale/zero-point
+及精确 int32/int64 数据。`run()` 执行 CPU 参考路径；`runGpu()` 接收
+`createOnnxGpuCompute()` 返回的引擎 Gpgpu 适配器，在 Vulkan 设备线程上同步执行。
+GPU 负责量化矩阵乘、卷积、LSTM 投影、浮点神经网络计算；形状、索引、控制流、
+LSTM 门控仍由 CPU 处理；动态量化在 GPU 上计算，只回读少量校验标量。
+GPU 错误明确返回，不会自动改用 CPU 重试。
+
+已用原版 Kokoro v1.1 INT8 模型跑通中文语音整图，包括 Loop/If/Sequence。
+接口使用 owning Result，输出不依赖模型生命周期，随机激励可指定种子。
+当前 ONNX GPU 执行已使用驻留缓冲区和批量 Sequence 提交；连续 GPU 节点之间不回读，
+仅在 CPU 数据依赖边界下载。应在推理循环外创建并保留 `createOnnxGpuCompute()`
+返回的 GPU 会话，跨调用复用管线、权重和缓冲区池；Graphics 销毁前自动清理，
+失效会话明确拒绝执行。实测同进程第二次合成约 2.60 秒，仍需优化 LSTM CPU 门控等开销。文字前处理、Squirrel
+绑定及 dialogue 播放接入不在此示例范围内。
+
+完整构建命令、模型资源、数值契约、限制和可重复语音测试见
+[原生 ONNX 示例](../../../examples/tensor/onnx/README.md)。
+
 ## 常见问题
 
 - 对 symbolic Tensor 调用 `get()`。
@@ -236,7 +256,10 @@ GPU 编译路径），资产缺失时自动跳过。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 - 张量支持 rank 1–6，dtype 为 float32 / int32；二元运算支持广播。
-- GPU 路径：`compile()` 需要已初始化的 Vulkan 或 WebGPU Graphics，窗口或 headless 初始化均可。Windows
+- 原生 ONNX GPU 会话使用有界 shader 编译队列，`createOnnxGpuCompute(compilerWorkers)`
+  可选 1–8 个 CPU 编译线程（默认 4）；同源码去重，编译器上下文和管线缓存均复用。
+  Vulkan 管线创建与提交仍在设备线程，`runGpu` 保持同步返回；并发数应按目标构建实测选择。
+- GPU 路径：`compile()` 需要已初始化的 Vulkan Graphics（先创建窗口）。Windows
   上 GLSL→SPIR-V 由链接进引擎的 shaderc 静态库完成，不需要安装 glslc。
 
 **源码：** [`src/modules/tensor/`](../../../src/modules/tensor/)（含

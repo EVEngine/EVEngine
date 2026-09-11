@@ -429,6 +429,39 @@ local lakeMesh = gen.generateTerrainLakeMesh(hm, layers, gfx, 0, 0, 64, 64,
 local waterShader = gen.createTerrainWaterShader(gfx); // 微法线、Fresnel 与太阳高光
 ```
 
+#### 读回已有地形文件（`loadTerrainFile` / `loadTerrainBytes`）
+
+`bakeTerrainAsset` 写出的是内存 `ByteData`，脚本没有字节写入口；反过来，脚本可以**读**
+已有地形文件并直接拿到可采样的高度场：
+
+```squirrel
+// format 传 "auto"（默认）按 magic 判定，也可显式传 "evtr" / "evtrn"。
+local loaded = gen.loadTerrainFile("assets/terrain/ridge.evtrn", "auto");
+if (!loaded.ok) throw loaded.status.summary;
+
+local hm = loaded.value;        // 与 newHeightmap 同类型的 ProcgenHeightmap
+local width = hm.getWidth();    // 也作为 loaded.width / loaded.height 返回
+local spacing = loaded.hasSpacing ? loaded.spacingX : 2.0;   // EVTR 不存米/格
+local height = hm.sampleBilinear(3.0, 4.0);                  // EVTRN 已是米
+```
+
+支持的两种持久化编码：
+
+| 编码 | 来源 | 高度表示 | 自带 `spacing` |
+| --- | --- | --- | --- |
+| `EVTR` | `TerrainAsset::bake` 的分块归档（magic `EVTR`） | UNORM16，按归档 header 的 `minHeight`/`maxHeight` 反量化为米 | 否（`hasSpacing == false`） |
+| `EVTRN` | `eve.terrain/1` 资产旁的 `heightfield.bin`（magic `EVTRN\0\1\0`） | 原始 float32 米 | 是 |
+
+返回值除 `value`（高度场代理）外还带 `spacingX`、`spacingZ`、`hasSpacing`、`minHeight`、
+`maxHeight`、`format`、`width`、`height`。`loadTerrainBytes` 同上，但直接吃内存字节
+（`file(path,"r").read()` 得到的 Squirrel 字符串是二进制安全的）。
+
+失败时返回结构化 `Result`：文件缺失是 `not_found`，magic 不匹配是 `parse_error`，无法识别的
+magic 是 `unsupported`，尺寸与字节数不一致同样是 `parse_error`——都不会返回半填充的高度场。
+`examples/level-designer` 用它实现「引用已有地形资产」，格式说明见该例的
+`assets/terrain/README.md`。
+
+
 `ProcgenTerrainLayers` 提供 `getFlowAccumulation`、`isRiver`、`getLakeDepth`、`isLake`、`getTemperature`、
 `getMoisture`、`getBiome` 和 `getBiomeName`。群落名称包括 `ocean`、`beach`、
 `desert`、`grassland`、`forest`、`rainforest`、`tundra`、`taiga`、`alpine`、

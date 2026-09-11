@@ -45,6 +45,18 @@ TEST_CASE("atmosphereVolume.heightFogFallsOffUpward") {
     CHECK(volume.at(0, 0, 0).extinction > volume.at(0, 7, 0).extinction);
 }
 
+TEST_CASE("atmosphereVolume.frustumHeightFogUsesReconstructedWorldHeight") {
+    AtmosphereVolume volume;
+    volume.resize(1, 2, 4);
+    volume.setDepthRange(0.1f, 1.f);
+    glm::mat4 invViewProj(1.f);
+    invViewProj[1] = glm::vec4(0.f, 0.f, 1.f, 0.f);
+    invViewProj[2] = glm::vec4(0.f, 1.f, 0.f, 0.f);
+    volume.injectHeightFogFrustum(0.2f, glm::vec3(0.8f), 0.f, 2.f, -2.f, 2.f, invViewProj);
+    CHECK(std::fabs(volume.at(0, 0, 0).extinction - volume.at(0, 1, 0).extinction) < 1e-6f);
+    CHECK(volume.at(0, 0, 0).extinction > volume.at(0, 0, 3).extinction);
+}
+
 TEST_CASE("atmosphereVolume.directionalShadowReducesScattering") {
     AtmosphereVolume lit;
     lit.resize(1, 1, 8);
@@ -93,6 +105,20 @@ TEST_CASE("atmosphereVolume.localVolumesAddAndCarveMedia") {
     volume.injectLocalVolume(carve, glm::vec3(-4.f), glm::vec3(4.f));
     CHECK(volume.at(4, 4, 4).extinction == 0.f);
     CHECK(volume.at(0, 0, 0).extinction > 0.f);
+}
+
+TEST_CASE("fogVolume.noiseIsDeterministicAndSpatiallyVaried") {
+    FogVolume volume;
+    volume.setShape("box");
+    volume.setSize(20.f, 20.f, 20.f);
+    volume.setExtinction(1.f);
+    volume.setEdgeFalloff(0.f);
+    volume.setNoise(1.f, 0.7f, 42);
+    const float first = volume.sampleExtinction(glm::vec3(0.25f, 0.5f, 0.75f));
+    CHECK(first == volume.sampleExtinction(glm::vec3(0.25f, 0.5f, 0.75f)));
+    CHECK(std::fabs(first - volume.sampleExtinction(glm::vec3(1.75f, 0.5f, 0.75f))) > 1e-4f);
+    volume.setNoise(0.f, 0.7f, 42);
+    CHECK(std::fabs(volume.sampleExtinction(glm::vec3(0.25f, 0.5f, 0.75f)) - 1.f) < 1e-6f);
 }
 
 TEST_CASE("atmosphereVolume.localLightAndTransparentDepthQuery") {
