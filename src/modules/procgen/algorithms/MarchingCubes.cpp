@@ -569,9 +569,10 @@ void MeshRecipeRegistry::registerBuiltins() {
 
     RecipeDescriptor tree = mesh("mesh.tree", "Tree");
     tree.params.push_back(ParamDescriptor::choice("style", "Style", "lowpoly", {"lowpoly", "realistic"}));
-    tree.params.push_back(ParamDescriptor::choice("leafMode", "Leaf Mode", "cards", {"cards", "clusters", "none"}));
+    tree.params.push_back(
+        ParamDescriptor::choice("leafMode", "Leaf Mode", "cards", {"cards", "clusters", "canopy", "none"}));
     tree.params.push_back(ParamDescriptor::choice("branchAlgorithm", "Branch Algorithm", "weberPenn",
-                                                  {"weberPenn", "colonization"}));
+                                                  {"weberPenn", "spaceColonization"}));
     tree.params.push_back(ParamDescriptor::floating("height", "Height", 6.f, 0.5f, 100.f, 0.1f));
     tree.params.push_back(ParamDescriptor::floating("trunkRadius", "Trunk Radius", 0.33f, 0.02f, 10.f, 0.01f));
     tree.params.push_back(ParamDescriptor::floating("crownRadius", "Crown Radius", 2.04f, 0.1f, 50.f, 0.05f));
@@ -625,6 +626,15 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(tree, ParamDescriptor::floating("upperLeafCoverage", "Upper Leaf Coverage", 0.18f,
                                                  0.f, 1.f, 0.01f));
     addAdvanced(tree, ParamDescriptor::integer("maxChildren", "Maximum Children", 2, 1, 4));
+    addAdvanced(tree, ParamDescriptor::floating("clusterSize", "Cluster Size", 0.30f, 0.04f, 0.8f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("clusterLeafScale", "Cluster Leaf Scale", 0.85f, 0.1f, 3.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("clusterSpacing", "Cluster Leaf Spacing", 0.80f, 0.25f, 3.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("clusterSeparation", "Cluster Separation", 0.55f, 0.1f, 3.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("clusterTilt", "Cluster Plane Tilt", 26.f, 0.f, 80.f, 1.f));
+    addAdvanced(tree, ParamDescriptor::integer("clusterPlanes", "Cluster Planes", 10, 1, 24));
+    addAdvanced(tree, ParamDescriptor::integer("clusterCaps", "Cluster Cap Planes", 2, 0, 8));
+    addAdvanced(tree, ParamDescriptor::integer("clusterLeaves", "Cluster Leaves Per Plane", 28, 1, 256));
+    addAdvanced(tree, ParamDescriptor::integer("clusterLimit", "Cluster Limit", 120, 1, 512));
     registerRecipe(std::move(tree), generateTreeMesh);
 
     RecipeDescriptor bush = mesh("mesh.bush", "Bush");

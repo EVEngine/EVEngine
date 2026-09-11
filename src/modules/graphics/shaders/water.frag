@@ -1,197 +1,30 @@
 #version 450
 
-#extension GL_GOOGLE_include_directive : enable
-#include "tonemap.glsl"
-layout(location = 0) in vec3 vNormal;
-layout(location = 1) in vec2 vUV;
-layout(location = 2) in vec4 vTint;
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(location = 5) in vec3 vViewPos;
-
-struct Light3D { vec4 posRadius; vec4 color; };
-layout(set = 0, binding = 0, std140) uniform Frame {
-    mat4 mvp;
-    mat4 model;
-    vec4 lightDirIntensity;
-    vec4 lightColor;
-    vec4 tint;
-    vec4 cameraPos;
-    vec4 ambient;
-    Light3D lights[8];
-    vec4 texBomb;
-    vec4 parallax;
-    mat4 view;
-    vec4 clipInfo;
-    vec4 cloud;
-    vec4 cloudWind;
-    vec4 bindlessEnv;
-    vec4 envProbeCenter;
-    vec4 envProbeExtent;
-    vec4 skinInfo;
-    vec4 reflectionProbeCenter[2];
-    vec4 reflectionProbeExtent[2];
-} ubo;
-
-layout(set = 0, binding = 1) uniform sampler2D albedo;
-layout(set = 0, binding = 3) uniform samplerCube env;
-layout(set = 0, binding = 6) uniform sampler2D ssrTex;  // screen-space reflection (optional)
-layout(set = 0, binding = 16) uniform samplerCube reflectionProbe0;
-layout(set = 0, binding = 17) uniform samplerCube reflectionProbe1;
-
-layout(push_constant) uniform Externals { float data[32]; } u;
-layout(location = 0) out vec4 outColor;
-
-const float PI = 3.14159265;
-
-float hash(float n) { return fract(sin(n) * 43758.5453123); }
-vec2  hash2(int i) { return vec2(hash(float(i) * 7.31), hash(float(i) * 13.17 + 1.0)); }
-
-float probeWeight(int index, vec3 worldPos) {
-    vec3 edge = ubo.reflectionProbeExtent[index].xyz -
-                abs(worldPos - ubo.reflectionProbeCenter[index].xyz);
-    float inside = min(edge.x, min(edge.y, edge.z));
-    if (inside <= 0.0 || ubo.reflectionProbeCenter[index].w <= 0.0) return 0.0;
-    return clamp(inside / max(ubo.reflectionProbeExtent[index].w, 1e-4), 0.0, 1.0);
-}
-
-vec3 probeDirection(int index, vec3 direction, vec3 worldPos) {
-    vec3 center = ubo.reflectionProbeCenter[index].xyz;
-    vec3 extent = ubo.reflectionProbeExtent[index].xyz;
-    vec3 safeDir = mix(vec3(1e-5), direction, greaterThan(abs(direction), vec3(1e-5)));
-    vec3 exitT = max((center - extent - worldPos) / safeDir,
-                     (center + extent - worldPos) / safeDir);
-    float distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-    return distanceToBox > 0.0
-        ? normalize(worldPos + direction * distanceToBox - center)
-        : normalize(direction);
-}
-
-// Expanding damped-wavelet ripple from a periodic drop (smooth, water-like).
-float rippleRing(vec2 uv, int i) {
-    float period = max(u.data[7], 1e-3);        // rippleInterval
-    float local = mod(u.data[0], period);
-    float startPhase = hash(float(i) * 3.7) * period;
-    float age = local - startPhase;
-    if (age < 0.0) return 0.0;
-    float life = period * 0.8;
-    if (age > life) return 0.0;
-    vec2 center = hash2(i);
-    center = mix(vec2(0.5), center, 0.72);      // keep drops near the middle
-    float r = length(uv - center);
-    float radius = age * 0.22;                  // expanding ring
-    float wavelength = 0.10;                    // spacing between crests
-    float x = (r - radius) / wavelength;
-    // Soft damped wavelet: smooth gaussian envelope, a crest + trough pair.
-    float envelope = exp(-(x * x) * 0.9);
-    float wave = cos(x * 6.28318);
-    float fade = exp(-age * 1.6);               // fade out as it grows
-    return u.data[3] * envelope * wave * fade;  // rippleAmp
-}
-
-// Water height displacement over UV.
-float waterHeight(vec2 uv) {
-    float t = u.data[0];
-    float ws = u.data[8];
-    vec2 edgeDist = min(uv, vec2(1.0) - uv);
-    float edgeFactor = 1.0 - clamp(min(edgeDist.x, edgeDist.y) / max(u.data[4], 1e-4), 0.0, 1.0);
-    float w = 0.0;
-    // Shore-edge waves, strongest at the border and fading inward.
-    w += edgeFactor * u.data[2] * (sin((uv.x * ws + t * u.data[1]) * PI * 2.0) +
-                                   0.5 * sin((uv.y * ws * 0.7 - t * u.data[1] * 1.3) * PI * 2.0));
-    // Fine detail everywhere.
-    w += u.data[2] * 0.10 * sin((uv.x * 31.0 + uv.y * 17.0 + t * u.data[1] * 2.0) * PI * 2.0);
-    // Occasional middle drop ripples.
-    int n = int(u.data[6] + 0.5);
-    for (int i = 0; i < 8; ++i) {
-        if (i >= n) break;
-        w += rippleRing(uv, i);
-    }
-    return w;
-}
-
-void main() {
-    // Surface normal from the analytic displacement (finite differences).
-    float eps = 1e-3;
-    float hL = waterHeight(vUV - vec2(eps, 0.0));
-    float hR = waterHeight(vUV + vec2(eps, 0.0));
-    float hD = waterHeight(vUV - vec2(0.0, eps));
-    float hU = waterHeight(vUV + vec2(0.0, eps));
-    vec2 grad = vec2((hR - hL) / (2.0 * eps), (hU - hD) / (2.0 * eps));
-    vec3 N = normalize(vec3(-grad.x, 1.0, -grad.y));
-
-    vec3 V = normalize(ubo.cameraPos.xyz - vWorldPos);
-    vec3 R = reflect(-V, N);
-
-    // Microfacet sky reflection; wave slope drives surface roughness.
-    float ndv = max(dot(V, N), 0.0);
-    float roughness = clamp(0.08 + length(grad) * 0.06, 0.04, 0.35);
-    float maxLod = float(max(textureQueryLevels(env) - 1, 0));
-    float specMaxLod = maxLod >= 2.0 ? maxLod - 1.0 : maxLod;
-    float lod = roughness * specMaxLod;
-    float probeWeight0 = probeWeight(0, vWorldPos);
-    float probeWeight1 = probeWeight(1, vWorldPos);
-    float probeWeightSum = probeWeight0 + probeWeight1;
-    if (probeWeightSum > 1.0) {
-        probeWeight0 /= probeWeightSum;
-        probeWeight1 /= probeWeightSum;
-        probeWeightSum = 1.0;
-    }
-    vec3 refl = textureLod(env, R, lod).rgb * ubo.lightColor.w * (1.0 - probeWeightSum);
-    if (probeWeight0 > 0.0) {
-        float probeLod = float(max(textureQueryLevels(reflectionProbe0) - 1, 0));
-        refl += textureLod(reflectionProbe0, probeDirection(0, R, vWorldPos),
-                           roughness * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[0].w * probeWeight0;
-    }
-    if (probeWeight1 > 0.0) {
-        float probeLod = float(max(textureQueryLevels(reflectionProbe1) - 1, 0));
-        refl += textureLod(reflectionProbe1, probeDirection(1, R, vWorldPos),
-                           roughness * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[1].w * probeWeight1;
-    }
-    refl *= vec3(u.data[12], u.data[13], u.data[14]);
-    float fresnel = 0.02 + 0.98 * pow(1.0 - ndv, 5.0);
-    vec4 brdf = roughness * vec4(-1.0, -0.0275, -0.572, 0.022) +
-                vec4(1.0, 0.0425, 1.04, -0.04);
-    float a004 = min(brdf.x * brdf.x, exp2(-9.28 * ndv)) * brdf.x + brdf.y;
-    vec2 dfg = vec2(-1.04, 1.04) * a004 + brdf.zw;
-    float envWeight = max(0.02 * dfg.x + dfg.y, 0.0);
-
-    vec3 waterCol = vec3(u.data[9], u.data[10], u.data[11]);
-    float reflectAmt = clamp(max(fresnel, envWeight) * u.data[5], 0.0, 1.0);
-    vec3 color = mix(waterCol, refl, reflectAmt);
-
-    // GGX sun glint, sharing the same wave-driven roughness as environment IBL.
-    vec3 L = normalize(ubo.lightDirIntensity.xyz);
-    vec3 H = normalize(V + L);
-    float NoL = max(dot(N, L), 0.0);
-    float NoH = max(dot(N, H), 0.0);
-    float VoH = max(dot(V, H), 0.0);
-    float alpha = max(roughness * roughness, 0.002);
-    float alpha2 = alpha * alpha;
-    float denom = NoH * NoH * (alpha2 - 1.0) + 1.0;
-    float D = alpha2 / max(3.14159265 * denom * denom, 1e-4);
-    float k = (roughness + 1.0) * (roughness + 1.0) * 0.125;
-    float Gv = ndv / max(ndv * (1.0 - k) + k, 1e-4);
-    float Gl = NoL / max(NoL * (1.0 - k) + k, 1e-4);
-    float Fsun = 0.02 + 0.98 * pow(1.0 - VoH, 5.0);
-    float spec = D * Gv * Gl * Fsun / max(4.0 * ndv * max(NoL, 0.001), 1e-3);
-    color += ubo.lightColor.rgb * spec * NoL * u.data[15];
-
-    // Soft foam where waves meet the edge.
-    vec2 edgeDist = min(vUV, vec2(1.0) - vUV);
-    float edgeFactor = 1.0 - clamp(min(edgeDist.x, edgeDist.y) / max(u.data[4], 1e-4), 0.0, 1.0);
-    color = mix(color, vec3(0.85, 0.93, 1.0), edgeFactor * 0.22);
-    // Optional screen-space reflection overlay (bound via the height slot,
-    // binding 6). Sample the SSR pass result at this fragment's screen UV and
-    // blend it over the env reflection where SSR found a hit (ssr.a > 0).
-    if (u.data[18] > 0.5 && u.data[16] > 1.0 && u.data[17] > 1.0) {
-        vec2 sUV = vec2(gl_FragCoord.x / u.data[16], gl_FragCoord.y / u.data[17]);
-        vec4 ssr = texture(ssrTex, sUV);
-        float ssrWeight = clamp(ssr.a * u.data[19], 0.0, 1.0);
-        color = ssr.rgb * u.data[19] + color * (1.0 - ssrWeight);
-    }
-
-    outColor = vec4(color, 1.0);
+layout(location=0) in vec3 vNormal; layout(location=1) in vec2 vUV; layout(location=2) in vec4 vTint;
+layout(location=3) in vec3 vWorldPos; layout(location=4) in vec3 vCameraPos; layout(location=5) in vec3 vViewPos;
+struct Light3D{vec4 posRadius;vec4 color;};
+layout(set=0,binding=0,std140) uniform Frame{mat4 mvp;mat4 model;vec4 lightDirIntensity;vec4 lightColor;vec4 tint;vec4 cameraPos;vec4 ambient;Light3D lights[8];vec4 texBomb;vec4 parallax;mat4 view;vec4 clipInfo;vec4 cloud;vec4 cloudWind;vec4 bindlessEnv;vec4 envProbeCenter;vec4 envProbeExtent;vec4 skinInfo;vec4 reflectionProbeCenter[2];vec4 reflectionProbeExtent[2];}ubo;
+layout(set=0,binding=1)uniform sampler2D sceneColorTex; layout(set=0,binding=3)uniform samplerCube env;
+layout(set=0,binding=6)uniform sampler2D ssrTex; layout(set=0,binding=7)uniform sampler2D sceneDepthTex;
+layout(set=0,binding=16)uniform samplerCube reflectionProbe0; layout(set=0,binding=17)uniform samplerCube reflectionProbe1;
+layout(push_constant)uniform Externals{float data[32];}u; layout(location=0)out vec4 outColor;
+const float PI=3.14159265;
+float hash(float n){return fract(sin(n)*43758.5453123);} vec2 hash2(int i){return vec2(hash(float(i)*7.31),hash(float(i)*13.17+1.0));}
+float shapedWave(float phase){float w=sin(phase);return sign(w)*pow(abs(w),max(u.data[31],0.1));}
+float rippleRing(vec2 uv,int i){float period=max(u.data[6],0.05);float age=mod(u.data[0],period)-hash(float(i)*3.7)*period;if(age<0.0||age>period*0.8)return 0.0;vec2 center=mix(vec2(0.5),hash2(i),0.72);float x=(length(uv-center)-age*0.22)/0.10;return u.data[4]*exp(-(x*x)*0.9)*cos(x*2.0*PI)*exp(-age*1.6);}
+float waterHeight(vec2 uv){float s=u.data[3],t=u.data[0]*u.data[1];vec2 q=uv+vec2(sin(uv.y*s*.31+t*.37),sin(uv.x*s*.27-t*.29))*.018;float p0=dot(q,vec2(1,.23))*s*2.0*PI+t*2.0*PI;float p1=dot(q,vec2(-.48,.88))*s*.73*2.0*PI-t*1.17*2.0*PI;float p2=dot(q,vec2(.37,.93))*s*1.31*2.0*PI+t*.61*2.0*PI;float h=u.data[2]*(shapedWave(p0)*.42+shapedWave(p1)*.34+shapedWave(p2)*.24);int count=int(u.data[5]+.5);for(int i=0;i<8;++i){if(i>=count)break;h+=rippleRing(q,i);}return h;}
+float caustics(vec2 p){float s=max(u.data[30],.01);p*=s;float t=u.data[0]*u.data[1];float a=sin(p.x*1.37+p.y*.73+t*1.2);float b=sin(p.x*-.62+p.y*1.51-t*.93);float c=sin((p.x+p.y)*1.11+t*.57);float ridge=1.0-abs((a+b+c)/3.0);return pow(clamp(ridge,0,1),5.0);}
+float foamCells(vec2 p){vec2 cell=floor(p),f=fract(p);float first=10.0,second=10.0;for(int y=-1;y<=1;++y)for(int x=-1;x<=1;++x){vec2 g=vec2(x,y),point=hash2(int(cell.x+g.x)*131+int(cell.y+g.y)*197);float d=length(g+point-f);if(d<first){second=first;first=d;}else if(d<second)second=d;}return 1.0-smoothstep(.025,.18,second-first);}
+float flowNoise(vec2 p){float t=u.data[0]*u.data[1];float a=sin(p.x*1.31+p.y*.73+t*1.17);float b=sin(p.x*-.67+p.y*1.57-t*.83);return .5+.25*(a+b);}
+float crestLines(vec2 p){float t=u.data[0]*u.data[1],s=max(u.data[3],.01)*.43;float phaseA=dot(p,vec2(.96,.28))*s+sin(p.y*.72-t*.31)*1.35+t*1.35;float phaseB=dot(p,vec2(-.38,.92))*s*.67+sin(p.x*.58+t*.27)*1.15-t*.82;float a=smoothstep(.91,.985,sin(phaseA));float b=smoothstep(.935,.992,sin(phaseB));float broken=smoothstep(.52,.70,flowNoise(p*.66+4.7));return max(a*.58,b*.38)*broken;}
+float probeWeight(int i,vec3 p){vec3 edge=ubo.reflectionProbeExtent[i].xyz-abs(p-ubo.reflectionProbeCenter[i].xyz);float inside=min(edge.x,min(edge.y,edge.z));if(inside<=0.0||ubo.reflectionProbeCenter[i].w<=0.0)return 0.0;return clamp(inside/max(ubo.reflectionProbeExtent[i].w,1e-4),0.0,1.0);}
+vec3 probeDirection(int i,vec3 d,vec3 p){vec3 c=ubo.reflectionProbeCenter[i].xyz,e=ubo.reflectionProbeExtent[i].xyz;vec3 sd=mix(vec3(1e-5),d,greaterThan(abs(d),vec3(1e-5)));vec3 t=max((c-e-p)/sd,(c+e-p)/sd);float exitDistance=min(t.x,min(t.y,t.z));return exitDistance>0.0?normalize(p+d*exitDistance-c):normalize(d);}
+void main(){
+ float eps=1e-3;vec2 grad=vec2(waterHeight(vUV+vec2(eps,0))-waterHeight(vUV-vec2(eps,0)),waterHeight(vUV+vec2(0,eps))-waterHeight(vUV-vec2(0,eps)))/(2.0*eps);float ft=u.data[0]*u.data[1];vec2 normalLayerA=vec2(sin(vWorldPos.x*1.7+vWorldPos.z*.8+ft),cos(vWorldPos.z*1.5-vWorldPos.x*.6-ft*.83));vec2 normalLayerB=vec2(cos(vWorldPos.x*3.1-vWorldPos.z*1.2-ft*1.31),sin(vWorldPos.z*2.7+vWorldPos.x*.9+ft*.57));vec2 layeredNormal=grad*.11+normalLayerA*.055+normalLayerB*.025;vec3 N=normalize(vNormal+vec3(-layeredNormal.x,0,-layeredNormal.y));vec3 V=normalize(ubo.cameraPos.xyz-vWorldPos),R=reflect(-V,N);float ndv=max(dot(V,N),0.0);
+ ivec2 ds=textureSize(sceneColorTex,0);vec2 suv=gl_FragCoord.xy/max(vec2(ds),vec2(1));float nearZ=max(ubo.clipInfo.x,1e-4),farZ=max(ubo.clipInfo.y,nearZ+1e-3);float surface=clamp((-vViewPos.z-nearZ)/(farZ-nearZ),0,1);bool hasDepth=u.data[29]>=0.0;float opacity=hasDepth?u.data[29]:-u.data[29]-1.0;vec4 sceneSample=texture(sceneColorTex,suv);float scene=hasDepth?texture(sceneDepthTex,suv).r:surface+1.0;if(sceneSample.a>surface+1e-5&&sceneSample.a<.9999)scene=sceneSample.a;float depth=max((scene-surface)*(farZ-nearZ),0.0);float shallow=1.0-smoothstep(0.0,max(u.data[16],1e-4),depth);vec3 deepColor=vec3(u.data[10],u.data[11],u.data[12]),shallowColor=vec3(u.data[13],u.data[14],u.data[15]);vec3 water=mix(deepColor,shallowColor,shallow);
+ vec2 flow=vec2(flowNoise(vWorldPos.xz*1.8),flowNoise(vWorldPos.zx*2.3+17.0))-.5;vec2 ruv=clamp(suv+(layeredNormal*.75+flow*.35)*u.data[28]*(0.25+shallow*.75),vec2(.001),vec2(.999));vec3 behind=texture(sceneColorTex,ruv).rgb;float absorption=hasDepth?1-exp(-depth/max(u.data[16],.001)*3.2):1.0;float waterAlpha=clamp(opacity*mix(.35,1.0,absorption),0,1);vec3 color=water;float causticMask=hasDepth?smoothstep(0.02,max(u.data[16],.03),depth)*shallow:0.0;color+=shallowColor*caustics(vWorldPos.xz)*causticMask*u.data[26];
+ float rough=clamp(.08+length(layeredNormal)*.35,.05,.34),lod=rough*float(max(textureQueryLevels(env)-2,0));float w0=probeWeight(0,vWorldPos),w1=probeWeight(1,vWorldPos),sum=w0+w1;if(sum>1){w0/=sum;w1/=sum;sum=1;}vec3 refl=textureLod(env,R,lod).rgb*ubo.lightColor.w*(1-sum);if(w0>0)refl+=textureLod(reflectionProbe0,probeDirection(0,R,vWorldPos),rough*4).rgb*ubo.reflectionProbeCenter[0].w*w0;if(w1>0)refl+=textureLod(reflectionProbe1,probeDirection(1,R,vWorldPos),rough*4).rgb*ubo.reflectionProbeCenter[1].w*w1;refl*=vec3(u.data[21],u.data[22],u.data[23]);float fresnel=pow(1-ndv,max(u.data[25],.01));waterAlpha=max(waterAlpha,opacity*mix(.35,1.0,fresnel));float reflectionWeight=clamp((.08+.92*fresnel)*u.data[20],0,.78);color=mix(color,refl,reflectionWeight);
+ vec3 L=normalize(ubo.lightDirIntensity.xyz);float glint=pow(max(dot(N,normalize(V+L)),0),mix(24,160,1-rough));color+=ubo.lightColor.rgb*glint*max(dot(N,L),0)*u.data[24];
+ vec2 foamUv=vWorldPos.xz*.80;float cells=foamCells(foamUv+vec2(u.data[0]*.08,-u.data[0]*.05));float cells2=foamCells(foamUv*.61+vec2(-u.data[0]*.04,u.data[0]*.06));float curvedLines=smoothstep(.72,.96,max(cells,cells2*.72));float crest=smoothstep(u.data[2]*.34,u.data[2]*.80,waterHeight(vUV));vec3 surfaceTint=mix(shallowColor,vec3(u.data[17],u.data[18],u.data[19]),.28);float surfacePattern=curvedLines*(.07+crest*.11)*u.data[9];color=mix(color,surfaceTint,surfacePattern);waterAlpha=max(waterAlpha,surfacePattern*.42);float normalizedDepth=clamp(depth/max(u.data[7],1e-4),0,1);float edge=1-smoothstep(max(u.data[7]-u.data[8],0),u.data[7]+u.data[8],depth);float bandCoord=normalizedDepth*3.4+flowNoise(foamUv*2.1)*.34;float shoreBands=(1-smoothstep(.035,.12,abs(fract(bandCoord)-.5)))*(1-normalizedDepth);float shoreFoam=max(edge*(.52+.48*cells),shoreBands*.82)*u.data[9];color=mix(color,vec3(u.data[17],u.data[18],u.data[19]),clamp(shoreFoam,0,1));waterAlpha=max(waterAlpha,clamp(shoreFoam,0,1));
+ if(u.data[27]>0.0){vec4 externalReflection=texture(ssrTex,suv);float externalWeight=clamp(externalReflection.a*u.data[27],0,1);color=mix(color,externalReflection.rgb,externalWeight);waterAlpha=max(waterAlpha,externalWeight);}waterAlpha=max(waterAlpha,reflectionWeight*.72);float transmission=(1.0-waterAlpha)*.38;color=mix(color,behind,transmission);outColor=vec4(color*vTint.rgb,waterAlpha);
 }

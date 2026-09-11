@@ -1010,8 +1010,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        # The package set includes FFmpeg and Pillow dependencies; GitHub's
-        # Ubuntu mirror can remain healthy but take more than ten minutes.
+        # apt update may consume most of ten minutes while retrying a slow
+        # Ubuntu mirror; keep enough time for the package download itself.
         timeout-minutes: 20
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
@@ -1291,7 +1291,9 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # apt update may consume most of ten minutes while retrying a slow
+        # Ubuntu mirror; keep enough time for the package download itself.
+        timeout-minutes: 20
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true

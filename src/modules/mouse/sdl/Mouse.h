@@ -36,10 +36,13 @@ public:
     bool   isGrabbed() const override;
     bool   setRelativeMode(bool relative) override;
     bool   getRelativeMode() const override;
+    double getMovementX() override;
+    double getMovementY() const override;
 
 private:
     eve::mouse::Cursor *            curCursor;
     std::map<std::string, Cursor *> systemCursors;
+    int                             lastRelY = 0;
 };  // Mouse
 
 }  // namespace eve::mouse::sdl
