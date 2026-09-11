@@ -1,4 +1,5 @@
 #include "cmdline/sdk_tools.h"
+#include "cmdline/Sha256.h"
 
 #include "common/config.h"
 
@@ -9,7 +10,6 @@
 #include <limits>
 #include <sstream>
 
-#include <Poco/SHA2Engine.h>
 #include <zlib.h>
 
 #if defined(_WIN32)
@@ -271,14 +271,14 @@ std::string eveSdkBaseUrl() {
 std::string fileSha256(const std::string& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) return "";
-    Poco::SHA2Engine digest(Poco::SHA2Engine::SHA_256);
-    char             buffer[16384];
+    detail::Sha256 digest;
+    char           buffer[16384];
     while (in) {
         in.read(buffer, sizeof(buffer));
         if (in.gcount() > 0) digest.update(buffer, static_cast<std::size_t>(in.gcount()));
     }
     if (in.bad()) return "";
-    return Poco::DigestEngine::digestToHex(digest.digest());
+    return digest.finish();
 }
 
 namespace {
