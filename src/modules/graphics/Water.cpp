@@ -1,12 +1,14 @@
 #include "graphics/Water.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/GBuffer.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/shaders/WaterWgsl.h"
 #include "graphics/shaders/water_frag_spv.inc"
+#include "graphics/shaders/water_vert_spv.inc"
 
 #include <cmath>
 #include <string>
@@ -17,16 +19,20 @@ namespace eve::graphics {
 namespace {
 
 // Push-constant layout (data[32]):
-//   0 time, 1 waveSpeed, 2 waveAmp, 3 rippleAmp, 4 edgeFalloff,
-//   5 reflIntensity, 6 rippleCount, 7 rippleInterval, 8 waveScale,
-//   9..11 waterColor, 12..14 reflTint, 15 sunIntensity,
-//   16 viewportW, 17 viewportH, 18 ssrEnabled, 19 ssrStrength.
+//   0 time, 1 waveSpeed, 2 waveAmp, 3 waveScale, 4 rippleAmp,
+//   5 rippleCount, 6 rippleInterval, 7 foamWidth, 8 foamSoftness,
+//   9 foamStrength, 10..12 deepColor, 13..15 shallowColor,
+//   16 depthDistance, 17..19 foamColor, 20 reflectionIntensity,
+//   21..23 reflectionTint, 24 sunIntensity, 25 fresnelPower,
+//   26 causticsStrength, 27 signedSsrStrength, 28 refractionStrength,
+//   29 signedOpacityAndDepthAvailability, 30 causticsScale, 31 waveSharpness.
 
 const char *kUniformNames[] = {
-    "time",      "waveSpeed", "waveAmp",  "rippleAmp",   "edgeFalloff",
-    "reflInten", "rippleCnt", "rippleInt", "waveScale",   "waterCol",
-    "reflTint",  "sunInten",  "viewportW", "viewportH",   "ssrEnabled",
-    "ssrStrength",
+    "time",       "waveSpeed", "waveAmp",   "waveScale",   "rippleAmp",
+    "rippleCnt",  "rippleInt", "foamWidth", "foamSoftness", "foamStrength",
+    "deepColor",  "shallowColor", "depthDistance", "foamColor", "reflInten",
+    "reflTint",   "sunInten", "fresnelPower", "causticsStrength", "ssrStrength",
+    "refractionStrength", "opacityAndDepth", "causticsScale", "waveSharpness",
 };
 const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 
@@ -37,15 +43,17 @@ Shader *newWaterShader(Graphics *gfx) {
     // on platforms without a runtime compiler (e.g. Windows).
     Shader *sh = nullptr;
     if (gfx->getBackendName() == "webgpu") {
-        sh = gfx->newMeshShaderFromWgsl({}, shaders::kWaterFragWgsl);
+        sh = gfx->newMeshShaderFromWgsl(shaders::kWaterVertWgsl, shaders::kWaterFragWgsl);
     } else {
+        std::vector<uint32_t> vert(water_vert_spv, water_vert_spv + water_vert_spv_count);
         std::vector<uint32_t> frag(water_frag_spv, water_frag_spv + water_frag_spv_count);
-        sh = gfx->newMeshShaderFromSpv({}, frag);
+        sh = gfx->newMeshShaderFromSpv(vert, frag);
     }
+    gfx->configureMeshShaderSurface(*sh, BlendMode::Alpha, false, false)
+        .expect("water requires alpha blending with depth writes disabled");
     for (int i = 0; i < kUniformCount; ++i) {
-        if (std::string(kUniformNames[i]) == "waterCol")
-            sh->declareVec3(kUniformNames[i]);
-        else if (std::string(kUniformNames[i]) == "reflTint")
+        const std::string name(kUniformNames[i]);
+        if (name == "deepColor" || name == "shallowColor" || name == "foamColor" || name == "reflTint")
             sh->declareVec3(kUniformNames[i]);
         else
             sh->declareFloat(kUniformNames[i]);
@@ -118,28 +126,24 @@ void Water::setTime(float seconds) {
     bindParams();
 }
 
-void Water::setWaveSpeed(float v) { waveSpeed_ = v; }
-void Water::setWaveAmplitude(float v) { waveAmplitude_ = v; }
-void Water::setRippleAmplitude(float v) { rippleAmplitude_ = v; }
-void Water::setEdgeFalloff(float v) { edgeFalloff_ = std::max(0.001f, v); }
-void Water::setRippleCount(int v) { rippleCount_ = std::max(0, v); }
-void Water::setRippleInterval(float v) { rippleInterval_ = std::max(0.05f, v); }
-void Water::setWaveScale(float v) { waveScale_ = std::max(0.1f, v); }
+void Water::setWaveSpeed(float v) { config_.waveSpeed = std::clamp(v, -20.0F, 20.0F); }
+void Water::setWaveAmplitude(float v) { config_.waveAmplitude = std::clamp(v, 0.0F, 4.0F); }
+void Water::setRippleAmplitude(float v) { config_.rippleAmplitude = std::clamp(v, 0.0F, 4.0F); }
+void Water::setEdgeFalloff(float v) { config_.foamWidth = std::clamp(v, 0.001F, 1000.0F); }
+void Water::setRippleCount(int v) { config_.rippleCount = std::clamp(v, 0, 8); }
+void Water::setRippleInterval(float v) { config_.rippleInterval = std::clamp(v, 0.05F, 60.0F); }
+void Water::setWaveScale(float v) { config_.waveScale = std::clamp(v, 0.01F, 256.0F); }
 void Water::setWaterColor(float r, float g, float b) {
-    waterColor_[0] = r;
-    waterColor_[1] = g;
-    waterColor_[2] = b;
+    config_.deepColor = glm::max(glm::vec3(r, g, b), glm::vec3(0.0F));
 }
 void Water::setReflectionTint(float r, float g, float b) {
-    reflectionTint_[0] = r;
-    reflectionTint_[1] = g;
-    reflectionTint_[2] = b;
+    config_.reflectionTint = glm::max(glm::vec3(r, g, b), glm::vec3(0.0F));
 }
-void Water::setReflectionIntensity(float v) { reflectionIntensity_ = std::max(0.f, v); }
-void Water::setSunIntensity(float v) { sunIntensity_ = std::max(0.f, v); }
+void Water::setReflectionIntensity(float v) { config_.reflectionIntensity = std::clamp(v, 0.0F, 4.0F); }
+void Water::setSunIntensity(float v) { config_.sunIntensity = std::clamp(v, 0.0F, 8.0F); }
 void Water::setScreenSpaceReflection(bool enabled, float strength) {
-    ssrEnabled_ = enabled;
-    ssrStrength_ = std::max(0.f, strength);
+    config_.screenSpaceReflection = enabled;
+    config_.screenSpaceReflectionStrength = std::clamp(strength, 0.0F, 4.0F);
 }
 void Water::setViewport(float w, float h) {
     viewportW_ = std::max(0.f, w);
@@ -149,43 +153,70 @@ void Water::setViewport(float w, float h) {
 void Water::bindParams() {
     if (!shader_) return;
     shader_->sendFloat("time", time_);
-    shader_->sendFloat("waveSpeed", waveSpeed_);
-    shader_->sendFloat("waveAmp", waveAmplitude_);
-    shader_->sendFloat("rippleAmp", rippleAmplitude_);
-    shader_->sendFloat("edgeFalloff", edgeFalloff_);
-    shader_->sendFloat("reflInten", reflectionIntensity_);
-    shader_->sendFloat("rippleCnt", float(rippleCount_));
-    shader_->sendFloat("rippleInt", rippleInterval_);
-    shader_->sendFloat("waveScale", waveScale_);
-    shader_->sendVec3("waterCol", waterColor_[0], waterColor_[1], waterColor_[2]);
-    shader_->sendVec3("reflTint", reflectionTint_[0], reflectionTint_[1], reflectionTint_[2]);
-    shader_->sendFloat("sunInten", sunIntensity_);
-    shader_->sendFloat("viewportW", viewportW_);
-    shader_->sendFloat("viewportH", viewportH_);
-    shader_->sendFloat("ssrEnabled", ssrEnabled_ ? 1.f : 0.f);
-    shader_->sendFloat("ssrStrength", ssrStrength_);
+    shader_->sendFloat("waveSpeed", config_.waveSpeed);
+    shader_->sendFloat("waveAmp", config_.waveAmplitude);
+    shader_->sendFloat("waveScale", config_.waveScale);
+    shader_->sendFloat("rippleAmp", config_.rippleAmplitude);
+    shader_->sendFloat("rippleCnt", float(config_.rippleCount));
+    shader_->sendFloat("rippleInt", config_.rippleInterval);
+    shader_->sendFloat("foamWidth", config_.foamWidth);
+    shader_->sendFloat("foamSoftness", config_.foamSoftness);
+    shader_->sendFloat("foamStrength", config_.foamStrength);
+    shader_->sendVec3("deepColor", config_.deepColor.x, config_.deepColor.y, config_.deepColor.z);
+    shader_->sendVec3("shallowColor", config_.shallowColor.x, config_.shallowColor.y, config_.shallowColor.z);
+    shader_->sendFloat("depthDistance", config_.depthDistance);
+    shader_->sendVec3("foamColor", config_.foamColor.x, config_.foamColor.y, config_.foamColor.z);
+    shader_->sendFloat("reflInten", config_.reflectionIntensity);
+    shader_->sendVec3("reflTint", config_.reflectionTint.x, config_.reflectionTint.y, config_.reflectionTint.z);
+    shader_->sendFloat("sunInten", config_.sunIntensity);
+    shader_->sendFloat("fresnelPower", config_.fresnelPower);
+    shader_->sendFloat("causticsStrength", config_.causticsStrength);
+    shader_->sendFloat("ssrStrength", config_.screenSpaceReflection ? config_.screenSpaceReflectionStrength : -1.0F);
+    shader_->sendFloat("refractionStrength", config_.refractionStrength);
+    shader_->sendFloat("opacityAndDepth", -(config_.opacity + 1.0F));
+    shader_->sendFloat("causticsScale", config_.causticsScale);
+    shader_->sendFloat("waveSharpness", config_.waveSharpness);
 }
 
-void Water::draw() {
+Result<void> Water::applyConfigJson(const std::string& json) {
+    auto candidate = WaterStyleConfig::fromJson(json);
+    if (!candidate) return Result<void>::failure(candidate.status());
+    config_ = std::move(candidate).takeValue();
+    bindParams();
+    return Result<void>::success();
+}
+
+Result<std::string> Water::configJson() const { return config_.toJson(); }
+
+void Water::draw() { drawWithReflection(nullptr, 0.0F); }
+
+void Water::drawWithPlanarReflection(Texture* planarReflection, float strength) {
+    drawWithReflection(planarReflection, std::clamp(strength, 0.0F, 4.0F));
+}
+
+void Water::drawWithReflection(Texture* requestedReflection, float requestedStrength) {
     if (!gfx_ || !mesh_ || !shader_) return;
     bindParams();
-    const int drawableW = gfx_->getPixelWidth() > 0 ? gfx_->getPixelWidth() : gfx_->getWidth();
-    const int drawableH = gfx_->getPixelHeight() > 0 ? gfx_->getPixelHeight() : gfx_->getHeight();
-    const float viewportW = viewportW_ > 0.f ? viewportW_ : float(drawableW);
-    const float viewportH = viewportH_ > 0.f ? viewportH_ : float(drawableH);
-    shader_->sendFloat("viewportW", std::max(viewportW, 1.f));
-    shader_->sendFloat("viewportH", std::max(viewportH, 1.f));
-
-    Texture *reflection = nullptr;
+    Texture *reflection = requestedReflection;
+    float reflectionStrength = requestedReflection ? requestedStrength : -1.0F;
     RenderControl *rc = gfx_->getRenderControl();
-    if (ssrEnabled_ && rc && rc->isEnabled("ssr")) {
+    if (!reflection && config_.screenSpaceReflection && rc && rc->isEnabled("ssr")) {
         ScreenSpaceReflection *ssr = gfx_->pipelineScreenSpaceReflection();
-        if (ssr->hasValidHistory()) reflection = ssr->getReflectionTexture();
+        if (ssr->hasValidHistory()) {
+            reflection = ssr->getReflectionTexture();
+            reflectionStrength = config_.screenSpaceReflectionStrength;
+        }
     }
-    shader_->sendFloat("ssrEnabled", reflection ? 1.f : 0.f);
+    shader_->sendFloat("ssrStrength", reflection ? reflectionStrength : -1.0F);
+    Texture *depth = rc && rc->getGBuffer() ? rc->getGBuffer()->getDepthTexture() : nullptr;
+    Texture *sceneColor = gfx_->getSceneColorTexture();
+    shader_->sendFloat("opacityAndDepth", depth ? config_.opacity : -(config_.opacity + 1.0F));
+    shader_->sendFloat("refractionStrength", sceneColor ? config_.refractionStrength : 0.0F);
     gfx_->setMesh3DHeightTexture(reflection);
-    gfx_->drawMeshShader(mesh_, glm::mat4(1.f), nullptr, glm::vec4(1.f), shader_);
+    gfx_->setMesh3DSceneDepth(depth);
+    gfx_->drawMeshShader(mesh_, glm::mat4(1.f), sceneColor, glm::vec4(1.f), shader_);
     gfx_->setMesh3DHeightTexture(nullptr);
+    gfx_->setMesh3DSceneDepth(nullptr);
 }
 
 void Water::drawReflectionCapture() {
@@ -193,12 +224,14 @@ void Water::drawReflectionCapture() {
     bindParams();
     // Probe captures must never sample the main-view SSR history: that creates
     // view-dependent feedback and recursively bakes an old reflection into the cube.
-    shader_->sendFloat("ssrEnabled", 0.f);
+    shader_->sendFloat("ssrStrength", -1.0F);
+    shader_->sendFloat("opacityAndDepth", -(config_.opacity + 1.0F));
+    shader_->sendFloat("refractionStrength", 0.0F);
     gfx_->setMesh3DHeightTexture(nullptr);
     gfx_->drawMeshShader(mesh_, glm::mat4(1.f), nullptr, glm::vec4(1.f), shader_);
     // Restore the authored state for a subsequent main-view draw in the same frame.
-    shader_->sendFloat("ssrEnabled", ssrEnabled_ ? 1.f : 0.f);
-    shader_->sendFloat("ssrStrength", ssrStrength_);
+    shader_->sendFloat("ssrStrength", config_.screenSpaceReflection ? config_.screenSpaceReflectionStrength : -1.0F);
+    shader_->sendFloat("refractionStrength", config_.refractionStrength);
 }
 
 }  // namespace eve::graphics

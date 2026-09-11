@@ -325,7 +325,9 @@ public:
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
     Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
-                                  const std::string &fragWgsl) override;
+                                   const std::string &fragWgsl) override;
+    eve::Result<void> configureMeshShaderSurface(Shader& shader, BlendMode blend,
+                                                  bool depthWrite, bool doubleSided) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;

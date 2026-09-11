@@ -5768,7 +5768,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
                                            WGPUTextureFormat format, const std::string &vert,
                                            const std::string &frag, bool depth, bool blend,
                                            bool mesh3d, bool hair, bool shadow, bool gbuffer,
-                                           uint32_t sampleCount) {
+                                           uint32_t sampleCount, bool depthWrite = true) {
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_custom_shader");
     pd.layout = layout.Get();
@@ -5857,7 +5857,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
     if (depth && !shadow) {
         static WGPUDepthStencilState ds{};
         ds.format = WGPUTextureFormat_Depth32Float;
-        ds.depthWriteEnabled = WGPUOptionalBool_True;
+        ds.depthWriteEnabled = depthWrite ? WGPUOptionalBool_True : WGPUOptionalBool_False;
         ds.depthCompare = WGPUCompareFunction_Less;
         pd.depthStencil = &ds;
     }
@@ -5956,6 +5956,24 @@ Shader *Graphics::newMeshShaderFromWgsl(const std::string &vertWgsl, const std::
     ownedShaders.push_back(std::move(sh));
     ownedGpuShaders.push_back(std::move(gpu));
     return raw;
+}
+
+eve::Result<void> Graphics::configureMeshShaderSurface(Shader& shader, BlendMode blend,
+                                                        bool depthWrite, bool doubleSided) {
+    auto found = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
+                              [&](const auto& gpu) { return gpu.get() == shader.gpuHandle; });
+    if (found == ownedGpuShaders.end() || !(*found)->isMesh3D)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Expected an owned WebGPU mesh shader"));
+    auto& gpu = **found;
+    const bool alphaBlend = blend == BlendMode::Alpha;
+    gpu.mesh3dPipeline = buildPipelineFromWgsl(
+        device, mesh3dPipelineLayout, sceneColorFormat, gpu.wgslVert, gpu.wgslFrag,
+        true, alphaBlend, true, doubleSided, false, false, sceneColorSamples, depthWrite);
+    shader.meshBlend = blend;
+    shader.meshDepthWrite = depthWrite;
+    shader.meshDoubleSided = doubleSided;
+    return eve::Result<void>::success();
 }
 
 Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) {

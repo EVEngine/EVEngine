@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editing/EditingProtocol.h"
+#include "scene/editor/ScenePhysicsPlacement.h"
 
 #include <memory>
 #include <string>
@@ -43,6 +44,61 @@ public:
     [[nodiscard]] editing::Result<editing::TransactionReceipt> restoreJson(const std::string& json);
     /** @brief Return the current monotonic target revision. */
     [[nodiscard]] editing::Revision revision() const;
+    /**
+     * @brief Cache backend-neutral local-space mesh points for later automatic convex placement.
+     * @param
+     * object Stable scene object identity; the session owns a copy of the points.
+     * @param vertices At least four
+     * packed finite XYZ points.
+     * @param maxVertices Convex hull simplification budget in [4, 254].
+     * @return
+     * Applied, or Rejected without changing the previous cached entry.
+     */
+    [[nodiscard]] editing::Result<void> cachePhysicsPlacementHull(const editing::ObjectId& object,
+                                                                  std::vector<float> vertices, int maxVertices = 64);
+    /**
+     * @brief Replace one object's generated compound collider cache entry.
+     * @param object Stable scene
+     * object identity.
+     * @param resourceKey Host-owned immutable mesh/content revision used for stale detection.
+
+     * * @param colliders One or more generated local-space convex or primitive parts; copied by the session.
+     */
+    [[nodiscard]] editing::Result<void> cachePhysicsPlacementCompound(const editing::ObjectId&              object,
+                                                                      std::string                           resourceKey,
+                                                                      std::vector<PhysicsPlacementCollider> colliders);
+    /** @brief Remove one cached automatic placement hull; missing entries return NoOp. */
+    [[nodiscard]] editing::Result<void> removePhysicsPlacementHull(const editing::ObjectId& object);
+    /** @brief Encode schema-2 generated collider cache; host owns file I/O and the returned string. */
+    [[nodiscard]] std::string savePhysicsPlacementColliderCacheJson() const;
+    /** @brief Atomically replace generated collider cache from schema-2 JSON. */
+    [[nodiscard]] editing::Result<void> restorePhysicsPlacementColliderCacheJson(const std::string& json);
+    /** @brief Begin an isolated Box3D placement preview using current scene transforms. */
+    [[nodiscard]] editing::Result<void> beginPhysicsPlacement(PhysicsPlacementRequest request);
+    /** @brief Move the preview handle and advance one fixed simulation step. */
+    [[nodiscard]] editing::Result<PhysicsPlacementFrame> updatePhysicsPlacement(double x, double y, double z,
+                                                                                double fixedDelta = 1.0 / 60.0);
+    /** @brief Move and rotate the preview handle, then advance one fixed simulation step. */
+    [[nodiscard]] editing::Result<PhysicsPlacementFrame> updatePhysicsPlacementPose(double x, double y, double z,
+                                                                                    double rotationX, double rotationY,
+                                                                                    double rotationZ,
+                                                                                    double fixedDelta = 1.0 / 60.0);
+    /** @brief Move, rotate and scale the preview handle, then advance one fixed simulation step. */
+    [[nodiscard]] editing::Result<PhysicsPlacementFrame> updatePhysicsPlacementTransform(
+        double x, double y, double z, double rotationX, double rotationY, double rotationZ, double scaleX,
+        double scaleY, double scaleZ, double fixedDelta = 1.0 / 60.0);
+    /** @brief Align the active selection to a non-selected preview surface and advance one step. */
+    [[nodiscard]] editing::Result<PhysicsPlacementFrame> alignPhysicsPlacementToSurface(double fromX, double fromY,
+                                                                                        double fromZ, double toX,
+                                                                                        double toY, double toZ,
+                                                                                        double offset     = 0.0,
+                                                                                        double fixedDelta = 1.0 / 60.0);
+    /** @brief Atomically publish selected preview transforms as one undoable transaction. */
+    [[nodiscard]] editing::Result<editing::TransactionReceipt> commitPhysicsPlacement();
+    /** @brief Discard the isolated preview without changing scene state. */
+    [[nodiscard]] editing::Result<void> cancelPhysicsPlacement();
+    /** @brief Report whether this session owns an active placement preview. */
+    [[nodiscard]] bool physicsPlacementActive() const noexcept;
 
 private:
     struct Impl;

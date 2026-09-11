@@ -1247,7 +1247,7 @@ local p = paramsResult.value;
 p.setSeed(31415);
 p.setString("style", "lowpoly");           // lowpoly | realistic
 p.setString("branchAlgorithm", "weberPenn");
-p.setString("leafMode", "canopy");        // cards | canopy | none
+p.setString("leafMode", "clusters");       // clusters | cards | canopy | none
 p.setFloat("leafDensity", 0.75);
 p.setFloat("height", 6.0);
 p.setFloat("crownRadius", 2.0);
@@ -1256,6 +1256,34 @@ local treeResult = gen.buildMesh("mesh.tree", p);
 if (!treeResult.ok) throw treeResult.status.summary;
 local tree = treeResult.value;
 ```
+
+四种叶片模式：
+
+- `clusters`（推荐）：在每根结果枝的合适位置放置一个"叶片丛"。每个叶片丛是一个球体，内部由
+  `clusterPlanes` 张绕 Y 轴分层旋转、各自带轻微倾斜和偏移的叶片平面组成；平面上的叶片中心来自
+  蓝噪声（Poisson-disk）采样，所以叶片分布均匀，没有成团和空洞。叶片顶点法线取自丛球面
+  （`normalRounding=1`），因此一堆平面卡片仍然按球体受光，得到有体积感的树冠，而不是一片片
+  各自为政的平板。透明区域不产生任何几何体——空的地方就是没有叶片，既省几何体也避免了
+  半透明排序问题。叶片同时输出两个绕向，因此背面剔除的管线也不会把它剔掉。
+- `cards`：沿枝条随机撒独立叶片，最省事但容易看出成团/空洞。
+- `canopy`：用椭球叶片团块堆出树冠，最便宜、最"低多边形"。
+- `none`：只生成枝干骨架。
+
+叶片丛参数：
+
+- `clusterSize`：丛半径占 `crownRadius` 的比例，默认 `0.30`。
+- `clusterSeparation`：相邻丛心的最小间距（单位：丛半径），默认 `0.55`。调大→丛更少更大，
+  调小→丛更多更碎。
+- `clusterPlanes` / `clusterCaps`：叶片平面数（默认 `10`）与封住两极的近水平面数（默认 `2`）。
+- `clusterTilt`：环形平面偏离竖直方向的最大倾角（度），默认 `26`。
+- `clusterLeafScale`：丛内单片叶长相对 `leafSize` 的比例，默认 `0.85`。
+- `clusterSpacing`：蓝噪声中心间距（单位：叶长），默认 `0.80`；`leafDensity` 在此基础上缩放。
+- `clusterLeaves`：每张平面的叶片数上限，默认 `28`。若请求的间距会超出该上限，采样器会放大
+  间距而不是截断，所以留下的叶片依然均匀。
+- `clusterLimit`：单棵树的丛数上限，默认 `120`。
+
+丛心按"随机顺序 + Poisson 排斥"从结果枝锚点中挑出：枝条越均匀地填满树冠，叶片丛就越均匀，
+不会扎堆在先生成的枝条上；`clusterLimit` 则给出几何体量的硬上限。
 
 两种算法共享主干曲率、向性、下垂、随高度变化的枝长/枝径，以及上下层叶片覆盖参数。常用调整：
 

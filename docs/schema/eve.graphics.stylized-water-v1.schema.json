@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evengine.dev/schema/eve.graphics.stylized-water-v1.schema.json",
+  "title": "EVEngine Stylized Water",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "schemaVersion", "unknownFields", "colors", "waves", "depth", "foam", "lighting", "refraction", "caustics"],
+  "properties": {
+    "schema": { "const": "eve.graphics.stylized-water" },
+    "schemaVersion": { "const": 1 },
+    "unknownFields": { "const": "reject" },
+    "colors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deep", "shallow", "foam", "reflectionTint"],
+      "properties": {
+        "deep": { "$ref": "#/$defs/color" },
+        "shallow": { "$ref": "#/$defs/color" },
+        "foam": { "$ref": "#/$defs/color" },
+        "reflectionTint": { "$ref": "#/$defs/color" }
+      }
+    },
+    "waves": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["speed", "amplitude", "scale", "sharpness", "rippleAmplitude", "rippleCount", "rippleInterval"],
+      "properties": {
+        "speed": { "type": "number", "minimum": -20, "maximum": 20 },
+        "amplitude": { "type": "number", "minimum": 0, "maximum": 4 },
+        "scale": { "type": "number", "minimum": 0.01, "maximum": 256 },
+        "sharpness": { "type": "number", "minimum": 0.1, "maximum": 8 },
+        "rippleAmplitude": { "type": "number", "minimum": 0, "maximum": 4 },
+        "rippleCount": { "type": "integer", "minimum": 0, "maximum": 8 },
+        "rippleInterval": { "type": "number", "minimum": 0.05, "maximum": 60 }
+      }
+    },
+    "depth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["distance", "opacity"],
+      "properties": {
+        "distance": { "type": "number", "exclusiveMinimum": 0, "maximum": 10000 },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "foam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "softness", "strength"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0, "maximum": 1000 },
+        "softness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "strength": { "type": "number", "minimum": 0, "maximum": 4 }
+      }
+    },
+    "lighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fresnelPower", "reflectionIntensity", "sunIntensity", "screenSpaceReflection", "screenSpaceReflectionStrength"],
+      "properties": {
+        "fresnelPower": { "type": "number", "minimum": 0.01, "maximum": 32 },
+        "reflectionIntensity": { "type": "number", "minimum": 0, "maximum": 4 },
+        "sunIntensity": { "type": "number", "minimum": 0, "maximum": 8 },
+        "screenSpaceReflection": { "type": "boolean" },
+        "screenSpaceReflectionStrength": { "type": "number", "minimum": 0, "maximum": 4 }
+      }
+    },
+    "refraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strength"],
+      "properties": {
+        "strength": { "type": "number", "minimum": 0, "maximum": 0.25 }
+      }
+    },
+    "caustics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strength", "scale"],
+      "properties": {
+        "strength": { "type": "number", "minimum": 0, "maximum": 4, "default": 0.35 },
+        "scale": { "type": "number", "minimum": 0.01, "maximum": 256, "default": 3.5 }
+      }
+    }
+  },
+  "$defs": {
+    "color": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number", "minimum": 0, "maximum": 8 }
+    }
+  }
+}
