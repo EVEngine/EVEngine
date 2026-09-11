@@ -264,8 +264,8 @@ private:
  * @brief HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling).
  *
  * Applies camera post settings for the miniature look and nearest-neighbor
- * filtering on sprite/terrain atlases. Depth-of-field requires sprites to write
- * depth (Sprite3D masked cutout / DopFix path).
+ * filtering on sprite/terrain atlases. Depth-of-field needs Sprite3D masked
+ * cutout / DopFix depth writes so the focus plane can resolve.
  */
 class Hd2dLook {
 public:
@@ -290,6 +290,8 @@ public:
     /**
      * @brief Write DOF + bloom onto a Camera3D (render-thread).
      * @param camera Non-null active scene camera.
+     * @ownership `camera` is borrowed; Hd2dLook does not retain it.
+     * @lifetime `camera` must remain valid only for this call.
      */
     void apply(graphics::Camera3D *camera) const;
 
@@ -297,6 +299,8 @@ public:
      * @brief Point-filter a texture for crisp pixel art (nearest / no mip).
      * @param gfx Active Graphics.
      * @param texture Atlas or sprite sheet.
+     * @ownership `gfx` and `texture` are borrowed; Hd2dLook does not retain them.
+     * @lifetime Both arguments must remain valid only for this call.
      */
     void applyPixelSampler(graphics::Graphics *gfx, graphics::Texture *texture) const;
 
@@ -326,9 +330,17 @@ public:
     TileMap3D *newTileMap3D();
     /** @brief Create a 3D billboard sprite bound to the given Graphics. */
     Sprite3D *newSprite(graphics::Graphics *gfx);
-    /** @brief Create an HD-2D look preset (caller owns). */
+    /**
+     * @brief Create an HD-2D look preset with soft defaults.
+     * @ownership Caller owns the returned object and must delete it.
+     * @lifetime Valid until the caller deletes it; independent of Hd2D.
+     */
     Hd2dLook *newLook();
-    /** @brief Create the miniature (strong DOF) look preset (caller owns). */
+    /**
+     * @brief Create the miniature (strong DOF) look preset.
+     * @ownership Caller owns the returned object and must delete it.
+     * @lifetime Valid until the caller deletes it; independent of Hd2D.
+     */
     Hd2dLook *newMiniatureLook();
 };
 
