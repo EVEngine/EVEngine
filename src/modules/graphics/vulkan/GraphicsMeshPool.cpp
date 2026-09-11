@@ -30,7 +30,7 @@ void Graphics::growGpuVertexPool(uint32_t needVertices, uint32_t needIndices) {
     const uint32_t oldInds  = gpuVertexPool_.indexCount;
     const auto     hostMem  = kHostVisibleCoherent;
     auto           copyInto = [&](vkb::GenericBuffer& dst, vkb::GenericBuffer& src, vk::DeviceSize oldBytes,
-                                  vk::DeviceSize newBytes) {
+                        vk::DeviceSize newBytes) {
         vkb::GenericBuffer grown(device, vk::BufferUsageFlagBits::eStorageBuffer, newBytes, hostMem);
         if (oldBytes > 0) {
             void* srcMap = src.map();

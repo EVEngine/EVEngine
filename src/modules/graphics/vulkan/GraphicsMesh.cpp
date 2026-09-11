@@ -73,8 +73,8 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         else
             v.normal = {0.f, 1.f, 0.f};
         if (mesh.HasTangentsAndBitangents()) {
-            const auto&     tangent   = mesh.mTangents[i];
-            const auto&     bitangent = mesh.mBitangents[i];
+            const auto     &tangent   = mesh.mTangents[i];
+            const auto     &bitangent = mesh.mBitangents[i];
             const glm::vec3 t(tangent.x, tangent.y, tangent.z);
             const glm::vec3 b(bitangent.x, bitangent.y, bitangent.z);
             v.tangent = glm::vec4(t, glm::dot(glm::cross(v.normal, t), b) < 0.f ? -1.f : 1.f);
@@ -233,7 +233,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
         tmp.mTextureCoords[0] = nullptr;
         tmp.mAnimMeshes       = nullptr;
     };
-    Mesh* out = nullptr;
+    Mesh *out = nullptr;
     try {
         out = newMeshFromAssimp(tmp);
     } catch (...) {
@@ -622,15 +622,15 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     drawMeshShaderRange(mesh, model, texture, tint, shader, 0, 1);
 }
 
-Result<void> Graphics::drawMeshShaderInstances(Mesh& mesh, Shader& shader, const glm::mat4& model, const Color& tint,
+Result<void> Graphics::drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model, const Color &tint,
                                                uint32_t first, uint32_t count) {
-    auto fail = [](const char* message) {
+    auto fail = [](const char *message) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "graphics.instances"));
     };
     auto ownedShader = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
-                                    [&](const auto& item) { return item->owner == &shader; });
+                                    [&](const auto &item) { return item->owner == &shader; });
     auto ownedMesh =
-        std::find_if(ownedMeshes.begin(), ownedMeshes.end(), [&](const auto& item) { return item.get() == &mesh; });
+        std::find_if(ownedMeshes.begin(), ownedMeshes.end(), [&](const auto &item) { return item.get() == &mesh; });
     if (!initialized || ownedShader == ownedGpuShaders.end() || ownedMesh == ownedMeshes.end() ||
         !(*ownedShader)->isMesh3D || (*ownedShader)->isHair3D || shader.isXray() || !mesh.gpuHandle ||
         (!swapchainPassOpen && !offscreen3DPassOpen))
@@ -647,13 +647,13 @@ Result<void> Graphics::drawMeshShaderInstances(Mesh& mesh, Shader& shader, const
     try {
         drawMeshShaderRange(&mesh, model, nullptr, tint, &shader, first, count);
         return Result<void>::success();
-    } catch (const std::exception& error) {
+    } catch (const std::exception &error) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "graphics.instances"));
     }
 }
 
-void Graphics::drawMeshShaderRange(Mesh* mesh, const glm::mat4& model, Texture* texture, const Color& tint,
-                                   Shader* shader, uint32_t firstInstance, uint32_t instanceCount) {
+void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
+                                   Shader *shader, uint32_t firstInstance, uint32_t instanceCount) {
     ASSERT(initialized);
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");

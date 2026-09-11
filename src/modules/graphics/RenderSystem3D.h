@@ -276,7 +276,7 @@ public:
      *
      * length is checked at submission, including after shader resource replacement.
      */
-    [[nodiscard]] Result<void> setInstanceRange(const MeshInstanceRange& range);
+    [[nodiscard]] Result<void> setInstanceRange(const MeshInstanceRange &range);
     /** @brief Remove runtime instance metadata on the update thread; no callbacks. */
     void clearInstanceRange();
     /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */

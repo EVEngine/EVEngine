@@ -20,7 +20,7 @@ namespace {
 
 class PoolExecutor final : public eve::caps::IAsyncWorkExecutor {
 public:
-    explicit PoolExecutor(Thread* owner) : pool_(std::min(8, owner->getHardwareConcurrency())) {}
+    explicit PoolExecutor(Thread *owner) : pool_(std::min(8, owner->getHardwareConcurrency())) {}
 
     eve::Result<void> submit(std::function<void()> work) override {
         if (!work) {

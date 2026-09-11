@@ -987,8 +987,8 @@ public:
      * @return Failure before
      * recording when unsupported, stale, or out of range.
      */
-    [[nodiscard]] virtual Result<void> drawMeshShaderInstances(Mesh& mesh, Shader& shader, const glm::mat4& model,
-                                                               const Color& tint, std::uint32_t first,
+    [[nodiscard]] virtual Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
+                                                               const Color &tint, std::uint32_t first,
                                                                std::uint32_t count) {
         (void)mesh;
         (void)shader;
@@ -1506,9 +1506,9 @@ public:
 
      * * Unsupported backends or missing validation providers return Unsupported unchanged.
      */
-    [[nodiscard]] virtual Result<void> replaceMeshShaderResources(Shader& shader, const std::vector<uint32_t>& vertSpv,
-                                                                  const std::vector<uint32_t>& fragSpv,
-                                                                  const ShaderResourceInputs&  resources);
+    [[nodiscard]] virtual Result<void> replaceMeshShaderResources(Shader &shader, const std::vector<uint32_t> &vertSpv,
+                                                                  const std::vector<uint32_t> &fragSpv,
+                                                                  const ShaderResourceInputs  &resources);
 
     /**
      * @brief Transactionally replace an existing shader with WGSL stages.
@@ -1575,8 +1575,8 @@ public:
 
      * * survives program/resource replacement and render-target recreation until shader release.
      */
-    [[nodiscard]] virtual eve::Result<void> configureMeshShaderRaster(Shader&                      shader,
-                                                                      const MeshShaderRasterState& state) {
+    [[nodiscard]] virtual eve::Result<void> configureMeshShaderRaster(Shader                      &shader,
+                                                                      const MeshShaderRasterState &state) {
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh raster state is unavailable"));
     }

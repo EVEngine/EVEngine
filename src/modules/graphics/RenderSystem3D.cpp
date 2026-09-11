@@ -713,7 +713,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                                         : (mat ? mat->getSortPriority() : 0);
                 item.xray     = mr->xrayHighlight;
                 if (mr->instances) {
-                    const auto& range = *mr->instances;
+                    const auto &range = *mr->instances;
                     glm::vec3   center, half;
                     for (int i = 0; i < 3; ++i) {
                         center[i] = range.minimum[i] * .5f + range.maximum[i] * .5f;
@@ -991,7 +991,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
         if (mr->instances) {
-            const auto& range = *mr->instances;
+            const auto &range = *mr->instances;
             auto        drawn = gfx.drawMeshShaderInstances(*drawMesh, *shader, model, tint, range.first, range.count);
             if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());
         } else
@@ -1504,7 +1504,7 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
             gfx.setMesh3DShadowReceive(false);
             eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
             if (mr->instances) {
-                const auto& range = *mr->instances;
+                const auto &range = *mr->instances;
                 auto        drawn =
                     gfx.drawMeshShaderInstances(*item.mesh, *shader, item.model, tint, range.first, range.count);
                 if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());

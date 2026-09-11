@@ -82,7 +82,7 @@ public:
      * @reentrancy Invokes no script callbacks; do not
      * synchronously wait from the same worker pool.
      */
-    [[nodiscard]] eve::Result<void> requestModelData(const std::string& path);
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path);
 
     /** @brief Queue CPU decoding with explicit postprocess options, copied into the cache key.
      * @param path VFS
@@ -92,7 +92,7 @@ public:
      * @return Submission result. Ownership, thread affinity and lifetime match
      * requestModelData(path).
      */
-    [[nodiscard]] eve::Result<void> requestModelData(const std::string& path, const ModelLoadOptions& options);
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path, const ModelLoadOptions &options);
 
     /**
      * Assemble one Renderable3D for a mesh of a decoded model: node transform

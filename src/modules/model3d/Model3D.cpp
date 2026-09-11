@@ -138,11 +138,11 @@ ModelData *Model3D::newModelDataFromFile(std::string path) {
     return newModelDataFromFile(std::move(path), ModelLoadOptions{});
 }
 
-eve::Result<void> Model3D::requestModelData(const std::string& path) {
+eve::Result<void> Model3D::requestModelData(const std::string &path) {
     return requestModelData(path, ModelLoadOptions{});
 }
 
-eve::Result<void> Model3D::requestModelData(const std::string& path, const ModelLoadOptions& options) {
+eve::Result<void> Model3D::requestModelData(const std::string &path, const ModelLoadOptions &options) {
     if (path.empty())
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "Model path must not be empty", "model3d.prefetch"));
@@ -306,8 +306,8 @@ void Model3D::expose(ssq::Class &cls) {
         auto value = eve::script::valueFromSquirrel(object);
         if (!value || !value.value().isObject()) throw eve::Exception("Expected model decode options table");
         ModelLoadOptions options;
-        for (const auto& key : value.value().keys()) {
-            const auto* field = value.value().find(key);
+        for (const auto &key : value.value().keys()) {
+            const auto *field = value.value().find(key);
             if (!field->isBool()) throw eve::Exception("Model decode options must be booleans");
             const bool flag = field->asBool();
             if (key == "triangulate")
@@ -326,32 +326,32 @@ void Model3D::expose(ssq::Class &cls) {
         return options;
     };
     cls.addFunc("requestModelDataWithOptions",
-                [vm = cls.getHandle(), parseOptions](Model3D* self, const std::string& path, ssq::Object object) {
+                [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path, ssq::Object object) {
                     try {
                         return eve::script::projectResult(vm, self->requestModelData(path, parseOptions(object)));
-                    } catch (const std::exception& error) {
+                    } catch (const std::exception &error) {
                         return eve::script::projectResult(
                             vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                                   error.what(), "model3d.prefetch")));
                     }
                 });
-    cls.addFunc("loadModelDataWithOptions", [vm = cls.getHandle(), parseOptions](Model3D* self, const std::string& path,
+    cls.addFunc("loadModelDataWithOptions", [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path,
                                                                                  ssq::Object object) {
         try {
             auto  options   = parseOptions(object);
-            auto* model     = self->newModelDataFromFile(path, options);
+            auto *model     = self->newModelDataFromFile(path, options);
             auto  projected = eve::script::projectStatusResult(vm, eve::Status::success(), true, true);
             projected.set("value", model);
             projected.set("ownership", std::string("borrowed-from-resource-cache"));
             return projected;
-        } catch (const std::exception& error) {
+        } catch (const std::exception &error) {
             return eve::script::projectStatusResult(
                 vm,
                 eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "model3d.load")),
                 false, false);
         }
     });
-    cls.addFunc("requestModelData", [vm = cls.getHandle()](Model3D* self, const std::string& path) {
+    cls.addFunc("requestModelData", [vm = cls.getHandle()](Model3D *self, const std::string &path) {
         return eve::script::projectResult(vm, self->requestModelData(path));
     });
     cls.addFunc("getName", &Model3D::getName);

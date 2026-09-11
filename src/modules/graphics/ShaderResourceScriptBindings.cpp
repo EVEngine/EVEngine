@@ -128,7 +128,7 @@ void exposeShaderResourceBindings(ssq::Table& table, ssq::Class& cls) {
                                                             "graphics.bloom")));
         BloomFilterSettings settings{mode == "gaussianScatter" ? BloomFilter::GaussianScatter : BloomFilter::KarisTent,
                                      scatter, iterations, clamp};
-        auto                valid = validateBloomFilterSettings(settings);
+        auto valid = validateBloomFilterSettings(settings);
         if (!valid) return script::projectResult(vm, Result<void>::failure(valid.status()));
         return script::projectResult(vm, graphics->pipelineBloom()->configureFilter(settings));
     });

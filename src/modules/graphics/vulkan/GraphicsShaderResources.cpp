@@ -152,7 +152,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         auto                                                flushUploads = [&] {
             if (uploadCommands.empty()) return;
             vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                                    [&](vk::CommandBuffer command) {
+                                                                                   [&](vk::CommandBuffer command) {
                                         for (auto& record : uploadCommands) record(command);
                                     });
             uploadCommands.clear();

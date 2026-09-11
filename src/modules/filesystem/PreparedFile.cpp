@@ -12,7 +12,7 @@ namespace eve::filesystem {
 namespace {
 constexpr size_t           maximumBytes = 1024ull * 1024 * 1024;
 constexpr std::string_view suffix       = "?filedata=1";
-class FileSnapshot final : public Resource {
+class FileSnapshot         final : public Resource {
 public:
     std::shared_ptr<const FileData> bytes;
     FileSnapshot(std::string key, std::shared_ptr<const FileData> data)

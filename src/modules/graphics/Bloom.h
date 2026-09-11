@@ -27,7 +27,7 @@ struct BloomFilterSettings {
  * @thread Any thread; pure and
  * reentrant, retaining no references.
  */
-[[nodiscard]] Result<void> validateBloomFilterSettings(const BloomFilterSettings& settings);
+[[nodiscard]] Result<void> validateBloomFilterSettings(const BloomFilterSettings &settings);
 
 /**
  * @brief Linear-HDR bloom pyramid with selectable Karis/tent or Gaussian/scatter reconstruction.
@@ -47,7 +47,7 @@ public:
 
      * * @thread Render thread only; invokes no callbacks. Target allocation is deferred to build.
      */
-    [[nodiscard]] Result<void> configureFilter(const BloomFilterSettings& settings);
+    [[nodiscard]] Result<void> configureFilter(const BloomFilterSettings &settings);
     /** @brief Return a value snapshot. Render thread only; retains no references. */
     BloomFilterSettings filterSettings() const { return filterSettings_; }
 
@@ -74,15 +74,15 @@ public:
     Texture *apply(Texture *source, float intensity, float threshold, float scatter = 1.f);
 
 private:
-    Texture*                buildGaussian(Texture* source, float threshold);
-    Texture*                compositeGaussian(Texture* source, Texture* bloom, float intensity);
-    BloomFilterSettings     filterSettings_{};
-    Shader*                 gaussianShader_ = nullptr;
-    std::array<Canvas*, 16> gaussianDown_{};
-    std::array<Canvas*, 16> gaussianUp_{};
-    int                     gaussianWidth_  = 0;
-    int                     gaussianHeight_ = 0;
-    int                     gaussianLevels_ = 0;
+    Texture                 *buildGaussian(Texture *source, float threshold);
+    Texture                 *compositeGaussian(Texture *source, Texture *bloom, float intensity);
+    BloomFilterSettings      filterSettings_{};
+    Shader                  *gaussianShader_ = nullptr;
+    std::array<Canvas *, 16> gaussianDown_{};
+    std::array<Canvas *, 16> gaussianUp_{};
+    int                      gaussianWidth_  = 0;
+    int                      gaussianHeight_ = 0;
+    int                      gaussianLevels_ = 0;
     void ensureTargets(int sourceWidth, int sourceHeight);
     void configureDownsample(Texture *source, bool firstPass, float threshold);
     void configureUpsample(Texture *source, float scatter);
