@@ -421,7 +421,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
@@ -433,7 +433,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h)
   foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)

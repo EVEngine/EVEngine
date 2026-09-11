@@ -4,7 +4,7 @@
 #include "common/Result.h"
 #include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
 #include <memory>

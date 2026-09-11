@@ -103,7 +103,7 @@ PHYSICS_CORE_SOURCES = (
     "physics/PhysicsHandles.cpp",
     "physics/PhysicsLink.cpp",
     "physics/Shape3D.cpp",
-    "physics/SimulationBackend.cpp",
+    "physics/backend/SimulationBackend.cpp",
     "physics/World.cpp",
     "physics/World3D.cpp",
 )
