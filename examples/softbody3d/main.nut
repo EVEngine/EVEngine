@@ -160,7 +160,10 @@ eve_update = function(dt) {
 
     if (windOn) {
         windT += dt;
-        cloth.applyForce(math.polarY(1.8, windT * 1.3), 0.0, math.polarX(0.6, windT * 0.9));
+        cloth.setWindVelocity(math.polarY(1.8, windT * 1.3), 1.2,
+                              math.polarX(0.6, windT * 0.9));
+    } else {
+        cloth.setWindVelocity(0.0, 0.0, 0.0);
     }
 
     // Pointer field: right mouse repels nearby particles (Fluid2D-style).
