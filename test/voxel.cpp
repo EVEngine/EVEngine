@@ -15,10 +15,12 @@
 #include "voxel/VoxelWorld.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace eve::voxel;
@@ -2477,6 +2479,42 @@ TEST_CASE("voxel.world.streamAround_evicts_and_creates") {
     StreamStats s4 = world.streamAround(0, 0, 0, -1);
     CHECK_EQ(s4.created, 0);
     CHECK_EQ(s4.evicted, 0);
+}
+
+TEST_CASE("voxel.world.streamAround_cache_keeps_recent_chunks") {
+    VoxelWorld world;
+    world.setStreamCacheChunks(4);
+
+    StreamStats s1 = world.streamAround(0, 0, 0, 2);
+    CHECK_EQ(s1.created, 33);
+    CHECK_EQ(world.getChunkCount(), 33);
+
+    StreamStats s2 = world.streamAround(1, 0, 0, 2);
+    CHECK_EQ(s2.evicted, 0);
+    CHECK(world.hasChunk(0, 0, 0));
+    CHECK(world.getChunkCount() >= 33);
+
+    StreamStats s3 = world.streamAround(10, 0, 0, 2);
+    CHECK(!world.hasChunk(0, 0, 0));
+    CHECK(world.hasChunk(10, 0, 0));
+    CHECK(s3.evicted > 0);
+}
+
+TEST_CASE("voxel.world.streamAround_create_budget_spreads_across_calls") {
+    VoxelWorld world;
+    world.setTerrainParams(42, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
+
+    StreamStats first = world.streamAround(0, 0, 0, 2, {}, 4);
+    CHECK(first.created + world.getInflightStreamCount() >= 4);
+    CHECK(world.getChunkCount() <= 4);
+    CHECK_EQ(first.pending + world.getChunkCount(), 33);
+
+    for (int i = 0; i < 400 && world.getChunkCount() < 33; ++i) {
+        world.streamAround(0, 0, 0, 2, {}, 8);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    CHECK_EQ(world.getChunkCount(), 33);
+    CHECK_EQ(world.getInflightStreamCount(), 0);
 }
 
 TEST_CASE("voxel.world.streamTerrain_and_persist") {

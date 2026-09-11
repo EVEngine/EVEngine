@@ -22,6 +22,43 @@ function file_exists(path) {
     }
 }
 
+/** Prefer the throw-site stack captured by the VM error hook over `e` alone. */
+function format_script_error(e) {
+    if ("lastScriptError" in eve) {
+        local stacked = eve.lastScriptError();
+        if (typeof stacked == "string" && stacked.len() > 0) return stacked;
+    }
+    return "" + e;
+}
+
+_loop_errors <- {}
+
+function emit_loop_error(slot, prefix, e) {
+    local msg = prefix + format_script_error(e);
+    local st = (slot in _loop_errors) ? _loop_errors[slot] : null;
+    if (st != null && st.text == msg) {
+        st.n += 1;
+        return;
+    }
+    if (st != null && st.n > 1)
+        print(st.text + "\n  (x" + st.n + " frames)\n");
+    local rec = { text = msg, n = 1 };
+    if (slot in _loop_errors)
+        _loop_errors[slot] = rec;
+    else
+        _loop_errors[slot] <- rec;
+    if ("dev" in eve) eve.dev.reportError("" + e);
+    print(msg + "\n");
+}
+
+function clear_loop_error(slot) {
+    if (!(slot in _loop_errors)) return;
+    local st = _loop_errors[slot];
+    if (st.n > 1)
+        print(st.text + "\n  (stopped after x" + st.n + " frames)\n");
+    delete _loop_errors[slot];
+}
+
 function path_endswith(str, suffix) {
     if (str == null || suffix == null) return false;
     if (str.len() < suffix.len()) return false;
@@ -61,7 +98,7 @@ function ensure_module(slot) {
     try {
         getroottable()[slot] <- eve[m.cls]();
     } catch (e) {
-        print("module " + m.cls + " failed to initialize: " + e + "\n");
+        print("module " + m.cls + " failed to initialize: " + format_script_error(e) + "\n");
         return false;
     }
     local _mdt = (clock() - _m0) * 1000.0;
@@ -253,14 +290,14 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
         // Report FIRST: with "break on error" the debugger pauses at the
         // throwing script line / catch site before stdout is flushed.
         if ("dev" in eve) eve.dev.reportError("" + e);
-        print("async runtime failed to load: " + e + "\n");
+        print("async runtime failed to load: " + format_script_error(e) + "\n");
     }
 } else if (file_exists("async.nut")) {
     try {
         dofile("async.nut");
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
-        print("async.nut failed to load: " + e + "\n");
+        print("async.nut failed to load: " + format_script_error(e) + "\n");
     }
 }
 _startup_ms("async runtime loaded");
@@ -392,7 +429,7 @@ function soft_reload_scripts() {
     try {
         candidates = compile_reload_candidates();
     } catch (e) {
-        report_reload_failure("hot-reload compile failed: " + e);
+        report_reload_failure("hot-reload compile failed: " + format_script_error(e));
         return false;
     }
 
@@ -405,7 +442,7 @@ function soft_reload_scripts() {
             eve_before_reload();
         } catch (e) {
             restore_reload_bindings(oldBindings);
-            report_reload_failure("eve_before_reload failed: " + e);
+            report_reload_failure("eve_before_reload failed: " + format_script_error(e));
             return false;
         }
     }
@@ -414,7 +451,7 @@ function soft_reload_scripts() {
         local e = eve.dev.beginStateReload();
         if (e != "") {
             restore_reload_bindings(oldBindings);
-            report_reload_failure("state reload: capture failed: " + e);
+            report_reload_failure("state reload: capture failed: " + format_script_error(e));
             return false;
         }
     }
@@ -430,7 +467,7 @@ function soft_reload_scripts() {
             restore_reload_bindings(oldBindings);
             local rollbackError = "";
             if (hasSession) rollbackError = eve.dev.abortStateReload();
-            local message = "hot-reload script failed: " + candidate.path + ": " + e;
+            local message = "hot-reload script failed: " + candidate.path + ": " + format_script_error(e);
             if (rollbackError != "") message += "; rollback failed: " + rollbackError;
             report_reload_failure(message);
             return false;
@@ -456,7 +493,7 @@ function soft_reload_scripts() {
             eve_after_reload();
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
-            print("eve_after_reload failed: " + e + "\n");
+            print("eve_after_reload failed: " + format_script_error(e) + "\n");
         }
     }
     if ("eve_reload" in getroottable()) {
@@ -464,7 +501,7 @@ function soft_reload_scripts() {
             eve_reload();
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
-            print("eve_reload failed: " + e + "\n");
+            print("eve_reload failed: " + format_script_error(e) + "\n");
         }
     }
     return true;
@@ -479,7 +516,7 @@ function handle_change(p) {
         try {
             if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
         } catch (e) {
-            report_reload_failure("module hot-reload failed: " + p + ": " + e);
+            report_reload_failure("module hot-reload failed: " + p + ": " + format_script_error(e));
             return;
         }
         if (!isModule) track_script(p);
@@ -491,7 +528,7 @@ function handle_change(p) {
             hot.tryReload(p);
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
-            print("hot-reload asset failed: " + p + ": " + e + "\n");
+            print("hot-reload asset failed: " + p + ": " + format_script_error(e) + "\n");
         }
     }
     if ("eve_asset_reload" in getroottable()) {
@@ -499,7 +536,7 @@ function handle_change(p) {
             eve_asset_reload(p);
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
-            print("eve_asset_reload failed: " + p + ": " + e + "\n");
+            print("eve_asset_reload failed: " + p + ": " + format_script_error(e) + "\n");
         }
     }
 }
@@ -520,7 +557,7 @@ function poll_hot_reload() {
                 if (hot.watchNewDirectory(p)) continue;
             } catch (e) {
                 if ("dev" in eve) eve.dev.reportError("" + e);
-                print("hot-reload directory watch failed: " + p + ": " + e + "\n");
+                print("hot-reload directory watch failed: " + p + ": " + format_script_error(e) + "\n");
             }
         }
         if (path_endswith(p, ".nut")) {
@@ -535,7 +572,7 @@ function poll_hot_reload() {
             try {
                 if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
             } catch (e) {
-                report_reload_failure("module hot-reload failed: " + p + ": " + e);
+                report_reload_failure("module hot-reload failed: " + p + ": " + format_script_error(e));
                 return;
             }
             if (!isModule) track_script(p);
@@ -583,7 +620,7 @@ if (file_exists("main.nut")) {
         compilestring(eve.demoScript)();
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
-        print("Embedded demo failed to load: " + e + "\n");
+        print("Embedded demo failed to load: " + format_script_error(e) + "\n");
     }
 }
 _startup_ms("game script loaded");
@@ -600,7 +637,7 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
         print("hot-reload: watching " + n + " path(s)\n");
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
-        print("hot-reload watchTree failed: " + e + "\n");
+        print("hot-reload watchTree failed: " + format_script_error(e) + "\n");
     }
 }
 _startup_ms("hot reload watch registered");
@@ -610,7 +647,7 @@ try {
     eve_init();
 } catch (e) {
     if ("dev" in eve) eve.dev.reportError("" + e);
-    print("eve_init failed: " + e + "\n");
+    print("eve_init failed: " + format_script_error(e) + "\n");
 }
 _startup_ms("eve_init done");
 
@@ -785,9 +822,9 @@ eve_frame <- function() {
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
         dev_draw_console();
+        clear_loop_error("frame");
     } catch (e) {
-        if ("dev" in eve) eve.dev.reportError("" + e);
-        print("frame error: " + e + "\n");
+        emit_loop_error("frame", "frame error: ", e);
     }
     // Always present: eve_render may have opened a 3D pass (gfx.render3D)
     // before throwing. Skipping present leaves swapchainPassOpen and every
@@ -795,8 +832,9 @@ eve_frame <- function() {
     try {
         gfx.present();
         if (has_module("ui")) ui.dispatchEvents();
+        clear_loop_error("present");
     } catch (e) {
-        print("present error: " + e + "\n");
+        emit_loop_error("present", "present error: ", e);
     }
     if (!("_startup_first_present" in getroottable())) {
         getroottable()._startup_first_present <- true;
