@@ -1194,7 +1194,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the debug lane's full native dependency install.
+        timeout-minutes: 15
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
@@ -1269,9 +1270,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    # Allow the 55-minute build and 90-minute test guards plus toolchain setup
-    # and cache reporting, including a cold sanitizer build.
-    timeout-minutes: 180
+    # Allow the 100-minute cold optimized sanitizer build and 90-minute test
+    # guards plus dependency/toolchain setup and cache reporting.
+    timeout-minutes: 270
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1291,8 +1292,7 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        # apt update may consume most of ten minutes while retrying a slow
-        # Ubuntu mirror; keep enough time for the package download itself.
+        # Sanitizer jobs use the same full dependency set as the debug lane.
         timeout-minutes: 20
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
@@ -1342,9 +1342,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # A cold full-profile sanitizer build now takes just over 40 minutes
-        # after the asset pipeline modules and tests were added.
-        timeout-minutes: 55
+        # PRs cannot populate the shared sccache. A new compiler flag set is
+        # therefore a cold build; run 34596121051 reached 67% after 55 minutes.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1386,7 +1386,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the other full native Linux dependency installs.
+        timeout-minutes: 15
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true

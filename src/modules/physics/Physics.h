@@ -8,6 +8,8 @@ class World;
 class World3D;
 class Cloth;
 class Cloth3D;
+class SoftBody3D;
+class SoftBody3DRenderer;
 class ClothGPU;
 class Fluid2D;
 class DistanceField3D;
@@ -100,6 +102,31 @@ public:
      */
     Cloth3D *newCloth3D(int cols, int rows, float spacing, float originX, float originY,
                         float originZ);
+
+    /**
+     * @brief Compatibility factory for a volumetric shape-matching soft body.
+     *
+     * The canonical C++ creation API is SoftBody3D::create(), which returns a
+     * checked owning unique_ptr. This adapter exists for the script binding,
+     * whose VM assumes ownership of the returned wrapper.
+     * @return Owning pointer transferred to the script VM/caller.
+     * @ownership The caller owns the returned object and must destroy it.
+     * @lifetime Valid until caller destruction; a borrowed World3D must be cleared first.
+     * @thread Create and use on the owning simulation thread.
+     * @reentrancy No callbacks are invoked.
+     * @throws eve::Exception when dimensions or coordinates are invalid.
+     */
+    SoftBody3D *newSoftBody3D(int cols, int rows, int layers, float spacing,
+                              float originX, float originY, float originZ);
+
+    /**
+     * @brief Create a presentation satellite observing a soft-body runtime.
+     * @param body Borrowed nullable runtime; clear it on the renderer before destroying the body.
+     * @return Owning renderer transferred to the script VM/caller.
+     * @ownership The caller owns the renderer; it never owns body or Graphics.
+     * @thread Create and use on the owning render thread.
+     */
+    SoftBody3DRenderer *newSoftBody3DRenderer(SoftBody3D *body);
 
     /**
      * @brief Create a GPU-accelerated 2D Verlet cloth (compute shader backend).

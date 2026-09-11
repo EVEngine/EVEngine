@@ -5,6 +5,8 @@
 #include "physics/DistanceField3D.h"
 #include "physics/Cloth.h"
 #include "physics/Cloth3D.h"
+#include "physics/softbody/SoftBody3D.h"
+#include "physics/softbody/graphics/SoftBody3DRenderer.h"
 #include "physics/ClothGPU.h"
 #include "physics/Fixture.h"
 #include "physics/Fluid2D.h"
@@ -57,6 +59,17 @@ Cloth *Physics::newCloth(int cols, int rows, float spacing, float originX, float
 Cloth3D *Physics::newCloth3D(int cols, int rows, float spacing, float originX, float originY,
                              float originZ) {
     return new Cloth3D(cols, rows, spacing, originX, originY, originZ);
+}
+
+SoftBody3D *Physics::newSoftBody3D(int cols, int rows, int layers, float spacing,
+                                    float originX, float originY, float originZ) {
+    auto created = SoftBody3D::create(cols, rows, layers, spacing, originX, originY, originZ);
+    if (!created) throw Exception("%s", created.status().describe().c_str());
+    return std::move(created).takeValue().release();
+}
+
+SoftBody3DRenderer *Physics::newSoftBody3DRenderer(SoftBody3D *body) {
+    return new SoftBody3DRenderer(body);
 }
 
 ClothGPU *Physics::newClothGPU(int cols, int rows, float spacing, float originX, float originY) {
@@ -958,6 +971,63 @@ void Physics::expose(ssq::Table &table) {
     cloth3.addFunc("getOriginZ", &Cloth3D::getOriginZ);
     cloth3.addFunc("destroy", &Cloth3D::destroy);
 
+    auto soft3 = table.addClass<SoftBody3D>(
+        "SoftBody3D", std::function<SoftBody3D *()>([]() -> SoftBody3D * { return nullptr; }), true);
+    soft3.addFunc("update", &SoftBody3D::update);
+    soft3.addFunc("setGravity", &SoftBody3D::setGravity);
+    soft3.addFunc("getGravityX", &SoftBody3D::getGravityX);
+    soft3.addFunc("getGravityY", &SoftBody3D::getGravityY);
+    soft3.addFunc("getGravityZ", &SoftBody3D::getGravityZ);
+    soft3.addFunc("setDeformationResistance", &SoftBody3D::setDeformationResistance);
+    soft3.addFunc("getDeformationResistance", &SoftBody3D::getDeformationResistance);
+    soft3.addFunc("setIterations", &SoftBody3D::setIterations);
+    soft3.addFunc("getIterations", &SoftBody3D::getIterations);
+    soft3.addFunc("setDamping", &SoftBody3D::setDamping);
+    soft3.addFunc("getDamping", &SoftBody3D::getDamping);
+    soft3.addFunc("setParticleRadius", &SoftBody3D::setParticleRadius);
+    soft3.addFunc("getParticleRadius", &SoftBody3D::getParticleRadius);
+    soft3.addFunc("setParticleMass", &SoftBody3D::setParticleMass);
+    soft3.addFunc("getParticleMass", &SoftBody3D::getParticleMass);
+    soft3.addFunc("setPlasticity", &SoftBody3D::setPlasticity);
+    soft3.addFunc("getPlasticYield", &SoftBody3D::getPlasticYield);
+    soft3.addFunc("getPlasticCreep", &SoftBody3D::getPlasticCreep);
+    soft3.addFunc("getPlasticRecovery", &SoftBody3D::getPlasticRecovery);
+    soft3.addFunc("getMaxDeformation", &SoftBody3D::getMaxDeformation);
+    soft3.addFunc("setSelfCollision", &SoftBody3D::setSelfCollision);
+    soft3.addFunc("getSelfCollision", &SoftBody3D::getSelfCollision);
+    soft3.addFunc("setBounds", &SoftBody3D::setBounds);
+    soft3.addFunc("clearBounds", &SoftBody3D::clearBounds);
+    soft3.addFunc("pin", &SoftBody3D::pin);
+    soft3.addFunc("unpin", &SoftBody3D::unpin);
+    soft3.addFunc("isPinned", &SoftBody3D::isPinned);
+    soft3.addFunc("grabAt", &SoftBody3D::grabAt);
+    soft3.addFunc("moveGrab", &SoftBody3D::moveGrab);
+    soft3.addFunc("releaseGrab", &SoftBody3D::releaseGrab);
+    soft3.addFunc("isGrabbing", &SoftBody3D::isGrabbing);
+    soft3.addFunc("getGrabIndex", &SoftBody3D::getGrabIndex);
+    soft3.addFunc("applyForce", &SoftBody3D::applyForce);
+    soft3.addFunc("interactAt", &SoftBody3D::interactAt);
+    soft3.addFunc("setCollideWorld", &SoftBody3D::setCollideWorld);
+    soft3.addFunc("getCollideWorld", &SoftBody3D::getCollideWorld);
+    soft3.addFunc("reset", &SoftBody3D::reset);
+    soft3.addFunc("getCols", &SoftBody3D::getCols);
+    soft3.addFunc("getRows", &SoftBody3D::getRows);
+    soft3.addFunc("getLayers", &SoftBody3D::getLayers);
+    soft3.addFunc("getParticleCount", &SoftBody3D::getParticleCount);
+    soft3.addFunc("getParticleX", &SoftBody3D::getParticleX);
+    soft3.addFunc("getParticleY", &SoftBody3D::getParticleY);
+    soft3.addFunc("getParticleZ", &SoftBody3D::getParticleZ);
+    soft3.addFunc("setParticlePosition", &SoftBody3D::setParticlePosition);
+    soft3.addFunc("getVolumeRatio", &SoftBody3D::getVolumeRatio);
+    soft3.addFunc("destroy", &SoftBody3D::destroy);
+
+    auto soft3Renderer = table.addClass<SoftBody3DRenderer>(
+        "SoftBody3DRenderer",
+        std::function<SoftBody3DRenderer *()>([]() -> SoftBody3DRenderer * { return nullptr; }), true);
+    soft3Renderer.addFunc("setBody", &SoftBody3DRenderer::setBody);
+    soft3Renderer.addFunc("setColor", &SoftBody3DRenderer::setColor);
+    soft3Renderer.addFunc("draw", &SoftBody3DRenderer::draw);
+
     auto clothGpu = table.addClass<ClothGPU>(
         "ClothGPU", std::function<ClothGPU *()>([]() -> ClothGPU * { return nullptr; }), true);
     clothGpu.addFunc("update", &ClothGPU::update);
@@ -1040,6 +1110,8 @@ void Physics::expose(ssq::Class &cls) {
     cls.addFunc("newDistanceField3D", &Physics::newDistanceField3D);
     cls.addFunc("newCloth", &Physics::newCloth);
     cls.addFunc("newCloth3D", &Physics::newCloth3D);
+    cls.addFunc("newSoftBody3D", &Physics::newSoftBody3D);
+    cls.addFunc("newSoftBody3DRenderer", &Physics::newSoftBody3DRenderer);
     cls.addFunc("newClothGPU", &Physics::newClothGPU);
     cls.addFunc("newFluid2D", &Physics::newFluid2D);
 }
