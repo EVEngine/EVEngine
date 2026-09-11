@@ -21,7 +21,7 @@
 #include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceFluidSceneRenderer.h"
 #include "fluids/SurfaceWetnessField.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 
 #include <glm/glm.hpp>
 

@@ -149,6 +149,17 @@ eve_declare_module(NAME action LIB EVAction LAYER 1
 eve_declare_module(NAME combat LIB EVCombat LAYER 2
                    DEPS action attributes tags
                    GROUP minimal 2d 3d web)
+# Shared fixed-step/backend contract extracted from the physics host so
+# independently switchable simulation satellites do not depend back upward.
+eve_declare_module(NAME physics_backend DIR physics/backend LAYER 2
+                   THIRDPARTY box2d
+                   GROUP 2d 3d web)
+# L3 -- independently switchable physics simulation satellites
+# Volumetric soft-body domain core. Rendering and authoring are separate
+# nested satellites; custom headless compositions may select only this target.
+eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
+                   DEPS physics_backend schema
+                   GROUP 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
                    GROUP minimal 2d 3d web)

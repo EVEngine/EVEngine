@@ -2,7 +2,7 @@
 
 #include "physics/Body.h"
 #include "physics/Body3D.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 #include "physics/World3D.h"
 
 #include <algorithm>

@@ -537,7 +537,7 @@
       "expiry": "2027-12-31",
       "evidence": [
         "docs/dev/物理系统分层与后端契约.md",
-        "src/modules/physics/SimulationBackend.h"
+        "src/modules/physics/backend/SimulationBackend.h"
       ],
       "tests": [
         "test/physics_artifact_provider.cpp",

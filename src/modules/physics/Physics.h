@@ -8,6 +8,8 @@ namespace eve::physics {
 
 class World;
 class World3D;
+class SoftBody3D;
+class SoftBody3DRenderer;
 class Fluid2D;
 class DistanceField3D;
 
@@ -65,6 +67,31 @@ public:
     DistanceField3D *newDistanceField3D(int width, int height, int depth, float cellSize,
                                         float originX = 0.f, float originY = 0.f,
                                         float originZ = 0.f, float outsideDistance = 1e6f);
+
+    /**
+     * @brief Compatibility factory for a volumetric shape-matching soft body.
+     *
+     * The canonical C++ creation API is SoftBody3D::create(), which returns a
+     * checked owning unique_ptr. This adapter exists for the script binding,
+     * whose VM assumes ownership of the returned wrapper.
+     * @return Owning pointer transferred to the script VM/caller.
+     * @ownership The caller owns the returned object and must destroy it.
+     * @lifetime Valid until caller destruction; a borrowed World3D must be cleared first.
+     * @thread Create and use on the owning simulation thread.
+     * @reentrancy No callbacks are invoked.
+     * @throws eve::Exception when dimensions or coordinates are invalid.
+     */
+    SoftBody3D *newSoftBody3D(int cols, int rows, int layers, float spacing,
+                              float originX, float originY, float originZ);
+
+    /**
+     * @brief Create a presentation satellite observing a soft-body runtime.
+     * @param body Borrowed nullable runtime; clear it on the renderer before destroying the body.
+     * @return Owning renderer transferred to the script VM/caller.
+     * @ownership The caller owns the renderer; it never owns body or Graphics.
+     * @thread Create and use on the owning render thread.
+     */
+    SoftBody3DRenderer *newSoftBody3DRenderer(SoftBody3D *body);
 
     /**
      * @brief Creates an interactive 2D particle fluid in pixel space.

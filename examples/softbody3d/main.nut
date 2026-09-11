@@ -18,9 +18,12 @@ persist physics = null
 persist clothModule = null
 persist world3 = null
 persist cloth = null
+persist jelly = null
+persist jellyRenderer = null
 persist grabbing = false
 persist selfCollisionOn = true
 persist foldOn = true
+persist windT = 0.0
 persist prevKeys = {}
 persist prevMouse = false
 
@@ -75,6 +78,24 @@ function buildScene() {
         cloth.setColor(0.72, 0.80, 0.96, 1.0);
         cloth.setCollideWorld(world3);
     }
+
+    // Volumetric soft body: overlapping shape-matching clusters preserve the
+    // local cube volume while still allowing squash, wobble and plasticity.
+    if (jelly == null) {
+        jelly = physics.newSoftBody3D(4, 4, 4, 0.38, 0.9, 2.2, -0.6);
+        jelly.setGravity(0.0, -9.8, 0.0);
+        jelly.setDeformationResistance(0.78);
+        jelly.setIterations(6);
+        jelly.setDamping(0.035);
+        jelly.setParticleRadius(0.11);
+        jelly.setPlasticity(0.32, 0.18, 0.25, 0.45);
+        jelly.setBounds(-4.0, 0.0, -3.0, 8.0, 5.5, 6.0);
+        jelly.setCollideWorld(world3);
+    }
+    if (jellyRenderer == null && jelly != null) {
+        jellyRenderer = physics.newSoftBody3DRenderer(jelly);
+        jellyRenderer.setColor(0.96, 0.36, 0.20, 1.0);
+    }
 }
 
 function resetScene() {
@@ -82,6 +103,7 @@ function resetScene() {
         cloth.reset();
         grabbing = false;
     }
+    if (jelly) jelly.reset();
 }
 
 // Intersect the mouse ray with a horizontal plane (y = GRAB_HEIGHT).
@@ -127,6 +149,10 @@ eve_reload <- function() {
 eve_update = function(dt) {
     if (cloth == null) return;
 
+    windT += dt;
+    cloth.setWindVelocity(math.polarY(1.8, windT * 0.7), 1.2,
+                          math.polarX(0.6, windT * 0.5));
+
     if (edgePressed("C")) {
         selfCollisionOn = !selfCollisionOn;
         cloth.setSelfCollision(selfCollisionOn);
@@ -162,10 +188,16 @@ eve_update = function(dt) {
 
     if (world3) world3.update(dt);
     cloth.update(dt);
+    if (jelly) {
+        // A small alternating lateral load keeps the volume response visible.
+        jelly.applyForce(math.polarY(0.055, windT * 1.7), 0.0, 0.0);
+        jelly.update(dt);
+    }
 };
 
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
     cloth.draw(gfx);
+    if (jellyRenderer) jellyRenderer.draw(gfx);
 };

@@ -211,6 +211,70 @@ cloth->update(dt);
 
 示例：[`examples/softbody3d/`](../../../examples/softbody3d/)（窗帘 + 平台/球体碰撞 + 自碰撞 + 折角限制）
 
+### 体积软体 3D（形状匹配）
+
+`SoftBody3D` 是真正的体积软体，而不是加厚的布料。规则粒子格的每个体素单元
+构成一个重叠八粒子 shape-matching cluster；相邻 cluster 共享粒子，因此局部体积和
+朝向会恢复，同时仍允许挤压、扭转和回弹。该实现独立编写，只借鉴了 Obi Softbody
+公开展示的组件分层与材料参数概念。
+
+```squirrel
+local body = physics.newSoftBody3D(4, 4, 4, 0.38, 0.9, 2.2, -0.6);
+local renderer = physics.newSoftBody3DRenderer(body);
+body.setGravity(0, -9.8, 0);
+body.setDeformationResistance(0.78); // 0 很软，1 强形状恢复
+body.setIterations(6);
+body.setParticleRadius(0.11);
+body.setPlasticity(0.32, 0.18, 0.25, 0.45); // yield, creep, recovery, max
+body.setCollideWorld(world3);        // 借用 World3D；world 必须活得更久
+body.update(dt);
+renderer.setColor(0.96, 0.36, 0.20, 1.0);
+renderer.draw(gfx);
+```
+
+运行时可用 `getDeformationResistance()`、`getParticleRadius()`、
+`getPlasticYield()`、`getPlasticCreep()`、`getPlasticRecovery()` 和
+`getMaxDeformation()` 回读材料参数；`getCols()`、`getRows()`、`getLayers()`
+描述体积格分辨率。
+
+`getVolumeRatio()` 返回当前 cell 总体积与初始体积之比，可用于测试、调试 UI 和
+破坏判定。C++ 应优先使用 `SoftBody3D::create()` 的
+`Result<std::unique_ptr<SoftBody3D>>`；`Physics::newSoftBody3D()` 是为脚本 VM
+所有权模型保留的兼容工厂。求解由注入的 `dt`/`SimulationStep` 驱动，在同平台同
+设置下提供容差有界确定性，不读取墙钟或随机源。当前版本使用 CPU cluster solver；
+尚未包含任意网格体素化、蒙皮权重烘焙或 GPU backend。
+
+创建配置由 `SoftBody3DDefinition` 统一拥有。其稳定 schema id 为
+`physics:softbody3d`，当前版本为 1；`toValue()` / `fromValue()` 用于持久化边界，
+版本 1 拒绝未知字段和未来版本。由于这是首个发布版本，没有旧版本迁移路径。
+`SoftBody3D::create(definition)` 会先完整验证候选，再一次性创建运行时对象，不会在
+验证失败时发布部分状态。编辑器侧使用
+`physics_editing::softBody3DDefinitionSchema()`，其中包含全部 20 个可编辑字段的
+默认值、数值范围、步长、单位、分类和说明；默认值直接取自
+`SoftBody3DDefinition`，不是第二份配置真源。首次创建时还会幂等注册同版本的 Eve
+Schema，工具可通过 `SchemaRegistry::resolve("physics:softbody3d", 1)` 查询，并用
+注册表执行通用 JSON 校验；聚合粒子数等跨字段约束仍由强类型 `validate()` 负责。
+
+软体实现按 physics 宿主包内 satellite 拆分：`physics/softbody` 只包含 definition、
+固定步长求解和窄碰撞接口；`physics/softbody/graphics` 负责动态表面网格；
+`physics/softbody/editing` 负责属性 schema。通用固定步长协议位于
+`physics/backend`。主 `physics` 模块仅保留 `World3D` 接触适配、脚本绑定和旧工厂，
+因此自定义无渲染组合可以只构建 `EVPhysics_softbody`，不拉入 graphics 或 editing；
+现有预设 `headless` / `server` profile 并不默认启用软体。
+
+颜色、动态 Mesh 缓存和绘制生命周期全部由 `SoftBody3DRenderer` 所有；它只借用
+`SoftBody3D`，销毁软体前应调用 `renderer.setBody(null)`。核心 `SoftBody3D` 的公共头
+不包含或前置声明任何 Graphics/Mesh 类型。`renderer.getBody()` 返回当前借用对象；
+`physics.newSoftBody3DRenderer(body)` 创建由脚本 VM 拥有的 renderer。
+
+真实网格的离线生成入口使用 `SoftBodyModelDefinition`，稳定 schema id 为
+`physics:softbody-model`、版本为 1。它记录 `sourceMesh`、surface/volume 采样模式、
+三种分辨率、各向异性上限和位置平滑率；未知字段、未来版本、空资源引用以及同时关闭
+surface/volume 采样都会被事务性拒绝。该能力统一使用 Model 命名。
+`physics/softbody/cook` 将资产模块的 `CanonicalMeshData` 转为拥有全部数组的 cooked
+`SoftBodyModel`。v1 已支持按源顶点采样、保留三角形表面、生成直接粒子绑定以及基于一环邻域的
+重叠 shape clusters；体素 surface/volume recipe 当前返回明确的 `Unsupported`，不会隐式改用顶点模式。
+
 ### 布料 GPU（2D，compute shader 加速）
 
 `newClothGPU(cols, rows, spacing, originX, originY)` 创建与 `Cloth` 同接口的 GPU 布料：Verlet 积分和距离约束全部跑在 Vulkan compute shader 里（每粒子一个线程 + 双缓冲 Jacobi 约束迭代），每帧回读位置用于绘制。适合大批量粒子：
