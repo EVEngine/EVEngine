@@ -795,6 +795,11 @@ void UI::setItemEnabled(bool enabled) {
     if (!parent.children.empty()) parent.children.back().enabled = enabled;
 }
 
+void UI::setItemSelected(bool selected) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().checked = selected;
+}
+
 void UI::setItemFocusMode(const std::string &mode) {
     WidgetDesc &parent = currentParent();
     if (!parent.children.empty()) parent.children.back().focusMode = parseFocusMode(mode);
@@ -2078,6 +2083,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemDragSource", &UI::setItemDragSource);
     cls.addFunc("setItemDropTarget", &UI::setItemDropTarget);
     cls.addFunc("setItemEnabled", &UI::setItemEnabled);
+    cls.addFunc("setItemSelected", &UI::setItemSelected);
     cls.addFunc("setItemFocusMode", &UI::setItemFocusMode);
     cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
     cls.addFunc("setItemTheme", &UI::setItemTheme);

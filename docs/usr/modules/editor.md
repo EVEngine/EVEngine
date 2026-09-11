@@ -623,6 +623,8 @@ dock.layout(config.width, config.height);
 local toolbar = editor.newToolbar();
 toolbar.addTool("move", "Move");
 toolbar.addTool("paint", "Paint");
+toolbar.setIcon("move", "move");
+toolbar.setIcon("paint", "paint-brush");
 toolbar.setShortcut("move", "W");
 
 local insp = editor.newInspector();
@@ -822,6 +824,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 ## API 快查
 
 - Editor 核心模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newToolbar` / `newInspector` / `newDock`
+- Toolbar：`clear` / `addTool` / `setIcon` / `setShortcut` / `setActive` / `getActive` / `matchShortcut` / `getToolCount` / `getToolId` / `getToolLabel` / `getToolIcon` / `getToolShortcut`
 - Level Editor 模块：`newTileBuffer` / `newBrush` / `newHistory` / `createTarget` / `bind`
 - Action editor adapter：`eve.ActionEditorModule().create`
 - Heightmap Target 模块：`create` / `bind` / `applyBrush` / `newMesh` / `updateMesh` / `newSmoothMesh` / `updateSmoothMesh` / `encodeDocument` / `decodeDocument`

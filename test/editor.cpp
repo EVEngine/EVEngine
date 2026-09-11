@@ -604,12 +604,16 @@ TEST_CASE("editor.toolbar_inspector_dock") {
     std::unique_ptr<EditorToolbar> tb(new EditorToolbar());
     tb->addTool("move", "Move");
     tb->addTool("paint", "Paint");
+    tb->setIcon("move", "move");
+    tb->setIcon("paint", "paint-brush");
     tb->setShortcut("move", "W");
     CHECK_EQ(tb->getActive(), std::string("move"));
     CHECK(tb->matchShortcut("W"));
     CHECK(tb->setActive("paint"));
     CHECK_EQ(tb->getActive(), std::string("paint"));
     CHECK_EQ(tb->getToolCount(), 2);
+    CHECK_EQ(tb->getToolIcon(0), std::string("move"));
+    CHECK_EQ(tb->getToolIcon(1), std::string("paint-brush"));
 
     std::unique_ptr<EditorInspector> insp(new EditorInspector());
     insp->addFloat("size", "Size", 1.f, 0.f, 10.f, 0.1f);
