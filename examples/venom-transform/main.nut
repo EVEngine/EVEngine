@@ -13,7 +13,7 @@ persist venomGround = null
 persist venomCoverage = 0.0
 persist venomPlaying = true
 persist venomTime = 0.0
-persist venomYaw = 0.55
+persist venomYaw = 0.72
 persist venomFrame = 0
 persist venomCaptureIdx = 0
 persist venomCapturePending = false
@@ -24,6 +24,8 @@ persist venomDone = false
 
 venomAutoShots <- [0.0, 0.28, 0.55, 0.82, 1.0]
 venomCharacterHeight <- 1.80
+// Quaternius free Universal Base is bald (full hair is in the paid pack);
+// eyebrows/eyes still ship as separate meshes with the hair/eye textures.
 
 function keyJust(k) {
     return key_just_pressed(k);
@@ -85,7 +87,8 @@ function buildCharacter() {
     for (local i = 0; i < meshCount; ++i) {
         local part = model3d.createRenderable(gfx, venomModel, i);
         part.setPosition(0.0, 0.0, 0.0);
-        part.setYaw(3.14159); // face the orbit camera
+        // Default bind facing is +Z; orbit camera sits on +Z at yaw=0.
+        part.setYaw(0.0);
         part.setCastShadow(true);
         part.setReceiveShadow(true);
         part.setReceiveLight(true);
@@ -157,10 +160,11 @@ function updateDroplets(dt) {
 }
 
 function orbitCamera() {
-    local radius = 3.6;
-    local eyeY = 1.25;
+    // Front 3/4 of the full body so the goo climb reads clearly.
+    local radius = 3.9;
+    local eyeY = 1.35;
     venomCamera.setEye(sin(venomYaw) * radius, eyeY, cos(venomYaw) * radius);
-    venomCamera.setTarget(0.0, 0.95, 0.0);
+    venomCamera.setTarget(0.0, 0.90, 0.0);
 }
 
 function requestShot(name) {
@@ -202,7 +206,10 @@ eve_init = function() {
 eve_update = function(dt) {
     venomFrame += 1;
     venomTime += dt;
-    venomYaw += dt * 0.22;
+    // Keep a fixed front 3/4 during the auto capture pass so every
+    // coverage step shows the character face-on; orbit only when interactive.
+    if (!venomAutoMode)
+        venomYaw += dt * 0.22;
     orbitCamera();
 
     if (keyJust("space")) venomPlaying = !venomPlaying;
