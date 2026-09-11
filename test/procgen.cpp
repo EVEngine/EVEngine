@@ -77,6 +77,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <set>
@@ -633,6 +634,12 @@ TEST_CASE("procgen.mesh.tree.validatesOptions") {
     p.setString("branchAlgorithm", "crystalGrowth");
     CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
     CHECK(err.find("branchAlgorithm") != std::string::npos);
+    p.setString("branchAlgorithm", "weberPenn");
+    p.setString("leafMode", "confetti");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
+    CHECK(err.find("leafMode") != std::string::npos);
+    p.setString("leafMode", "clusters");
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
 }
 
 TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
@@ -738,11 +745,40 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setFloat("growthStep", 0.25f);
     params.setFloat("maxTurnAngle", 18.f);
     params.setInt("maxChildren", 2);
+    // Cluster knobs are env-overridable so the leaf look can be compared across
+    // runs without rebuilding; unset variables leave the recipe defaults.
+    const auto envFloat = [](const char *name, float fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stof(raw) : fallback;
+    };
+    const auto envInt = [](const char *name, int fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stoi(raw) : fallback;
+    };
+    params.setFloat("clusterSize", envFloat("EVENGINE_TREE_CLUSTER_SIZE", 0.30f));
+    params.setFloat("clusterLeafScale", envFloat("EVENGINE_TREE_CLUSTER_LEAF_SCALE", 0.85f));
+    params.setFloat("clusterSpacing", envFloat("EVENGINE_TREE_CLUSTER_SPACING", 0.80f));
+    params.setFloat("clusterSeparation", envFloat("EVENGINE_TREE_CLUSTER_SEPARATION", 0.55f));
+    params.setInt("clusterPlanes", envInt("EVENGINE_TREE_CLUSTER_PLANES", 10));
+    params.setInt("clusterCaps", envInt("EVENGINE_TREE_CLUSTER_CAPS", 2));
+    params.setInt("clusterLeaves", envInt("EVENGINE_TREE_CLUSTER_LEAVES", 28));
+    params.setInt("clusterLimit", envInt("EVENGINE_TREE_CLUSTER_LIMIT", 120));
+    params.setFloat("leafSize", envFloat("EVENGINE_TREE_LEAF_SIZE", 6.2f * 0.075f));
 
     Procgen generator;
     auto    treeParams = requireParams(params);
     auto    treeMesh   = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
     REQUIRE(treeMesh.isBound());
+    // Same parameters, CPU side: the uploaded Mesh keeps no metadata, but the
+    // dump is most useful with the cost and cluster count next to it.
+    {
+        MeshBuild   stats;
+        std::string statsError;
+        if (MeshRecipeRegistry::instance().generate("mesh.tree", params, stats, statsError)) {
+            std::printf("tree mesh: %d vertices, %d triangles, clusters=%s\n", stats.getVertexCount(),
+                        stats.getIndexCount() / 3, stats.getMeta("clusters", "n/a").c_str());
+        }
+    }
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
     const uint8_t atlasPixels[] = {
