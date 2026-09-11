@@ -19,17 +19,17 @@
 #include "graphics/AlphaMask.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/CanvasScriptBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
+#include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/PrimitiveScriptBindings.h"
-#include "graphics/ShaderScriptBindings.h"
-#include "graphics/CanvasScriptBindings.h"
 #include "graphics/Quad.h"
 #include "graphics/ReflectionProbeCapture.h"
 #include "graphics/ReflectionProbeRegistry.h"
@@ -275,6 +275,35 @@ void Graphics::expose(ssq::Table& table) {
     maskCls.addFunc("setInverted", &AlphaMask::setInverted);
     maskCls.addFunc("getInverted", &AlphaMask::getInverted);
     maskCls.addFunc("draw", &AlphaMask::draw);
+
+    auto mapFogCls =
+        table.addClass<MapFog>("MapFog", std::function<MapFog*()>([]() -> MapFog* { return nullptr; }), true);
+    mapFogCls.addFunc("update", &MapFog::update);
+    mapFogCls.addFunc("setTime", &MapFog::setTime);
+    mapFogCls.addFunc("getTime", &MapFog::getTime);
+    mapFogCls.addFunc("setCloudTexture", &MapFog::setCloudTexture);
+    mapFogCls.addFunc("getCloudTexture", &MapFog::getCloudTexture);
+    mapFogCls.addFunc("setMaskTexture", &MapFog::setMaskTexture);
+    mapFogCls.addFunc("getMaskTexture", &MapFog::getMaskTexture);
+    mapFogCls.addFunc("setCloudTiling", &MapFog::setCloudTiling);
+    mapFogCls.addFunc("setCloudSpeed", &MapFog::setCloudSpeed);
+    mapFogCls.addFunc("setDistort", &MapFog::setDistort);
+    mapFogCls.addFunc("setDistortFix", &MapFog::setDistortFix);
+    mapFogCls.addFunc("setFogColor", &MapFog::setFogColor);
+    mapFogCls.addFunc("setFogAlpha", &MapFog::setFogAlpha);
+    mapFogCls.addFunc("setEdgeSoftness", &MapFog::setEdgeSoftness);
+    mapFogCls.addFunc("setShadowEnabled", &MapFog::setShadowEnabled);
+    mapFogCls.addFunc("setShadow", &MapFog::setShadow);
+    mapFogCls.addFunc("setSelectStrength", &MapFog::setSelectStrength);
+    mapFogCls.addFunc("setDissolveScale", &MapFog::setDissolveScale);
+    mapFogCls.addFunc("setCloudMix", &MapFog::setCloudMix);
+    mapFogCls.addFunc("setCloudDensity", &MapFog::setCloudDensity);
+    mapFogCls.addFunc("getCloudTileA", &MapFog::getCloudTileA);
+    mapFogCls.addFunc("getCloudTileB", &MapFog::getCloudTileB);
+    mapFogCls.addFunc("getFogAlpha", &MapFog::getFogAlpha);
+    mapFogCls.addFunc("getShadowEnabled", &MapFog::getShadowEnabled);
+    mapFogCls.addFunc("makeCloudTexture", &MapFog::makeCloudTexture);
+    mapFogCls.addFunc("draw", &MapFog::draw);
 
     auto texCls =
         table.addClass<Texture>("Texture", std::function<Texture*()>([]() -> Texture* { return nullptr; }), true);
@@ -1143,6 +1172,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
+    cls.addFunc("newMapFog", &Graphics::newMapFog);
     cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
@@ -1180,6 +1210,8 @@ AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(
 
 Outline* Graphics::newOutline() { return new Outline(this); }
 AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
+
+MapFog* Graphics::newMapFog() { return new MapFog(this); }
 
 GlobalIllumination* Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 
