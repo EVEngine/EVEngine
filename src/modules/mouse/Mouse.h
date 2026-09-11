@@ -43,20 +43,20 @@ public:
          */
         float        getWheelY() const;
         virtual void getPosition(double& x, double& y) const       = 0;
-        virtual void setX(double x) = 0;
-	virtual void setY(double y) = 0;
-	virtual void setPosition(double x, double y) = 0;
-	virtual void setVisible(bool visible) = 0;
-	virtual bool isDown(const std::vector<int> &buttons) const = 0;
-	virtual bool isVisible() const = 0;
-	virtual void setGrabbed(bool grab) = 0;
-	virtual bool isGrabbed() const = 0;
-	virtual bool setRelativeMode(bool relative) = 0;
-	virtual bool getRelativeMode() const = 0;
-	/** @brief Pixel delta since the last getMovementX() (also latches Y for getMovementY). */
-	virtual double getMovementX() = 0;
-	/** @brief Pixel delta latched by the most recent getMovementX(); call X then Y each frame. */
-	virtual double getMovementY() const = 0;
+        virtual void setX(double x)                                = 0;
+        virtual void setY(double y)                                = 0;
+        virtual void setPosition(double x, double y)               = 0;
+        virtual void setVisible(bool visible)                      = 0;
+        virtual bool isDown(const std::vector<int>& buttons) const = 0;
+        virtual bool isVisible() const                             = 0;
+        virtual void setGrabbed(bool grab)                         = 0;
+        virtual bool isGrabbed() const                             = 0;
+        virtual bool setRelativeMode(bool relative)                = 0;
+        virtual bool getRelativeMode() const                       = 0;
+        /** @brief Pixel delta since the last getMovementX() (also latches Y for getMovementY). */
+        virtual double getMovementX() = 0;
+        /** @brief Pixel delta latched by the most recent getMovementX(); call X then Y each frame. */
+        virtual double getMovementY() const = 0;
 
 }; // Mouse
 
