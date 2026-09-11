@@ -1292,9 +1292,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        # Sanitizer jobs use the same full dependency set; package unpacking
-        # can legitimately finish just beyond the former 10-minute guard.
-        timeout-minutes: 15
+        # Sanitizer jobs use the same full dependency set as the debug lane.
+        timeout-minutes: 20
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
