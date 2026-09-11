@@ -150,8 +150,6 @@ eve_update = function(dt) {
     if (cloth == null) return;
 
     windT += dt;
-    cloth.setWindVelocity(math.polarY(1.8, windT * 0.7), 1.2,
-                          math.polarX(0.6, windT * 0.5));
 
     if (edgePressed("C")) {
         selfCollisionOn = !selfCollisionOn;
