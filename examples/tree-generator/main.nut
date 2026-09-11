@@ -1,10 +1,10 @@
 // Arbor Lab — interactive procedural tree recipe showcase.
-// R regenerate, 1/2 Low Poly/Realistic, A algorithm, L leaves, [/] density, C canopy.
+// R regenerate, 1/2 Low Poly/Realistic, A algorithm, L cycle leaf mode, [/] density.
 
 persist treeSeed = 31415
 persist treeStyle = "lowpoly"
 persist treeAlgorithm = "weberPenn"
-persist leafMode = "cards"
+persist leafMode = "clusters"
 persist leafDensity = 0.65
 persist treeMesh = null
 persist treeObject = null
@@ -27,6 +27,15 @@ function rebuildTree() {
     p.setFloat("crownRadius", 2.15);
     p.setInt("branchLevels", treeStyle == "realistic" ? 3 : 2);
     p.setInt("branchCount", treeStyle == "realistic" ? 10 : 6);
+    // Blue-noise leaf clusters: a sphere of leaf planes per foliage anchor.
+    // Denser, more separated clusters give a continuous crown instead of a few
+    // big lobes; smaller leaves suit the realistic style.
+    p.setFloat("clusterSize", treeStyle == "realistic" ? 0.26 : 0.30);
+    p.setFloat("clusterSeparation", treeStyle == "realistic" ? 0.45 : 0.55);
+    p.setFloat("clusterLeafScale", treeStyle == "realistic" ? 0.70 : 0.85);
+    p.setInt("clusterPlanes", treeStyle == "realistic" ? 12 : 10);
+    p.setInt("clusterLeaves", treeStyle == "realistic" ? 34 : 28);
+    p.setInt("clusterLimit", treeStyle == "realistic" ? 160 : 120);
     local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
     if (!meshResult.ok) return;
     treeMesh = meshResult.value;
@@ -64,11 +73,9 @@ function eve_update(dt) {
         rebuildTree();
     }
     if (pressed("l") || pressed("L")) {
-        leafMode = leafMode == "none" ? "cards" : "none";
-        rebuildTree();
-    }
-    if (pressed("c") || pressed("C")) {
-        leafMode = leafMode == "canopy" ? "cards" : "canopy";
+        leafMode = leafMode == "clusters" ? "cards" :
+                   leafMode == "cards" ? "canopy" :
+                   leafMode == "canopy" ? "none" : "clusters";
         rebuildTree();
     }
     if (pressed("leftbracket")) { leafDensity = max(0.0, leafDensity - 0.1); rebuildTree(); }

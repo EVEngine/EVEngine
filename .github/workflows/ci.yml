@@ -1010,9 +1010,9 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        # Ubuntu mirrors have twice crossed the former 10-minute guard while
-        # still making progress through this full native dependency set.
-        timeout-minutes: 15
+        # apt update may consume most of ten minutes while retrying a slow
+        # Ubuntu mirror; keep enough time for the package download itself.
+        timeout-minutes: 20
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.

@@ -159,7 +159,7 @@ eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen procgen_editi
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)
 eve_declare_module(NAME queue_editor LAYER 7 DEPS editor queue_editing GROUP 2d 3d web)
-eve_declare_module(NAME scene_editor LAYER 7 DEPS editor scene_editing OPTIONAL_DEPS scene
+eve_declare_module(NAME scene_editor LAYER 7 DEPS editor physics scene_editing OPTIONAL_DEPS scene
                    SCRIPT SceneEditorModule SLOT sceneEditor GROUP 3d web)
 eve_declare_module(NAME sceneloader_editor LAYER 7 DEPS editor sceneloader_editing GROUP 3d web)
 eve_declare_module(NAME social_editor LAYER 7 DEPS editor social_editing GROUP 2d 3d web)
