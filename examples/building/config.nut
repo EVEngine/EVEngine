@@ -1,5 +1,6 @@
 // examples/building 的窗口配置。
 config = {
+    assetSource = "starter" // Set to "assets" after preparing optional third-party art.
     width = 1280
     height = 800
     title = "EVEngine Building 示例 —— 城镇放置沙盒"

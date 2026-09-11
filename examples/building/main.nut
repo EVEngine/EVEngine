@@ -1,3 +1,4 @@
+dofile("town_art.nut");
 // ============================================================================
 // EVEngine Building 模块示例 —— 城镇建筑放置沙盒
 //
@@ -65,8 +66,8 @@ function mousePressed(button) {
 function registerBuildings() {
     bld.registerBuildingsFromJson(@"[
       {""id"":""road"",""displayName"":""石板路"",""category"":""infra"",
-       ""footprintW"":1,""footprintH"":1,""tags"":[""road""],""cost"":{""gold"":2}},
-      {""id"":""house.wood"",""displayName"":""木屋"",""category"":""housing"",
+       ""footprintW"":1,""footprintH"":1,""tags"":[""road""],""requireTerrain"":[1],""cost"":{""gold"":2}},
+      {""id"":""house.wood"",""displayName"":""石屋"",""category"":""housing"",
        ""footprintW"":2,""footprintH"":2,""tags"":[""house"",""housing""],
        ""requireTerrain"":[1],""cost"":{""gold"":15,""wood"":20},
        ""extra"":{""color"":""warm""}},
@@ -102,8 +103,8 @@ function paintTerrain() {
 }
 
 function resetTown() {
-    if (world) world.destroy();
     if (ghost) ghost.destroy();
+    if (world) world.destroy();
 
     world = bld.newWorld(gridW, gridH, cellPx);
     world.setId("town");
@@ -117,8 +118,19 @@ function resetTown() {
     ghost.setBuildingId(palette[paletteIndex]);
     ghost.setRotationDeg(0.0);
 
-    gold = 120;
-    wood = 80;
+    // Seed a readable town using the same validated placement path as the player.
+    foreach (entry in [["house.wood",3,3],["house.wood",8,3],["barn.l",12,4],
+                       ["road",3,6],["road",4,6],["road",5,6],["road",6,6],
+                       ["road",7,6],["road",8,6],["road",9,6],["road",10,6],
+                       ["stall",6,5],["dock",10,11]]) {
+        ghost.setBuildingId(entry[0]);
+        ghost.setFromWorld(world,mapOriginX+(entry[1]+0.5)*cellPx,mapOriginY+(entry[2]+0.5)*cellPx);
+        ghost.validate(world);
+        if (!ghost.isValid() || world.placeGhost(ghost)<=0) throw "Town seed placement failed";
+    }
+    ghost.setBuildingId(palette[0]);
+    gold = 500;
+    wood = 400;
     hiddenGhostCellX = -999;
     hiddenGhostCellY = -999;
     logLines = [];
@@ -232,23 +244,6 @@ function tryRemove() {
     }
 }
 
-function buildingColor(buildingId, out) {
-    // out = [r,g,b]
-    if (buildingId == "road") {
-        out[0] = 0.45; out[1] = 0.45; out[2] = 0.48;
-    } else if (buildingId == "house.wood") {
-        out[0] = 0.72; out[1] = 0.48; out[2] = 0.28;
-    } else if (buildingId == "stall") {
-        out[0] = 0.85; out[1] = 0.62; out[2] = 0.22;
-    } else if (buildingId == "dock") {
-        out[0] = 0.35; out[1] = 0.55; out[2] = 0.70;
-    } else if (buildingId == "barn.l") {
-        out[0] = 0.55; out[1] = 0.38; out[2] = 0.55;
-    } else {
-        out[0] = 0.6; out[1] = 0.6; out[2] = 0.6;
-    }
-}
-
 function footprintCells(buildingId, ox, oy, rot, sink) {
     // 与引擎 cardinal 旋转约定一致，便于绘制鬼影（不依赖私有 API）
     local w = bld.getBuildingFootprintW(buildingId);
@@ -291,7 +286,7 @@ function refreshHud() {
         "  花费 G" + costG + "/W" + costW +
         "  旋转 " + ghost.getRotationDeg().tointeger() + "°  " + ghostInfo);
     ui.setText("help",
-        "快捷键：1-5 选择 · R 旋转 · 左键建造 · 右键拆除 · Space 重置");
+        "快捷键：1-5 选择 · R 旋转 · 左键建造 · 右键拆除 · T 网格 · Space 重置");
     local logText = "";
     foreach (line in logLines)
         logText += line + "\n";
@@ -325,7 +320,8 @@ function mountMapCells(remount) {
 
 eve_init = function() {
     print("examples/building: town placement sandbox ready\n");
-    gfx.setBackgroundColor(0.08, 0.10, 0.12, 1.0);
+    gfx.setBackgroundColor(0.055, 0.075, 0.065, 1.0);
+    loadTownArt();
     if (bld == null) {
         bld = eve.Building();
         registerBuildings();
@@ -343,7 +339,7 @@ eve_init = function() {
         ui.separator("palette-separator");
         ui.text("选择建筑", "palette-title");
         ui.button("1  石板路", "select-road");
-        ui.button("2  木屋", "select-house");
+        ui.button("2  石屋", "select-house");
         ui.button("3  摊位（需邻路）", "select-stall");
         ui.button("4  码头（仅水域）", "select-dock");
         ui.button("5  L 形仓", "select-barn");
@@ -369,12 +365,15 @@ eve_init = function() {
 };
 
 eve_reload <- function() {
+    loadTownArt();
     registerBuildings();
     mountMapCells(true);
 };
 
 eve_update = function(dt) {
     if (world == null || ghost == null) return;
+    waterTime += dt;
+    if (keyPressed("t")) showGrid = !showGrid;
 
     local clicked = ui.consumeClick();
     while (clicked != "") {
@@ -439,49 +438,7 @@ eve_render = function() {
         return;
     }
 
-    // —— 地形、建筑与放置鬼影 ——
-    // Render all grid visuals in one pass. The current 2D backend can coalesce
-    // separated solid batches, so a later ghost-only pass is not reliable.
-    local col = [0.5, 0.5, 0.5];
-    local ghostCells = [];
-    local drawGhost = ghost != null &&
-        (ghost.getCellX() != hiddenGhostCellX || ghost.getCellY() != hiddenGhostCellY);
-    local ghostOk = false;
-    if (drawGhost) {
-        footprintCells(ghost.getBuildingId(), ghost.getCellX(), ghost.getCellY(),
-                       ghost.getRotationDeg(), ghostCells);
-        ghostOk = ghost.isValid() && canAfford(ghost.getBuildingId()) == "";
-    }
-    for (local y = 0; y < gridH; y += 1) {
-        for (local x = 0; x < gridW; x += 1) {
-            local px = mapOriginX + x * cellPx;
-            local py = mapOriginY + y * cellPx;
-            local isGhostCell = false;
-            if (drawGhost) {
-                foreach (c in ghostCells) {
-                    if (c[0] == x && c[1] == y) {
-                        isGhostCell = true;
-                        break;
-                    }
-                }
-            }
-            local occ = world.getOccupant(x, y);
-            if (isGhostCell) {
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0,
-                                  ghostOk ? 0.25 : 0.78,
-                                  ghostOk ? 0.75 : 0.20,
-                                  ghostOk ? 0.35 : 0.18, 1.0);
-            } else if (occ > 0) {
-                buildingColor(world.getBuildingId(occ), col);
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0,
-                                  col[0], col[1], col[2], 1.0);
-            } else if (world.getTerrain(x, y) == TERRAIN_WATER) {
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0, 0.18, 0.42, 0.62, 1.0);
-            } else {
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0, 0.22, 0.38, 0.24, 1.0);
-            }
-        }
-    }
+    drawTown();
 
     ui.beginFrameAndRender();
 };
