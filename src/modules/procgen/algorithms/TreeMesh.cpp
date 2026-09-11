@@ -1,5 +1,7 @@
 #include "procgen/algorithms/TreeMesh.h"
 
+#include "procgen/algorithms/FoliageCluster.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -121,6 +123,95 @@ struct Tip {
     V3    dir;
     float scale;
 };
+
+/** @brief Knobs for the blue-noise leaf-cluster foliage mode. */
+struct ClusterSettings {
+    float size;            // cluster radius as a fraction of the crown radius
+    float leafScale;       // leaf length as a fraction of the `leafSize` parameter
+    float spacing;         // blue-noise centre distance, in leaf-size units
+    float separation;      // minimum cluster-centre distance, in cluster radii
+    float tilt;            // maximum ring-plane tilt away from vertical, in degrees
+    int   planes;          // planes rotated around the cluster's Y axis
+    int   caps;            // near-horizontal planes closing the cluster's poles
+    int   leavesPerPlane;  // per-plane leaf budget
+    int   limit;           // maximum clusters per tree
+};
+
+/**
+ * @brief Fill the crown with blue-noise leaf clusters.
+ *
+ * Anchors are consumed in a deterministic shuffled order under a Poisson
+ * separation test, so clusters cover the crown evenly instead of piling onto
+ * whichever limb the generator happened to emit first, and the count stays
+ * inside the requested budget. Each accepted anchor receives one cluster: a
+ * sphere filled with blue-noise leaf planes whose normals come from the sphere
+ * rather than from the individual cards.
+ *
+ * @param out Destination mesh, appended to in place.
+ * @param anchors Candidate foliage anchors; not modified.
+ * @param rng Cluster-placement RNG, already seeded from the recipe seed.
+ * @param crownRadius Crown radius driving the cluster size.
+ * @param leafSize Base leaf length; clusters scale it by `settings.leafScale`.
+ * @param density Value in `[0, 1]`; widens the blue-noise spacing when low.
+ * @param seed Recipe seed, mixed with the cluster index for per-cluster streams.
+ * @param settings Cluster placement and sampling knobs.
+ * @return Number of clusters appended.
+ */
+int addFoliageClusters(MeshBuild& out, const std::vector<Tip>& anchors, std::mt19937& rng, float crownRadius,
+                       float leafSize, float density, uint32_t seed, const ClusterSettings& settings) {
+    if (anchors.empty() || settings.limit <= 0) return 0;
+
+    std::vector<size_t> order(anchors.size());
+    for (size_t i = 0; i < order.size(); ++i) order[i] = i;
+    for (size_t i = order.size(); i > 1; --i)
+        std::swap(order[i - 1], order[size_t(randomRange(rng, 0.f, float(i) - 1e-4f))]);
+
+    const float baseRadius   = std::max(1e-3f, crownRadius * settings.size);
+    const float separation   = std::max(0.05f, settings.separation) * baseRadius * 2.f;
+    const float separationSq = separation * separation;
+    // Higher density packs the same cluster volume with more, closer leaves.
+    const float spacing = std::max(0.05f, settings.spacing * (1.45f - 0.75f * density));
+
+    std::vector<V3> accepted;
+    accepted.reserve(size_t(settings.limit));
+    int clusters = 0;
+    for (size_t k = 0; k < order.size() && clusters < settings.limit; ++k) {
+        const Tip& tip     = anchors[order[k]];
+        bool       blocked = false;
+        for (const V3& taken : accepted) {
+            if (distanceSquared(taken, tip.p) < separationSq) {
+                blocked = true;
+                break;
+            }
+        }
+        if (blocked) continue;
+
+        const float radius = baseRadius * (0.62f + 0.38f * tip.scale) * randomRange(rng, 0.88f, 1.12f);
+        // Pull the cluster back along the shoot so the twig visibly enters the
+        // foliage instead of stopping just short of it.
+        const V3 center = add(sub(tip.p, mul(tip.dir, radius * 0.10f)), {0.f, radius * 0.06f, 0.f});
+
+        FoliageClusterDesc cluster;
+        cluster.seed              = seed ^ (uint32_t(clusters + 1) * 2654435761u);
+        cluster.centerX           = center.x;
+        cluster.centerY           = center.y;
+        cluster.centerZ           = center.z;
+        cluster.radius            = radius;
+        cluster.leafSize          = leafSize * settings.leafScale * randomRange(rng, 0.85f, 1.15f);
+        cluster.leafSpacing       = spacing;
+        cluster.planes            = settings.planes;
+        cluster.capPlanes         = settings.caps;
+        cluster.tiltDegrees       = settings.tilt;
+        cluster.maxLeavesPerPlane = settings.leavesPerPlane;
+        cluster.normalRounding    = 1.f;
+        cluster.doubleSided       = true;
+        addFoliageCluster(out, cluster);
+
+        accepted.push_back(tip.p);
+        ++clusters;
+    }
+    return clusters;
+}
 
 struct StemPath {
     std::vector<V3> points;
@@ -374,8 +465,8 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
         error = "mesh.tree: style must be lowpoly|realistic";
         return false;
     }
-    if (leafMode != "cards" && leafMode != "canopy" && leafMode != "none") {
-        error = "mesh.tree: leafMode must be cards|canopy|none";
+    if (leafMode != "cards" && leafMode != "clusters" && leafMode != "canopy" && leafMode != "none") {
+        error = "mesh.tree: leafMode must be cards|clusters|canopy|none";
         return false;
     }
     if (branchAlgorithm != "weberPenn" && branchAlgorithm != "spaceColonization") {
@@ -416,6 +507,17 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
     const float lowerLeafCoverage   = std::clamp(params.getFloat("lowerLeafCoverage", 0.72f), 0.f, 1.f);
     const float upperLeafCoverage   = std::clamp(params.getFloat("upperLeafCoverage", 0.18f), 0.f, 1.f);
     const int   maxChildren         = std::clamp(params.getInt("maxChildren", 2), 1, 4);
+    const ClusterSettings clusters{
+        .size           = std::clamp(params.getFloat("clusterSize", 0.30f), 0.04f, 0.8f),
+        .leafScale      = std::clamp(params.getFloat("clusterLeafScale", 0.85f), 0.1f, 3.f),
+        .spacing        = std::clamp(params.getFloat("clusterSpacing", 0.80f), 0.25f, 3.f),
+        .separation     = std::clamp(params.getFloat("clusterSeparation", 0.55f), 0.1f, 3.f),
+        .tilt           = std::clamp(params.getFloat("clusterTilt", 26.f), 0.f, 80.f),
+        .planes         = std::clamp(params.getInt("clusterPlanes", 10), 1, 24),
+        .caps           = std::clamp(params.getInt("clusterCaps", 2), 0, 8),
+        .leavesPerPlane = std::clamp(params.getInt("clusterLeaves", 28), 1, 256),
+        .limit          = std::clamp(params.getInt("clusterLimit", 120), 1, 512),
+    };
     std::mt19937 rng(params.getSeed());
     out.clear();
 
@@ -511,6 +613,7 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
         }
     }
 
+    int clusterCount = 0;
     if (leafMode == "cards") {
         const int perTip = int(std::round((realistic ? 12.f : 6.f) * density));
         for (const Tip& tip : foliageAnchors) {
@@ -523,6 +626,9 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                 addLeafCard(out, c, face, leafSize * randomRange(rng, 0.72f, 1.25f), randomRange(rng, 0.f, kPi));
             }
         }
+    } else if (leafMode == "clusters" && density > 0.f) {
+        clusterCount =
+            addFoliageClusters(out, foliageAnchors, rng, crownRadius, leafSize, density, params.getSeed(), clusters);
     } else if (leafMode == "canopy" && density > 0.f) {
         // A canopy lobe belongs to a branch: center it just behind the terminal
         // point so the branch visibly penetrates the foliage instead of ending in air.
@@ -548,6 +654,7 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
     out.setMeta("leafMode", leafMode);
     out.setMeta("branchAlgorithm", branchAlgorithm);
     out.setMeta("seed", std::to_string(params.getSeed()));
+    if (leafMode == "clusters") out.setMeta("clusters", std::to_string(clusterCount));
     if (out.empty()) {
         error = "mesh.tree: generated an empty mesh";
         return false;
