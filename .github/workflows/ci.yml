@@ -1194,7 +1194,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the debug lane's full native dependency install.
+        timeout-minutes: 15
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
@@ -1291,7 +1292,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Sanitizer jobs use the same full dependency set as the debug lane.
+        timeout-minutes: 20
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
@@ -1385,7 +1387,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the other full native Linux dependency installs.
+        timeout-minutes: 15
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true

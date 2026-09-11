@@ -4,7 +4,7 @@
 #include "physics/Body.h"
 #include "physics/Physics.h"
 #include "physics/PhysicsLink.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 #include "physics/World.h"
 
 #include "common/Capability.h"
