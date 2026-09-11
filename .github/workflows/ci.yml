@@ -1010,12 +1010,12 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
           # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
@@ -1032,6 +1032,8 @@ jobs:
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -1289,9 +1291,9 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
@@ -1308,6 +1310,8 @@ jobs:
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
