@@ -1,12 +1,14 @@
 // Project-owned presentation. Replace this UI, camera or primitive projection
 // without changing SceneEditorSession or any domain operation.
 persist sceneDemo = {
-    session=null, camera=null, gizmo=null, selected="", objects=[], shapes=[], axes=[],
+    session=null, camera=null, gizmo=null, selected="", selection=[], objects=[], shapes=[], axes=[],
     revision=-1, serial=0, down=false, status="Select an object in the world or hierarchy",
-    mounted=false, frame=0, yaw=0.63, pitch=0.48, distance=15.0, lastX=0.0,lastY=0.0,orbit=false
+    mounted=false, frame=0, yaw=0.63, pitch=0.48, distance=15.0, lastX=0.0,lastY=0.0,orbit=false,
+    physicsFrame=null, placementKind="", gizmoMode="move"
 };
 const SCENE_HOST = "scene-components";
 const SCENE_SAVE = "scene-components.json";
+const SCENE_COLLIDER_CACHE = "scene-components-colliders.json";
 dofile(sceneToolsFull ? "scene_visuals.nut" : "../scene-editor/scene_visuals.nut");
 
 function sceneChecked(result) {
@@ -17,14 +19,44 @@ function sceneObject(id) {
     foreach (object in sceneDemo.objects) if (object.id == id) return object;
     return null;
 }
+function scenePhysicsObject(id) {
+    if (sceneDemo.physicsFrame == null) return null;
+    foreach (object in sceneDemo.physicsFrame.objects) if (object.object == id) return object;
+    return null;
+}
+function isSceneSelected(id) { foreach (value in sceneDemo.selection) if (value==id) return true; return false; }
+function scenePhysicsPoint(object,x,y,z) {
+    x*=object.scale[0];y*=object.scale[1];z*=object.scale[2];
+    local a=object.rotation[2],nx=x*cos(a)-y*sin(a),ny=x*sin(a)+y*cos(a);x=nx;y=ny;
+    a=object.rotation[0];ny=y*cos(a)-z*sin(a);local nz=y*sin(a)+z*cos(a);y=ny;z=nz;
+    a=object.rotation[1];nx=x*cos(a)+z*sin(a);nz=-x*sin(a)+z*cos(a);
+    return [nx+object.position[0],ny+object.position[1],nz+object.position[2]];
+}
+function startScenePhysicsPlacement(mode) {
+    if (sceneDemo.selected=="" || sceneDemo.session.isPhysicsPlacementActive()) return false;
+    local objects=[];
+    foreach (entry in sceneDemo.objects) if (entry.id!="root")
+        objects.push({object=entry.id,selected=isSceneSelected(entry.id),
+            shape=entry.id=="ground" ? "box" : "auto",halfExtents=[0.5,0.5,0.5],
+            colliderResourceKey=entry.id=="ground" ? "" : "demo-cube-v1",layerBits=1,tags=["placeable"]});
+    local started=sceneDemo.session.beginPhysicsPlacement({mode=mode,primary=sceneDemo.selected,objects=objects});
+    if (!sceneChecked(started)) return false;
+    sceneDemo.placementKind=mode; sceneDemo.physicsFrame=null;
+    sceneDemo.status=mode=="drop" ? "Dropping selection..." : "Physics placement";
+    return true;
+}
 function sceneCommand(command, payload) {
     if (sceneChecked(sceneDemo.session.execute(command, payload))) {
         sceneDemo.status = command;
     }
     refreshSceneComponents();
 }
-function selectSceneObject(id) {
-    sceneDemo.selected = id;
+function selectSceneObject(id, additive=false) {
+    if (!additive) sceneDemo.selection.clear();
+    local found=-1; for(local i=0;i<sceneDemo.selection.len();i++) if(sceneDemo.selection[i]==id) found=i;
+    if (id!="" && found<0) sceneDemo.selection.push(id);
+    else if (additive && found>=0) sceneDemo.selection.remove(found);
+    sceneDemo.selected=sceneDemo.selection.len()>0 ? sceneDemo.selection[sceneDemo.selection.len()-1] : "";
     refreshSceneComponents();
 }
 function clearSceneShapes(shapes) {
@@ -49,17 +81,19 @@ function drawSceneComponents() {
     scene.updateTransforms();
     local slot=0;
     foreach (object in sceneDemo.objects) {
-        if (object.id == "root") continue;
+        if (object.id == "root" || object.id == "ground") continue;
         local center = scene.localToWorldAt(SCENE_HOST, object.id, 0.0,0.0,0.0);
-        local dragging = object.id == sceneDemo.selected && sceneDemo.gizmo.isDragging();
-        if (dragging) center=scenePreviewPoint(0.0,0.0,0.0);
+        local dragging = isSceneSelected(object.id) && sceneDemo.gizmo.isDragging();
+        local physicsObject = scenePhysicsObject(object.id);
+        if (physicsObject != null) center=physicsObject.position;
+        else if (dragging) center=scenePreviewPoint(0.0,0.0,0.0);
         local points = [center[0],center[1],center[2]];
         foreach (axis in [[0.5,0.0,0.0],[0.0,0.5,0.0],[0.0,0.0,0.5]]) {
-            local end = dragging ? scenePreviewPoint(axis[0],axis[1],axis[2]) :
+            local end = physicsObject!=null ? scenePhysicsPoint(physicsObject,axis[0],axis[1],axis[2]) : dragging ? scenePreviewPoint(axis[0],axis[1],axis[2]) :
                 scene.localToWorldAt(SCENE_HOST, object.id, axis[0],axis[1],axis[2]);
             points.extend([end[0]-center[0],end[1]-center[1],end[2]-center[2]]);
         }
-        local selected = object.id == sceneDemo.selected;
+        local selected = isSceneSelected(object.id);
         sceneLitCube(points,selected,slot++);
         // Bounds are a derived picking projection; they are not authored TRS.
         scene.setNodeBoundsAt(SCENE_HOST, object.id, -0.5,-0.5,-0.5,0.5,0.5,0.5);
@@ -144,7 +178,8 @@ function mountScenePanels() {
         ui.text("Live hierarchy", "hierarchy-title");
         function addChildren(parent, indent) {
             foreach (object in sceneDemo.objects) if (object.parent == parent) {
-                ui.button(indent + (object.id == sceneDemo.selected ? "> " : "") + object.name,
+                if (object.id=="ground") continue;
+                    ui.button(indent + (isSceneSelected(object.id) ? "> " : "") + object.name,
                     "select:" + object.id);
                 addChildren(object.id, indent + "  ");
             }
@@ -167,9 +202,16 @@ function mountScenePanels() {
             ui.beginRow("object-actions",6.0);
             ui.button("Apply properties", "apply"); ui.button("Delete leaf", "delete");
             ui.end();
+            ui.beginRow("physics-actions",6.0);
+            ui.button("Drop", "physics:drop"); ui.button("Surface", "physics:surface");
+            ui.button("Point", "physics:point");
+            ui.end();
+            ui.beginRow("physics-finish-actions",6.0);
+            ui.button("Commit preview", "physics:commit"); ui.button("Cancel preview", "physics:cancel");
+            ui.end();
         }
     }
-    ui.textWrapped(sceneToolsFull ? "Axes: one axis. Squares: two axes. Center: uniform scale. RMB orbits. Rotation: radians. Resync clears history." : "Click to select. Arrows move one axis; squares move two. RMB orbits.", 320.0, "help");
+    ui.textWrapped(sceneToolsFull ? "Move uses collision preview. Drop settles onto the ground, Cancel discards it. Axes: one axis. Squares: two axes. RMB orbits. Rotation: radians." : "Click to select. Arrows move one axis; squares move two. RMB orbits.", 320.0, "help");
     ui.end(); ui.mountBuildAs("scene-tools"); ui.select("scene-tools");
     ui.setHostPos(16.0,16.0,0.0,0.0); ui.setHostSize(365.0, sceneToolsFull ? config.height-32.0 : 260.0);
     ui.setHostOverlay(true);
@@ -180,10 +222,14 @@ function refreshSceneComponents() {
     if (!sceneChecked(snapshot)) return;
     sceneDemo.objects=snapshot.value.objects;
     local object=sceneObject(sceneDemo.selected);
-    if (object == null) sceneDemo.selected="";
+    if (object == null) { sceneDemo.selected=""; sceneDemo.selection.clear(); }
     else {
         local t=object.transform;
-        sceneDemo.gizmo.setPosition(t.x,t.y,t.z);
+        local cx=0.0,cy=0.0,cz=0.0,count=0;
+        foreach(entry in sceneDemo.objects) if(isSceneSelected(entry.id)) {
+            cx+=entry.transform.x;cy+=entry.transform.y;cz+=entry.transform.z;count++;
+        }
+        sceneDemo.gizmo.setPosition(cx/count,cy/count,cz/count);
         sceneDemo.gizmo.setRotationEuler(t.rotationX,t.rotationY,t.rotationZ);
         sceneDemo.gizmo.setScale(t.scaleX,t.scaleY,t.scaleZ);
     }
@@ -195,7 +241,14 @@ function createSceneCube() {
     local id="cube-"+sceneDemo.serial;
     sceneCommand("scene.object.create.v1", {object=id,name="Cube "+sceneDemo.serial,
         parent=sceneObject("root")!=null ? "root" : "",position=[(sceneDemo.serial%5)*2.0-4.0,0.5,0.0]});
+    sceneChecked(cacheSceneCubeCollider(id));
     selectSceneObject(id);
+}
+function cacheSceneCubeCollider(id) {
+    return sceneDemo.session.cachePhysicsPlacementCompound(id,"demo-cube-v1",[
+        {shape="box",source="generated",halfExtents=[0.25,0.5,0.5],localPosition=[-0.25,0.0,0.0]},
+        {shape="box",source="generated",halfExtents=[0.25,0.5,0.5],localPosition=[0.25,0.0,0.0]}
+    ]);
 }
 function handleSceneUi() {
     ui.select("scene-tools");
@@ -206,7 +259,7 @@ function handleSceneUi() {
 }
 function handleSceneAction(id) {
     if (id=="create") createSceneCube();
-    else if (id.find("mode:")==0) { sceneDemo.gizmo.setMode(id.slice(5));drawSceneAxes(); }
+    else if (id.find("mode:")==0) { sceneDemo.gizmoMode=id.slice(5);sceneDemo.gizmo.setMode(sceneDemo.gizmoMode);drawSceneAxes(); }
     else if (id=="undo" || id=="redo") {
         sceneChecked(id=="undo" ? sceneDemo.session.undo() : sceneDemo.session.redo());
         refreshSceneComponents();
@@ -215,15 +268,43 @@ function handleSceneAction(id) {
         if (fs.getIdentity()=="" && !fs.setIdentity("scene-components",false)) {
             sceneDemo.status="Save identity setup failed";ui.setText("status",sceneDemo.status);return;
         }
-        sceneDemo.status=(fs.setupWriteDirectory() && fs.writeTextAtomic(SCENE_SAVE,sceneDemo.session.saveJson())) ? "Saved "+SCENE_SAVE : "Save failed";
+        sceneDemo.status=(fs.setupWriteDirectory() && fs.writeTextAtomic(SCENE_SAVE,sceneDemo.session.saveJson()) &&
+            fs.writeTextAtomic(SCENE_COLLIDER_CACHE,sceneDemo.session.savePhysicsPlacementColliderCacheJson())) ?
+            "Saved scene and collider cache" : "Save failed";
     } else if (id=="load") {
-        sceneChecked(sceneDemo.session.restoreJson(eve.Filesystem().readText(SCENE_SAVE)));
+        local fs=eve.Filesystem();
+        sceneChecked(sceneDemo.session.restoreJson(fs.readText(SCENE_SAVE)));
+        local cache=fs.readText(SCENE_COLLIDER_CACHE);
+        if (cache!="") sceneChecked(sceneDemo.session.restorePhysicsPlacementColliderCacheJson(cache));
         refreshSceneComponents();
     } else if (id=="resync") {
         local created=eve.SceneEditorModule().createLiveSession("demo.scene",SCENE_HOST);
-        if (sceneChecked(created)) sceneDemo.session=created.value;
+        if (sceneChecked(created)) {
+            sceneDemo.session=created.value;
+            foreach(entry in sceneDemo.objects) if(entry.id.find("cube-")==0) sceneChecked(cacheSceneCubeCollider(entry.id));
+        }
         refreshSceneComponents();
-    } else if (id.find("select:")==0) selectSceneObject(id.slice(7));
+    } else if (id.find("select:")==0) selectSceneObject(id.slice(7),
+        keyboard.isDown("lctrl") || keyboard.isDown("rctrl") || keyboard.isDown("ctrl"));
+    else if (id=="physics:drop") startScenePhysicsPlacement("drop");
+    else if (id=="physics:point") {
+        if (startScenePhysicsPlacement("point")) sceneDemo.status="Point mode: aim with the mouse, then Commit";
+    }
+    else if (id=="physics:surface") {
+        if (startScenePhysicsPlacement("drag")) {
+            sceneDemo.placementKind="surface"; sceneDemo.status="Click a surface to preview alignment";
+        }
+    }
+    else if (id=="physics:commit") {
+        if (sceneDemo.session.isPhysicsPlacementActive()) {
+            sceneChecked(sceneDemo.session.commitPhysicsPlacement());
+            sceneDemo.physicsFrame=null; sceneDemo.placementKind=""; refreshSceneComponents();
+        }
+    }
+    else if (id=="physics:cancel") {
+        if (sceneDemo.session.isPhysicsPlacementActive()) sceneChecked(sceneDemo.session.cancelPhysicsPlacement());
+        sceneDemo.physicsFrame=null; sceneDemo.placementKind=""; drawSceneComponents();
+    }
     else if (id=="delete") sceneCommand("scene.object.delete.v1",{object=sceneDemo.selected});
     else if (id=="apply") {
         // Capture fields before a successful command remounts this custom panel.
@@ -254,17 +335,48 @@ function scenePointer() {
     local lx=b[0]-a[0],ly=b[1]-a[1],lz=b[2]-a[2];
     local length=sqrt(lx*lx+ly*ly+lz*lz); lx/=length;ly/=length;lz/=length;
     if (down && !sceneDemo.down && !ui.wantCaptureMouse()) {
-        local axis=object==null ? "" : g.pick(a[0],a[1],a[2],lx,ly,lz);
-        if (axis!="") g.beginDrag(axis,a[0],a[1],a[2],lx,ly,lz);
-        else selectSceneObject(scene.pickRayAt(SCENE_HOST,ox,oy,oz,dx,dy,dz));
+        if (sceneDemo.placementKind=="surface" && sceneDemo.session.isPhysicsPlacementActive()) {
+            local aligned=sceneDemo.session.alignPhysicsPlacementToSurface(
+                [ox,oy,oz],[ox+dx*1000.0,oy+dy*1000.0,oz+dz*1000.0],0.02,1.0/60.0);
+            if (sceneChecked(aligned)) {
+                sceneDemo.physicsFrame=aligned.value; sceneDemo.status="Surface preview ready; Commit or Cancel";
+                drawSceneComponents();
+            }
+        } else {
+            local axis=object==null ? "" : g.pick(a[0],a[1],a[2],lx,ly,lz);
+            if (axis!="") {
+                g.beginDrag(axis,a[0],a[1],a[2],lx,ly,lz);
+                local mode=sceneDemo.gizmoMode=="rotate" ? "rotate" : "place";
+                if (!startScenePhysicsPlacement(mode)) g.endDrag();
+            }
+            else selectSceneObject(scene.pickRayAt(SCENE_HOST,ox,oy,oz,dx,dy,dz),
+                keyboard.isDown("lctrl") || keyboard.isDown("rctrl") || keyboard.isDown("ctrl"));
+        }
     }
-    if (down && g.isDragging()) { g.updateDrag(a[0],a[1],a[2],lx,ly,lz); drawSceneComponents(); }
+    if (down && g.isDragging()) {
+        g.updateDrag(a[0],a[1],a[2],lx,ly,lz);
+        if (sceneDemo.session.isPhysicsPlacementActive()) {
+            local preview=sceneDemo.session.updatePhysicsPlacementTransform(
+                [g.getPositionX(),g.getPositionY(),g.getPositionZ()],
+                [g.getRotationX(),g.getRotationY(),g.getRotationZ()],
+                [g.getScaleX(),g.getScaleY(),g.getScaleZ()],1.0/60.0);
+            if (sceneChecked(preview)) {
+                sceneDemo.physicsFrame=preview.value;
+                sceneDemo.status=preview.value.colliding ? "Physics placement: contact" : "Physics placement";
+            }
+        }
+        drawSceneComponents();
+    }
     if (!down && g.isDragging()) {
         local position=[g.getPositionX(),g.getPositionY(),g.getPositionZ()];
         local rotation=[g.getRotationX(),g.getRotationY(),g.getRotationZ()];
         local scale=[g.getScaleX(),g.getScaleY(),g.getScaleZ()];
         g.endDrag();
-        sceneCommand("scene.transform.set.v1",{object=sceneDemo.selected,position=position,rotation=rotation,scale=scale});
+        if (sceneDemo.session.isPhysicsPlacementActive()) {
+            sceneChecked(sceneDemo.session.commitPhysicsPlacement());
+            sceneDemo.physicsFrame=null; sceneDemo.placementKind="";
+            refreshSceneComponents();
+        } else sceneCommand("scene.transform.set.v1",{object=sceneDemo.selected,position=position,rotation=rotation,scale=scale});
     }
     sceneDemo.down=down;
 }
@@ -275,6 +387,8 @@ eve_init=function() {
     local created=eve.SceneEditorModule().createLiveSession("demo.scene",SCENE_HOST);
     if (!sceneChecked(created)) throw sceneDemo.status;
     sceneDemo.session=created.value;
+    sceneChecked(sceneDemo.session.execute("scene.object.create.v1",{
+        object="ground",name="Ground",parent="root",position=[0.0,-0.1,0.0],scale=[18.0,0.2,18.0]}));
     if (!sceneToolsFull) sceneChecked(sceneDemo.session.restrictCommands(
         ["scene.object.create.v1","scene.transform.set.v1"]));
     sceneDemo.gizmo=eve.Editor().newGizmo(); sceneDemo.gizmo.setSize(1.8);
@@ -299,6 +413,25 @@ eve_update=function(dt) {
     }
     sceneDemo.orbit=orbit;sceneDemo.lastX=mouse.getX();sceneDemo.lastY=mouse.getY();
     if (!sceneDemo.gizmo.isDragging()) handleSceneUi();
+    if (sceneDemo.placementKind=="drop" && sceneDemo.session.isPhysicsPlacementActive()) {
+        local preview=sceneDemo.session.updatePhysicsPlacement(0.0,0.0,0.0,dt>1.0/30.0 ? 1.0/30.0 : dt);
+        if (sceneChecked(preview)) {
+            sceneDemo.physicsFrame=preview.value; drawSceneComponents();
+            if (preview.value.settled) {
+                sceneChecked(sceneDemo.session.commitPhysicsPlacement());
+                sceneDemo.physicsFrame=null; sceneDemo.placementKind=""; refreshSceneComponents();
+            }
+        }
+    }
+    if (sceneDemo.placementKind=="point" && sceneDemo.session.isPhysicsPlacementActive() && !ui.wantCaptureMouse()) {
+        sceneDemo.camera.screenToRay(mouse.getX(),mouse.getY(),config.width.tofloat(),config.height.tofloat());
+        local ox=sceneDemo.camera.getScreenRayOriginX(),oy=sceneDemo.camera.getScreenRayOriginY(),oz=sceneDemo.camera.getScreenRayOriginZ();
+        local preview=sceneDemo.session.updatePhysicsPlacement(
+            ox+sceneDemo.camera.getScreenRayDirX()*20.0,
+            oy+sceneDemo.camera.getScreenRayDirY()*20.0,
+            oz+sceneDemo.camera.getScreenRayDirZ()*20.0,dt>1.0/30.0 ? 1.0/30.0 : dt);
+        if (sceneChecked(preview)) { sceneDemo.physicsFrame=preview.value; drawSceneComponents(); }
+    }
     scenePointer();
 };
 eve_render=function() {

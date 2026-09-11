@@ -67,12 +67,15 @@ local playerChunkX = floor(player.x / 32.0);
 local playerChunkY = floor(player.y / 32.0);
 local playerChunkZ = floor(player.z / 32.0);
 world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);  // 半径 4 chunk
+// 每帧限额（可选第 5 参）：只补最近的 N 个缺失 chunk，其余留到后续帧，避免一次填满半径卡顿。
+// world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4, 2);
 world.selectVisible(viewProj, player.x, player.y, player.z, 160.0, true);
 world.drawVisible(gfx, atlasTex, 16);
 ```
 
-`streamAround` 返回本次新建 chunk 数（卸载数可用 `getChunkCount` 差值计算）。
-地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。
+`streamAround` 返回本次**插入世界、可立即绘制**的 chunk 数（卸载数可用 `getChunkCount` 差值计算）。
+第 5 个参数 `maxCreates` 为 0（默认）时在调用线程一次补齐半径内全部缺失 chunk。大于 0 且使用内置噪声地形（无脚本 generator、未加载 EVTR）时，主线程只入队最近 N 个任务：工作线程填充体素并网格化，后续某帧 `streamAround` 再把已完成的 chunk 插入世界并绘制。脚本 generator 与 EVTR 资产路径仍在调用线程执行。
+`getInflightStreamCount()` 是尚未插入世界的后台任务数。`setStreamCacheChunks(extra)` 在加载球外再留一圈：离开时不立刻卸载，飞回来可直接绘制；超出 `radius + extra` 才回收。默认 extra=0（与旧行为一致）。地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。
 
 ### 使用烘焙 EVTR 地形
 
@@ -134,7 +137,9 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 - 网格：`remeshDirty()`（自动并行）、`getChunkCount()`、`hasChunk`、`removeChunk`、`clear`。
 - 存档/流式：`saveWorld()`（返回 `data.newByteData` 可直接落盘）、`loadWorld(byteData)`、
   `unloadChunksOutside(cx,cy,cz,radiusChunks)`（卸载半径外的 chunk，返回卸载数）、
-  `streamAround(cx,cy,cz,radiusChunks)`（自动补建+生成+卸载+重建，返回新建数）、
+  `setStreamCacheChunks(extra)` / `getStreamCacheChunks()`（`streamAround` 卸载半径 = 加载半径 + extra）、
+  `streamAround(cx,cy,cz,radiusChunks [,maxCreates])`（自动补建+生成+卸载+重建，返回本帧插入世界的数量；内置噪声 + maxCreates>0 时后台填充，就绪帧插入）、
+  `getDirtyCount()`、`getInflightStreamCount()`、
   `setTerrain(seed, top, sub, stone, base, amp, scale)`（快速配置）、
   `setTerrainParam(key, value)`（细粒度配置，见下方参数表）、
   `loadTerrainAsset(bytes, offset, scale)`、
