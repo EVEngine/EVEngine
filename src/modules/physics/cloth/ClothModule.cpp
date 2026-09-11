@@ -93,6 +93,7 @@ void Cloth::expose(ssq::Table& table) {
     auto cloth3 =
         table.addClass<Cloth3D>("Cloth3D", std::function<Cloth3D*()>([]() -> Cloth3D* { return nullptr; }), true);
     cloth3.addFunc("update", &Cloth3D::update);
+    cloth3.addFunc("applyForce", &Cloth3D::applyForce);
     cloth3.addFunc("setGravity", &Cloth3D::setGravity);
     cloth3.addFunc("getGravityX", &Cloth3D::getGravityX);
     cloth3.addFunc("getGravityY", &Cloth3D::getGravityY);
@@ -163,7 +164,6 @@ void Cloth::expose(ssq::Table& table) {
     cloth3.addFunc("releaseGrab", &Cloth3D::releaseGrab);
     cloth3.addFunc("isGrabbing", &Cloth3D::isGrabbing);
     cloth3.addFunc("getGrabIndex", &Cloth3D::getGrabIndex);
-    cloth3.addFunc("applyForce", &Cloth3D::applyForce);
     cloth3.addFunc("setWindVelocity", &Cloth3D::setWindVelocity);
     cloth3.addFunc("getWindVelocityX", &Cloth3D::getWindVelocityX);
     cloth3.addFunc("getWindVelocityY", &Cloth3D::getWindVelocityY);
