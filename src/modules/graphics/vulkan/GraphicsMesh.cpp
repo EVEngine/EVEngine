@@ -3,10 +3,11 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Light.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/ShaderResourceReload.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -59,9 +60,11 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     std::vector<float> basePos;
     std::vector<float> baseNrm;
     std::vector<float> baseUv;
-    basePos.reserve(mesh.mNumVertices * 3);
-    baseNrm.reserve(mesh.mNumVertices * 3);
-    baseUv.reserve(mesh.mNumVertices * 2);
+    if (mesh.mNumAnimMeshes > 0) {
+        basePos.reserve(mesh.mNumVertices * 3);
+        baseNrm.reserve(mesh.mNumVertices * 3);
+        baseUv.reserve(mesh.mNumVertices * 2);
+    }
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
         MeshVertex v{};
         v.pos = {mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z};
@@ -69,19 +72,28 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
             v.normal = {mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z};
         else
             v.normal = {0.f, 1.f, 0.f};
+        if (mesh.HasTangentsAndBitangents()) {
+            const auto&     tangent   = mesh.mTangents[i];
+            const auto&     bitangent = mesh.mBitangents[i];
+            const glm::vec3 t(tangent.x, tangent.y, tangent.z);
+            const glm::vec3 b(bitangent.x, bitangent.y, bitangent.z);
+            v.tangent = glm::vec4(t, glm::dot(glm::cross(v.normal, t), b) < 0.f ? -1.f : 1.f);
+        }
         if (mesh.HasTextureCoords(0))
             v.uv = {mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y};
         else
             v.uv = {0.f, 0.f};
         verts.push_back(v);
-        basePos.push_back(v.pos.x);
-        basePos.push_back(v.pos.y);
-        basePos.push_back(v.pos.z);
-        baseNrm.push_back(v.normal.x);
-        baseNrm.push_back(v.normal.y);
-        baseNrm.push_back(v.normal.z);
-        baseUv.push_back(v.uv.x);
-        baseUv.push_back(v.uv.y);
+        if (mesh.mNumAnimMeshes > 0) {
+            basePos.push_back(v.pos.x);
+            basePos.push_back(v.pos.y);
+            basePos.push_back(v.pos.z);
+            baseNrm.push_back(v.normal.x);
+            baseNrm.push_back(v.normal.y);
+            baseNrm.push_back(v.normal.z);
+            baseUv.push_back(v.uv.x);
+            baseUv.push_back(v.uv.y);
+        }
     }
 
     std::vector<uint32_t> indices;
@@ -128,7 +140,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     handle->markMorphClean();
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
-    registerMeshRecord(gpu.get());
+    registerMeshRecord(gpu.get(), &verts, &indices);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -142,6 +154,19 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
 
     std::vector<aiVector3D> positions(mesh.mNumVertices);
     std::vector<aiVector3D> normals(mesh.mNumVertices);
+    std::vector<aiVector3D> tangents;
+    std::vector<aiVector3D> bitangents;
+    if (mesh.HasTangentsAndBitangents()) {
+        tangents.resize(mesh.mNumVertices);
+        bitangents.resize(mesh.mNumVertices);
+        const aiMatrix3x3 linear(worldTransform);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            tangents[i]   = linear * mesh.mTangents[i];
+            bitangents[i] = linear * mesh.mBitangents[i];
+            tangents[i].Normalize();
+            bitangents[i].Normalize();
+        }
+    }
     aiMatrix3x3 nmat(worldTransform);
     const float ndet = nmat.Determinant();
     if (std::fabs(ndet) > 1e-8f) {
@@ -188,6 +213,8 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     tmp.mNumVertices = mesh.mNumVertices;
     tmp.mVertices = positions.data();
     tmp.mNormals = normals.data();
+    tmp.mTangents       = tangents.empty() ? nullptr : tangents.data();
+    tmp.mBitangents     = bitangents.empty() ? nullptr : bitangents.data();
     tmp.mNumFaces = mesh.mNumFaces;
     tmp.mFaces = flipWinding ? flippedFaces.data() : mesh.mFaces;
     tmp.mMaterialIndex = mesh.mMaterialIndex;
@@ -197,12 +224,23 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
         tmp.mTextureCoords[0] = mesh.mTextureCoords[0];
         tmp.mNumUVComponents[0] = mesh.mNumUVComponents[0];
     }
-    Mesh *out = newMeshFromAssimp(tmp);
-    tmp.mVertices = nullptr;
-    tmp.mNormals = nullptr;
-    tmp.mFaces = nullptr;
-    tmp.mTextureCoords[0] = nullptr;
-    tmp.mAnimMeshes = nullptr;
+    const auto detach = [&]() {
+        tmp.mVertices         = nullptr;
+        tmp.mNormals          = nullptr;
+        tmp.mTangents         = nullptr;
+        tmp.mBitangents       = nullptr;
+        tmp.mFaces            = nullptr;
+        tmp.mTextureCoords[0] = nullptr;
+        tmp.mAnimMeshes       = nullptr;
+    };
+    Mesh* out = nullptr;
+    try {
+        out = newMeshFromAssimp(tmp);
+    } catch (...) {
+        detach();
+        throw;
+    }
+    detach();
     return out;
 }
 
@@ -581,6 +619,41 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
 
 void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                               Shader *shader) {
+    drawMeshShaderRange(mesh, model, texture, tint, shader, 0, 1);
+}
+
+Result<void> Graphics::drawMeshShaderInstances(Mesh& mesh, Shader& shader, const glm::mat4& model, const Color& tint,
+                                               uint32_t first, uint32_t count) {
+    auto fail = [](const char* message) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "graphics.instances"));
+    };
+    auto ownedShader = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
+                                    [&](const auto& item) { return item->owner == &shader; });
+    auto ownedMesh =
+        std::find_if(ownedMeshes.begin(), ownedMeshes.end(), [&](const auto& item) { return item.get() == &mesh; });
+    if (!initialized || ownedShader == ownedGpuShaders.end() || ownedMesh == ownedMeshes.end() ||
+        !(*ownedShader)->isMesh3D || (*ownedShader)->isHair3D || shader.isXray() || !mesh.gpuHandle ||
+        (!swapchainPassOpen && !offscreen3DPassOpen))
+        return fail("Expected owned mesh resources inside an open 3D pass");
+    const auto size = meshResourceInstanceCount(**ownedShader);
+    if (!size || first > size || count > size - first)
+        return fail("Instance range exceeds the immutable matrix buffer");
+    for (int col = 0; col < 4; ++col)
+        for (int row = 0; row < 4; ++row)
+            if (!std::isfinite(model[col][row])) return fail("Nonfinite model matrix");
+    for (int i = 0; i < 4; ++i)
+        if (!std::isfinite(tint[i])) return fail("Nonfinite instance tint");
+    if (!count) return Result<void>::success();
+    try {
+        drawMeshShaderRange(&mesh, model, nullptr, tint, &shader, first, count);
+        return Result<void>::success();
+    } catch (const std::exception& error) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "graphics.instances"));
+    }
+}
+
+void Graphics::drawMeshShaderRange(Mesh* mesh, const glm::mat4& model, Texture* texture, const Color& tint,
+                                   Shader* shader, uint32_t firstInstance, uint32_t instanceCount) {
     ASSERT(initialized);
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");
@@ -820,10 +893,11 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, activePipeline);
             lastMesh3dPipeline = activePipeline;
         }
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
-                              2, dynOffsets);
-        cb.pushConstants(mesh3dShaderPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gs->pipelineLayout, 0, 1, &set, 2, dynOffsets);
+        if (gs->resources)
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gs->pipelineLayout, 1, 1, &gs->resourceSet, 0,
+                                  nullptr);
+        cb.pushConstants(gs->pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
         const bool transparent = mesh3dSurfaceMode == SurfaceMode::Transparent;
@@ -843,7 +917,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 2,
                               dynOffsets);
     }
-    drawIndexedMesh(cb, *gpuMesh);
+    drawIndexedMesh(cb, *gpuMesh, instanceCount, firstInstance);
 }
 
 

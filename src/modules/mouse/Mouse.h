@@ -36,7 +36,13 @@ public:
 
 	virtual double getX() const = 0;
 	virtual double getY() const = 0;
-	virtual void getPosition(double &x, double &y) const = 0;
+        /** @brief Horizontal scroll accumulated by the latest completed platform pump; event-thread read,
+         * non-consuming. */
+        float getWheelX() const;
+        /** @brief Vertical scroll accumulated by the latest completed platform pump; event-thread read, non-consuming.
+         */
+        float        getWheelY() const;
+        virtual void getPosition(double &x, double &y) const = 0;
 	virtual void setX(double x) = 0;
 	virtual void setY(double y) = 0;
 	virtual void setPosition(double x, double y) = 0;

@@ -11,6 +11,7 @@
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
+#include "graphics/vulkan/ShaderResourceReload.h"
 
 namespace eve::graphics::vulkan {
 namespace {
@@ -50,6 +51,8 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         return reloadFailure(DiagnosticCode::ParseError, "SPIR-V magic mismatch", "source");
 
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
+    auto  resourceValidation = validateMeshResourceShaderReload(*current, vertSpv, fragSpv);
+    if (!resourceValidation) return resourceValidation;
     auto gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
                               [&](const std::unique_ptr<GpuShader> &owned) {
                                   return owned.get() == current;
@@ -88,13 +91,13 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         } else {
             candidate.mesh3dPipeline = createMesh3DStylePipeline(
                 vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples(), shader.meshBlend,
-                shader.meshDepthWrite, shader.meshDoubleSided);
+                shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
             candidate.mesh3dOffscreenPipeline = createMesh3DStylePipeline(
                 vert, fragSpv, candidate.pipelineLayout, offscreen3DRenderPass, vk::SampleCountFlagBits::e1,
-                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided);
+                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
             candidate.mesh3dHdrOffscreenPipeline = createMesh3DStylePipeline(
                 vert, fragSpv, candidate.pipelineLayout, hdrOffscreen3DRenderPass, vk::SampleCountFlagBits::e1,
-                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided);
+                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
             candidate.mesh3dXrayPipeline = createMesh3DXrayPipeline(
                 vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples());
         }

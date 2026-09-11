@@ -131,6 +131,8 @@ struct MeshVertex {
     glm::vec2 uv;
     glm::u16vec4 joints{0};
     glm::vec4 weights{0.f};
+    // Optional imported tangent basis; w=0 explicitly denotes an absent stream.
+    glm::vec4 tangent{0.f};
 
     static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
         vk::VertexInputBindingDescription b{};
@@ -146,6 +148,7 @@ struct MeshVertex {
             {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
             {3, binding, vk::Format::eR16G16B16A16Uint, offsetof(MeshVertex, joints)},
             {4, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, weights)},
+            {5, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, tangent)},
         };
     }
 };
@@ -261,6 +264,11 @@ struct GpuMesh {
     GpuMeshRecord record;
 };
 
+struct MeshShaderResources;
+struct MeshShaderResourcesDeleter {
+    void operator()(MeshShaderResources* resources) const noexcept;
+};
+
 struct GpuShader {
     vk::Pipeline       swapchainPipeline;
     vk::Pipeline       offscreenPipeline;
@@ -273,6 +281,8 @@ struct GpuShader {
     vk::Pipeline       mesh3dOffscreenPipeline;
     vk::Pipeline       mesh3dHdrOffscreenPipeline;
     vk::PipelineLayout pipelineLayout;
+    vk::DescriptorSet                                                resourceSet;
+    std::unique_ptr<MeshShaderResources, MeshShaderResourcesDeleter> resources;
     bool isMesh3D = false;
     bool isHair3D = false;
     Shader *owner = nullptr;
@@ -498,6 +508,9 @@ public:
     [[nodiscard]] Result<void> replaceShaderFromSpv(
         Shader &shader, const std::vector<uint32_t> &vertSpv,
         const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceMeshShaderResources(Shader& shader, const std::vector<uint32_t>& vertSpv,
+                                                          const std::vector<uint32_t>& fragSpv,
+                                                          const ShaderResourceInputs&  resources) override;
     [[nodiscard]] Result<void> replaceShaderFromWgsl(
         Shader &shader, const std::string &vertWgsl,
         const std::string &fragWgsl) override;
@@ -512,6 +525,7 @@ public:
     bool releaseShader(Shader *shader) override;
     eve::Result<void> configureMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite,
                                                  bool doubleSided) override;
+    eve::Result<void> configureMeshShaderRaster(Shader& shader, const MeshShaderRasterState& state) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -545,9 +559,12 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
-      void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
-                                  float originZ, const std::string &faceDir, Texture *atlas,
-                                  int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
+    [[nodiscard]] Result<void> drawMeshShaderInstances(Mesh& mesh, Shader& shader, const glm::mat4& model,
+                                                       const Color& tint, std::uint32_t first,
+                                                       std::uint32_t count) override;
+    void drawVoxelFaceInstances(const uint32_t* packed, int count, float originX, float originY, float originZ,
+                                const std::string& faceDir, Texture* atlas, int tilesPerRow = 16,
+                                const uint32_t* ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
@@ -574,6 +591,8 @@ public:
     void setMesh3DEnv(Texture *cube, float intensity) override;
     void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) override;
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
+    [[nodiscard]] Result<void> setSceneToneMapping(SceneToneMapping mode) override;
+    SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
     void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
@@ -678,6 +697,8 @@ public:
     };
 
 private:
+    void drawMeshShaderRange(Mesh* mesh, const glm::mat4& model, Texture* texture, const Color& tint, Shader* shader,
+                             std::uint32_t first, std::uint32_t count);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;
 
@@ -765,11 +786,13 @@ private:
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
                                               BlendMode mode = BlendMode::Alpha,
                                               vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
-    vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
-                                            vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples,
-                                            BlendMode blend = BlendMode::Opaque,
-                                            bool depthWrite = true, bool doubleSided = true);
+    vk::Pipeline      createMesh3DStylePipeline(const std::vector<uint32_t>& vert, const std::vector<uint32_t>& frag,
+                                                vk::PipelineLayout layout, const vkb::BuiltRenderPass& rp,
+                                                vk::SampleCountFlagBits samples, BlendMode blend = BlendMode::Opaque,
+                                                bool depthWrite = true, bool doubleSided = true,
+                                                const MeshShaderRasterState& raster = {});
+    eve::Result<void> rebuildMeshShaderSurface(Shader& shader, BlendMode blend, bool depthWrite, bool doubleSided,
+                                               const MeshShaderRasterState& raster);
     static constexpr size_t kMesh3DPipelineVariants = 20;
     static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
     static constexpr size_t kPrimitive3DPipelineVariants = 45;
@@ -915,6 +938,7 @@ private:
     vk::Pipeline opaqueTexPipeline;
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
+    SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
     float sceneExposure = 1.f;
     bool sceneAutoExposure = false;
     float sceneAutoExposureMinEV = -8.f;
@@ -1113,7 +1137,8 @@ private:
     uint32_t registerBindlessTexture2D(GpuTexture *tex);
     uint32_t registerBindlessTextureCube(GpuTexture *tex);
     void unregisterBindlessTexture(GpuTexture *tex);
-    uint32_t registerMeshRecord(GpuMesh *gpu);
+    uint32_t          registerMeshRecord(GpuMesh* gpu, const std::vector<MeshVertex>* vertices = nullptr,
+                                         const std::vector<uint32_t>* indices = nullptr);
     void syncMeshTable();
     GpuMaterialRecord buildMaterialRecord(Material *material);
     void createBindlessSet();
@@ -1135,7 +1160,8 @@ private:
     void growGpuVertexPool(uint32_t needVertices, uint32_t needIndices);
     /** @brief Rewrite bindless bindings 18-21 (pool buffers) in every slot set. */
     void bindGpuVertexPoolBindless();
-    void appendGpuMeshToPool(GpuMesh &gpu);
+    void appendGpuMeshToPool(GpuMesh& gpu, const std::vector<MeshVertex>* vertices = nullptr,
+                             const std::vector<uint32_t>* indices = nullptr);
 
     // ---- GPU-driven (stage 3): virtual geometry ----
     static constexpr uint32_t kMaxVgAssets = 64;

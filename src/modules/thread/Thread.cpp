@@ -9,6 +9,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <functional>
 #include <thread>
 
@@ -19,7 +20,7 @@ namespace {
 
 class PoolExecutor final : public eve::caps::IAsyncWorkExecutor {
 public:
-    explicit PoolExecutor(Thread *owner) : owner_(owner) {}
+    explicit PoolExecutor(Thread* owner) : pool_(std::min(8, owner->getHardwareConcurrency())) {}
 
     eve::Result<void> submit(std::function<void()> work) override {
         if (!work) {
@@ -27,7 +28,7 @@ public:
                 eve::DiagnosticCode::InvalidArgument, "IAsyncWorkExecutor: null work"));
         }
         try {
-            std::unique_ptr<Task> task(owner_->getPool()->submit(std::move(work)));
+            std::unique_ptr<Task> task(pool_.submit(std::move(work)));
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         } catch (const eve::Exception &ex) {
             return eve::Result<void>::failure(
@@ -36,7 +37,9 @@ public:
     }
 
 private:
-    Thread *owner_ = nullptr;
+    // CPU resource decoders are allocation/IO heavy. Bound admission independently
+    // of the general-purpose pool and drain accepted work during destruction.
+    ThreadPool pool_;
 };
 
 }  // namespace
@@ -50,6 +53,7 @@ Thread::Thread() {
 
 Thread::~Thread() {
     cap::revoke<caps::IAsyncWorkExecutor>(executor_.get());
+    executor_.reset();
     if (defaultPool_)
         defaultPool_->stop();
     if (defaultJobSystem_)
