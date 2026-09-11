@@ -61,23 +61,23 @@ function clearMask() {
     }
 }
 
-function maxChannel(x, y, r, g, b) {
-    local pr = maskPixels.getPixelR(x, y);
-    local pg = maskPixels.getPixelG(x, y);
-    local pb = maskPixels.getPixelB(x, y);
-    if (r > pr) pr = r;
-    if (g > pg) pg = g;
-    if (b > pb) pb = b;
-    maskPixels.setPixel(x, y, pr, pg, pb, 1.0);
+function softWeight(dist, radius) {
+    // Hard core to ~60% radius, then smooth falloff — merges adjacent cells into one hole.
+    if (dist >= radius) return 0.0;
+    local core = radius * 0.60;
+    if (dist <= core) return 1.0;
+    local t = (radius - dist) / (radius - core);
+    return t * t * (3.0 - 2.0 * t);
 }
 
 function stampSoft(gx, gy, r, g, b, radiusScale) {
-    // Stamp a soft disc in mask-pixel space around a grid cell (organic FoW edge).
-    local px = (gx.tofloat() + 0.5) * maskW.tofloat() / gridW.tofloat();
-    local py = (gy.tofloat() + 0.5) * maskH.tofloat() / gridH.tofloat();
-    local radius = radiusScale * (maskW.tofloat() / gridW.tofloat());
+    // Local brush only (fast). Hard-core soft disc in mask-pixel space.
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local cellPy = maskH.tofloat() / gridH.tofloat();
+    local px = (gx.tofloat() + 0.5) * cellPx;
+    local py = (gy.tofloat() + 0.5) * cellPy;
+    local radius = radiusScale * cellPx;
     if (radius < 2.0) radius = 2.0;
-    local r2 = radius * radius;
     local x0 = (px - radius).tointeger();
     local y0 = (py - radius).tointeger();
     local x1 = (px + radius).tointeger() + 1;
@@ -90,12 +90,18 @@ function stampSoft(gx, gy, r, g, b, radiusScale) {
         for (local xx = x0; xx < x1; ++xx) {
             local dx = (xx.tofloat() + 0.5) - px;
             local dy = (yy.tofloat() + 0.5) - py;
-            local d2 = dx * dx + dy * dy;
-            if (d2 > r2) continue;
-            local t = 1.0 - d2 / r2;
-            // Smooth falloff so edges are cloudy, not hard squares.
-            local w = t * t * (3.0 - 2.0 * t);
-            maxChannel(xx, yy, r * w, g * w, b * w);
+            local w = softWeight(sqrt(dx * dx + dy * dy), radius);
+            if (w <= 0.0) continue;
+            local pr = maskPixels.getPixelR(xx, yy);
+            local pg = maskPixels.getPixelG(xx, yy);
+            local pb = maskPixels.getPixelB(xx, yy);
+            local nr = r * w;
+            local ng = g * w;
+            local nb = b * w;
+            if (nr > pr) pr = nr;
+            if (ng > pg) pg = ng;
+            if (nb > pb) pb = nb;
+            maskPixels.setPixel(xx, yy, pr, pg, pb, 1.0);
         }
     }
 }
@@ -109,11 +115,11 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.15);
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.95);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 1.15);
+                stampSoft(x, y, 1.0, sel, 0.0, 1.95);
             } else if (sel > 0.0) {
-                stampSoft(x, y, 0.0, sel, 0.0, 0.85);
+                stampSoft(x, y, 0.0, sel, 0.0, 0.95);
             }
         }
     }
@@ -153,20 +159,21 @@ eve_init = function() {
     fog = gfx.newMapFog();
     fog.setCloudTexture(fog.makeCloudTexture(256));
     fog.setMaskTexture(maskTex);
-    // Modest tiling + aspect-corrected UVs => large soft billows, not wallpaper.
-    fog.setCloudTiling(1.0, 1.35);
-    fog.setCloudSpeed(0.012, 0.018);
-    fog.setCloudMix(0.45);
-    fog.setDistort(0.07);
-    fog.setDistortFix(-0.006, 0.004);
-    fog.setFogColor(0.82, 0.86, 0.92);
+    // Low tiling + aspect-corrected UVs => large soft billows, not wallpaper.
+    fog.setCloudTiling(0.55, 0.80);
+    fog.setCloudSpeed(0.010, 0.016);
+    fog.setCloudMix(0.40);
+    fog.setDistort(0.11);
+    fog.setDistortFix(-0.008, 0.005);
+    fog.setFogColor(0.80, 0.84, 0.90);
     fog.setFogAlpha(fogAlpha);
-    fog.setEdgeSoftness(0.30);
-    fog.setShadow(0.014, 0.020, 0.32);
+    // Mask is already soft-stamped; mild edge remap + strong UV warp = organic rim.
+    fog.setEdgeSoftness(0.16);
+    fog.setShadow(0.016, 0.022, 0.36);
     fog.setSelectStrength(0.90);
-    fog.setDissolveScale(1.8);
+    fog.setDissolveScale(1.6);
     // Mild density shaping — sheet stays readable; mask cuts the hole.
-    fog.setCloudDensity(0.55, 0.18);
+    fog.setCloudDensity(0.50, 0.16);
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };

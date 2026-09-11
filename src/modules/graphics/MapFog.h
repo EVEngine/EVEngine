@@ -124,11 +124,11 @@ private:
     Texture  *mask_       = nullptr;
 
     float time_            = 0.f;
-    float tileA_           = 1.0f;
-    float tileB_           = 1.35f;
-    float speedA_          = 0.012f;
-    float speedB_          = 0.018f;
-    float distort_         = 0.07f;
+    float tileA_           = 0.55f;
+    float tileB_           = 0.80f;
+    float speedA_          = 0.010f;
+    float speedB_          = 0.016f;
+    float distort_         = 0.11f;
     float fixX_            = 0.f;
     float fixY_            = 0.f;
     float fogR_            = 0.82f;

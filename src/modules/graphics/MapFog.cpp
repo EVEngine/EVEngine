@@ -272,14 +272,15 @@ Texture *MapFog::makeCloudTexture(int size) {
             const float u = float(x) / float(n);
             const float v = float(y) / float(n);
 
-            const float large = fbmSeamless(u, v, 2, 0xA11CE001u, 5);
-            const float mid   = fbmSeamless(u, v, 3, 0xBEEF42u, 4);
-            const float fine  = fbmSeamless(u, v, 5, 0xC0FFEEu, 3);
+            // Period 1/2/3 => a few huge soft masses per tile (not wallpaper micro-noise).
+            const float large = fbmSeamless(u, v, 1, 0xA11CE001u, 5);
+            const float mid   = fbmSeamless(u, v, 2, 0xBEEF42u, 4);
+            const float fine  = fbmSeamless(u, v, 3, 0xC0FFEEu, 3);
 
             // Soft puffy volumes: billow dominates, fine ridge only for breakup.
-            const float soft = billow(large) * 0.62f + billow(mid) * 0.28f + ridged(fine) * 0.10f;
+            const float soft = billow(large) * 0.68f + billow(mid) * 0.24f + ridged(fine) * 0.08f;
             // Lift into a pale cloud range so dual-scroll multiply stays readable.
-            const float c = std::clamp(0.42f + soft * 0.50f, 0.f, 1.f);
+            const float c = std::clamp(0.38f + soft * 0.55f, 0.f, 1.f);
 
             const float cool = std::clamp(c * 0.96f + 0.03f, 0.f, 1.f);
             const float warm = std::clamp(c * 1.02f - 0.01f, 0.f, 1.f);
