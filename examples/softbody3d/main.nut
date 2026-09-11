@@ -7,7 +7,6 @@
 //
 // Controls:
 //   Left drag — grab / drag cloth
-//   Space     — toggle wind
 //   C         — toggle self-collision
 //   F         — toggle fold-angle limit
 //   R         — reset cloth pose
@@ -20,10 +19,8 @@ persist clothModule = null
 persist world3 = null
 persist cloth = null
 persist grabbing = false
-persist windOn = true
 persist selfCollisionOn = true
 persist foldOn = true
-persist windT = 0.0
 persist prevKeys = {}
 persist prevMouse = false
 
@@ -120,7 +117,7 @@ eve_init = function() {
     gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.25, 1.15, 1.0);
 
     buildScene();
-    print("softbody3d: left-drag grab | Space wind | C self-collision | F fold | R reset\n");
+    print("softbody3d: left-drag grab | C self-collision | F fold | R reset\n");
 };
 
 eve_reload <- function() {
@@ -130,7 +127,6 @@ eve_reload <- function() {
 eve_update = function(dt) {
     if (cloth == null) return;
 
-    if (edgePressed("Space")) windOn = !windOn;
     if (edgePressed("C")) {
         selfCollisionOn = !selfCollisionOn;
         cloth.setSelfCollision(selfCollisionOn);
@@ -156,14 +152,6 @@ eve_update = function(dt) {
     } else if (grabbing) {
         cloth.releaseGrab();
         grabbing = false;
-    }
-
-    if (windOn) {
-        windT += dt;
-        cloth.setWindVelocity(math.polarY(1.8, windT * 1.3), 1.2,
-                              math.polarX(0.6, windT * 0.9));
-    } else {
-        cloth.setWindVelocity(0.0, 0.0, 0.0);
     }
 
     // Pointer field: right mouse repels nearby particles (Fluid2D-style).
