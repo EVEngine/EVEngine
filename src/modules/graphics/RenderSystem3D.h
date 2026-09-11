@@ -71,9 +71,19 @@ public:
     }
 
     void setEye(float x, float y, float z);
+    /** @brief Camera eye position (world space). */
+    float getEyeX();
+    float getEyeY();
+    float getEyeZ();
     void setTarget(float x, float y, float z);
+    /** @brief Look-at target (world space). */
+    float getTargetX();
+    float getTargetY();
+    float getTargetZ();
     void setUp(float x, float y, float z);
     void setFov(float fovYDeg);
+    /** @brief Vertical field of view in degrees. */
+    float getFov();
     /** @brief Enable an orthographic projection with the given vertical world-space span. */
     void setOrthographic(float height);
     /** @brief Return to perspective projection, retaining the configured field of view. */

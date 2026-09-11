@@ -90,5 +90,31 @@ function basic() {
     check(c3.getParticleX(21) > -0.01 && c3.getParticleX(21) < 0.01, "3d set position");
     c3.reset();
     c3.destroy();
+
+    // ---- schema-driven 3D rope ----
+    local ropeJson = "{\"particleCount\":7,\"startX\":0,\"startY\":4,\"startZ\":0,\"endX\":3,\"endY\":4,\"endZ\":0,\"pinStart\":true,\"pinEnd\":true}";
+    local ropeModule = eve.Rope();
+    local rope = ropeModule.newRope3DFromJson(ropeJson);
+    check(rope.getParticleCount() == 7, "rope schema particle count");
+    check(rope.isAttached(0) && rope.isAttached(6), "rope schema endpoint pins");
+    rope.update(1.0 / 60.0);
+    check(rope.getParticleY(3) < 4.0, "rope schema runtime step");
+    local revision = rope.getTopologyRevision();
+    check(rope.changeLength(4.5, 0.5, true), "rope cursor grow");
+    check(abs(rope.getSampleX(0.25) - 1.125) < 0.1, "rope material position sampling");
+    check(rope.getSampleTangentX(0.5) > 0.9, "rope tangent sampling");
+    check(rope.getParticleCount() > 7 && rope.getTopologyRevision() > revision, "rope cursor topology revision");
+    check(rope.cut(2) && !rope.isElementActive(2), "rope script cut");
+    check(rope.repair(2) && rope.isElementActive(2), "rope script repair");
+    rope.setCollisionFriction(0.4);
+    rope.setCollisionRestitution(0.1);
+    rope.setContinuousCollision(true);
+    check(rope.getContinuousCollision() && abs(rope.getCollisionRestitution() - 0.1) < 0.001,
+          "rope continuous collision configuration");
+    local floorId = rope.addPlaneCollider(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    local sphereId = rope.addSphereCollider(1.5, 2.0, 0.0, 0.5);
+    check(floorId > 0 && sphereId > floorId, "rope collider stable ids");
+    check(rope.moveSphereCollider(sphereId, 1.5, 2.2, 0.0), "rope moving collider");
+    check(rope.removeCollider(sphereId), "rope remove collider");
     return true;
 }

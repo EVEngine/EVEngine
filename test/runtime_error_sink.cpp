@@ -51,10 +51,9 @@ boom();
 )SQ", "boom.nut");
     } catch (const ScriptException& error) {
         caught = true;
-        // The VM error hook reported this uncaught error, so the Runtime sink
-        // must have skipped it (reported()==true); the exception still carries
-        // the live location + stack.
-        CHECK(error.reported());
+        // The VM hook only captures the live stack when Runtime is bound;
+        // the Runtime error sink reports it once after unwind.
+        CHECK(!error.reported());
         CHECK(error.hasLocation());
         CHECK(!error.stackTrace().empty());
     }

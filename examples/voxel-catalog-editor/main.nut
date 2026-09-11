@@ -156,8 +156,14 @@ function panelModels() {
 
 function panelTools() {
     ui.text("Tools", "tools-title");
-    ui.button("Attach", "tool-attach");
-    ui.button("Erase", "tool-erase");
+    ui.beginToolbar("sculpt-toolbar");
+    ui.iconButton("plus", "", "tool-attach");
+    ui.setItemTooltip("Attach voxel");
+    ui.setItemSelected(voxelUi.catalog.getTool() == "attach");
+    ui.iconButton("minus", "", "tool-erase");
+    ui.setItemTooltip("Erase voxel");
+    ui.setItemSelected(voxelUi.catalog.getTool() == "erase");
+    ui.end();
     ui.separator("tools-sep");
     ui.button("New 8x8x8", "new-model");
     ui.separator("tools-sep2");
@@ -283,6 +289,8 @@ function updateLabels() {
             voxelUi.catalog.getRevision()));
     ui.setText("status", voxelUi.catalog.getTool() + "  " + voxelUi.status);
     ui.select("voxel.tools");
+    ui.setChecked("tool-attach", voxelUi.catalog.getTool() == "attach");
+    ui.setChecked("tool-erase", voxelUi.catalog.getTool() == "erase");
     ui.setEnabled("undo", voxelUi.catalog.canUndo());
     ui.setEnabled("redo", voxelUi.catalog.canRedo());
 }

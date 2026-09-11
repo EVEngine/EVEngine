@@ -272,6 +272,11 @@ public:
     void setItemDropTarget(const std::string &acceptedType);
     /** @brief Enables or disables the most recently added item. */
     void setItemEnabled(bool enabled);
+    /**
+     * @brief Marks the most recently added button as the selected tool/action.
+     * @param selected Selected state.
+     */
+    void setItemSelected(bool selected);
     /** @brief Sets the last item's focus mode: "none", "click", or "all". */
     void setItemFocusMode(const std::string &mode);
     /** @brief Sets the last item's pointer filter: "stop", "pass", or "ignore". */

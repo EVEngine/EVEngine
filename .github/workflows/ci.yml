@@ -1029,9 +1029,9 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        # archive.ubuntu.com can deliver Mesa at well below 100 KiB/s on hosted
-        # runners; keep the per-request timeout, but allow a slow active transfer
-        # to finish instead of killing apt after ten minutes.
+        # apt update may consume most of ten minutes while retrying a slow
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
         timeout-minutes: 25
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired

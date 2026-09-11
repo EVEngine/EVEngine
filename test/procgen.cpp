@@ -20,6 +20,7 @@
 #include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "water_scene_fixture.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
@@ -76,6 +77,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <set>
@@ -632,6 +634,12 @@ TEST_CASE("procgen.mesh.tree.validatesOptions") {
     p.setString("branchAlgorithm", "crystalGrowth");
     CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
     CHECK(err.find("branchAlgorithm") != std::string::npos);
+    p.setString("branchAlgorithm", "weberPenn");
+    p.setString("leafMode", "confetti");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
+    CHECK(err.find("leafMode") != std::string::npos);
+    p.setString("leafMode", "clusters");
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
 }
 
 TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
@@ -737,11 +745,40 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setFloat("growthStep", 0.25f);
     params.setFloat("maxTurnAngle", 18.f);
     params.setInt("maxChildren", 2);
+    // Cluster knobs are env-overridable so the leaf look can be compared across
+    // runs without rebuilding; unset variables leave the recipe defaults.
+    const auto envFloat = [](const char *name, float fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stof(raw) : fallback;
+    };
+    const auto envInt = [](const char *name, int fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stoi(raw) : fallback;
+    };
+    params.setFloat("clusterSize", envFloat("EVENGINE_TREE_CLUSTER_SIZE", 0.30f));
+    params.setFloat("clusterLeafScale", envFloat("EVENGINE_TREE_CLUSTER_LEAF_SCALE", 0.85f));
+    params.setFloat("clusterSpacing", envFloat("EVENGINE_TREE_CLUSTER_SPACING", 0.80f));
+    params.setFloat("clusterSeparation", envFloat("EVENGINE_TREE_CLUSTER_SEPARATION", 0.55f));
+    params.setInt("clusterPlanes", envInt("EVENGINE_TREE_CLUSTER_PLANES", 10));
+    params.setInt("clusterCaps", envInt("EVENGINE_TREE_CLUSTER_CAPS", 2));
+    params.setInt("clusterLeaves", envInt("EVENGINE_TREE_CLUSTER_LEAVES", 28));
+    params.setInt("clusterLimit", envInt("EVENGINE_TREE_CLUSTER_LIMIT", 120));
+    params.setFloat("leafSize", envFloat("EVENGINE_TREE_LEAF_SIZE", 6.2f * 0.075f));
 
     Procgen generator;
     auto    treeParams = requireParams(params);
     auto    treeMesh   = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
     REQUIRE(treeMesh.isBound());
+    // Same parameters, CPU side: the uploaded Mesh keeps no metadata, but the
+    // dump is most useful with the cost and cluster count next to it.
+    {
+        MeshBuild   stats;
+        std::string statsError;
+        if (MeshRecipeRegistry::instance().generate("mesh.tree", params, stats, statsError)) {
+            std::printf("tree mesh: %d vertices, %d triangles, clusters=%s\n", stats.getVertexCount(),
+                        stats.getIndexCount() / 3, stats.getMeta("clusters", "n/a").c_str());
+        }
+    }
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
     const uint8_t atlasPixels[] = {
@@ -3882,7 +3919,7 @@ TEST_CASE("graphics.water.render.plane") {
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
-    const int fs = 16;
+    const int fs = 64;
     std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
     {
         auto dirFor = [&](int f, int x, int y, float &dx, float &dy, float &dz) {
@@ -3907,10 +3944,21 @@ TEST_CASE("graphics.water.render.plane") {
                     const float ny = dy / len;
                     // t=1 at zenith, t=0 near/below horizon.
                     const float t = std::pow(std::clamp(ny * 0.5f + 0.5f, 0.f, 1.f), 1.5f);
-                    // Pale blue horizon 鈫?deep blue zenith.
-                    const float cr = 0.72f + (0.12f - 0.72f) * t;
-                    const float cg = 0.80f + (0.32f - 0.80f) * t;
-                    const float cb = 0.90f + (0.72f - 0.90f) * t;
+                    // Pale blue horizon → deep blue zenith.
+                    float cr = 0.72f + (0.12f - 0.72f) * t;
+                    float cg = 0.80f + (0.32f - 0.80f) * t;
+                    float cb = 0.90f + (0.72f - 0.90f) * t;
+                    const float nx = dx / len;
+                    const float nz = dz / len;
+                    const float cloudNoise = std::sin(nx * 8.0f + nz * 3.1f) +
+                                             std::sin(nz * 11.3f - nx * 2.7f) * 0.55f +
+                                             std::sin((nx + nz) * 17.0f) * 0.22f;
+                    const float cloudAltitude = std::clamp((ny - 0.03f) * 4.0f, 0.0f, 1.0f) *
+                                                std::clamp((0.82f - ny) * 3.2f, 0.0f, 1.0f);
+                    const float cloud = std::clamp((cloudNoise - 0.42f) * 2.6f, 0.0f, 1.0f) * cloudAltitude;
+                    cr = cr + (0.96f - cr) * cloud;
+                    cg = cg + (0.97f - cg) * cloud;
+                    cb = cb + (1.00f - cb) * cloud;
                     const size_t o = (size_t(f) * fs * fs + size_t(y) * fs + size_t(x)) * 4u;
                     sky[o + 0] = uint8_t(cr * 255.f);
                     sky[o + 1] = uint8_t(cg * 255.f);
@@ -3923,30 +3971,6 @@ TEST_CASE("graphics.water.render.plane") {
     Texture *skyTex = gfx->newCubemap(fs, sky.data());
     REQUIRE(skyTex != nullptr);
 
-    // Skybox: a huge sphere centered on the camera, shaded purely by the env
-    // cubemap so the sky is visible behind the water.
-    const char *kSkyFrag = R"GLSL(#version 450
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(set = 0, binding = 3) uniform samplerCube env;
-layout(location = 0) out vec4 outColor;
-void main() {
-    vec3 c = texture(env, normalize(vWorldPos - vCameraPos)).rgb;
-    outColor = vec4(c, 1.0);
-}
-)GLSL";
-    Shader *skyShader = gfx->newMeshShader("", kSkyFrag);
-    REQUIRE(skyShader != nullptr);
-    Mesh *skyMesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(skyMesh != nullptr);
-    auto *skyEnt = Renderable3D::create();
-    skyEnt->setMesh(skyMesh);
-    skyEnt->setShader(skyShader);
-    skyEnt->setTexture(nullptr);
-    skyEnt->setScale(200.f, 200.f, 200.f);
-    skyEnt->setReceiveShadow(false);
-    skyEnt->setCastShadow(false);
-
     auto *camera = Camera3D::createCamera();
     camera->setEye(6.f, 5.f, 8.f);
     camera->setTarget(0.f, 0.f, 0.f);
@@ -3955,11 +3979,10 @@ void main() {
     camera->setEnvMap(skyTex);
     camera->setEnvIntensity(1.f);
     camera->data()->nearZ = 0.1f;
-    camera->data()->farZ = 2000.f;
-    skyEnt->setCamera(camera);
-
-    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    camera->data()->farZ = 100.f;
+    gfx->setBackgroundColor(Color(0.36f, 0.55f, 0.72f, 1.f));
     gfx->setScreenReadbackEnabled(true);
+    gfx->getRenderControl()->enable("gbuffer");
     RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
 
     auto *present = Renderable2D::create();
@@ -3969,35 +3992,58 @@ void main() {
     present->sprite()->height = 1.f;
     present->sprite()->a = 0.f;
 
-    // A single flat water plane carrying the water shader.
+    WaterSceneFixture sceneFixture = createStylizedWaterScene(gfx, camera);
+
+    // The water is drawn explicitly after the opaque GBuffer so it can sample
+    // scene color and linear depth without a read/write feedback hazard.
     Water *water = gfx->newWater();
     REQUIRE(water != nullptr);
     water->createPlane(14.f, 14.f, 64, 64);
-    water->setWaterColor(0.06f, 0.30f, 0.48f);
-    water->setWaveAmplitude(0.30f);
-    water->setRippleAmplitude(0.55f);
-    water->setRippleCount(8);
-    water->setRippleInterval(1.4f);
-    water->setWaveScale(14.f);
-    water->setReflectionTint(0.9f, 0.95f, 1.0f);
-    water->setReflectionIntensity(1.3f);
-    water->setSunIntensity(1.6f);
-
-    auto *waterEnt = Renderable3D::create();
-    waterEnt->setMesh(water->getMesh());
-    waterEnt->setShader(water->getShader());
-    waterEnt->setTexture(nullptr);
-    waterEnt->setReceiveShadow(false);
-    waterEnt->setCastShadow(false);
-    waterEnt->setCamera(camera);
+    WaterStyleConfig style             = water->config();
+    style.deepColor                    = {0.005f, 0.16f, 0.42f};
+    style.shallowColor                 = {0.025f, 0.50f, 0.62f};
+    style.waveAmplitude                = 0.11f;
+    style.waveSharpness                = 1.65f;
+    style.rippleAmplitude              = 0.12f;
+    style.rippleCount                  = 5;
+    style.rippleInterval               = 1.4f;
+    style.waveScale                    = 1.35f;
+    style.foamWidth                    = 0.58f;
+    style.foamSoftness                 = 0.12f;
+    style.foamStrength                 = 0.72f;
+    style.reflectionIntensity          = 0.82f;
+    style.fresnelPower                 = 2.2f;
+    style.sunIntensity                 = 0.65f;
+    style.opacity                      = 0.68f;
+    style.refractionStrength           = 0.045f;
+    style.causticsStrength             = 0.55f;
+    style.causticsScale                = 3.8f;
+    if (const char* layerMode = std::getenv("EVENGINE_WATER_LAYER_MODE")) {
+        if (std::strcmp(layerMode, "transmission") == 0) {
+            style.reflectionIntensity = 0.0f;
+            style.sunIntensity        = 0.0f;
+            style.foamStrength        = 0.12f;
+            style.opacity             = 0.52f;
+        } else if (std::strcmp(layerMode, "reflection") == 0) {
+            style.reflectionIntensity = 1.15f;
+            style.sunIntensity        = 0.75f;
+            style.refractionStrength  = 0.0f;
+            style.causticsStrength    = 0.0f;
+            style.foamStrength        = 0.08f;
+            style.opacity             = 0.82f;
+        }
+    }
+    auto styleJson = style.toJson();
+    REQUIRE(static_cast<bool>(styleJson));
+    REQUIRE(static_cast<bool>(water->applyConfigJson(styleJson.value())));
 
     // Animate a few seconds so ripples travel, then save a frame.
     for (int frame = 0; frame < 40; ++frame) {
-        // Keep the skybox centered on the camera so it reads as a surrounding sky.
-        skyEnt->setPosition(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
-        water->setTime(float(frame) * 0.06f);
-        water->bindParams();
+        const float time = float(frame) * 0.06f;
+        water->setTime(time);
+        sceneFixture.update(time);
         RenderSystem3D::render(*gfx);
+        water->draw();
         RenderSystem::render(*gfx);
     }
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
@@ -4270,23 +4316,6 @@ TEST_CASE("graphics.water.render.planar") {
     present->sprite()->height = 1.f;
     present->sprite()->a = 0.f;
 
-    // Skybox: big sphere shaded by the env cubemap.
-    const char *kSky = R"GLSL(#version 450
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(set = 0, binding = 3) uniform samplerCube env;
-layout(location = 0) out vec4 outColor;
-void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rgb, 1.0); }
-)GLSL";
-    Shader *skyShader = gfx->newMeshShader("", kSky);
-    auto *skyEnt = Renderable3D::create();
-    skyEnt->setMesh(gfx->newMeshSphere(24, 16));
-    skyEnt->setShader(skyShader);
-    skyEnt->setScale(300.f, 300.f, 300.f);
-    skyEnt->setReceiveShadow(false);
-    skyEnt->setCastShadow(false);
-    skyEnt->setCamera(camera);
-
     // Boxes above the water to reflect.
     struct Box { float x, y, z, sx, sy, sz; uint8_t r, g, b; };
     const Box boxes[] = {
@@ -4295,22 +4324,15 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
         {3.5f, 3.5f, -4.f, 2.5f, 2.5f, 2.5f, 70, 110, 230},
     };
     Mesh *cube = makeUnitCube(gfx);
-    struct Ent { Renderable3D *e; glm::mat4 model; };
+    struct Ent { Texture* texture; glm::mat4 model; };
     std::vector<Ent> ents;
     for (const Box &b : boxes) {
-        auto *ent = Renderable3D::create();
-        ent->setMesh(cube);
         const uint8_t px[4] = {b.r, b.g, b.b, 255};
-        ent->setTexture(gfx->newTexture(1, 1, px));
-        ent->setPosition(b.x, b.y, b.z);
-        ent->setScale(b.sx, b.sy, b.sz);
-        ent->setReceiveShadow(false);
-        ent->setCastShadow(false);
-        ent->setCamera(camera);
+        Texture* texture = gfx->newTexture(1, 1, px);
         glm::mat4 m(1.f);
         m = glm::translate(m, glm::vec3(b.x, b.y, b.z));
         m = glm::scale(m, glm::vec3(b.sx, b.sy, b.sz));
-        ents.push_back({ent, m});
+        ents.push_back({texture, m});
     }
 
     Water *water = gfx->newWater();
@@ -4320,14 +4342,6 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
     water->setReflectionIntensity(1.0f);
     water->setScreenSpaceReflection(true, 0.9f);
     water->setViewport(float(settings.width), float(settings.height));
-
-    auto *waterEnt = Renderable3D::create();
-    waterEnt->setMesh(water->getMesh());
-    waterEnt->setShader(water->getShader());
-    waterEnt->setTexture(nullptr);
-    waterEnt->setReceiveShadow(false);
-    waterEnt->setCastShadow(false);
-    waterEnt->setCamera(camera);
 
     Canvas *refl = gfx->newCanvas(settings.width, settings.height);
     REQUIRE(refl != nullptr);
@@ -4348,23 +4362,30 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
     gfx->setBackgroundColor(Color(0.45f, 0.62f, 0.85f, 1.f));
     gfx->begin3DFrameToCanvas(refl);
     for (const Ent &en : ents) {
-        gfx->drawMeshShader(cube, en.model,
-                            static_cast<Renderable3D *>(en.e)->meshRenderer()->texture,
-                            glm::vec4(1.f), nullptr);
+        gfx->drawMeshShader(cube, en.model, en.texture, glm::vec4(1.f), nullptr);
     }
     gfx->end3DFrameToCanvas();
     gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
 
-    // Final frame: water sampling the planar reflection.
-    waterEnt->setHeightTexture(refl->getTexture());
+    // Final frame: the public Water path borrows and samples the planar reflection.
+    const glm::mat4 mainView = glm::lookAtRH(eye, tgt, glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 mainProj = perspectiveVulkanRH_ZO(glm::radians(camera->data()->fovYDeg),
+                                                       settings.width / float(settings.height),
+                                                       camera->data()->nearZ, camera->data()->farZ);
+    gfx->setMesh3DViewProj(mainProj * mainView);
+    gfx->setMesh3DView(mainView);
+    gfx->setMesh3DCameraPos(eye);
+    gfx->setMesh3DClip(camera->data()->nearZ, camera->data()->farZ);
+    gfx->setMesh3DEnv(skyTex, 1.f);
     water->setTime(0.5f);
-    water->bindParams();
     RenderSystem3D::render(*gfx);
+    water->drawWithPlanarReflection(refl->getTexture(), 0.9F);
     RenderSystem::render(*gfx);
 
     // Read the reflection canvas once and check the red box was captured.
     std::unique_ptr<eve::image::ImageData> rim(refl->newImageData());
     REQUIRE(rim.get() != nullptr);
+    REQUIRE(saveImagePng(*rim, std::string(outPath) + ".reflection.png"));
     int red = 0, total = 0;
     const uint8_t *pd = static_cast<const uint8_t *>(rim->getData());
     const int rw = rim->getWidth();
@@ -4383,6 +4404,18 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
 
     std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
     REQUIRE(img.get() != nullptr);
+    int reflectedRed = 0;
+    const auto* finalPixels = static_cast<const uint8_t*>(img->getData());
+    for (int y = 0; y < img->getHeight(); ++y) {
+        for (int x = 0; x < img->getWidth(); ++x) {
+            const size_t offset = (size_t(y) * size_t(img->getWidth()) + size_t(x)) * 4;
+            const int r = finalPixels[offset];
+            const int g = finalPixels[offset + 1];
+            const int b = finalPixels[offset + 2];
+            if (r > 120 && r > g + 20 && r > b + 20) ++reflectedRed;
+        }
+    }
+    CHECK(reflectedRed > 1000);
     REQUIRE(saveImagePng(*img, outPath));
     std::printf("planar water render saved: %s\n", outPath);
     win->close();

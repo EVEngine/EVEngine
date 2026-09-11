@@ -22,6 +22,14 @@ function file_exists(path) {
     }
 }
 
+function format_script_error(e) {
+    if ("lastScriptError" in eve) {
+        local stacked = eve.lastScriptError();
+        if (typeof stacked == "string" && stacked.len() > 0) return stacked;
+    }
+    return "" + e;
+}
+
 function has_module(slot) {
     return slot in getroottable() && getroottable()[slot] != null;
 }
@@ -146,7 +154,7 @@ while (true) {
             async_pump();
         eve_render();
     } catch (e) {
-        print("frame error: " + e + "\n");
+        print("frame error: " + format_script_error(e) + "\n");
     }
 
     try {
@@ -154,7 +162,7 @@ while (true) {
         if (has_module("ui"))
             ui.dispatchEvents();
     } catch (e) {
-        print("present error: " + e + "\n");
+        print("present error: " + format_script_error(e) + "\n");
     }
 
     frame++;

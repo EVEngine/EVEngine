@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
-FRAGS = ["water.frag"]
+SHADERS = [("water.vert", "vert"), ("water.frag", "frag")]
 
 
 def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
@@ -37,17 +37,17 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
 
 
 def main() -> int:
-    for name in FRAGS:
+    for name, stage in SHADERS:
         src = SHADER_DIR / name
         if not src.is_file():
             raise SystemExit(f"missing {src}")
         out_spv = src.with_suffix(".spv")
-        r = subprocess.run(["glslc", "-fshader-stage=frag", str(src), "-o", str(out_spv)],
+        r = subprocess.run(["glslc", f"-fshader-stage={stage}", str(src), "-o", str(out_spv)],
                            capture_output=True, text=True)
         if r.returncode != 0:
             raise SystemExit(f"glslc failed for {name}:\n{r.stderr or r.stdout}")
-        array = f"{src.stem}_frag_spv"
-        spv_to_inc(out_spv, array, SHADER_DIR / f"{src.stem}_frag_spv.inc")
+        array = f"{src.stem}_{stage}_spv"
+        spv_to_inc(out_spv, array, SHADER_DIR / f"{src.stem}_{stage}_spv.inc")
     return 0
 
 

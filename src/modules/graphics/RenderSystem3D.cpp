@@ -157,12 +157,20 @@ void Camera3D::setEye(float x, float y, float z) {
     d->eyeZ = z;
 }
 
+float Camera3D::getEyeX() { return data()->eyeX; }
+float Camera3D::getEyeY() { return data()->eyeY; }
+float Camera3D::getEyeZ() { return data()->eyeZ; }
+
 void Camera3D::setTarget(float x, float y, float z) {
     auto d = data();
     d->targetX = x;
     d->targetY = y;
     d->targetZ = z;
 }
+
+float Camera3D::getTargetX() { return data()->targetX; }
+float Camera3D::getTargetY() { return data()->targetY; }
+float Camera3D::getTargetZ() { return data()->targetZ; }
 
 void Camera3D::setUp(float x, float y, float z) {
     auto d = data();
@@ -172,6 +180,8 @@ void Camera3D::setUp(float x, float y, float z) {
 }
 
 void Camera3D::setFov(float fovYDeg) { data()->fovYDeg = fovYDeg; }
+
+float Camera3D::getFov() { return data()->fovYDeg; }
 
 void Camera3D::setOrthographic(float height) {
     data()->orthographic = true;
