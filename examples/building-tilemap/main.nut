@@ -1,4 +1,4 @@
-dofile("assets/catalog.nut");
+dofile(config.assetSource+"/catalog.nut");
 
 // TileLayer owns terrain GIDs; PlacementWorld lazily reads their semantics.
 // These references follow the original example lifecycle. Texture handles are
@@ -39,8 +39,8 @@ function loadArt() {
     buildingTexture=gfx.newTextureFromFile("art/buildings.png");
     if(buildingTexture==null) throw "Missing generated building atlas";
     gfx.setTextureSampler(buildingTexture,"linear","none",1.0,0.0);
-    atlas = gfx.newTextureFromFile("assets/c14-atlas.png");
-    cursorTexture = gfx.newTextureFromFile("assets/cursor.png");
+    atlas = gfx.newTextureFromFile(config.assetSource+"/c14-atlas.png");
+    cursorTexture = gfx.newTextureFromFile(config.assetSource+"/cursor.png");
     if (atlas==null || cursorTexture==null) throw "Run building-tilemap/prepare_assets.py first";
     gfx.setTextureSampler(atlas,"linear","none",1.0,0.0);
     gfx.setTextureSampler(cursorTexture,"linear","none",1.0,0.0);

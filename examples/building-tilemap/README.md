@@ -12,7 +12,7 @@ python examples/building-tilemap/prepare_assets.py "path/to/C14 45°地表素材
 make run/win32-debug GAME=examples/building-tilemap
 ```
 
-`assets/provenance.json` 记录每个 GID 的原文件和处理方式；生成的 `catalog.nut` 显式映射文件编号，避免漏号导致地表错位。运行前必须完成提取，PNG 与生成目录内容不提交源码仓库。
+`assets/provenance.json` 记录每个 GID 的原文件和处理方式；生成的 `catalog.nut` 显式映射文件编号，避免漏号导致地表错位。选择第三方素材模式前必须完成提取；第三方 PNG 与提取输出不提交源码仓库。
 
 ## 操作
 
@@ -37,3 +37,7 @@ C14 提供地表；石基木屋（2×2）和石质哨塔（1×1）由内置 imag
 - 已用真实 Vulkan 运行与引擎截图验证，并通过全部 168 个格子中心投影回查、房屋放置、占用格地形保护、移除后刷水、房屋禁水、码头水域放置及连续三次重置检查。
 
 生成建筑已通过真实 Vulkan 截图与运行检查：放置、重叠拒绝、拆除后显示清理、房屋禁水、连续三次重置以及无残留 BuildingFx 占位模型。
+
+## 干净检出运行
+
+默认 `config.assetSource = "starter"` 使用仓库自带的程序绘制基础素材，无需外部资源即可启动。运行第三方素材提取脚本后，将其改为 `"assets"` 使用完整素材。基础素材可用 `python scripts/generate_building_starter_assets.py`（需要 Pillow）重新生成。

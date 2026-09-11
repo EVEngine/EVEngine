@@ -14,7 +14,7 @@ make building
 
 使用本地 Cainos **Pixel Art Top Down - Basic**：8 种草地、6 种石板路切片，按格子坐标稳定混合；石屋由原包的石墙、石地面和木门组合，摊位、仓储箱与码头也使用原包切片。水面、动态波纹与岸线由示例代码绘制，不冒充原包素材。开场通过正常放置校验生成 13 个建筑，重置恢复相同场景。
 
-素材 PNG 不进入源码仓库。在已安装 Pillow 的 Python 环境执行一次：
+素材 PNG 不进入源码仓库。如需使用 Cainos 素材，在已安装 Pillow 的 Python 环境执行一次：
 
 ```powershell
 python examples/building/prepare_assets.py "你的路径/Pixel Art Top Down - Basic.unitypackage"
@@ -43,3 +43,7 @@ python examples/building/prepare_assets.py "你的路径/Pixel Art Top Down - Ba
 - **码头**：只能建在水域格子上
 - **L 仓**：不规则 `footprintMask`
 - 鬼影绿色 = 可放，红色 = 失败（HUD 显示 reason）
+
+## 干净检出运行
+
+默认 `config.assetSource = "starter"` 使用仓库自带的程序绘制基础素材，无需外部资源即可启动。运行第三方素材提取脚本后，将其改为 `"assets"` 使用完整素材。基础素材可用 `python scripts/generate_building_starter_assets.py`（需要 Pillow）重新生成。

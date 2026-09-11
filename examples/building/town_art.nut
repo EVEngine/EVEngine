@@ -10,7 +10,7 @@ function loadTownArt() {
     for (local i=0; i<8; ++i) names.push("grass"+i);
     for (local i=0; i<6; ++i) names.push("road"+i);
     foreach (name in names) {
-        local texture = gfx.newTextureFromFile("assets/"+name+".png");
+        local texture = gfx.newTextureFromFile(config.assetSource+"/"+name+".png");
         if (texture == null) throw "Missing town art: run prepare_assets.py first";
         gfx.setTextureSampler(texture, "nearest", "none", 1.0, 0.0);
         townArt[name] <- texture;
