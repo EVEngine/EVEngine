@@ -1,5 +1,5 @@
 #version 450
-// Height + noise coverage: human tint -> glossy black goo with emissive edge.
+// Height + noise coverage over textured mesh: albedo -> glossy black goo.
 // Push constants (declareFloat order):
 //   0 coverage  1 edgeWidth  2 noiseScale  3 time
 //   4 gooR 5 gooG 6 gooB  7 edgeR 8 edgeG 9 edgeB  10 edgeGlow  11 gloss
@@ -33,6 +33,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cloud;
     vec4 cloudWind;
 } ubo;
+
+layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 
 layout(push_constant) uniform Externals {
     float data[32];
@@ -81,24 +83,30 @@ void main() {
     if (dot(N, V) < 0.0)
         N = -N;
 
-    // Bottom-to-top organic front.
-    float height01 = clamp((vWorldPos.y + 0.05) / 1.85, 0.0, 1.0);
+    // Quaternius FullBody is ~1.8 m tall with feet near y=0.
+    float height01 = clamp((vWorldPos.y + 0.02) / 1.80, 0.0, 1.0);
     float n = fbm(vWorldPos.xz * noiseScale + vec2(time * 0.35, time * 0.22));
     n = mix(n, fbm(vUV * noiseScale * 3.0 + time * 0.15), 0.35);
-    float field = height01 + (n - 0.5) * 0.28;
-    float frontier = coverage * 1.18 - 0.06;
-    // 0 = human, 1 = goo. Coverage grows upward from the feet.
+    float field = height01 + (n - 0.5) * 0.22;
+    float frontier = coverage * 1.15 - 0.04;
+    // 0 = human (textured), 1 = goo. Coverage grows upward from the feet.
     float mask = 1.0 - smoothstep(frontier - edgeWidth, frontier + edgeWidth * 0.35, field);
-    float edge = (1.0 - smoothstep(0.0, edgeWidth * 2.2, abs(field - frontier)))
+    float edge = (1.0 - smoothstep(0.0, edgeWidth * 2.0, abs(field - frontier)))
                * step(0.02, coverage) * step(coverage, 0.98);
+
+    vec4 albedoSample = texture(albedoSampler, vUV);
+    vec3 albedo = albedoSample.rgb * vTint.rgb;
+    // Keep a usable tint if the mesh has no albedo texture bound.
+    if (dot(albedoSample.rgb, albedoSample.rgb) < 1e-4)
+        albedo = vTint.rgb;
 
     float ndotl = max(dot(N, L), 0.0);
     vec3 H = normalize(L + V);
     float spec = pow(max(dot(N, H), 0.0), mix(16.0, 96.0, gloss));
     float fresnel = pow(1.0 - max(dot(N, V), 0.0), 3.0);
 
-    vec3 human = vTint.rgb * (0.22 + 0.78 * ndotl);
-    human += ubo.ambient.rgb * vTint.rgb * 0.55;
+    vec3 human = albedo * (0.25 + 0.75 * ndotl);
+    human += ubo.ambient.rgb * albedo * 0.55;
 
     vec3 goo = gooColor * (0.08 + 0.55 * ndotl);
     goo += ubo.lightColor.rgb * spec * gloss * 1.35;
@@ -110,5 +118,5 @@ void main() {
 
     vec3 color = mix(human, goo, mask);
     color += edgeColor * edge * edge * edgeGlow;
-    outColor = vec4(color, vTint.a);
+    outColor = vec4(color, albedoSample.a * vTint.a);
 }

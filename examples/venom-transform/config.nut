@@ -4,5 +4,5 @@ config = {
     title = "EVEngine — Venom Transform Demo"
     hotReload = true
     debug = false
-    modules = ["gfx", "win", "fs"]
+    modules = ["gfx", "win", "fs", "model3d"]
 };
