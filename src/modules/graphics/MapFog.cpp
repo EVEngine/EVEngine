@@ -16,38 +16,53 @@
 namespace eve::graphics {
 namespace {
 
-float hash21(int x, int y) {
-    uint32_t n = uint32_t(x) * 374761393u + uint32_t(y) * 668265263u;
+float hashWrap(int x, int y, int period, uint32_t seed) {
+    x = ((x % period) + period) % period;
+    y = ((y % period) + period) % period;
+    uint32_t n = uint32_t(x) * 374761393u + uint32_t(y) * 668265263u + seed;
     n          = (n ^ (n >> 13u)) * 1274126177u;
     return float(n & 0x00ffffffu) / float(0x00ffffffu);
 }
 
-float valueNoise(float x, float y) {
-    const int   x0  = int(std::floor(x));
-    const int   y0  = int(std::floor(y));
-    const float fx  = x - float(x0);
-    const float fy  = y - float(y0);
-    const float ux  = fx * fx * (3.f - 2.f * fx);
-    const float uy  = fy * fy * (3.f - 2.f * fy);
-    const float n00 = hash21(x0, y0);
-    const float n10 = hash21(x0 + 1, y0);
-    const float n01 = hash21(x0, y0 + 1);
-    const float n11 = hash21(x0 + 1, y0 + 1);
+float valueNoiseWrap(float x, float y, int period, uint32_t seed) {
+    const int   x0 = int(std::floor(x));
+    const int   y0 = int(std::floor(y));
+    const float fx = x - float(x0);
+    const float fy = y - float(y0);
+    // Quintic fade — softer ridges than the classic cubic hermite.
+    const float ux = fx * fx * fx * (fx * (fx * 6.f - 15.f) + 10.f);
+    const float uy = fy * fy * fy * (fy * (fy * 6.f - 15.f) + 10.f);
+    const float n00 = hashWrap(x0, y0, period, seed);
+    const float n10 = hashWrap(x0 + 1, y0, period, seed);
+    const float n01 = hashWrap(x0, y0 + 1, period, seed);
+    const float n11 = hashWrap(x0 + 1, y0 + 1, period, seed);
     const float nx0 = n00 + (n10 - n00) * ux;
     const float nx1 = n01 + (n11 - n01) * ux;
     return nx0 + (nx1 - nx0) * uy;
 }
 
-float fbm(float x, float y) {
-    float sum  = 0.f;
-    float amp  = 0.5f;
-    float freq = 1.f;
-    for (int i = 0; i < 5; ++i) {
-        sum += amp * valueNoise(x * freq, y * freq);
-        freq *= 2.03f;
-        amp *= 0.5f;
+// True tileable fBm: each octave period is an integer multiple of the base so
+// u=0 and u=1 hit identical lattice corners (no fmod phase-shift seams).
+float fbmSeamless(float u, float v, int basePeriod, uint32_t seed, int octaves) {
+    float sum    = 0.f;
+    float amp    = 0.55f;
+    float norm   = 0.f;
+    int   period = std::max(basePeriod, 2);
+    for (int i = 0; i < octaves; ++i) {
+        sum += amp * valueNoiseWrap(u * float(period), v * float(period), period,
+                                    seed + uint32_t(i) * 97u);
+        norm += amp;
+        period *= 2;
+        amp *= 0.48f;
     }
-    return sum;
+    return (norm > 1e-6f) ? (sum / norm) : 0.f;
+}
+
+float billow(float n) { return 1.f - std::fabs(n * 2.f - 1.f); }
+
+float ridged(float n) {
+    const float r = 1.f - std::fabs(n * 2.f - 1.f);
+    return r * r;
 }
 
 }  // namespace
@@ -89,38 +104,68 @@ fn luma(c: vec3<f32>) -> f32 {
   let selectPulse = clamp(u.data[18], 0.0, 1.0);
   let dissolveScale = max(u.data[19], 0.25);
   let cloudMix = clamp(u.data[20], 0.0, 1.0);
+  let densityContrast = max(u.data[21], 0.05);
+  let densityBias = clamp(u.data[22], 0.0, 0.9);
+  let aspect = max(u.data[23], 1e-4);
 
-  let cloudA = textureSample(mainTex, mainSampler, scrollUV(input.uv, tileA, speedA, time, 1.0)).rgb;
-  let cloudB = textureSample(mainTex, mainSampler, scrollUV(input.uv, tileB, speedB, time, -1.0)).rgb;
-  let cloud = mix(cloudA, cloudB, cloudMix);
+  let cloudUv = vec2<f32>(input.uv.x * aspect, input.uv.y);
+  let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
+  let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
+  let cloudMul = clamp(sampleA * sampleB * 1.35, vec3<f32>(0.0), vec3<f32>(1.0));
+  let cloudAvg = mix(sampleA, sampleB, cloudMix);
+  let cloud = mix(cloudAvg, cloudMul, 0.40);
   let noise = luma(cloud);
-  let maskUv = input.uv + (noise - 0.5) * distort + fix;
+
+  let warpNoise = luma(mix(
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileA * 0.22, 0.15), speedA * 0.30, time, 1.0)).rgb,
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileB * 0.22, 0.15), speedB * 0.30, time, -1.0)).rgb,
+    0.5));
+  let maskUv = input.uv + (warpNoise - 0.5) * distort + fix;
   let maskSample = textureSample(maskTex, maskSampler, maskUv);
   let unlocked = maskSample.r;
   let selected = maskSample.g;
   let dissolve = maskSample.b;
-  var fogKeep = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlocked);
+  let softRadius = max(edgeSoft * 0.55, 0.012);
+  let unlockedSoft = (unlocked
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(softRadius, 0.0)).r
+    + textureSample(maskTex, maskSampler, maskUv - vec2<f32>(softRadius, 0.0)).r
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(0.0, softRadius)).r
+    + textureSample(maskTex, maskSampler, maskUv - vec2<f32>(0.0, softRadius)).r
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(softRadius, softRadius) * 0.707).r
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(-softRadius, softRadius) * 0.707).r
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(softRadius, -softRadius) * 0.707).r
+    + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(-softRadius, -softRadius) * 0.707).r) * (1.0 / 9.0);
+  var fogKeep = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlockedSoft);
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
-      input.uv * dissolveScale + vec2<f32>(time * 0.02, -time * 0.015)).rgb);
-  fogKeep = fogKeep * step(dissolve, dissolveNoise + 1e-4);
+      cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
+  fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.10, dissolve + 0.10, dissolveNoise) * step(1e-4, dissolve));
+  let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
+  // Soft translucent cloud sheet — valleys thinner, peaks denser (not swiss cheese).
+  let body = mix(0.52, 1.0, density);
 
   if (passMode < 0.5) {
     let sUv = maskUv + shadowOff;
     let sMask = textureSample(maskTex, maskSampler, sUv);
-    var sFog = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, sMask.r);
-    let sDissolve = luma(textureSample(mainTex, mainSampler, (input.uv + shadowOff) * dissolveScale).rgb);
-    sFog = sFog * step(sMask.b, sDissolve + 1e-4);
-    let a = sFog * shadowStrength * fogAlpha * input.color.a;
+    let sUnlocked = (sMask.r
+      + textureSample(maskTex, maskSampler, sUv + vec2<f32>(softRadius, 0.0)).r
+      + textureSample(maskTex, maskSampler, sUv - vec2<f32>(softRadius, 0.0)).r
+      + textureSample(maskTex, maskSampler, sUv + vec2<f32>(0.0, softRadius)).r
+      + textureSample(maskTex, maskSampler, sUv - vec2<f32>(0.0, softRadius)).r) * 0.2;
+    var sFog = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, sUnlocked);
+    let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
+        (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
+    sFog = sFog * (1.0 - smoothstep(sMask.b - 0.10, sMask.b + 0.10, sDissolveNoise) * step(1e-4, sMask.b));
+    let a = sFog * body * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = fogRgb * mix(vec3<f32>(0.55), cloud, 0.85);
+  var col = fogRgb * mix(vec3<f32>(0.62), cloud, 0.88);
   let blink = selected * selectStrength * selectPulse;
-  col = mix(col, col * 1.35 + vec3<f32>(0.18, 0.22, 0.28), clamp(blink, 0.0, 1.0));
-  let a = fogKeep * fogAlpha * input.color.a;
+  col = mix(col, col * 1.22 + vec3<f32>(0.18, 0.22, 0.30), clamp(blink, 0.0, 1.0));
+  let a = fogKeep * body * fogAlpha * input.color.a;
   return vec4<f32>(col, a);
 })";
-        shader_                           = graphics_->newShaderFromWgsl({}, fragment);
+        shader_ = graphics_->newShaderFromWgsl({}, fragment);
     } else {
         std::vector<uint32_t> fragment(map_fog_frag_spv, map_fog_frag_spv + map_fog_frag_spv_count);
         shader_ = graphics_->newShaderFromSpv({}, fragment);
@@ -148,6 +193,9 @@ fn luma(c: vec3<f32>) -> f32 {
     shader_->declareFloat("selectPulse");
     shader_->declareFloat("dissolveScale");
     shader_->declareFloat("cloudMix");
+    shader_->declareFloat("densityContrast");
+    shader_->declareFloat("densityBias");
+    shader_->declareFloat("aspect");
 }
 
 MapFog::~MapFog() = default;
@@ -208,22 +256,37 @@ void MapFog::setDissolveScale(float scale) { dissolveScale_ = std::max(scale, 0.
 
 void MapFog::setCloudMix(float mix) { cloudMix_ = std::clamp(mix, 0.f, 1.f); }
 
+void MapFog::setCloudDensity(float contrast, float bias) {
+    densityContrast_ = std::max(contrast, 0.05f);
+    densityBias_     = std::clamp(bias, 0.f, 0.9f);
+}
+
 Texture *MapFog::makeCloudTexture(int size) {
     const int            n = std::clamp(size, 16, 512);
     std::vector<uint8_t> rgba(size_t(n * n * 4));
+    // Integer-period wrap fBm is seamless by construction. Prefer LOW base
+    // periods so one tile reads as a few large soft billows (article look),
+    // not wallpaper static. Do NOT scale UV by non-integers here.
     for (int y = 0; y < n; ++y) {
         for (int x = 0; x < n; ++x) {
-            // Seamless-ish by sampling in toroidal fashion at low frequency.
-            const float   u  = float(x) / float(n);
-            const float   v  = float(y) / float(n);
-            const float   n0 = fbm(u * 4.f, v * 4.f);
-            const float   n1 = fbm(u * 8.f + 17.1f, v * 8.f + 9.3f);
-            const float   c  = std::clamp(n0 * 0.65f + n1 * 0.35f, 0.f, 1.f);
-            const uint8_t b  = uint8_t(c * 255.f + 0.5f);
-            const size_t  i  = size_t((y * n + x) * 4);
-            rgba[i + 0]      = b;
-            rgba[i + 1]      = b;
-            rgba[i + 2]      = b;
+            const float u = float(x) / float(n);
+            const float v = float(y) / float(n);
+
+            const float large = fbmSeamless(u, v, 2, 0xA11CE001u, 5);
+            const float mid   = fbmSeamless(u, v, 3, 0xBEEF42u, 4);
+            const float fine  = fbmSeamless(u, v, 5, 0xC0FFEEu, 3);
+
+            // Soft puffy volumes: billow dominates, fine ridge only for breakup.
+            const float soft = billow(large) * 0.62f + billow(mid) * 0.28f + ridged(fine) * 0.10f;
+            // Lift into a pale cloud range so dual-scroll multiply stays readable.
+            const float c = std::clamp(0.42f + soft * 0.50f, 0.f, 1.f);
+
+            const float cool = std::clamp(c * 0.96f + 0.03f, 0.f, 1.f);
+            const float warm = std::clamp(c * 1.02f - 0.01f, 0.f, 1.f);
+            const size_t i   = size_t((y * n + x) * 4);
+            rgba[i + 0]      = uint8_t(warm * 255.f + 0.5f);
+            rgba[i + 1]      = uint8_t(c * 255.f + 0.5f);
+            rgba[i + 2]      = uint8_t(cool * 255.f + 0.5f);
             rgba[i + 3]      = 255;
         }
     }
@@ -232,7 +295,7 @@ Texture *MapFog::makeCloudTexture(int size) {
 
 void MapFog::ensureCloudTexture() {
     if (cloud_) return;
-    if (!ownedCloud_) ownedCloud_ = makeCloudTexture(128);
+    if (!ownedCloud_) ownedCloud_ = makeCloudTexture(256);
     cloud_ = ownedCloud_;
 }
 
@@ -259,6 +322,9 @@ void MapFog::syncUniforms(float passMode) {
     shader_->sendFloat("selectPulse", pulse);
     shader_->sendFloat("dissolveScale", dissolveScale_);
     shader_->sendFloat("cloudMix", cloudMix_);
+    shader_->sendFloat("densityContrast", densityContrast_);
+    shader_->sendFloat("densityBias", densityBias_);
+    shader_->sendFloat("aspect", drawAspect_);
 }
 
 void MapFog::draw(float x, float y, float width, float height) {
@@ -267,13 +333,17 @@ void MapFog::draw(float x, float y, float width, float height) {
     Texture *cloud = cloud_ ? cloud_ : ownedCloud_;
     if (!cloud) return;
 
+    drawAspect_ = width / std::max(height, 1e-4f);
+
     // Article: shadow pass must run before the main cloud pass.
     if (shadowEnabled_ && shadowStrength_ > 0.f) {
         syncUniforms(0.f);
-        graphics_->drawTexturedRectShaderDepth(cloud, mask_, shader_, x, y, width, height, Color(1.f, 1.f, 1.f, 1.f));
+        graphics_->drawTexturedRectShaderDepth(cloud, mask_, shader_, x, y, width, height,
+                                               Color(1.f, 1.f, 1.f, 1.f));
     }
     syncUniforms(1.f);
-    graphics_->drawTexturedRectShaderDepth(cloud, mask_, shader_, x, y, width, height, Color(1.f, 1.f, 1.f, 1.f));
+    graphics_->drawTexturedRectShaderDepth(cloud, mask_, shader_, x, y, width, height,
+                                           Color(1.f, 1.f, 1.f, 1.f));
 }
 
 }  // namespace eve::graphics

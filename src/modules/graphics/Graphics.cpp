@@ -297,6 +297,7 @@ void Graphics::expose(ssq::Table& table) {
     mapFogCls.addFunc("setSelectStrength", &MapFog::setSelectStrength);
     mapFogCls.addFunc("setDissolveScale", &MapFog::setDissolveScale);
     mapFogCls.addFunc("setCloudMix", &MapFog::setCloudMix);
+    mapFogCls.addFunc("setCloudDensity", &MapFog::setCloudDensity);
     mapFogCls.addFunc("getCloudTileA", &MapFog::getCloudTileA);
     mapFogCls.addFunc("getCloudTileB", &MapFog::getCloudTileB);
     mapFogCls.addFunc("getFogAlpha", &MapFog::getFogAlpha);

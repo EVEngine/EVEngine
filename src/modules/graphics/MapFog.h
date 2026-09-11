@@ -82,6 +82,8 @@ public:
     void setDissolveScale(float scale);
     /** @brief Mix weight between the two scrolling cloud samples (0..1). */
     void setCloudMix(float mix);
+    /** @brief Shape cloud alpha: contrast (soft→hard) and bias (coverage). */
+    void setCloudDensity(float contrast, float bias);
 
     float getCloudTileA() const { return tileA_; }
     float getCloudTileB() const { return tileB_; }
@@ -121,26 +123,29 @@ private:
     Texture  *ownedCloud_ = nullptr;
     Texture  *mask_       = nullptr;
 
-    float time_           = 0.f;
-    float tileA_          = 2.4f;
-    float tileB_          = 3.7f;
-    float speedA_         = 0.035f;
-    float speedB_         = 0.055f;
-    float distort_        = 0.035f;
-    float fixX_           = 0.f;
-    float fixY_           = 0.f;
-    float fogR_           = 0.72f;
-    float fogG_           = 0.78f;
-    float fogB_           = 0.88f;
-    float fogAlpha_       = 0.92f;
-    float edgeSoft_       = 0.12f;
-    bool  shadowEnabled_  = true;
-    float shadowOffX_     = 0.012f;
-    float shadowOffY_     = 0.018f;
-    float shadowStrength_ = 0.45f;
-    float selectStrength_ = 0.85f;
-    float dissolveScale_  = 3.0f;
-    float cloudMix_       = 0.5f;
+    float time_            = 0.f;
+    float tileA_           = 1.0f;
+    float tileB_           = 1.35f;
+    float speedA_          = 0.012f;
+    float speedB_          = 0.018f;
+    float distort_         = 0.07f;
+    float fixX_            = 0.f;
+    float fixY_            = 0.f;
+    float fogR_            = 0.82f;
+    float fogG_            = 0.86f;
+    float fogB_            = 0.92f;
+    float fogAlpha_        = 0.78f;
+    float edgeSoft_        = 0.28f;
+    bool  shadowEnabled_   = true;
+    float shadowOffX_      = 0.014f;
+    float shadowOffY_      = 0.020f;
+    float shadowStrength_  = 0.32f;
+    float selectStrength_  = 0.85f;
+    float dissolveScale_   = 1.8f;
+    float cloudMix_        = 0.45f;
+    float densityContrast_ = 0.55f;
+    float densityBias_     = 0.18f;
+    float drawAspect_      = 1.f;
 };
 
 }  // namespace eve::graphics
