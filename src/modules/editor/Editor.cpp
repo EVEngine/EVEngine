@@ -442,6 +442,7 @@ void Editor::expose(ssq::Table& table) {
         "EditorToolbar", std::function<EditorToolbar*()>([]() -> EditorToolbar* { return nullptr; }), true);
     tb.addFunc("clear", &EditorToolbar::clear);
     tb.addFunc("addTool", &EditorToolbar::addTool);
+    tb.addFunc("setIcon", &EditorToolbar::setIcon);
     tb.addFunc("setShortcut", &EditorToolbar::setShortcut);
     tb.addFunc("setActive", &EditorToolbar::setActive);
     tb.addFunc("getActive", &EditorToolbar::getActive);
@@ -449,6 +450,7 @@ void Editor::expose(ssq::Table& table) {
     tb.addFunc("getToolCount", &EditorToolbar::getToolCount);
     tb.addFunc("getToolId", &EditorToolbar::getToolId);
     tb.addFunc("getToolLabel", &EditorToolbar::getToolLabel);
+    tb.addFunc("getToolIcon", &EditorToolbar::getToolIcon);
     tb.addFunc("getToolShortcut", &EditorToolbar::getToolShortcut);
 
     auto insp = table.addClass<EditorInspector>(

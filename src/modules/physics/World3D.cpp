@@ -850,6 +850,14 @@ Body3D *World3D::findBody(PhysicsBodyHandle handle) const {
     return nullptr;
 }
 
+Body3D *World3D::findBodyById(int bodyId) const {
+    if (!isValid() || bodyId < 0) return nullptr;
+    for (Body3D *body : bodies_) {
+        if (body && body->isValid() && body->getId() == bodyId) return body;
+    }
+    return nullptr;
+}
+
 Shape3D *World3D::findShape(PhysicsShapeHandle handle) const {
     if (!isValid() || handle.isInvalid()) return nullptr;
     const auto found = shapeHandles_.find(handle);
@@ -2001,6 +2009,10 @@ ClothProbeStatus World3D::pointProbeFiltered(float x, float y, float z, float ra
     for (Shape3D *s : shapes_) {
         if (!s || !s->isValid() || s->isSensor()) continue;
         if ((maskBits & s->getCategoryBits()) == 0 || (s->getMaskBits() & categoryBits) == 0) continue;
+        // Box3D closest-point proxies are convex-only. Concave surfaces are handled by
+        // swept queries (and rigid contact generation), not b3Shape_GetClosestPoint.
+        const std::string kind = s->getKind();
+        if (kind == "triangleMesh" || kind == "heightField") continue;
         const b3Vec3 closest = b3Shape_GetClosestPoint(s->raw(), target);
         const b3Vec3 delta   = target - closest;
         const float d = std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);

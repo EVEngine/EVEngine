@@ -882,6 +882,8 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 3. 可调 `setSmoothingRadius` / `setRestDensity` / `setPressureStiffness` / `setViscosity`。
 4. `draw(gfx)` 按密度着色绘制粒子。
 
+3D 绳索现为可独立裁剪的 `physics_rope` 子模块，详见 `physics_rope.md`。
+
 ## 常见问题
 
 - 每帧改变 meter：会破坏 2D 单位一致性，应启动时设置一次；3D 世界不受 `setMeter` 影响。

@@ -41,7 +41,8 @@ void Cloth::expose(ssq::Table& table) {
     using Cloth3D  = eve::physics::Cloth3D;
     using ClothGPU = eve::physics::ClothGPU;
 
-    auto cloth = table.addClass<Cloth>("Cloth", std::function<Cloth*()>([]() -> Cloth* { return nullptr; }), true);
+    auto cloth =
+        table.addClass<Cloth>("Cloth2D", std::function<Cloth*()>([]() -> Cloth* { return nullptr; }), true);
     cloth.addFunc("update", &Cloth::update);
     cloth.addFunc("setGravity", &Cloth::setGravity);
     cloth.addFunc("getGravityX", &Cloth::getGravityX);

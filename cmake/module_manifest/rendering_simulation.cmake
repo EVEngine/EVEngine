@@ -61,6 +61,10 @@ eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLO
 eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
                    DEPS asset physics_cloth
                    GROUP 3d web)
+eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
+                   SCRIPT Rope SLOT rope
+                   DEPS physics schema
+                   GROUP 3d web)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
                    GROUP 2d)

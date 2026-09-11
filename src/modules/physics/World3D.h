@@ -286,6 +286,8 @@ public:
     Body3D *newBody(const std::string &bodyType, float x, float y, float z);
     /** @brief Resolves a live body handle; returns null for a stale or foreign handle. */
     [[nodiscard]] Body3D *findBody(PhysicsBodyHandle handle) const;
+    /** @brief Resolves a live body by its world-local stable event/query id. */
+    [[nodiscard]] Body3D *findBodyById(int bodyId) const;
     /** @brief Resolves a live shape handle; returns null when stale or foreign. */
     [[nodiscard]] Shape3D *findShape(PhysicsShapeHandle handle) const;
     /** @brief Resolves a live joint handle; returns null when stale or foreign. */

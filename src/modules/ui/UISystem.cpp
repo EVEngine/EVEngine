@@ -729,8 +729,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
                                           : (n.sizeX > 0.f ? n.sizeX : 0.f),
                                 iconOnly ? (n.sizeY > 0.f ? n.sizeY : defaultSide)
                                           : (n.sizeY > 0.f ? n.sizeY : 0.f));
+        if (n.checked) {
+            ImGui::PushStyleColor(ImGuiCol_Button,
+                                  ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                  ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        }
         const bool clicked = (sized || iconOnly) ? ImGui::Button(label.c_str(), buttonSize)
                                                  : ImGui::Button(label.c_str());
+        if (n.checked) ImGui::PopStyleColor(2);
         if (iconOnly) {
             const ImVec2 rectMin = ImGui::GetItemRectMin();
             const ImVec2 rectMax = ImGui::GetItemRectMax();
