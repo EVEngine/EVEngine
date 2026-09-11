@@ -33,17 +33,29 @@ public:
     /**
      * @brief Set or replace the repeating cloud/color texture.
      * @param cloud Borrowed Graphics-owned texture; null falls back to a built-in noise cloud.
+     * @ownership Does not take ownership of `cloud`; Graphics retains texture ownership.
+     * @lifetime `cloud` must outlive subsequent draw() calls that use it.
      */
     void setCloudTexture(Texture *cloud);
-    /** @brief Return the active cloud texture (never null after first ensureCloudTexture). */
+    /**
+     * @brief Return the active cloud texture (never null after first ensureCloudTexture).
+     * @ownership Borrowed; Graphics owns the texture storage.
+     * @lifetime Remains valid until Graphics releases the texture or shutdown.
+     */
     Texture *getCloudTexture();
 
     /**
      * @brief Set the RGBA mask bridge texture.
      * @param mask Borrowed texture; R=unlocked, G=selected, B=dissolve threshold.
+     * @ownership Does not take ownership of `mask`; the caller/Graphics retains it.
+     * @lifetime `mask` must outlive subsequent draw() calls that use it.
      */
     void setMaskTexture(Texture *mask);
-    /** @brief Return the current mask texture, or null if unset. */
+    /**
+     * @brief Return the current mask texture, or null if unset.
+     * @ownership Borrowed; ownership stays with the provider that created the texture.
+     * @lifetime Valid until the provider releases the texture or this MapFog is destroyed.
+     */
     Texture *getMaskTexture() const { return mask_; }
 
     /** @brief Dual-layer cloud tiling (layer A / B). */
@@ -94,6 +106,8 @@ public:
      * @brief Build a seamless procedural cloud noise texture owned by Graphics.
      * @param size Edge length in pixels (clamped to [16, 512]).
      * @return Borrowed Graphics-owned texture, or null on failure.
+     * @ownership Graphics owns the returned texture; the caller must not delete it.
+     * @lifetime Remains valid until Graphics releases the texture or shutdown.
      */
     Texture *makeCloudTexture(int size = 128);
 
