@@ -9,6 +9,7 @@
 #include "procgen/ProcgenCapabilities.h"
 #include "procgen/RuntimeGenerationScript.h"
 #include "procgen/ShapeGrammarScript.h"
+#include "procgen/mesh/MeshModifierGraphScript.h"
 
 #include "image/ImageData.h"
 
@@ -1310,6 +1311,20 @@ eve::script::Borrowed<PointGraph> Procgen::resolvePointGraph(ProcgenPointGraphHa
     return pointGraphs_.resolve(reference);
 }
 
+eve::script::Borrowed<MeshModifierGraph> Procgen::resolveMeshModifierGraph(
+    ProcgenMeshModifierGraphHandleRef reference) noexcept {
+    return meshModifierGraphs_.resolve(reference);
+}
+
+eve::script::Borrowed<MeshDeformationSession> Procgen::resolveMeshDeformationSession(
+    ProcgenMeshDeformationSessionHandleRef reference) noexcept {
+    return meshDeformationSessions_.resolve(reference);
+}
+
+eve::script::Borrowed<SplinePath> Procgen::resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept {
+    return splinePaths_.resolve(reference);
+}
+
 eve::script::Borrowed<BiomeRules> Procgen::resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept {
     return biomeRules_.resolve(reference);
 }
@@ -1326,6 +1341,13 @@ eve::Result<void> Procgen::release(ProcgenRuntimeGenerationHandleRef reference) 
     return runtimeGenerations_.erase(reference);
 }
 eve::Result<void> Procgen::release(ProcgenPointGraphHandleRef reference) { return pointGraphs_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenMeshModifierGraphHandleRef reference) {
+    return meshModifierGraphs_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenMeshDeformationSessionHandleRef reference) {
+    return meshDeformationSessions_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) { return splinePaths_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) { return biomeRules_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) { return shapeGrammars_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) { return lsystems_.erase(reference); }
@@ -1334,6 +1356,13 @@ bool Procgen::isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcep
     return runtimeGenerations_.isStale(reference);
 }
 bool Procgen::isStale(ProcgenPointGraphHandleRef reference) const noexcept { return pointGraphs_.isStale(reference); }
+bool Procgen::isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept {
+    return meshModifierGraphs_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept {
+    return meshDeformationSessions_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept { return splinePaths_.isStale(reference); }
 bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept { return biomeRules_.isStale(reference); }
 bool Procgen::isStale(ProcgenShapeGrammarHandleRef reference) const noexcept {
     return shapeGrammars_.isStale(reference);
@@ -2839,6 +2868,7 @@ void Procgen::expose(ssq::Table &table) {
     expose(cls);
     exposeBiomeRules(table);
     exposePointGraph(table);
+    exposeMeshModifierGraph(table);
     exposeShapeGrammar(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
@@ -4018,6 +4048,62 @@ void Procgen::expose(ssq::Class &cls) {
                 return owner ? owner->release(ref)
                              : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                            "Procgen module is no longer loaded", "pointGraph");
+            });
+    });
+    cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<MeshModifierGraph>(
+            vm, value->newMeshModifierGraphHandle(),
+            [value](ProcgenMeshModifierGraphHandleRef ref) { return value->resolveMeshModifierGraph(ref); },
+            [](ProcgenMeshModifierGraphHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "meshModifierGraph");
+            });
+    });
+    cls.addFunc("newSplinePath", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<SplinePath>(
+            vm, value->newSplinePathHandle(),
+            [value](ProcgenSplinePathHandleRef ref) { return value->resolveSplinePath(ref); },
+            [](ProcgenSplinePathHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "splinePath");
+            });
+    });
+    cls.addFunc("newMeshDeformationSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<MeshDeformationSession>(
+            vm, value->newMeshDeformationSessionHandle(),
+            [value](ProcgenMeshDeformationSessionHandleRef ref) {
+                return value->resolveMeshDeformationSession(ref);
+            },
+            [](ProcgenMeshDeformationSessionHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "meshDeformation");
             });
     });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {

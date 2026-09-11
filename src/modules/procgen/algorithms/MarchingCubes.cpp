@@ -7,6 +7,7 @@
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
 #include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/MeshDeformationGeometry.h"
 #include "procgen/algorithms/LSystemMesh.h"
 #include "procgen/urban/UrbanOutput.h"
 #include "procgen/algorithms/CastleMesh.h"
@@ -498,6 +499,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerPrototypePieceRecipes(*this);
+    registerMeshDeformationGeometryRecipes(*this);
     auto mesh = [](std::string id, std::string name) {
         RecipeDescriptor schema{std::move(id), std::move(name), "Mesh", {}};
         schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));

@@ -21,6 +21,9 @@
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/mesh/MeshModifierGraph.h"
+#include "procgen/mesh/MeshDeformationSession.h"
+#include "procgen/spline/SplinePath.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
@@ -80,6 +83,12 @@ struct ProcgenSpatialDataHandleTag {};
 struct ProcgenRuntimeGenerationHandleTag {};
 /** @brief Handle domain for module-owned point graphs. */
 struct ProcgenPointGraphHandleTag {};
+/** @brief Handle domain for module-owned mesh modifier graphs. */
+struct ProcgenMeshModifierGraphHandleTag {};
+/** @brief Handle domain for module-owned interactive mesh deformation sessions. */
+struct ProcgenMeshDeformationSessionHandleTag {};
+/** @brief Handle domain for module-owned 3D spline paths. */
+struct ProcgenSplinePathHandleTag {};
 /** @brief Handle domain for module-owned biome rules. */
 struct ProcgenBiomeRulesHandleTag {};
 /** @brief Handle domain for module-owned shape grammars. */
@@ -102,6 +111,9 @@ using ProcgenNormalImageHandleRef       = eve::script::RuntimeHandleRef<ProcgenN
 using ProcgenSpatialDataHandleRef       = eve::script::RuntimeHandleRef<ProcgenSpatialDataHandleTag>;
 using ProcgenRuntimeGenerationHandleRef = eve::script::RuntimeHandleRef<ProcgenRuntimeGenerationHandleTag>;
 using ProcgenPointGraphHandleRef        = eve::script::RuntimeHandleRef<ProcgenPointGraphHandleTag>;
+using ProcgenMeshModifierGraphHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshModifierGraphHandleTag>;
+using ProcgenMeshDeformationSessionHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshDeformationSessionHandleTag>;
+using ProcgenSplinePathHandleRef = eve::script::RuntimeHandleRef<ProcgenSplinePathHandleTag>;
 using ProcgenBiomeRulesHandleRef        = eve::script::RuntimeHandleRef<ProcgenBiomeRulesHandleTag>;
 using ProcgenShapeGrammarHandleRef      = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
 using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenLSystemHandleTag>;
@@ -260,6 +272,12 @@ public:
 
     [[nodiscard]] eve::Result<ProcgenRuntimeGenerationHandleRef> newRuntimeGenerationHandle(uint32_t worldSeed);
     [[nodiscard]] eve::Result<ProcgenPointGraphHandleRef>        newPointGraphHandle();
+    /** @brief Allocate a module-owned mesh modifier graph. */
+    [[nodiscard]] eve::Result<ProcgenMeshModifierGraphHandleRef> newMeshModifierGraphHandle();
+    /** @brief Allocate a module-owned interactive mesh deformation session. */
+    [[nodiscard]] eve::Result<ProcgenMeshDeformationSessionHandleRef> newMeshDeformationSessionHandle();
+    /** @brief Allocate a module-owned 3D spline path. */
+    [[nodiscard]] eve::Result<ProcgenSplinePathHandleRef> newSplinePathHandle();
     [[nodiscard]] eve::Result<ProcgenBiomeRulesHandleRef>        newBiomeRulesHandle();
     [[nodiscard]] eve::Result<ProcgenShapeGrammarHandleRef>      newShapeGrammarHandle();
     [[nodiscard]] eve::Result<ProcgenLSystemHandleRef>           newLSystemHandle();
@@ -267,6 +285,14 @@ public:
     [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> resolveRuntimeGeneration(
         ProcgenRuntimeGenerationHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<PointGraph>   resolvePointGraph(ProcgenPointGraphHandleRef reference) noexcept;
+    /** @brief Resolve a mesh modifier graph for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<MeshModifierGraph> resolveMeshModifierGraph(
+        ProcgenMeshModifierGraphHandleRef reference) noexcept;
+    /** @brief Resolve a mesh deformation session for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<MeshDeformationSession> resolveMeshDeformationSession(
+        ProcgenMeshDeformationSessionHandleRef reference) noexcept;
+    /** @brief Resolve a spline path for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<SplinePath> resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<BiomeRules>   resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<ShapeGrammar> resolveShapeGrammar(
         ProcgenShapeGrammarHandleRef reference) noexcept;
@@ -274,12 +300,24 @@ public:
     [[nodiscard]] eve::Result<void>              release(ProcgenSpatialDataHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenRuntimeGenerationHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenPointGraphHandleRef reference);
+    /** @brief Release a module-owned mesh modifier graph. */
+    [[nodiscard]] eve::Result<void> release(ProcgenMeshModifierGraphHandleRef reference);
+    /** @brief Release a module-owned mesh deformation session. */
+    [[nodiscard]] eve::Result<void> release(ProcgenMeshDeformationSessionHandleRef reference);
+    /** @brief Release a module-owned spline path. */
+    [[nodiscard]] eve::Result<void> release(ProcgenSplinePathHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenBiomeRulesHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenShapeGrammarHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenLSystemHandleRef reference);
     [[nodiscard]] bool                           isStale(ProcgenSpatialDataHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenPointGraphHandleRef reference) const noexcept;
+    /** @brief Report whether a mesh modifier graph handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept;
+    /** @brief Report whether a mesh deformation session handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept;
+    /** @brief Report whether a spline path handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenSplinePathHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenBiomeRulesHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenShapeGrammarHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenLSystemHandleRef reference) const noexcept;
@@ -815,6 +853,10 @@ private:
     eve::script::RuntimeObjectRegistry<SpatialData, ProcgenSpatialDataHandleTag>             spatialData_;
     eve::script::RuntimeObjectRegistry<RuntimeGeneration, ProcgenRuntimeGenerationHandleTag> runtimeGenerations_;
     eve::script::RuntimeObjectRegistry<PointGraph, ProcgenPointGraphHandleTag>               pointGraphs_;
+    eve::script::RuntimeObjectRegistry<MeshModifierGraph, ProcgenMeshModifierGraphHandleTag> meshModifierGraphs_;
+    eve::script::RuntimeObjectRegistry<MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag>
+        meshDeformationSessions_;
+    eve::script::RuntimeObjectRegistry<SplinePath, ProcgenSplinePathHandleTag>                     splinePaths_;
     eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag>               biomeRules_;
     eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag>           shapeGrammars_;
     eve::script::RuntimeObjectRegistry<LSystem, ProcgenLSystemHandleTag>                     lsystems_;

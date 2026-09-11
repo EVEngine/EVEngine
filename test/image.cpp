@@ -6,6 +6,8 @@
 #include "filesystem/FileData.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "image/UvPaintRegion.h"
+#include "image/UvPaintSession.h"
 #include "medialoader/image/FormatHandler.h"
 
 #include <cmath>
@@ -20,15 +22,13 @@
 
 namespace {
 
-eve::image::Image* img() {
-    return eve::image::Image::create();
-}
+eve::image::Image* img() { return eve::image::Image::create(); }
 
 using Colorf = eve::image::ImageData::Colorf;
 
 bool nearColor(const Colorf& a, const Colorf& b, float eps = 1.0f / 255.0f) {
-    return std::fabs(a.r - b.r) <= eps && std::fabs(a.g - b.g) <= eps &&
-           std::fabs(a.b - b.b) <= eps && std::fabs(a.a - b.a) <= eps;
+    return std::fabs(a.r - b.r) <= eps && std::fabs(a.g - b.g) <= eps && std::fabs(a.b - b.b) <= eps &&
+           std::fabs(a.a - b.a) <= eps;
 }
 
 bool expectException(const std::function<void()>& fn) {
@@ -50,7 +50,7 @@ TEST_CASE("image.create") {
 }
 
 TEST_CASE("image.newImageData.sizeAndDefaults") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> data(module->newImageData(4, 3));
     REQUIRE(data.get() != nullptr);
     CHECK_EQ(data->getWidth(), 4);
@@ -69,9 +69,9 @@ TEST_CASE("image.newImageData.sizeAndDefaults") {
 }
 
 TEST_CASE("image.setPixel.getPixel.roundTrip") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> data(module->newImageData(2, 2));
-    Colorf in{0.25f, 0.5f, 0.75f, 1.0f};
+    Colorf                                 in{0.25f, 0.5f, 0.75f, 1.0f};
     data->setPixel(1, 0, in);
     Colorf out = data->getPixel(1, 0);
     CHECK(nearColor(in, out));
@@ -82,18 +82,18 @@ TEST_CASE("image.setPixel.getPixel.roundTrip") {
 }
 
 TEST_CASE("image.setPixel.outOfRange") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> data(module->newImageData(2, 2));
-    Colorf c{1, 1, 1, 1};
+    Colorf                                 c{1, 1, 1, 1};
     CHECK(expectException([&] { data->setPixel(2, 0, c); }));
     CHECK(expectException([&] { data->getPixel(-1, 0); }));
 }
 
 TEST_CASE("image.paintCircleUv.mapsVAndWrapsSeams") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> data(module->newImageData(8, 8));
-    const Colorf red{1.f, 0.f, 0.f, 1.f};
-    auto top = data->paintCircleUv(0.5f, 1.f, 0.f, red);
+    const Colorf                           red{1.f, 0.f, 0.f, 1.f};
+    auto                                   top = data->paintCircleUv(0.5f, 1.f, 0.f, red);
     REQUIRE(top.ok());
     const auto topReceipt = std::move(top).takeValue();
     CHECK_EQ(topReceipt.centerY, 0);
@@ -110,6 +110,71 @@ TEST_CASE("image.paintCircleUv.mapsVAndWrapsSeams") {
     CHECK_EQ(invalid.error()->code(), eve::DiagnosticCode::InvalidArgument);
 }
 
+TEST_CASE("image.uvPaintRegion.sharedCpuGpuCommandBounds") {
+    auto region =
+        eve::image::prepareUvPaintRegionResult(100, 50, 0.5f, 0.25f, 0.1f, 0.2f, 1.f, 0.25f, 0.f, 0.8f, false);
+    REQUIRE(region.ok());
+    CHECK_EQ(region.value().centerX, 50);
+    CHECK_EQ(region.value().centerY, 12);
+    CHECK_EQ(region.value().minX, 39);
+    CHECK_EQ(region.value().maxX, 60);
+    CHECK_EQ(region.value().minY, 2);
+    CHECK_EQ(region.value().maxY, 23);
+    CHECK_EQ(region.value().width(), 22);
+    CHECK_EQ(region.value().height(), 22);
+
+    auto flipped = eve::image::prepareUvPaintRegionResult(100, 50, 0.5f, 0.25f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f, true);
+    REQUIRE(flipped.ok());
+    CHECK_EQ(flipped.value().centerY, 37);
+    CHECK(!eve::image::prepareUvPaintRegionResult(0, 50, 0.5f, 0.5f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f).ok());
+    CHECK(!eve::image::prepareUvPaintRegionResult(10, 10, 0.5f, 0.5f, -0.1f, 0.f, 1.f, 1.f, 1.f, 1.f).ok());
+
+    eve::image::UvPaintRegion scratch;
+    REQUIRE(scratch.prepareResult(64, 32, 0.25f, 0.75f, 0.1f, 0.1f, 1.f, 0.f, 0.f, 1.f, false).ok());
+    const int committedX = scratch.centerX;
+    CHECK(!scratch.prepareResult(0, 32, 0.5f, 0.5f, 0.1f, 0.1f, 1.f, 0.f, 0.f, 1.f, false).ok());
+    CHECK_EQ(scratch.centerX, committedX);
+}
+
+TEST_CASE("image.uvPaintSession.transactionsUndoRestoreAndBake") {
+    eve::image::ImageData source(8, 8, "RGBA8");
+    const Colorf          blue{0.f, 0.f, 1.f, 1.f};
+    for (int y = 0; y < 8; ++y)
+        for (int x = 0; x < 8; ++x) source.setPixel(x, y, blue);
+
+    eve::image::UvPaintSession session;
+    REQUIRE(session.initializeResult(source).ok());
+    auto painted = session.paintCircleResult(0.5f, 0.5f, 1.1f, 1.f, 0.f, 0.f, 1.f);
+    REQUIRE(painted.ok());
+    CHECK(painted.value().changedPixelCount >= 4);
+    CHECK_EQ(session.undoCount(), 1);
+    CHECK(session.currentImageResult().value()->getPixel(4, 4).r > 0.99f);
+    eve::image::ImageData copied(1, 1, "RGBA8");
+    REQUIRE(session.copyCurrentToResult(copied).ok());
+    CHECK_EQ(copied.getWidth(), 8);
+    CHECK(copied.getPixel(4, 4).r > 0.99f);
+    REQUIRE(session.undoResult().ok());
+    CHECK(session.currentImageResult().value()->getPixel(4, 4).b > 0.99f);
+
+    REQUIRE(session.paintCircleResult(0.5f, 0.5f, 0.f, 0.f, 1.f, 0.f, 1.f).ok());
+    REQUIRE(session.bakeResult().ok());
+    REQUIRE(session.paintCircleResult(0.5f, 0.5f, 0.f, 1.f, 0.f, 0.f, 1.f).ok());
+    REQUIRE(session.restoreResult().ok());
+    CHECK(session.currentImageResult().value()->getPixel(4, 4).g > 0.99f);
+}
+
+TEST_CASE("image.uvPaintSession.rejectsInvalidPaintAtomically") {
+    eve::image::ImageData      source(4, 4, "RGBA8");
+    eve::image::UvPaintSession session;
+    CHECK(!session.paintCircleResult(0.5f, 0.5f, 1.f, 1.f, 0.f, 0.f, 1.f).ok());
+    REQUIRE(session.initializeResult(source).ok());
+    const auto revision = session.revision();
+    CHECK(!session.paintCircleResult(0.5f, 0.5f, -1.f, 1.f, 0.f, 0.f, 1.f).ok());
+    CHECK(!session.paintCircleResult(0.5f, 0.5f, 1.f, 2.f, 0.f, 0.f, 1.f).ok());
+    CHECK_EQ(session.revision(), revision);
+    CHECK_EQ(session.undoCount(), 0);
+}
+
 TEST_CASE("image.invalidFormat") {
     auto* module = img();
     CHECK(!eve::image::ImageData::validPixelFormat("NOT_A_FORMAT"));
@@ -124,40 +189,38 @@ TEST_CASE("image.invalidSize") {
 }
 
 TEST_CASE("image.newImageDataFromData.garbage") {
-    auto* module = img();
-    const char garbage[] = "this is not encoded image data";
+    auto*               module    = img();
+    const char          garbage[] = "this is not encoded image data";
     eve::data::ByteData bytes(garbage, sizeof(garbage) - 1);
     CHECK(expectException([&] { module->newImageData(&bytes); }));
 }
 
 TEST_CASE("image.isCompressed.nonCompressed") {
-    auto* module = img();
-    const char plain[] = "plain rgba bytes, not dds/ktx/pvr";
+    auto*               module  = img();
+    const char          plain[] = "plain rgba bytes, not dds/ktx/pvr";
     eve::data::ByteData bytes(plain, sizeof(plain) - 1);
     CHECK(!module->isCompressed(&bytes));
 }
 
 TEST_CASE("image.newImageData.withBuffer") {
-    auto* module = img();
-    unsigned char raw[8] = {10, 20, 30, 40, 50, 60, 70, 80};
-    std::unique_ptr<eve::image::ImageData> copied(
-        module->newImageData(2, 1, "RGBA8", raw, false));
+    auto*                                  module = img();
+    unsigned char                          raw[8] = {10, 20, 30, 40, 50, 60, 70, 80};
+    std::unique_ptr<eve::image::ImageData> copied(module->newImageData(2, 1, "RGBA8", raw, false));
     REQUIRE(copied.get() != nullptr);
     CHECK(std::memcmp(copied->getData(), raw, sizeof(raw)) == 0);
     raw[0] = 99;
     CHECK(static_cast<unsigned char*>(copied->getData())[0] == 10);
 
-    unsigned char* owned = new unsigned char[4]{1, 2, 3, 4};
-    std::unique_ptr<eve::image::ImageData> owning(
-        module->newImageData(1, 1, "RGBA8", owned, true));
+    unsigned char*                         owned = new unsigned char[4]{1, 2, 3, 4};
+    std::unique_ptr<eve::image::ImageData> owning(module->newImageData(1, 1, "RGBA8", owned, true));
     REQUIRE(owning.get() != nullptr);
     CHECK(std::memcmp(owning->getData(), owned, 4) == 0);
 }
 
 TEST_CASE("image.cloneAndPaste") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 2));
-    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf                                 red{1.0f, 0.0f, 0.0f, 1.0f};
     src->setPixel(2, 1, red);
 
     std::unique_ptr<eve::image::ImageData> clone(src->clone());
@@ -177,9 +240,9 @@ TEST_CASE("image.cloneAndPaste") {
 }
 
 TEST_CASE("image.encode.pngRoundTrip") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
-    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf                                 red{1.0f, 0.0f, 0.0f, 1.0f};
     src->setPixel(1, 1, red);
 
     std::unique_ptr<eve::filesystem::FileData> encoded(
@@ -195,19 +258,20 @@ TEST_CASE("image.encode.pngRoundTrip") {
 }
 
 TEST_CASE("image.encode.unsupportedFormatThrows") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2, "RGBA32F"));
     // No encoder currently supports encoding float pixel data into PNG.
-    CHECK(expectException([&] {
-        src->encode(medialoader::FormatHandler::ENCODED_PNG, "ut_bad.png", false);
-    }));
+    CHECK(expectException([&] { src->encode(medialoader::FormatHandler::ENCODED_PNG, "ut_bad.png", false); }));
 }
 
 TEST_CASE("image.newCubeFaces.crossLayout") {
     auto* module = img();
     // 3x4 "+" cross layout, one texel per face; see Image::newCubeFaces mapping.
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 4));
-    struct Face { int x, y; Colorf color; };
+    struct Face {
+        int    x, y;
+        Colorf color;
+    };
     const Face faces[] = {
         {1, 1, {1.0f, 0.0f, 0.0f, 1.0f}},  // +x
         {1, 3, {0.0f, 1.0f, 0.0f, 1.0f}},  // -x
@@ -228,7 +292,7 @@ TEST_CASE("image.newCubeFaces.crossLayout") {
 }
 
 TEST_CASE("image.newCubeFaces.invalidDimensionsThrows") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(5, 7));
     CHECK(expectException([&] { module->newCubeFaces(src.get()); }));
 }
@@ -237,16 +301,15 @@ TEST_CASE("image.rotate.ninetyDegreesNearest") {
     auto* module = img();
     // 3x2 with a unique corner marker at (2,0).
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 2));
-    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
-    Colorf green{0.0f, 1.0f, 0.0f, 1.0f};
+    Colorf                                 red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf                                 green{0.0f, 1.0f, 0.0f, 1.0f};
     src->setPixel(2, 0, red);
     src->setPixel(0, 1, green);
 
     // +90° with Math::rotate2* / Y-down → clockwise on screen.
     // Corner (2,0) relative to center (1.5,1.0): (+0.5,-1.0) → (+1.0,+0.5)
     // → destination pixel center ≈ (dstCx+1, dstCy+0.5).
-    std::unique_ptr<eve::image::ImageData> rotated(
-        src->rotate(float(M_PI) * 0.5f, "nearest", true));
+    std::unique_ptr<eve::image::ImageData> rotated(src->rotate(float(M_PI) * 0.5f, "nearest", true));
     REQUIRE(rotated.get() != nullptr);
     // Expanded AABB of 3x2 at 90° is 2x3.
     CHECK_EQ(rotated->getWidth(), 2);
@@ -280,37 +343,34 @@ TEST_CASE("image.rotate.ninetyDegreesNearest") {
 }
 
 TEST_CASE("image.rotate.identityAndExpandFalse") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(4, 4));
-    Colorf c{0.2f, 0.4f, 0.6f, 1.0f};
+    Colorf                                 c{0.2f, 0.4f, 0.6f, 1.0f};
     src->setPixel(1, 2, c);
 
-    std::unique_ptr<eve::image::ImageData> same(
-        src->rotate(0.f, "nearest", false));
+    std::unique_ptr<eve::image::ImageData> same(src->rotate(0.f, "nearest", false));
     REQUIRE(same.get() != nullptr);
     CHECK_EQ(same->getWidth(), 4);
     CHECK_EQ(same->getHeight(), 4);
     CHECK(nearColor(same->getPixel(1, 2), c));
 
     // 45° without expand keeps size; marker stays near center area.
-    std::unique_ptr<eve::image::ImageData> clipped(
-        src->rotate(float(M_PI) * 0.25f, "nearest", false));
+    std::unique_ptr<eve::image::ImageData> clipped(src->rotate(float(M_PI) * 0.25f, "nearest", false));
     REQUIRE(clipped.get() != nullptr);
     CHECK_EQ(clipped->getWidth(), 4);
     CHECK_EQ(clipped->getHeight(), 4);
 }
 
 TEST_CASE("image.rotate.bilinearAndBadFilter") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
-    Colorf white{1.0f, 1.0f, 1.0f, 1.0f};
+    Colorf                                 white{1.0f, 1.0f, 1.0f, 1.0f};
     src->setPixel(0, 0, white);
     src->setPixel(1, 0, white);
     src->setPixel(0, 1, white);
     src->setPixel(1, 1, white);
 
-    std::unique_ptr<eve::image::ImageData> rotated(
-        src->rotate(float(M_PI) * 0.25f, "linear", true));
+    std::unique_ptr<eve::image::ImageData> rotated(src->rotate(float(M_PI) * 0.25f, "linear", true));
     REQUIRE(rotated.get() != nullptr);
     CHECK(rotated->getWidth() >= 2);
     CHECK(rotated->getHeight() >= 2);
@@ -331,11 +391,11 @@ TEST_CASE("image.rotate.bilinearAndBadFilter") {
 }
 
 TEST_CASE("image.rotate.rotspriteNinetyAndPalette") {
-    auto* module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 2));
-    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
-    Colorf green{0.0f, 1.0f, 0.0f, 1.0f};
-    Colorf blue{0.0f, 0.0f, 1.0f, 1.0f};
+    Colorf                                 red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf                                 green{0.0f, 1.0f, 0.0f, 1.0f};
+    Colorf                                 blue{0.0f, 0.0f, 1.0f, 1.0f};
     src->setPixel(0, 0, blue);
     src->setPixel(1, 0, blue);
     src->setPixel(2, 0, red);
@@ -343,8 +403,7 @@ TEST_CASE("image.rotate.rotspriteNinetyAndPalette") {
     src->setPixel(1, 1, blue);
     src->setPixel(2, 1, blue);
 
-    std::unique_ptr<eve::image::ImageData> rotated(
-        src->rotate(float(M_PI) * 0.5f, "rotsprite", true));
+    std::unique_ptr<eve::image::ImageData> rotated(src->rotate(float(M_PI) * 0.5f, "rotsprite", true));
     REQUIRE(rotated.get() != nullptr);
     CHECK_EQ(rotated->getWidth(), 2);
     CHECK_EQ(rotated->getHeight(), 3);
@@ -357,19 +416,17 @@ TEST_CASE("image.rotate.rotspriteNinetyAndPalette") {
         return nearColor(p, red) || nearColor(p, green) || nearColor(p, blue);
     };
     for (int y = 0; y < rotated->getHeight(); ++y)
-        for (int x = 0; x < rotated->getWidth(); ++x)
-            CHECK(isPalette(rotated->getPixel(x, y)));
+        for (int x = 0; x < rotated->getWidth(); ++x) CHECK(isPalette(rotated->getPixel(x, y)));
 }
 
 TEST_CASE("image.rotate.rotspriteFortyFive") {
     auto* module = img();
     // 8x8 plus-shaped sprite — RotSprite should keep palette and expand AABB.
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(8, 8));
-    Colorf ink{0.1f, 0.2f, 0.3f, 1.0f};
-    Colorf bg{0.9f, 0.9f, 0.85f, 1.0f};
+    Colorf                                 ink{0.1f, 0.2f, 0.3f, 1.0f};
+    Colorf                                 bg{0.9f, 0.9f, 0.85f, 1.0f};
     for (int y = 0; y < 8; ++y)
-        for (int x = 0; x < 8; ++x)
-            src->setPixel(x, y, bg);
+        for (int x = 0; x < 8; ++x) src->setPixel(x, y, bg);
     for (int i = 1; i < 7; ++i) {
         src->setPixel(i, 3, ink);
         src->setPixel(i, 4, ink);
@@ -377,14 +434,13 @@ TEST_CASE("image.rotate.rotspriteFortyFive") {
         src->setPixel(4, i, ink);
     }
 
-    std::unique_ptr<eve::image::ImageData> rotated(
-        src->rotate(float(M_PI) * 0.25f, "rotsprite", true));
+    std::unique_ptr<eve::image::ImageData> rotated(src->rotate(float(M_PI) * 0.25f, "rotsprite", true));
     REQUIRE(rotated.get() != nullptr);
     CHECK(rotated->getWidth() >= 8);
     CHECK(rotated->getHeight() >= 8);
 
     int inkCount = 0;
-    int foreign = 0;
+    int foreign  = 0;
     for (int y = 0; y < rotated->getHeight(); ++y) {
         for (int x = 0; x < rotated->getWidth(); ++x) {
             Colorf p = rotated->getPixel(x, y);
@@ -400,22 +456,18 @@ TEST_CASE("image.rotate.rotspriteFortyFive") {
 }
 
 TEST_CASE("image.formats.pixelRoundTrips") {
-    auto *module = img();
+    auto* module = img();
     struct Fmt {
-        const char *name;
-        size_t pixelSize;
-        float eps;
+        const char* name;
+        size_t      pixelSize;
+        float       eps;
     };
     const Fmt full[] = {
-        {"RGBA16", 8u, 0.01f},
-        {"RGBA16F", 8u, 0.01f},
-        {"RGBA32F", 16u, 1e-4f},
-        {"RGBA4", 2u, 0.1f},
-        {"RGB5A1", 2u, 0.05f},
-        {"RGB565", 2u, 0.05f},
+        {"RGBA16", 8u, 0.01f}, {"RGBA16F", 8u, 0.01f}, {"RGBA32F", 16u, 1e-4f},
+        {"RGBA4", 2u, 0.1f},   {"RGB5A1", 2u, 0.05f},  {"RGB565", 2u, 0.05f},
     };
     const Colorf probe{0.30f, 0.60f, 0.90f, 1.0f};
-    for (const auto &f : full) {
+    for (const auto& f : full) {
         CHECK(eve::image::ImageData::validPixelFormat(f.name));
         std::unique_ptr<eve::image::ImageData> d(module->newImageData(2, 2, f.name));
         REQUIRE(d.get() != nullptr);
@@ -431,7 +483,7 @@ TEST_CASE("image.formats.pixelRoundTrips") {
     }
 
     const Fmt reduced[] = {{"R8", 1u, 0.01f}, {"RG8", 2u, 0.01f}};
-    for (const auto &f : reduced) {
+    for (const auto& f : reduced) {
         CHECK(eve::image::ImageData::validPixelFormat(f.name));
         std::unique_ptr<eve::image::ImageData> d(module->newImageData(2, 2, f.name));
         REQUIRE(d.get() != nullptr);
@@ -459,9 +511,9 @@ TEST_CASE("image.formats.canPasteMatrix") {
 }
 
 TEST_CASE("image.paste.acrossFormats") {
-    auto *module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 1, "RGBA8"));
-    const Colorf px{0.2f, 0.4f, 0.8f, 1.0f};
+    const Colorf                           px{0.2f, 0.4f, 0.8f, 1.0f};
     src->setPixel(1, 0, px);
 
     std::unique_ptr<eve::image::ImageData> dst32f(module->newImageData(2, 1, "RGBA32F"));
@@ -480,9 +532,9 @@ TEST_CASE("image.paste.acrossFormats") {
 }
 
 TEST_CASE("image.encode.tgaRoundTrip") {
-    auto *module = img();
+    auto*                                  module = img();
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
-    const Colorf teal{0.1f, 0.7f, 0.6f, 1.0f};
+    const Colorf                           teal{0.1f, 0.7f, 0.6f, 1.0f};
     src->setPixel(1, 1, teal);
 
     std::unique_ptr<eve::filesystem::FileData> encoded(
