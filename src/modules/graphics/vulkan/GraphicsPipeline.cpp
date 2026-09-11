@@ -1481,7 +1481,10 @@ void Graphics::buildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk:
 void Graphics::queueSceneColorResolve() {
     Texture *src = takeFinalSceneTexture();
     if (!src) src = getSceneColorTexture();
-    if (!src || !src->gpuHandle || sceneColorComposited) return;
+    if (!src || !src->gpuHandle) return;
+    // Still build the AA/Bloom/Exposure resolve when a script called
+    // drawScene3D (sceneColorComposited). autoScene skips the implicit
+    // fullscreen blit; present replaces the script's scene-color span.
     const bool reflectionPasses = renderControl_ &&
                                   (renderControl_->isEnabled("rtgi") ||
                                    renderControl_->isEnabled("ssr") ||

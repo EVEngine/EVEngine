@@ -7,6 +7,8 @@
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
 
+#include <squirrel.h>
+
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
@@ -421,6 +423,9 @@ void Runtime::initialize() {
     try {
         ModuleManager::expose(*this);
         exposeReflection(*this, table("eve"));
+        table("eve").addFunc("lastScriptError", [this]() {
+            return script::formatLastScriptError(handle());
+        });
         initialized_ = true;
     } catch (const std::exception& error) {
         ModuleManager::detach(this);
@@ -431,6 +436,11 @@ void Runtime::initialize() {
 void Runtime::installErrorHandler() {
     if (!vm_) return;
     HSQUIRRELVM vm = handle();
+    // Line numbers in sq_stackinfos require debug info at compile time.
+    sq_enabledebuginfo(vm, SQTrue);
+    // Call the hook for try/catch as well, while the throw-site stack is live.
+    // load.nut's eve_frame catch would otherwise print only the error string.
+    sq_notifyallexceptions(vm, SQTrue);
     sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
     sq_seterrorhandler(vm);  // pops the closure
 }
@@ -552,7 +562,8 @@ const ScriptInfo& Runtime::execute(ScriptId id) {
         sq_pushroottable(vm);
         const SQRESULT result = sq_call(vm, 1, SQFalse, SQTrue);
         if (SQ_FAILED(result)) {
-            script::ScriptErrorContext ctx = script::takeLastScriptError(vm);
+            script::ScriptErrorContext ctx;
+            if (const auto* pending = script::peekLastScriptError(vm)) ctx = *pending;
             if (ctx.empty()) ctx.message = "script error";
             try {
                 discoverClasses(record, before);
@@ -1206,7 +1217,16 @@ script::ScriptErrorContext Runtime::compileErrorContext(const std::string& what,
 [[noreturn]] void Runtime::fail(ScriptStage stage, const std::string& source, ScriptId id,
                                 const std::exception& error) {
     script::ScriptErrorContext ctx = script::takeLastScriptError(handle());
-    if (ctx.empty()) ctx.message = error.what();
+    const char* what = error.what();
+    const std::string message = what ? what : "";
+    // notifyallexceptions records every caught throw (e.g. file_exists). Only
+    // keep that snapshot when it actually describes this failure.
+    if (ctx.empty() ||
+        (ctx.message != message && message.find(ctx.message) == std::string::npos &&
+         ctx.message.find(message) == std::string::npos)) {
+        ctx = {};
+        ctx.message = message;
+    }
     fail(stage, source, id, std::move(ctx));
 }
 

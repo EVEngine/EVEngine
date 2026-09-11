@@ -207,4 +207,17 @@ bool Mouse::getRelativeMode() const
 	return SDL_GetRelativeMouseMode() != SDL_FALSE;
 }
 
+double Mouse::getMovementX()
+{
+	int x = 0, y = 0;
+	SDL_GetRelativeMouseState(&x, &y);
+	lastRelY = y;
+	return double(x);
+}
+
+double Mouse::getMovementY() const
+{
+	return double(lastRelY);
+}
+
 } // eve::mouse::sdl

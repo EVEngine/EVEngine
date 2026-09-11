@@ -220,16 +220,17 @@ void printCentered(graphics::Graphics *gfx, const std::string &text, float cx, f
 void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h, float angle, float a) {
     const RenderTransform previous = gRenderTransform;
     gRenderTransform = {x + w * 0.5f, y + h * 0.5f, angle, true};
-    drawSolid(gfx, x, y, w, h, angle, glm::vec4(0.06f, 0.06f, 0.10f, a));
-    const float i1 = w * 0.05f;
-    drawSolid(gfx, x + i1, y + i1, w - i1 * 2.f, h - i1 * 2.f, angle,
-              glm::vec4(0.30f, 0.17f, 0.45f, a));
-    const float i2 = w * 0.10f;
-    drawSolid(gfx, x + i2, y + i2, w - i2 * 2.f, h - i2 * 2.f, angle,
-              glm::vec4(0.11f, 0.08f, 0.22f, a));
+    // 2D solids keep the first fragment at equal depth, so inner details go first.
     if (gfx->getFont())
         printCentered(gfx, "?", x + w * 0.5f, y + h * 0.5f, 1.2f * (w / 110.f),
                       glm::vec4(0.9f, 0.85f, 0.95f, a));
+    const float i2 = w * 0.10f;
+    drawSolid(gfx, x + i2, y + i2, w - i2 * 2.f, h - i2 * 2.f, angle,
+              glm::vec4(0.11f, 0.08f, 0.22f, a));
+    const float i1 = w * 0.05f;
+    drawSolid(gfx, x + i1, y + i1, w - i1 * 2.f, h - i1 * 2.f, angle,
+              glm::vec4(0.30f, 0.17f, 0.45f, a));
+    drawSolid(gfx, x, y, w, h, angle, glm::vec4(0.06f, 0.06f, 0.10f, a));
     gRenderTransform = previous;
 }
 

@@ -54,6 +54,8 @@ const FLY_SPEED = 18.0;     // world units / second
 const FLY_FAST = 48.0;
 const LOOK_SENS = 0.0032;   // radians per mouse pixel
 const VIEW_RANGE = 180.0;
+const STREAM_CREATE_PER_FRAME = 8;  // enqueue up to N async fill+remesh jobs per frame
+const STREAM_CACHE_CHUNKS = 3;      // keep this many extra chunk radii after leaving
 
 function maxf(a, b) { return a > b ? a : b; }
 
@@ -186,6 +188,7 @@ function setupWorld() {
     }
     if (world == null) {
         world = voxel.newWorldWithTypes(types);
+        world.setStreamCacheChunks(STREAM_CACHE_CHUNKS);
         applyTerrainPreset(0, seed);
         // 出生点放在本地最高点斜后方，朝向岛屿，保证第一眼能看到地形
         local bestH = 0;
@@ -257,7 +260,7 @@ function streamWorld() {
     local pcx = floor(playerPos[0] / 32.0).tointeger();
     local pcy = floor(playerPos[1] / 32.0).tointeger();
     local pcz = floor(playerPos[2] / 32.0).tointeger();
-    world.streamAround(pcx, pcy, pcz, streamRadius);
+    world.streamAround(pcx, pcy, pcz, streamRadius, STREAM_CREATE_PER_FRAME);
 }
 
 // ---------------------------------------------------------------------------
@@ -300,23 +303,20 @@ function updateCamera(dt) {
 function setMouseCaptured(captured) {
     mouseCaptured = captured;
     mouse.setVisible(!captured);
-    local cx = config.width * 0.5;
-    local cy = config.height * 0.5;
-    if (captured) mouse.setPosition(cx, cy);
+    // Relative mode reports true motion; warping to the window centre on
+    // Windows injects a reverse SDL event (look left, then snap back).
+    mouse.setRelativeMode(captured);
+    mouse.getMovementX();  // drain pending delta
 }
 
 function updateMouseLook() {
     if (key_just_pressed("escape", "Escape")) setMouseCaptured(!mouseCaptured);
+    local dx = mouse.getMovementX();
+    local dy = mouse.getMovementY();
     if (!mouseCaptured) return;
-
-    local cx = config.width * 0.5;
-    local cy = config.height * 0.5;
-    local dx = mouse.getX() - cx;
-    local dy = mouse.getY() - cy;
     yaw -= dx * LOOK_SENS;
     pitch += dy * LOOK_SENS;  // 屏幕 Y 向下
     pitch = clampf(pitch, -1.5, 1.5);
-    mouse.setPosition(cx, cy);
 }
 
 function mouseLeftPressed() {
@@ -397,11 +397,12 @@ function refreshHud() {
     ui.setText("stats",
         "voxel-terrain  预设[" + (presetIdx + 1) + "/" + presets.len() + "] " + p.name +
         "  seed " + seed + "\n" +
-        format("位置 (%.0f, %.0f, %.0f)   流式半径 %d chunk", playerPos[0], playerPos[1],
-               playerPos[2], streamRadius) + "\n" +
-        format("chunks %d   可见 %d   批次 %d   矩形 %d   FPS %.0f",
-               world.getChunkCount(), world.getVisibleChunkCount(),
-               world.getVisibleBatchCount(), world.getVisibleRectCount(), fpsAvg) +
+        format("位置 (%.0f, %.0f, %.0f)   流式半径 %d  缓存 +%d", playerPos[0], playerPos[1],
+               playerPos[2], streamRadius, world.getStreamCacheChunks()) + "\n" +
+        format("chunks %d   加载中 %d   dirty %d   可见 %d   批次 %d   矩形 %d   FPS %.0f",
+               world.getChunkCount(), world.getInflightStreamCount(), world.getDirtyCount(),
+               world.getVisibleChunkCount(), world.getVisibleBatchCount(),
+               world.getVisibleRectCount(), fpsAvg) +
         (lastEdit == "" ? "" : "\n" + lastEdit));
     ui.setText("help",
         "WASD 飞行  Space/C 升降  Shift 加速  鼠标视角  Esc释放/捕获  左键放置  右键破坏  Z/Y撤销重做\n" +

@@ -1010,7 +1010,9 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # apt update may consume most of ten minutes while retrying a slow
+        # Ubuntu mirror; keep enough time for the package download itself.
+        timeout-minutes: 20
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.

@@ -1573,6 +1573,31 @@ void Graphics::flushToSwapchain() {
         replaySpans(engineSpans);
     };
 
+    auto drawPlacedSceneResolve = [&](TexturedBatch &placed) {
+        if (!sceneResolve) {
+            drawTextured(placed);
+            return;
+        }
+        TexturedBatch blit = *sceneResolve;
+        const glm::vec4 acesColor = sceneResolve->batch.vertices().empty()
+                                        ? glm::vec4(1.f, 1.f, 1.f, 65536.f)
+                                        : sceneResolve->batch.vertices().front().color;
+        const auto &src = placed.batch.vertices();
+        if (src.size() >= 6) {
+            const float x = src[0].pos.x;
+            const float y = src[0].pos.y;
+            const float w = src[1].pos.x - x;
+            const float h = src[2].pos.y - y;
+            const glm::vec4 tint = src[0].color;
+            blit.batch.clear();
+            blit.batch.addTexturedRect(x, y, w, h,
+                                       Color(tint.r * acesColor.r, tint.g * acesColor.g,
+                                             tint.b * acesColor.b, acesColor.a),
+                                       src[0].uv.x, src[0].uv.y, src[1].uv.x, src[2].uv.y);
+        }
+        drawTextured(blit, true);
+    };
+
     // Default: blit 3D fullscreen under script 2D. Scripts that call
     // drawScene3D / drawTexturedRect(getSceneColorTexture()) own the order.
     if (autoScene && sceneResolve) {
@@ -1596,8 +1621,21 @@ void Graphics::flushToSwapchain() {
                 drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
             } else if (sp.kind == OverlayKind::Textured && texPipeline &&
                        sp.index < textured.size()) {
-                drawTextured(textured[sp.index]);
-                if (textured[sp.index].texture == sceneTex) drawEngine3D();
+                // Distortion overlays sample scene color; they are not
+                // drawScene3D placements. Replacing them with the ACES
+                // resolve skips particleDistortionPipeline and can cover
+                // the autoScene blit with a near-empty frame.
+                const bool placedScene =
+                    sceneResolve && textured[sp.index].texture == sceneTex &&
+                    textured[sp.index].effect != TexturedBatch::Effect::SceneColorDistortion;
+                if (placedScene) {
+                    drawPlacedSceneResolve(textured[sp.index]);
+                } else {
+                    drawTextured(textured[sp.index]);
+                }
+                if (placedScene) {
+                    drawEngine3D();
+                }
             } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
