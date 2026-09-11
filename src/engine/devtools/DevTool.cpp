@@ -97,7 +97,7 @@ SQInteger runtimeErrorHook(HSQUIRRELVM v) {
     // When attached through Runtime, uncaught errors are reported by the
     // Runtime error sink after unwind. Notifying here as well would treat
     // expected catches (file_exists, migrate_instance) as debugger errors.
-    if (g_active->runtimeBound()) {
+    if (g_active->isRuntimeBound()) {
         eve::script::setLastScriptError(v, std::move(ctx));
         return 0;
     }

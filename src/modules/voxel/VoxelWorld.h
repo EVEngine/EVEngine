@@ -82,7 +82,7 @@ public:
     /**
      * @brief Extra chunk radius kept after leaving the stream sphere.
      * `streamAround` still creates only inside `radiusChunks`, but does not
-     * unload (or drop in-flight jobs) until distance > radius + this value.
+     * unload or drop in-flight jobs until distance exceeds radius plus this value.
      * 0 (default) matches the old immediately-evict behaviour.
      */
     void setStreamCacheChunks(int extraChunks);
