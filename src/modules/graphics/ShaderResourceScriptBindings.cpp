@@ -24,7 +24,8 @@ uint32_t number(const Value& object, const std::string& name) {
     return uint32_t(value);
 }
 std::shared_ptr<const filesystem::FileData> readBytes(const std::string& path, size_t limit) {
-    filesystem::Filesystem::create();
+    auto* filesystem = filesystem::Filesystem::create();
+    if (!filesystem) throw std::runtime_error("Filesystem module initialization failed");
     auto result = filesystem::readPreparedFile(path, limit);
     if (!result) throw std::runtime_error(result.status().describe());
     return std::move(result).takeValue();
@@ -62,17 +63,17 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
                 if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
                     throw std::runtime_error("Unknown image resource field: " + key);
             ShaderImageInput image;
-            image.binding      = number(row, "binding");
-            image.width        = number(row, "width");
-            image.height       = number(row, "height");
-            image.layers       = number(row, "layers");
-            image.mipLevels    = number(row, "mips");
-            const auto& format = field(row, "format", Value::Type::String).asString();
-            auto        found  = std::find_if(std::begin(formats), std::end(formats),
-                                              [&](const auto& item) { return item.first == format; });
+            image.binding     = number(row, "binding");
+            image.width       = number(row, "width");
+            image.height      = number(row, "height");
+            image.layers      = number(row, "layers");
+            image.mipLevels   = number(row, "mips");
+            const auto format = field(row, "format", Value::Type::String).asString();
+            auto       found  = std::find_if(std::begin(formats), std::end(formats),
+                                             [&](const auto& item) { return item.first == format; });
             if (found == std::end(formats)) throw std::runtime_error("Unknown image format: " + format);
-            image.format          = found->second;
-            const auto& dimension = field(row, "dimension", Value::Type::String).asString();
+            image.format         = found->second;
+            const auto dimension = field(row, "dimension", Value::Type::String).asString();
             if (dimension == "2d")
                 image.dimension = ShaderImageDimension::Image2D;
             else if (dimension == "array2d")
@@ -91,7 +92,7 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
             image.sampler.repeatU                 = wrapU == 0;
             image.sampler.repeatV                 = wrapV == 0;
             image.sampler.maxAnisotropy           = float(number(row, "anisotropy"));
-            const auto& path                      = field(row, "path", Value::Type::String).asString();
+            const auto path                       = field(row, "path", Value::Type::String).asString();
             files.push_back(readBytes(path, 1024ull * 1024 * 1024));
             const auto& bytes = *files.back();
             totalBytes += bytes.getSize();

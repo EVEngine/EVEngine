@@ -20,7 +20,8 @@ Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput
     };
     if (!image.width || !image.height || image.width > 32768 || image.height > 32768 || !image.layers ||
         image.layers > 2048 || !image.mipLevels ||
-        image.mipLevels > std::bit_width(std::max(image.width, image.height)) || image.binding > 31)
+        image.mipLevels > static_cast<uint32_t>(std::bit_width(std::max(image.width, image.height))) ||
+        image.binding > 31)
         return invalid("Invalid shader image dimensions, mip count or binding");
     switch (image.dimension) {
         case ShaderImageDimension::Image2D:
