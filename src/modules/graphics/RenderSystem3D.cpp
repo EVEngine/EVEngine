@@ -232,6 +232,17 @@ void Camera3D::setBloom(float intensity, float threshold) {
 float Camera3D::getBloomIntensity() { return data()->bloomIntensity; }
 float Camera3D::getBloomThreshold() { return data()->bloomThreshold; }
 
+void Camera3D::setDepthOfField(float focusDistance, float maxBlurPx, float focusRange) {
+    auto d = data();
+    d->dofFocusDistance = std::max(0.f, focusDistance);
+    d->dofMaxBlurPx = std::clamp(maxBlurPx, 0.f, 32.f);
+    d->dofFocusRange = std::max(1e-3f, focusRange);
+}
+
+float Camera3D::getDofFocusDistance() { return data()->dofFocusDistance; }
+float Camera3D::getDofMaxBlur() { return data()->dofMaxBlurPx; }
+float Camera3D::getDofFocusRange() { return data()->dofFocusRange; }
+
 void Camera3D::setEnvProbe(float centerX, float centerY, float centerZ, float extentX,
                            float extentY, float extentZ) {
     data()->envProbeCenter = glm::vec3(centerX, centerY, centerZ);
@@ -1045,6 +1056,8 @@ void RenderSystem3D::render(Graphics &gfx) {
         gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV,
                                  cd->autoExposureMaxEV);
         gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+        gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange,
+                                 cd->nearZ, cd->farZ);
     }
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
@@ -1513,6 +1526,8 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
     gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV,
                              cd->autoExposureMaxEV);
     gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+    gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange, cd->nearZ,
+                             cd->farZ);
 
     // Lighting: real lights (if any) + camera ambient; shadows/clustered off.
     std::vector<PackedLight3D> packed;

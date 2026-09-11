@@ -195,6 +195,28 @@ public:
     void setVisible(bool visible);
     bool getVisible() const;
 
+    /**
+     * @brief Alpha cutout threshold for the masked material (DopFix-style depth write).
+     * @param cutoff Finite value clamped to [0,1]; default 0.5.
+     */
+    void setAlphaCutoff(float cutoff);
+    float getAlphaCutoff() const;
+    /**
+     * @brief Whether opaque/cutout texels write depth (required for DOF focus).
+     * Default true — matches HD2DURP DopFix / TransparentCutout materials.
+     */
+    void setDepthWrite(bool enabled);
+    bool getDepthWrite() const;
+    /** @brief Render both faces of the billboard quad (default true). */
+    void setDoubleSided(bool enabled);
+    bool getDoubleSided() const;
+    /**
+     * @brief Billboard orientation mode.
+     * @param mode "screen" (default, full camera basis) or "yaw" (Y-up cylindrical).
+     */
+    void setBillboardMode(const std::string &mode);
+    std::string getBillboardMode() const;
+
     graphics::Mesh *quadMesh() const { return quad_; }
 
 private:
@@ -209,6 +231,7 @@ private:
     void buildQuad(graphics::Graphics *gfx);
     void updateFrameUv();
     void orientToCamera();
+    void syncMaterial();
 
     graphics::Graphics *gfx_ = nullptr;
     graphics::Texture *texture_ = nullptr;
@@ -231,6 +254,63 @@ private:
     float pivotX_ = 0.5f, pivotY_ = 0.5f;
     float tintR_ = 1.f, tintG_ = 1.f, tintB_ = 1.f, tintA_ = 1.f;
     bool visible_ = true;
+    float alphaCutoff_ = 0.5f;
+    bool depthWrite_ = true;
+    bool doubleSided_ = true;
+    bool yawBillboard_ = false;
+};
+
+/**
+ * @brief HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling).
+ *
+ * Applies camera post settings for the miniature look and nearest-neighbor
+ * filtering on sprite/terrain atlases. Depth-of-field requires sprites to write
+ * depth (Sprite3D masked cutout / DopFix path).
+ */
+class Hd2dLook {
+public:
+    Hd2dLook() = default;
+
+    /** @brief View-space focus plane distance (default 18). */
+    void setFocusDistance(float distance);
+    float getFocusDistance() const { return focusDistance_; }
+    /** @brief Max Gaussian blur radius in texels; 0 disables DOF (default 5). */
+    void setMaxBlur(float blurPx);
+    float getMaxBlur() const { return maxBlurPx_; }
+    /** @brief Distance from focus where blur reaches the max (default 14). */
+    void setFocusRange(float range);
+    float getFocusRange() const { return focusRange_; }
+    /** @brief HDR bloom intensity (default 0.35). */
+    void setBloomIntensity(float intensity);
+    float getBloomIntensity() const { return bloomIntensity_; }
+    /** @brief HDR bloom threshold (default 1.2). */
+    void setBloomThreshold(float threshold);
+    float getBloomThreshold() const { return bloomThreshold_; }
+
+    /**
+     * @brief Write DOF + bloom onto a Camera3D (render-thread).
+     * @param camera Non-null active scene camera.
+     */
+    void apply(graphics::Camera3D *camera) const;
+
+    /**
+     * @brief Point-filter a texture for crisp pixel art (nearest / no mip).
+     * @param gfx Active Graphics.
+     * @param texture Atlas or sprite sheet.
+     */
+    void applyPixelSampler(graphics::Graphics *gfx, graphics::Texture *texture) const;
+
+    /** @brief Strong miniature preset matching HD2DURP-style shallow DOF. */
+    static Hd2dLook miniature();
+    /** @brief Mild look with light bloom and modest DOF. */
+    static Hd2dLook soft();
+
+private:
+    float focusDistance_ = 18.f;
+    float maxBlurPx_ = 5.f;
+    float focusRange_ = 14.f;
+    float bloomIntensity_ = 0.35f;
+    float bloomThreshold_ = 1.2f;
 };
 
 /**
@@ -246,6 +326,10 @@ public:
     TileMap3D *newTileMap3D();
     /** @brief Create a 3D billboard sprite bound to the given Graphics. */
     Sprite3D *newSprite(graphics::Graphics *gfx);
+    /** @brief Create an HD-2D look preset (caller owns). */
+    Hd2dLook *newLook();
+    /** @brief Create the miniature (strong DOF) look preset (caller owns). */
+    Hd2dLook *newMiniatureLook();
 };
 
 }  // namespace eve::hd2d

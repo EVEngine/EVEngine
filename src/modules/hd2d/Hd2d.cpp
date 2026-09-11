@@ -22,6 +22,10 @@ Sprite3D *Hd2D::newSprite(graphics::Graphics *gfx) {
     return sprite;
 }
 
+Hd2dLook *Hd2D::newLook() { return new Hd2dLook(); }
+
+Hd2dLook *Hd2D::newMiniatureLook() { return new Hd2dLook(Hd2dLook::miniature()); }
+
 void Hd2D::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Hd2D::create, false);
     expose(cls);
@@ -67,12 +71,37 @@ void Hd2D::expose(ssq::Table &table) {
     sprite.addFunc("setTint", &Sprite3D::setTint);
     sprite.addFunc("setVisible", &Sprite3D::setVisible);
     sprite.addFunc("getVisible", &Sprite3D::getVisible);
+    sprite.addFunc("setAlphaCutoff", &Sprite3D::setAlphaCutoff);
+    sprite.addFunc("getAlphaCutoff", &Sprite3D::getAlphaCutoff);
+    sprite.addFunc("setDepthWrite", &Sprite3D::setDepthWrite);
+    sprite.addFunc("getDepthWrite", &Sprite3D::getDepthWrite);
+    sprite.addFunc("setDoubleSided", &Sprite3D::setDoubleSided);
+    sprite.addFunc("getDoubleSided", &Sprite3D::getDoubleSided);
+    sprite.addFunc("setBillboardMode", &Sprite3D::setBillboardMode);
+    sprite.addFunc("getBillboardMode", &Sprite3D::getBillboardMode);
+
+    auto look = table.addClass<Hd2dLook>(
+        "Hd2dLook", std::function<Hd2dLook *()>([]() { return nullptr; }), true);
+    look.addFunc("setFocusDistance", &Hd2dLook::setFocusDistance);
+    look.addFunc("getFocusDistance", &Hd2dLook::getFocusDistance);
+    look.addFunc("setMaxBlur", &Hd2dLook::setMaxBlur);
+    look.addFunc("getMaxBlur", &Hd2dLook::getMaxBlur);
+    look.addFunc("setFocusRange", &Hd2dLook::setFocusRange);
+    look.addFunc("getFocusRange", &Hd2dLook::getFocusRange);
+    look.addFunc("setBloomIntensity", &Hd2dLook::setBloomIntensity);
+    look.addFunc("getBloomIntensity", &Hd2dLook::getBloomIntensity);
+    look.addFunc("setBloomThreshold", &Hd2dLook::setBloomThreshold);
+    look.addFunc("getBloomThreshold", &Hd2dLook::getBloomThreshold);
+    look.addFunc("apply", &Hd2dLook::apply);
+    look.addFunc("applyPixelSampler", &Hd2dLook::applyPixelSampler);
 }
 
 void Hd2D::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Hd2D::getName);
     cls.addFunc("newTileMap3D", &Hd2D::newTileMap3D);
     cls.addFunc("newSprite", &Hd2D::newSprite);
+    cls.addFunc("newLook", &Hd2D::newLook);
+    cls.addFunc("newMiniatureLook", &Hd2D::newMiniatureLook);
 }
 
 }  // namespace eve::hd2d
