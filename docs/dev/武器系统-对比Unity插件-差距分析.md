@@ -51,7 +51,7 @@ G1 开镜 ADS/zoom。全部走"数据字段 + 事件载荷"，未改架构，热
 | A3 | **多弹丸（霰弹）** | `pelletCount`，一次发射多颗 | ✅ 已实现（projectile.pelletCount/pelletSpread） | `ProjectileSpec.pelletCount + pelletSpread`；`tryFireRanged` 循环 `logic->fire` | 高 |
 | A4 | **蓄力武器（hold-to-charge）** | 按住蓄力，松开释放，伤害/速度随蓄力档位 | ⚠️ windup 只能延迟，不能"按住再松开" | 阶段机加 `Charge` 状态 + `releaseRequest` | 中 |
 | A5 | **持续光束武器** | `beam`，射线每帧结算 | ❌ | `RangedForm` 加 `beam` logic，channel() 里逐帧伤害 | 中 |
-| A6 | **掷弹/投掷物** | 抛物线 + 引信计时 + cook | ❌ | `MissileForm` 或新增 `grenade` kind：抛体 + 计时 | 中 |
+| A6 | **掷弹/投掷物** | 抛物线 + 引信计时 + cook | ⚠️ 载体框架已有 fuse/splash/gravity 组合；cook/手雷 UI 未做 | `CombatCarrierRuntime` 配方（ApplyGravity+OnFuse+Splash）；cook 仍在武器阶段机 | 中 |
 | A7 | **射击模式切换（safe/semi/auto 运行时切换）** | 玩家切 single/burst/auto | ✅ 已实现（fireModes + setFireMode） | `WeaponEntity` 加 `selector` 运行时字段，校验合法性 | 中 |
 | A8 | **干火（空膛扣扳机）** | 空膛时不同的"click"反馈 | ⚠️ 有 `empty` 事件，无专门 dry-fire 表现 | 事件扩展 `dry_fire` 或在 `empty` 上细分 | 低 |
 
@@ -99,7 +99,7 @@ G1 开镜 ADS/zoom。全部走"数据字段 + 事件载荷"，未改架构，热
 | F2 | **距离衰减（falloff）** | 近满伤、远减伤 | ❌ | `range` + falloff 曲线，或游戏侧 | 中 |
 | F3 | **暴击 / 命中倍率** | crit chance / headshot | ❌ | 事件携带命中部位/倍率，游戏侧结算 | 中 |
 | F4 | **击退 / 硬直 / 击飞** | knockback/stagger | ❌ | 事件载荷，游戏侧（physics） | 中 |
-| F5 | **穿透层数 / 墙体** | 穿透 n 个物体 | ⚠️ 有 `penetration` 标量 | 游戏侧用事件做穿透 | 中 |
+| F5 | **穿透层数 / 墙体** | 穿透 n 个物体 | ⚠️ `CombatCarrier` 的 Pierce impact 已建模；墙体仍靠 HitProbe | 载体配方 Pierce + 游戏侧 HitProbe | 中 |
 
 ### G. 瞄准与镜头（表现层）
 
