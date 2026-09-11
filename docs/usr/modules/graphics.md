@@ -213,6 +213,17 @@ local fall = gfx.newWaterfall();
 fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 ```
 
+### 风格化水体配置
+
+`Water.applyConfigJson(json)` 使用 `eve.graphics.stylized-water` 版本化 schema 一次性校验并应用深浅水色、波浪、泡沫、透明度、折射、反射和焦散参数；失败时保留原配置。`Water.configJson()` 返回当前配置的规范 JSON，可用于编辑器属性面板、预设保存和运行时复制。
+
+```squirrel
+local water = gfx.newWater();
+water.createPlane(14.0, 14.0, 64, 64);
+local current = water.configJson();
+water.applyConfigJson(current);
+```
+
 ## 常见问题
 
 - 忘记每帧 `clear()`，保留未定义的旧帧内容。

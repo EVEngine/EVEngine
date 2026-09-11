@@ -3,6 +3,7 @@
 #include "graphics/Exposure.h"
 #include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
+#include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
 #include "graphics/ArtifactProvider.h"
@@ -892,6 +893,12 @@ void Graphics::expose(ssq::Table& table) {
     water.addFunc("setScreenSpaceReflection", &Water::setScreenSpaceReflection);
     water.addFunc("getScreenSpaceReflection", &Water::getScreenSpaceReflection);
     water.addFunc("getScreenSpaceReflectionStrength", &Water::getScreenSpaceReflectionStrength);
+    water.addFunc("applyConfigJson", [vm = table.getHandle()](Water* value, const std::string& json) {
+        return eve::script::projectResult(vm, value->applyConfigJson(json));
+    });
+    water.addFunc("configJson", [vm = table.getHandle()](Water* value) {
+        return eve::script::projectResult(vm, value->configJson(), [](std::string json) { return json; });
+    });
     water.addFunc("setViewport", &Water::setViewport);
     water.addFunc("getViewportWidth", &Water::getViewportWidth);
     water.addFunc("getViewportHeight", &Water::getViewportHeight);
