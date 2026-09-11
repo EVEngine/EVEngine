@@ -186,7 +186,4 @@ eve_render = function() {
     }
 
     fog.draw(mapX, mapY, mapW, mapH);
-
-    gfx.print("Map Fog — dual cloud + mask (R unlock / G select / B dissolve)", 16.0, 18.0, 0.92, 0.94, 0.98, 1.0, 1.0);
-    gfx.print(status + "  alpha=" + fogAlpha, 16.0, 40.0, 0.80, 0.86, 0.94, 1.0, 0.9);
 };
