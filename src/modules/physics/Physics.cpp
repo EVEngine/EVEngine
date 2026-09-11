@@ -5,6 +5,7 @@
 #include "physics/DistanceField3D.h"
 #include "physics/Cloth.h"
 #include "physics/Cloth3D.h"
+#include "physics/ClothModel.h"
 #include "physics/ClothGPU.h"
 #include "physics/Fixture.h"
 #include "physics/Fluid2D.h"
@@ -57,6 +58,10 @@ Cloth *Physics::newCloth(int cols, int rows, float spacing, float originX, float
 Cloth3D *Physics::newCloth3D(int cols, int rows, float spacing, float originX, float originY,
                              float originZ) {
     return new Cloth3D(cols, rows, spacing, originX, originY, originZ);
+}
+
+std::unique_ptr<Cloth3D> Physics::createCloth(const ClothModel &model) {
+    return std::make_unique<Cloth3D>(model);
 }
 
 ClothGPU *Physics::newClothGPU(int cols, int rows, float spacing, float originX, float originY) {
@@ -913,6 +918,23 @@ void Physics::expose(ssq::Table &table) {
     cloth3.addFunc("getGravityZ", &Cloth3D::getGravityZ);
     cloth3.addFunc("setStiffness", &Cloth3D::setStiffness);
     cloth3.addFunc("getStiffness", &Cloth3D::getStiffness);
+    cloth3.addFunc("setStretchCompliance", &Cloth3D::setStretchCompliance);
+    cloth3.addFunc("getStretchCompliance", &Cloth3D::getStretchCompliance);
+    cloth3.addFunc("setShearCompliance", &Cloth3D::setShearCompliance);
+    cloth3.addFunc("getShearCompliance", &Cloth3D::getShearCompliance);
+    cloth3.addFunc("setBendCompliance", &Cloth3D::setBendCompliance);
+    cloth3.addFunc("getBendCompliance", &Cloth3D::getBendCompliance);
+    cloth3.addFunc("setTetherScale", &Cloth3D::setTetherScale);
+    cloth3.addFunc("getTetherScale", &Cloth3D::getTetherScale);
+    cloth3.addFunc("setTetherCompliance", &Cloth3D::setTetherCompliance);
+    cloth3.addFunc("getTetherCompliance", &Cloth3D::getTetherCompliance);
+    cloth3.addFunc("setPressure", &Cloth3D::setPressure);
+    cloth3.addFunc("getPressure", &Cloth3D::getPressure);
+    cloth3.addFunc("getBackendName", &Cloth3D::getBackendName);
+    cloth3.addFunc("supportsFeature", &Cloth3D::supportsFeature);
+    cloth3.addFunc("setVolumeCompliance", &Cloth3D::setVolumeCompliance);
+    cloth3.addFunc("getVolumeCompliance", &Cloth3D::getVolumeCompliance);
+    cloth3.addFunc("getCurrentVolume", &Cloth3D::getCurrentVolume);
     cloth3.addFunc("setIterations", &Cloth3D::setIterations);
     cloth3.addFunc("getIterations", &Cloth3D::getIterations);
     cloth3.addFunc("setDamping", &Cloth3D::setDamping);
@@ -929,16 +951,46 @@ void Physics::expose(ssq::Table &table) {
     cloth3.addFunc("getMaxFoldAngle", &Cloth3D::getMaxFoldAngle);
     cloth3.addFunc("setBounds", &Cloth3D::setBounds);
     cloth3.addFunc("clearBounds", &Cloth3D::clearBounds);
+    cloth3.addFunc("setCollisionMaterial", &Cloth3D::setCollisionMaterial);
+    cloth3.addFunc("getCollisionFriction", &Cloth3D::getCollisionFriction);
+    cloth3.addFunc("getCollisionRestitution", &Cloth3D::getCollisionRestitution);
+    cloth3.addFunc("setCollisionFilter", &Cloth3D::setCollisionFilter);
+    cloth3.addFunc("getCollisionCategoryBits", &Cloth3D::getCollisionCategoryBits);
+    cloth3.addFunc("getCollisionMaskBits", &Cloth3D::getCollisionMaskBits);
+    cloth3.addFunc("setTearThreshold", &Cloth3D::setTearThreshold);
+    cloth3.addFunc("getTearThreshold", &Cloth3D::getTearThreshold);
+    cloth3.addFunc("setMaxTearsPerStep", &Cloth3D::setMaxTearsPerStep);
+    cloth3.addFunc("getMaxTearsPerStep", &Cloth3D::getMaxTearsPerStep);
+    cloth3.addFunc("tearConstraint", &Cloth3D::tearConstraint);
+    cloth3.addFunc("getTornConstraintCount", &Cloth3D::getTornConstraintCount);
     cloth3.addFunc("pin", &Cloth3D::pin);
     cloth3.addFunc("unpin", &Cloth3D::unpin);
     cloth3.addFunc("pinTopRow", &Cloth3D::pinTopRow);
     cloth3.addFunc("isPinned", &Cloth3D::isPinned);
+    cloth3.addFunc("setParticleInverseMass", &Cloth3D::setParticleInverseMass);
+    cloth3.addFunc("getParticleInverseMass", &Cloth3D::getParticleInverseMass);
+    cloth3.addFunc("setSkinConstraint", &Cloth3D::setSkinConstraint);
+    cloth3.addFunc("updateSkinReference", &Cloth3D::updateSkinReference);
+    cloth3.addFunc("clearSkinConstraint", &Cloth3D::clearSkinConstraint);
+    cloth3.addFunc("hasSkinConstraint", &Cloth3D::hasSkinConstraint);
+    cloth3.addFunc("attachParticle", &Cloth3D::attachParticle);
+    cloth3.addFunc("updateAttachment", &Cloth3D::updateAttachment);
+    cloth3.addFunc("detachParticle", &Cloth3D::detachParticle);
+    cloth3.addFunc("isAttached", &Cloth3D::isAttached);
     cloth3.addFunc("grabAt", &Cloth3D::grabAt);
     cloth3.addFunc("moveGrab", &Cloth3D::moveGrab);
     cloth3.addFunc("releaseGrab", &Cloth3D::releaseGrab);
     cloth3.addFunc("isGrabbing", &Cloth3D::isGrabbing);
     cloth3.addFunc("getGrabIndex", &Cloth3D::getGrabIndex);
     cloth3.addFunc("applyForce", &Cloth3D::applyForce);
+    cloth3.addFunc("setWindVelocity", &Cloth3D::setWindVelocity);
+    cloth3.addFunc("getWindVelocityX", &Cloth3D::getWindVelocityX);
+    cloth3.addFunc("getWindVelocityY", &Cloth3D::getWindVelocityY);
+    cloth3.addFunc("getWindVelocityZ", &Cloth3D::getWindVelocityZ);
+    cloth3.addFunc("setAerodynamics", &Cloth3D::setAerodynamics);
+    cloth3.addFunc("getAirDensity", &Cloth3D::getAirDensity);
+    cloth3.addFunc("getDragCoefficient", &Cloth3D::getDragCoefficient);
+    cloth3.addFunc("getLiftCoefficient", &Cloth3D::getLiftCoefficient);
     cloth3.addFunc("interactAt", &Cloth3D::interactAt);
     cloth3.addFunc("setCollideWorld", &Cloth3D::setCollideWorld);
     cloth3.addFunc("getCollideWorld", &Cloth3D::getCollideWorld);
@@ -948,6 +1000,11 @@ void Physics::expose(ssq::Table &table) {
     cloth3.addFunc("getCols", &Cloth3D::getCols);
     cloth3.addFunc("getRows", &Cloth3D::getRows);
     cloth3.addFunc("getParticleCount", &Cloth3D::getParticleCount);
+    cloth3.addFunc("getTriangleCount", &Cloth3D::getTriangleCount);
+    cloth3.addFunc("getDistanceConstraintCount", &Cloth3D::getDistanceConstraintCount);
+    cloth3.addFunc("getTetherConstraintCount", &Cloth3D::getTetherConstraintCount);
+    cloth3.addFunc("getSkinConstraintCount", &Cloth3D::getSkinConstraintCount);
+    cloth3.addFunc("getAttachmentCount", &Cloth3D::getAttachmentCount);
     cloth3.addFunc("getParticleX", &Cloth3D::getParticleX);
     cloth3.addFunc("getParticleY", &Cloth3D::getParticleY);
     cloth3.addFunc("getParticleZ", &Cloth3D::getParticleZ);
@@ -961,6 +1018,8 @@ void Physics::expose(ssq::Table &table) {
     auto clothGpu = table.addClass<ClothGPU>(
         "ClothGPU", std::function<ClothGPU *()>([]() -> ClothGPU * { return nullptr; }), true);
     clothGpu.addFunc("update", &ClothGPU::update);
+    clothGpu.addFunc("getBackendName", &ClothGPU::getBackendName);
+    clothGpu.addFunc("supportsFeature", &ClothGPU::supportsFeature);
     clothGpu.addFunc("setGravity", &ClothGPU::setGravity);
     clothGpu.addFunc("getGravityX", &ClothGPU::getGravityX);
     clothGpu.addFunc("getGravityY", &ClothGPU::getGravityY);

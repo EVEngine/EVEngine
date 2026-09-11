@@ -1,8 +1,10 @@
 #pragma once
 
+#include "physics/ClothModel.h"
 #include "physics/SimulationBackend.h"
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -36,16 +38,28 @@ public:
      * @param originZ top-left particle Z (meters)
      */
     Cloth3D(int cols, int rows, float spacing, float originX, float originY, float originZ);
+    /**
+     * @brief Create runtime cloth state by copying a reusable ClothModel.
+     * @param model Validated model;
+     * the runtime does not retain a reference to it.
+     * @ownership Cloth3D owns its copied particle and constraint
+     * state.
+     * @lifetime The source model only needs to remain alive for this constructor call.
+     * @thread
+     * Construct and use on the owning physics thread.
+     * @reentrancy Invokes no callbacks.
+     */
+    explicit Cloth3D(const ClothModel& model);
     ~Cloth3D();
 
-    Cloth3D(const Cloth3D &)            = delete;
-    Cloth3D &operator=(const Cloth3D &) = delete;
+    Cloth3D(const Cloth3D&)            = delete;
+    Cloth3D& operator=(const Cloth3D&) = delete;
 
     void update(float dt);
 
     /** @brief Advances cloth with the shared ticked backend contract. */
     [[nodiscard("check the cloth step outcome")]]
-    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings) override;
+    eve::Result<void> step(const eve::SimulationStep& step, const SimulationSettings& settings) override;
     /** @brief Returns completed tick/time observables. */
     [[nodiscard]] SimulationObservation observation() const noexcept override { return observation_; }
     /** @brief Identifies this production CPU cloth backend. */
@@ -54,9 +68,13 @@ public:
     [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
         return SimulationDeterminism::ToleranceBounded;
     }
+    /** @brief Return stable backend name for scripts and diagnostics. */
+    [[nodiscard]] std::string getBackendName() const { return "cpu"; }
+    /** @brief Query a stable cloth feature name without assuming CPU/GPU parity. */
+    [[nodiscard]] bool supportsFeature(const std::string& feature) const;
     /** @brief Restores tick/progress metadata after an owner-level restore. */
     [[nodiscard("check cloth observation restore")]]
-    eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
+    eve::Result<void> restoreObservation(const SimulationObservation& observation) override;
 
     void  setGravity(float gx, float gy, float gz);
     float getGravityX() const { return gravityX_; }
@@ -66,6 +84,39 @@ public:
     /** @brief Constraint relaxation strength in [0,1] (default 0.85). */
     void  setStiffness(float stiffness);
     float getStiffness() const { return stiffness_; }
+
+    /** @brief Set XPBD stretch compliance in m/N; zero preserves legacy PBD. */
+    void setStretchCompliance(float compliance);
+    /** @brief Return XPBD stretch compliance in m/N. */
+    [[nodiscard]] float getStretchCompliance() const { return stretchCompliance_; }
+    /** @brief Set XPBD shear compliance in m/N; zero preserves legacy PBD. */
+    void setShearCompliance(float compliance);
+    /** @brief Return XPBD shear compliance in m/N. */
+    [[nodiscard]] float getShearCompliance() const { return shearCompliance_; }
+    /** @brief Set XPBD distance-bend compliance in m/N; zero preserves legacy PBD. */
+    void setBendCompliance(float compliance);
+    /** @brief Return XPBD distance-bend compliance in m/N. */
+    [[nodiscard]] float getBendCompliance() const { return bendCompliance_; }
+
+    /** @brief Set tether maximum-length scale; zero disables tethers, one uses baked lengths. */
+    void setTetherScale(float scale);
+    /** @brief Return the current tether length scale. */
+    [[nodiscard]] float getTetherScale() const { return tetherScale_; }
+    /** @brief Set XPBD tether compliance in m/N. */
+    void setTetherCompliance(float compliance);
+    /** @brief Return XPBD tether compliance in m/N. */
+    [[nodiscard]] float getTetherCompliance() const { return tetherCompliance_; }
+
+    /** @brief Set closed-mesh target volume ratio; zero disables volume solving. */
+    void setPressure(float pressure);
+    /** @brief Return the closed-mesh target volume ratio. */
+    [[nodiscard]] float getPressure() const { return pressure_; }
+    /** @brief Set XPBD closed-volume compliance in m^3/N. */
+    void setVolumeCompliance(float compliance);
+    /** @brief Return XPBD closed-volume compliance. */
+    [[nodiscard]] float getVolumeCompliance() const { return volumeCompliance_; }
+    /** @brief Return current signed mesh volume, or zero for an open model. */
+    [[nodiscard]] float getCurrentVolume() const;
 
     /** @brief Constraint solver iterations per substep (default 4). */
     void setIterations(int iterations);
@@ -88,8 +139,8 @@ public:
      * at least 2*particleSize apart, so the sheet cannot slip through itself
      * between particles.
      */
-    void  setSelfCollision(bool on);
-    bool  getSelfCollision() const { return selfCollision_; }
+    void setSelfCollision(bool on);
+    bool getSelfCollision() const { return selfCollision_; }
 
     /**
      * @brief Implicit particle mass in kg (default 0.1). Used for mass-proportional
@@ -115,10 +166,59 @@ public:
     void setBounds(float x, float y, float z, float w, float h, float d);
     void clearBounds();
 
+    /** @brief Configure cloth contact friction and restitution in [0,1]. */
+    void setCollisionMaterial(float friction, float restitution);
+    /** @brief Return cloth-side Coulomb friction. */
+    [[nodiscard]] float getCollisionFriction() const { return collisionFriction_; }
+    /** @brief Return cloth-side restitution. */
+    [[nodiscard]] float getCollisionRestitution() const { return collisionRestitution_; }
+    /** @brief Configure symmetric category/mask filtering for World3D contacts. */
+    void setCollisionFilter(uint64_t categoryBits, uint64_t maskBits);
+    /** @brief Return cloth collision category bits. */
+    [[nodiscard]] uint64_t getCollisionCategoryBits() const { return collisionCategoryBits_; }
+    /** @brief Return cloth collision mask bits. */
+    [[nodiscard]] uint64_t getCollisionMaskBits() const { return collisionMaskBits_; }
+
+    /** @brief Set automatic structural-edge tear strain; zero disables, values must exceed one. */
+    void setTearThreshold(float strain);
+    /** @brief Return the automatic tear strain threshold, or zero when disabled. */
+    [[nodiscard]] float getTearThreshold() const { return tearThreshold_; }
+    /** @brief Limit automatic structural tears per simulation substep. */
+    void setMaxTearsPerStep(int count);
+    /** @brief Return the automatic tear budget per substep. */
+    [[nodiscard]] int getMaxTearsPerStep() const { return maxTearsPerStep_; }
+    /** @brief Tear an existing structural edge. @throws eve::Exception if the edge cannot tear. */
+    void tearConstraint(int particleA, int particleB);
+    /** @brief Return the cumulative number of torn structural constraints. */
+    [[nodiscard]] int getTornConstraintCount() const { return tornConstraintCount_; }
+
     void pin(int index);
     void unpin(int index);
     void pinTopRow();
     bool isPinned(int index) const;
+    /** @brief Set per-particle inverse mass; zero makes the particle kinematic/pinned. */
+    void setParticleInverseMass(int index, float inverseMass);
+    /** @brief Return per-particle inverse mass, or zero for an invalid index. */
+    [[nodiscard]] float getParticleInverseMass(int index) const;
+
+    /** @brief Constrain a particle around an animated skin reference and optional backstop sphere. */
+    void setSkinConstraint(int index, float x, float y, float z, float nx, float ny, float nz, float radius,
+                           float backstopDistance = -1.f, float backstopRadius = 0.f, float compliance = 0.f);
+    /** @brief Update the animated reference pose of an existing skin constraint. */
+    void updateSkinReference(int index, float x, float y, float z, float nx, float ny, float nz);
+    /** @brief Remove a particle's skin/backstop constraint. */
+    void clearSkinConstraint(int index);
+    /** @brief Return whether a particle has a skin/backstop constraint. */
+    [[nodiscard]] bool hasSkinConstraint(int index) const;
+
+    /** @brief Attach a particle to a world-space target using an XPBD point constraint. */
+    void attachParticle(int index, float x, float y, float z, float compliance = 0.f);
+    /** @brief Move an existing attachment target without recreating it. */
+    void updateAttachment(int index, float x, float y, float z);
+    /** @brief Detach a particle; its simulated velocity remains continuous. */
+    void detachParticle(int index);
+    /** @brief Return whether a particle currently has an attachment. */
+    [[nodiscard]] bool isAttached(int index) const;
 
     /**
      * @brief Grab nearest free particle within radius (meters).
@@ -132,6 +232,50 @@ public:
 
     /** Uniform wind / force impulse applied this frame (m/s²). */
     void applyForce(float fx, float fy, float fz);
+
+    /**
+     * @brief Set world-space air velocity used by the aerodynamic model (m/s).
+     * @param vx Air velocity
+     * along X.
+     * @param vy Air velocity along Y.
+     * @param vz Air velocity along Z.
+     * @thread Call on the
+     * owning physics thread between simulation steps.
+     * @reentrancy Invokes no callbacks.
+     */
+    void setWindVelocity(float vx, float vy, float vz);
+    /** @brief Return configured air velocity along X in m/s. */
+    [[nodiscard]] float getWindVelocityX() const;
+    /** @brief Return configured air velocity along Y in m/s. */
+    [[nodiscard]] float getWindVelocityY() const;
+    /** @brief Return configured air velocity along Z in m/s. */
+    [[nodiscard]] float getWindVelocityZ() const;
+
+    /**
+     * @brief Configure two-sided triangle aerodynamics.
+     *
+     * Forces use each deformed triangle's
+     * current area and normal, relative air
+     * velocity, and the configured particle mass. Setting both
+     * coefficients to
+     * zero disables aerodynamics without changing the wind velocity.
+     *
+     * @param
+     * airDensity Non-negative fluid density in kg/m³ (air is about 1.225).
+     * @param dragCoefficient Non-negative
+     * pressure-drag coefficient.
+     * @param liftCoefficient Non-negative lift coefficient.
+     * @thread Call on
+     * the owning physics thread between simulation steps.
+     * @reentrancy Invokes no callbacks.
+     */
+    void setAerodynamics(float airDensity, float dragCoefficient, float liftCoefficient);
+    /** @brief Return aerodynamic fluid density in kg/m³. */
+    [[nodiscard]] float getAirDensity() const;
+    /** @brief Return the aerodynamic drag coefficient. */
+    [[nodiscard]] float getDragCoefficient() const;
+    /** @brief Return the aerodynamic lift coefficient. */
+    [[nodiscard]] float getLiftCoefficient() const;
 
     /**
      * @brief Pointer-field interaction like Fluid2D::interactAt (3D): positive
@@ -151,7 +295,7 @@ public:
      * @thread Call on the owning physics thread.
      * @reentrancy Does not invoke callbacks; do not destroy the world re-entrantly.
      */
-    void    setCollideWorld(World3D *world);
+    void setCollideWorld(World3D* world);
     /**
      * @brief Returns the attached collision world, or null when detached.
      * @return Borrowed nullable World3D pointer owned by the physics registry.
@@ -160,7 +304,7 @@ public:
      * @thread Call on the owning physics thread.
      * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
      */
-    World3D *getCollideWorld() const { return world_; }
+    World3D* getCollideWorld() const { return world_; }
 
     /** @brief Restore the flat grid pose (top row pinned) and clear transient state. */
     void reset();
@@ -172,11 +316,21 @@ public:
     float getColorA() const { return colorA_; }
 
     /** @brief Draw the cloth as a triangle mesh (requires an open 3D frame). */
-    void draw(graphics::Graphics *gfx);
+    void draw(graphics::Graphics* gfx);
 
     int   getCols() const { return cols_; }
     int   getRows() const { return rows_; }
     int   getParticleCount() const { return static_cast<int>(particles_.size()); }
+    /** @brief Return the current render/collision triangle count, reduced by tearing. */
+    [[nodiscard]] int getTriangleCount() const { return static_cast<int>(triangles_.size()); }
+    /** @brief Return the current distance-constraint count. */
+    [[nodiscard]] int getDistanceConstraintCount() const { return static_cast<int>(links_.size()); }
+    /** @brief Return baked geodesic tether count. */
+    [[nodiscard]] int getTetherConstraintCount() const { return static_cast<int>(tethers_.size()); }
+    /** @brief Return active skin-constraint count. */
+    [[nodiscard]] int getSkinConstraintCount() const { return static_cast<int>(skinConstraints_.size()); }
+    /** @brief Return active attachment count. */
+    [[nodiscard]] int getAttachmentCount() const { return static_cast<int>(attachments_.size()); }
     float getParticleX(int index) const;
     float getParticleY(int index) const;
     float getParticleZ(int index) const;
@@ -193,11 +347,14 @@ private:
     struct Particle {
         float x = 0.f, y = 0.f, z = 0.f;
         float px = 0.f, py = 0.f, pz = 0.f;
+        float inverseMass = 1.f;
         bool  pinned = false;
     };
     struct Link {
-        int   a = 0, b = 0;
-        float rest = 0.f;
+        int                 a = 0, b = 0;
+        float               rest   = 0.f;
+        ClothConstraintKind kind   = ClothConstraintKind::Structural;
+        float               lambda = 0.f;
     };
     struct Tri {
         int v[3] = {0, 0, 0};
@@ -206,39 +363,86 @@ private:
     struct FoldPair {
         int a = 0, b = 0, k = 0, l = 0;
     };
+    struct Tether {
+        int   particle  = 0;
+        int   anchor    = 0;
+        float maxLength = 0.f;
+        float lambda    = 0.f;
+    };
+    struct SkinConstraint {
+        int   particle = 0;
+        float x = 0.f, y = 0.f, z = 0.f;
+        float nx = 0.f, ny = 1.f, nz = 0.f;
+        float radius = 0.f;
+        float backstopDistance = -1.f;
+        float backstopRadius   = 0.f;
+        float compliance       = 0.f;
+        float lambda           = 0.f;
+    };
+    struct Attachment {
+        int   particle = 0;
+        float x = 0.f, y = 0.f, z = 0.f;
+        float compliance = 0.f;
+        float lambda     = 0.f;
+    };
 
-    void rebuildLinks();
+    void    rebuildLinks();
+    void    initializeFromModel(const ClothModel& model);
     void    updateSubsteps(float dt, int substeps);
-    void rebuildTriangles();
-    void buildLinkKeys();
-    bool areLinked(int a, int b) const;
-    void integrate(float dt);
-    void solveConstraints();
-    void solveFoldConstraint();
-    void solveSelfCollision();
-    void solveSelfCollisionTriangles();
-    void collideWorld(float dt);
-    void collideBounds();
-    void rebuildHash();
-    bool validIndex(int index) const;
+    void    rebuildTriangles();
+    void    buildLinkKeys();
+    bool    areLinked(int a, int b) const;
+    void    integrate(float dt);
+    void    accumulateAerodynamicAcceleration(float dt, std::vector<float>& accelerations) const;
+    void    solveConstraints(float dt);
+    void    solveTetherConstraints(float dt);
+    void    solveVolumeConstraint(float dt);
+    void    solveSkinConstraints(float dt);
+    void    solveAttachments(float dt);
+    void    applyAutomaticTearing();
+    void    tearLink(size_t linkIndex);
+    void    rebuildFoldPairsFromTriangles();
+    void    solveFoldConstraint();
+    void    solveSelfCollision();
+    void    solveSelfCollisionTriangles();
+    void    collideWorld(float dt);
+    void    collideBounds();
+    void    rebuildHash();
+    bool    validIndex(int index) const;
     int64_t cellKey(int cx, int cy, int cz) const;
 
-    int   cols_ = 0;
-    int   rows_ = 0;
+    int   cols_    = 0;
+    int   rows_    = 0;
     float spacing_ = 0.4f;
     float originX_ = 0.f, originY_ = 0.f, originZ_ = 0.f;
 
-    float gravityX_ = 0.f;
-    float gravityY_ = -9.8f;
-    float gravityZ_ = 0.f;
-    float stiffness_ = 0.85f;
-    float damping_   = 0.01f;
-    int   iterations_ = 4;
-    float particleSize_ = 0.1f;
-    float particleMass_ = 0.1f;
-    bool  selfCollision_ = true;
-    float foldStiffness_ = 0.5f;
-    float maxFoldAngle_ = 120.f * 3.14159265f / 180.f;
+    float gravityX_          = 0.f;
+    float gravityY_          = -9.8f;
+    float gravityZ_          = 0.f;
+    float stiffness_         = 0.85f;
+    float stretchCompliance_ = 0.f;
+    float shearCompliance_   = 0.f;
+    float bendCompliance_    = 0.f;
+    float tetherScale_       = 0.f;
+    float tetherCompliance_  = 0.f;
+    float pressure_          = 0.f;
+    float volumeCompliance_  = 0.f;
+    float restVolume_        = 0.f;
+    float volumeLambda_      = 0.f;
+    float damping_           = 0.01f;
+    int   iterations_        = 4;
+    float particleSize_      = 0.1f;
+    float particleMass_      = 0.1f;
+    bool  selfCollision_     = true;
+    float foldStiffness_     = 0.5f;
+    float maxFoldAngle_      = 120.f * 3.14159265f / 180.f;
+    float collisionFriction_    = 0.2f;
+    float collisionRestitution_ = 0.15f;
+    uint64_t collisionCategoryBits_ = ~uint64_t{0};
+    uint64_t collisionMaskBits_     = ~uint64_t{0};
+    float tearThreshold_ = 0.f;
+    int   maxTearsPerStep_ = 1;
+    int   tornConstraintCount_ = 0;
 
     bool  hasBounds_ = false;
     float boundX_ = 0.f, boundY_ = 0.f, boundZ_ = 0.f;
@@ -247,27 +451,35 @@ private:
     int   grabIndex_ = -1;
     float grabX_ = 0.f, grabY_ = 0.f, grabZ_ = 0.f;
     float forceX_ = 0.f, forceY_ = 0.f, forceZ_ = 0.f;
+    float windVelocityX_ = 0.f, windVelocityY_ = 0.f, windVelocityZ_ = 0.f;
+    float airDensity_      = 1.225f;
+    float dragCoefficient_ = 0.f;
+    float liftCoefficient_ = 0.f;
     float interactX_ = 0.f, interactY_ = 0.f, interactZ_ = 0.f;
-    float interactRadius_ = 0.f;
+    float interactRadius_   = 0.f;
     float interactStrength_ = 0.f;
 
-    World3D *world_ = nullptr;
+    World3D* world_ = nullptr;
 
     float colorR_ = 0.75f, colorG_ = 0.82f, colorB_ = 0.95f, colorA_ = 1.f;
 
-    bool destroyed_ = false;
+    bool                  destroyed_ = false;
     SimulationObservation observation_;
 
-    std::vector<Particle> particles_;
-    std::vector<Link>     links_;
-    std::vector<Tri>      triangles_;
-    std::vector<FoldPair> foldPairs_;
-    std::unordered_set<int64_t> linkKeys_;
+    std::vector<Particle>                         particles_;
+    std::vector<Particle>                         restParticles_;
+    std::vector<Link>                             links_;
+    std::vector<Tri>                              triangles_;
+    std::vector<FoldPair>                         foldPairs_;
+    std::vector<Tether>                           tethers_;
+    std::vector<SkinConstraint>                    skinConstraints_;
+    std::vector<Attachment>                        attachments_;
+    std::unordered_set<int64_t>                   linkKeys_;
     std::unordered_map<int64_t, std::vector<int>> hash_;
 
-    graphics::Mesh *mesh_ = nullptr;
+    graphics::Mesh* mesh_            = nullptr;
     int             meshVertexCount_ = 0;
-    int             meshIndexCount_ = 0;
+    int             meshIndexCount_  = 0;
 };
 
 }  // namespace eve::physics

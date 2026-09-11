@@ -15,6 +15,11 @@
 
 namespace eve::physics {
 
+bool ClothGPU::supportsFeature(const std::string &feature) const {
+    return feature == "grid_topology" || feature == "distance_constraints" || feature == "self_collision" ||
+           feature == "bounds_collision" || feature == "interaction_force";
+}
+
 using eve::graphics::Color;
 using eve::gpgpu::GpuBuffer;
 

@@ -52,6 +52,10 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+# Typed package bridge kept outside the physics domain core.
+eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
+                   DEPS asset physics
+                   GROUP 3d web)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
                    GROUP 2d)

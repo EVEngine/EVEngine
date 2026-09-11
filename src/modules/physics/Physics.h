@@ -2,12 +2,15 @@
 
 #include "common/Module.h"
 
+#include <memory>
+
 namespace eve::physics {
 
 class World;
 class World3D;
 class Cloth;
 class Cloth3D;
+class ClothModel;
 class ClothGPU;
 class Fluid2D;
 class DistanceField3D;
@@ -100,6 +103,17 @@ public:
      */
     Cloth3D *newCloth3D(int cols, int rows, float spacing, float originX, float originY,
                         float originZ);
+
+    /**
+     * @brief Create an owning 3D cloth runtime from a reusable ClothModel.
+     * @param model Validated model whose rest data is copied into the runtime.
+     * @return Unique ownership of an independent runtime cloth instance.
+     * @ownership Ownership transfers to the caller; Physics and model retain no runtime state.
+     * @lifetime The returned runtime remains valid until destroyed by the caller.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks.
+     */
+    [[nodiscard]] std::unique_ptr<Cloth3D> createCloth(const ClothModel &model);
 
     /**
      * @brief Create a GPU-accelerated 2D Verlet cloth (compute shader backend).

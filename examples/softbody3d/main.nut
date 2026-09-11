@@ -67,6 +67,8 @@ function buildScene() {
         cloth.setStiffness(0.9);
         cloth.setIterations(5);
         cloth.setParticleSize(0.12);
+        cloth.setWindVelocity(1.8, 1.2, 0.6);
+        cloth.setAerodynamics(1.225, 1.1, 0.2);
         cloth.setSelfCollision(true);
         cloth.setFoldStiffness(0.8);
         cloth.setMaxFoldAngle(130.0);
