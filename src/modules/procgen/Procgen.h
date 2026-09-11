@@ -705,6 +705,10 @@ public:
     [[nodiscard]] bool isTerrainSamplerStale(ProcgenTerrainSamplerHandleRef) const noexcept;
     /** @brief Empty in-memory heightmap (caller owns). */
     [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> newHeightmapHandle(int width, int height);
+    /** @brief Take ownership of a decoded height field so script can sample it.
+     *  @param heightmap Decoded grid, moved into the module-owned registry.
+     *  @return Owning handle, or a failure when the module is shutting down. */
+    [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> adoptHeightmap(Heightmap heightmap);
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;

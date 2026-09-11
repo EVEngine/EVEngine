@@ -18,6 +18,7 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 
@@ -274,6 +275,39 @@ ssq::Table staleProcgenResult(HSQUIRRELVM vm, const char* objectName) {
     return eve::script::projectResult(
         vm, procgenBindingFailure<T>(eve::DiagnosticCode::StaleHandle,
                                      std::string("owned procgen ") + objectName + " handle is stale", objectName));
+}
+
+/** @brief Projects a decoded terrain file as an owned heightmap proxy plus metadata.
+ *
+ * The heightmap arrives through the same owning-handle path as `newHeightmap`, so
+ * scripts sample it with the ordinary `ProcgenHeightmap` methods. Spacing is only
+ * authoritative when `hasSpacing` is true: an EVTR archive stores no
+ * metres-per-cell and leaves that to the level that references it.
+ */
+ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrainFile>&& decoded) {
+    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status(), false, false);
+    DecodedTerrainFile terrain = std::move(decoded).takeValue();
+    const std::int64_t width   = terrain.heightmap.getWidth();
+    const std::int64_t height  = terrain.heightmap.getHeight();
+    auto*              module  = Procgen::create();
+    auto               result  = makeOwnedNativeProxy<Heightmap>(
+        vm, module->adoptHeightmap(std::move(terrain.heightmap)),
+        [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
+        [](ProcgenHeightmapHandleRef ref) {
+            auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+            return owner ? owner->releaseHeightmap(ref)
+                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                       "Procgen module is no longer loaded", "heightmap");
+        });
+    result.set("spacingX", terrain.spacingX);
+    result.set("spacingZ", terrain.spacingZ);
+    result.set("hasSpacing", terrain.hasSpacing);
+    result.set("minHeight", terrain.minHeight);
+    result.set("maxHeight", terrain.maxHeight);
+    result.set("format", terrain.format);
+    result.set("width", width);
+    result.set("height", height);
+    return result;
 }
 
 /** @brief Projects one native recipe schema through the canonical Result table.
@@ -2228,6 +2262,13 @@ eve::Result<ProcgenHeightmapHandleRef> Procgen::newHeightmapHandle(int width, in
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(width, height));
 }
 
+eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(Heightmap heightmap) {
+    if (heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0)
+        return procgenBindingFailure<ProcgenHeightmapHandleRef>(
+            eve::DiagnosticCode::InvalidArgument, "decoded heightmap has no samples", "heightmap");
+    return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(std::move(heightmap)));
+}
+
 eve::script::Borrowed<Heightmap> Procgen::resolveHeightmap(ProcgenHeightmapHandleRef reference) noexcept {
     return ownership_->heightmaps.resolve(reference);
 }
@@ -3797,7 +3838,22 @@ void Procgen::expose(ssq::Class &cls) {
             [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
             [module](ProcgenHeightmapHandleRef ref) { return module->releaseHeightmap(ref); });
     });
-    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
+    // Decoded terrain files return the same heightmap proxy as newHeightmap, with
+    // the file's own metadata attached to the result envelope. Spacing is only
+    // authoritative for EVTRN: an EVTR archive stores no metres-per-cell, so the
+    // referencing level owns that value and `hasSpacing` is false.
+    cls.addFunc("loadTerrainFile",
+                [vm = cls.getHandle()](Procgen*, const std::string& path, const std::string& format) -> ssq::Table {
+                    return projectDecodedTerrainResult(
+                        vm, loadTerrainFile(path, parseTerrainFileFormat(format)));
+                });
+    cls.addFunc("loadTerrainBytes",
+                [vm = cls.getHandle()](Procgen*, const std::string& bytes, const std::string& format) -> ssq::Table {
+                    const auto* data = reinterpret_cast<const std::uint8_t*>(bytes.data());
+                    return projectDecodedTerrainResult(
+                        vm, decodeTerrainFile(std::span<const std::uint8_t>(data, bytes.size()),
+                                                       parseTerrainFileFormat(format)));
+                });    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
         return makeOwnedNativeProxy<CloudField>(
             vm, module->newCloudFieldHandle(),

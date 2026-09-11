@@ -31,6 +31,10 @@
 
 struct aiMesh;
 
+namespace eve {
+class Subscription;
+}
+
 namespace eve::graphics {
 struct PbrSurface;
 
@@ -188,6 +192,13 @@ public:
      * callbacks.
      */
     [[nodiscard]] std::weak_ptr<const void> resourceLifetime() const;
+    /** @brief Register cleanup before this provider destroys its GPU device/resources.
+     * @return Owning subscription, or Conflict if retirement has started.
+     * @lifetime Retain the subscription until cleanup is no longer needed. Either destruction order is safe.
+     * @thread Render thread only. Callback must not throw, recreate or destroy Graphics, or start GPU work.
+     * @note Callbacks run without locks; disposing subscriptions during notification is supported. */
+    [[nodiscard]] Result<eve::Subscription> onResourcesRetiring(std::function<void()> callback) const;
+
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this

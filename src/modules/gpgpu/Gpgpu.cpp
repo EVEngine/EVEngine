@@ -1,4 +1,5 @@
 #include "gpgpu/Gpgpu.h"
+#include "gpgpu/ComputeProgram.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsScriptPack.h"
 #include "gpgpu/GpuBuffer.h"
@@ -204,6 +205,36 @@ bool Gpgpu::isAvailable() const {
 #endif
 }
 
+Result<std::vector<uint32_t>> compileComputeSpirv(const std::string &source) {
+#ifdef EVENGINE_WEBGPU
+    return Result<std::vector<uint32_t>>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "GLSL compilation requires Vulkan"));
+#else
+    try {
+        return Result<std::vector<uint32_t>>::success(compileComputeGlsl(source));
+    } catch (const std::exception &e) {
+        return Result<std::vector<uint32_t>>::failure(Diagnostic::error(DiagnosticCode::Failed, e.what()));
+    }
+#endif
+}
+
+Result<std::unique_ptr<ComputeShader>> createComputeShader(const std::vector<uint32_t> &words) {
+#ifdef EVENGINE_WEBGPU
+    return Result<std::unique_ptr<ComputeShader>>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "SPIR-V pipelines require Vulkan"));
+#else
+    try {
+        if (words.size() < 5 || words.front() != 0x07230203)
+            return Result<std::unique_ptr<ComputeShader>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid SPIR-V header"));
+        return Result<std::unique_ptr<ComputeShader>>::success(
+            std::unique_ptr<ComputeShader>(vulkanNewShaderFromSpirv(words)));
+    } catch (const std::exception &e) {
+        return Result<std::unique_ptr<ComputeShader>>::failure(Diagnostic::error(DiagnosticCode::Failed, e.what()));
+    }
+#endif
+}
+
 ComputeShader *Gpgpu::newShader(const std::string &source) {
 #ifdef EVENGINE_WEBGPU
     if (currentGraphicsBackend() != "webgpu")
@@ -213,7 +244,11 @@ ComputeShader *Gpgpu::newShader(const std::string &source) {
 #else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.newShader: requires vulkan Graphics backend");
-    return vulkanNewShaderFromSpirv(compileComputeGlsl(source));
+    auto compiled = compileComputeSpirv(source);
+    if (!compiled.ok()) throw Exception("%s", compiled.error()->message().c_str());
+    auto shader = createComputeShader(compiled.value());
+    if (!shader.ok()) throw Exception("%s", shader.error()->message().c_str());
+    return shader.value().release();
 #endif
 }
 

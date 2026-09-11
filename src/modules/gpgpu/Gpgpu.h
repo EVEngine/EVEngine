@@ -26,7 +26,11 @@ public:
     /** @brief True when the active Graphics backend can run compute (device initialized). */
     bool isAvailable() const;
 
-    /** @brief Compile compute source for the active backend (Vulkan: GLSL; WebGPU: WGSL). */
+    /** @brief Compatibility-only raw-owning shader factory (Vulkan: GLSL; WebGPU: WGSL).
+     * Vulkan delegates to the
+     * checked compileComputeSpirv/createComputeShader APIs.
+     * Device thread only; caller must delete the shader
+     * before Graphics retires. */
     ComputeShader *newShader(const std::string &source);
 
     /** @brief Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */

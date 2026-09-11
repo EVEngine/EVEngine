@@ -488,7 +488,9 @@ if(_has_gpgpu)
       # INTERFACE: EVGpgpu is an OBJECT library; its private link deps would not
       # reach the final executable, so propagate the SDK archive to consumers.
       target_link_libraries(EVGpgpu INTERFACE ${EVE_SHADERC_LIB})
-      target_compile_definitions(EVGpgpu INTERFACE EVE_HAS_SHADERC=1)
+      # The implementation itself selects shaderc; INTERFACE would only define
+      # the macro for consumers and silently leave VulkanUtil spawning glslc.
+      target_compile_definitions(EVGpgpu PRIVATE EVE_HAS_SHADERC=1)
       message(STATUS "Gpgpu: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
     else()
       message(STATUS "Gpgpu: shaderc lib not found; will spawn glslc at runtime")

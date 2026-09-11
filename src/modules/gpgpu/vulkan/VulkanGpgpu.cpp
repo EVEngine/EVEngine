@@ -14,7 +14,7 @@ ComputeShader *vulkanNewShaderFromSpirv(const std::vector<uint32_t> &spv) {
     auto *vkg = requireVulkanGraphics();
     auto &device = vkg->getDevice();
 
-    auto *shader = new VulkanComputeShader();
+    auto shader     = std::make_unique<VulkanComputeShader>();
     shader->device_ = &device;
     shader->module_ = vkb::PipelineBuilder::createShaderModule(device.instance, spv);
 
@@ -56,11 +56,10 @@ ComputeShader *vulkanNewShaderFromSpirv(const std::vector<uint32_t> &spv) {
     cpInfo.layout = shader->pipelineLayout_;
     auto result = device->createComputePipeline(vk::PipelineCache{}, cpInfo, device.allocation_callbacks);
     if (result.result != vk::Result::eSuccess) {
-        delete shader;
         throw Exception("Gpgpu.newShader: createComputePipeline failed");
     }
     shader->pipeline_ = result.value;
-    return shader;
+    return shader.release();
 }
 
 GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
