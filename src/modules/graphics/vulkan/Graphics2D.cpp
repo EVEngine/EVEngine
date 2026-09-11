@@ -1621,11 +1621,21 @@ void Graphics::flushToSwapchain() {
                 drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
             } else if (sp.kind == OverlayKind::Textured && texPipeline &&
                        sp.index < textured.size()) {
-                if (sceneResolve && textured[sp.index].texture == sceneTex)
+                // Distortion overlays sample scene color; they are not
+                // drawScene3D placements. Replacing them with the ACES
+                // resolve skips particleDistortionPipeline and can cover
+                // the autoScene blit with a near-empty frame.
+                const bool placedScene =
+                    sceneResolve && textured[sp.index].texture == sceneTex &&
+                    textured[sp.index].effect != TexturedBatch::Effect::SceneColorDistortion;
+                if (placedScene) {
                     drawPlacedSceneResolve(textured[sp.index]);
-                else
+                } else {
                     drawTextured(textured[sp.index]);
-                if (textured[sp.index].texture == sceneTex) drawEngine3D();
+                }
+                if (placedScene) {
+                    drawEngine3D();
+                }
             } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
