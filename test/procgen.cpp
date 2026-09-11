@@ -369,6 +369,28 @@ bool meshNormalsFiniteUnit(const MeshBuild &m, float tol = 0.15f) {
     return true;
 }
 
+bool meshWindingAgreesWithNormals(const MeshBuild &m, float minFraction = 0.9f) {
+    int ok = 0, counted = 0;
+    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
+        const int i0 = m.getIndex(t), i1 = m.getIndex(t + 1), i2 = m.getIndex(t + 2);
+        const float ax = m.getPositionX(i1) - m.getPositionX(i0);
+        const float ay = m.getPositionY(i1) - m.getPositionY(i0);
+        const float az = m.getPositionZ(i1) - m.getPositionZ(i0);
+        const float bx = m.getPositionX(i2) - m.getPositionX(i0);
+        const float by = m.getPositionY(i2) - m.getPositionY(i0);
+        const float bz = m.getPositionZ(i2) - m.getPositionZ(i0);
+        const float gx = ay * bz - az * by, gy = az * bx - ax * bz, gz = ax * by - ay * bx;
+        const float gLen = std::sqrt(gx * gx + gy * gy + gz * gz);
+        if (gLen < 1e-8f) continue;
+        const float nx = (m.getNormalX(i0) + m.getNormalX(i1) + m.getNormalX(i2)) / 3.f;
+        const float ny = (m.getNormalY(i0) + m.getNormalY(i1) + m.getNormalY(i2)) / 3.f;
+        const float nz = (m.getNormalZ(i0) + m.getNormalZ(i1) + m.getNormalZ(i2)) / 3.f;
+        ++counted;
+        if (gx * nx + gy * ny + gz * nz > 0.f) ++ok;
+    }
+    return counted > 0 && float(ok) / float(counted) >= minFraction;
+}
+
 bool meshPositionsFinite(const MeshBuild &m) {
     for (int i = 0; i < m.getVertexCount(); ++i) {
         if (!std::isfinite(m.getPositionX(i)) || !std::isfinite(m.getPositionY(i)) ||
@@ -3536,6 +3558,13 @@ TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
     CHECK(stairs->getVertexCount() > 100);
     CHECK_EQ(stairs->getMeta("group", ""), "stairs");
     CHECK(meshIndicesInRange(*stairs));
+    int towerGroup = -1;
+    for (int i = 0; i < a.getGroupCount(); ++i)
+        if (a.getGroupName(i) == "towers") towerGroup = i;
+    REQUIRE(towerGroup >= 0);
+    auto towers = a.copyGroup(towerGroup);
+    REQUIRE(towers.get() != nullptr);
+    CHECK(meshWindingAgreesWithNormals(*towers));
 }
 
 TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
