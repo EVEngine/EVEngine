@@ -309,6 +309,122 @@ TEST_CASE("combatCarrier.bridgeFromProjectileDefinitionPreservesLinearMotion") {
     CHECK(std::fabs(state->motion.position.x - 5.0) < 1e-9);
 }
 
+class BodyDefenseProvider final : public eve::weapon::ICarrierBodyDefenseProvider {
+public:
+    [[nodiscard]] eve::Result<std::vector<eve::weapon::CarrierBodyDefenseSample>> sample(
+        eve::weapon::CarrierHandle, ecs::EntityHandle, const eve::weapon::CarrierMotion&) const override {
+        return eve::Result<std::vector<eve::weapon::CarrierBodyDefenseSample>>::success(bodies);
+    }
+
+    std::vector<eve::weapon::CarrierBodyDefenseSample> bodies;
+};
+
+TEST_CASE("combatCarrier.homingAvoidsFrontBodyDefenseLaterally") {
+    eve::weapon::CombatCarrierRuntime runtime;
+    REQUIRE(runtime.configurePool(4).ok());
+
+    eve::weapon::CarrierRecipe recipe;
+    recipe.id       = id("carrier:smart-missile");
+    recipe.lifetime = seconds(5.0);
+    recipe.speed    = 10.0;
+    recipe.motionOps.push_back({eve::weapon::CarrierMotionOpKind::SteerHoming, 0.0, 360.0});
+    eve::weapon::CarrierMotionOp avoid;
+    avoid.kind               = eve::weapon::CarrierMotionOpKind::SteerAvoidBody;
+    avoid.maxTurnRateDegrees = 360.0;
+    avoid.avoidLookAhead     = 8.0;
+    avoid.avoidStrength      = 4.0;
+    avoid.avoidRadiusPadding = 0.5;
+    recipe.motionOps.push_back(avoid);
+    recipe.motionOps.push_back({eve::weapon::CarrierMotionOpKind::IntegrateLinear});
+    recipe.triggers.push_back({eve::weapon::CarrierTriggerKind::OnExpire});
+    recipe.impacts.push_back({eve::weapon::CarrierImpactKind::Release, eve::weapon::CarrierTriggerKind::OnExpire});
+
+    ecs::EntityHandle target;
+    target.id         = 7;
+    target.generation = 1;
+    TargetProvider targets;
+    targets.positions[target.id] = {20.0, 0.0, 0.0};
+
+    BodyDefenseProvider bodies;
+    eve::weapon::CarrierBodyDefenseSample shield;
+    shield.center           = {5.0, 0.0, 0.0};
+    shield.radius           = 2.0;
+    shield.facing           = {-1.0, 0.0, 0.0};  // faces the incoming carrier
+    shield.frontConeDegrees = 90.0;
+    bodies.bodies.push_back(shield);
+
+    auto spawned = runtime.spawn(recipe, {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, target});
+    REQUIRE(spawned.ok());
+    auto frame = runtime.update(seconds(0.2), &targets, nullptr, &bodies);
+    REQUIRE(frame.ok());
+    auto state = runtime.find(spawned.value());
+    REQUIRE(state.has_value());
+    // Avoidance should introduce a lateral (Z) component instead of flying straight into the shield.
+    CHECK(std::fabs(state->motion.velocity.z) > 1e-3);
+}
+
+TEST_CASE("combatCarrier.spawnVolleyFanFiresDistinctDirections") {
+    eve::weapon::CombatCarrierRuntime runtime;
+    REQUIRE(runtime.configurePool(8).ok());
+
+    eve::weapon::CarrierRecipe recipe;
+    recipe.id       = id("carrier:pellet");
+    recipe.lifetime = seconds(2.0);
+    recipe.speed    = 10.0;
+    recipe.motionOps.push_back({eve::weapon::CarrierMotionOpKind::IntegrateLinear});
+    recipe.triggers.push_back({eve::weapon::CarrierTriggerKind::OnExpire});
+    recipe.impacts.push_back({eve::weapon::CarrierImpactKind::Release, eve::weapon::CarrierTriggerKind::OnExpire});
+
+    eve::weapon::CarrierVolleySpec volley;
+    volley.count         = 3;
+    volley.pattern       = eve::weapon::CarrierVolleyPattern::Fan;
+    volley.spreadDegrees = 90.0;
+
+    auto handles = runtime.spawnVolley(recipe, {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {}}, volley);
+    REQUIRE(handles.ok());
+    REQUIRE(handles.value().size() == 3);
+    CHECK(runtime.activeCount() == 3);
+
+    REQUIRE(runtime.update(seconds(0.5)).ok());
+    auto states = runtime.states();
+    REQUIRE(states.size() == 3);
+    // Outer pellets should have diverged in Z after flying forward.
+    double minZ = states[0].motion.position.z;
+    double maxZ = states[0].motion.position.z;
+    for (const auto& state : states) {
+        minZ = std::min(minZ, state.motion.position.z);
+        maxZ = std::max(maxZ, state.motion.position.z);
+    }
+    CHECK(maxZ - minZ > 1.0);
+}
+
+TEST_CASE("combatCarrier.curveSwayAddsLateralOscillation") {
+    eve::weapon::CombatCarrierRuntime runtime;
+    REQUIRE(runtime.configurePool(2).ok());
+
+    eve::weapon::CarrierRecipe recipe;
+    recipe.id       = id("carrier:wavy");
+    recipe.lifetime = seconds(3.0);
+    recipe.speed    = 10.0;
+    eve::weapon::CarrierMotionOp sway;
+    sway.kind             = eve::weapon::CarrierMotionOpKind::CurveSway;
+    sway.curveAmplitude   = 1.0;
+    sway.curveFrequencyHz = 1.0;
+    recipe.motionOps.push_back(sway);
+    recipe.motionOps.push_back({eve::weapon::CarrierMotionOpKind::IntegrateLinear});
+    recipe.triggers.push_back({eve::weapon::CarrierTriggerKind::OnExpire});
+    recipe.impacts.push_back({eve::weapon::CarrierImpactKind::Release, eve::weapon::CarrierTriggerKind::OnExpire});
+
+    auto spawned = runtime.spawn(recipe, {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {}});
+    REQUIRE(spawned.ok());
+    auto frame = runtime.update(seconds(0.25));
+    REQUIRE(frame.ok());
+    auto state = runtime.find(spawned.value());
+    REQUIRE(state.has_value());
+    CHECK(state->motion.position.x > 0.0);
+    CHECK(std::fabs(state->motion.position.z) > 1e-6);
+}
+
 TEST_CASE("combatCarrier.snapshotRestoreRoundTrip") {
     eve::weapon::CombatCarrierRuntime runtime;
     REQUIRE(runtime.configurePool(4).ok());

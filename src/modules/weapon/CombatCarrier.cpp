@@ -68,6 +68,32 @@ ProjectileVector reflect(ProjectileVector velocity, ProjectileVector normal) {
             velocity.z - 2.0 * into * normal.z};
 }
 
+
+ProjectileVector cross(const ProjectileVector& a, const ProjectileVector& b) {
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+
+ProjectileVector rotateAroundAxis(ProjectileVector vector, ProjectileVector axis, double radians) {
+    axis                    = normalized(axis);
+    const double cosA       = std::cos(radians);
+    const double sinA       = std::sin(radians);
+    const auto   axisCrossV = cross(axis, vector);
+    const double axisDotV   = axis.x * vector.x + axis.y * vector.y + axis.z * vector.z;
+    return {vector.x * cosA + axisCrossV.x * sinA + axis.x * axisDotV * (1.0 - cosA),
+            vector.y * cosA + axisCrossV.y * sinA + axis.y * axisDotV * (1.0 - cosA),
+            vector.z * cosA + axisCrossV.z * sinA + axis.z * axisDotV * (1.0 - cosA)};
+}
+
+ProjectileVector lateralBasis(const ProjectileVector& forward) {
+    ProjectileVector up{0.0, 1.0, 0.0};
+    auto             side = cross(forward, up);
+    if (length(side) <= 1e-12) {
+        up   = {1.0, 0.0, 0.0};
+        side = cross(forward, up);
+    }
+    return normalized(side);
+}
+
 bool crossed(Duration previousAge, Duration nextAge, Duration mark) {
     return previousAge < mark && nextAge >= mark;
 }
@@ -75,6 +101,55 @@ bool crossed(Duration previousAge, Duration nextAge, Duration mark) {
 int intervalIndex(Duration age, Duration interval) {
     if (interval <= Duration::zero()) return 0;
     return static_cast<int>(age.nanoseconds() / interval.nanoseconds());
+}
+
+Result<void> validateVolley(const CarrierVolleySpec& volley) {
+    if (volley.count <= 0)
+        return carrierError(DiagnosticCode::InvalidArgument, "Volley count must be positive", "count");
+    if (volley.count > 256)
+        return carrierError(DiagnosticCode::InvalidArgument, "Volley count must be <= 256", "count");
+    if (volley.pattern == CarrierVolleyPattern::Fan) {
+        if (!std::isfinite(volley.spreadDegrees) || volley.spreadDegrees < 0.0)
+            return carrierError(DiagnosticCode::InvalidArgument,
+                                "Fan volley spreadDegrees must be finite and non-negative", "spreadDegrees");
+    }
+    return Result<void>::success();
+}
+
+Result<std::vector<ProjectileVector>> volleyDirections(const ProjectileVector& base,
+                                                       const CarrierVolleySpec& volley) {
+    auto valid = validateVolley(volley);
+    if (!valid) return Result<std::vector<ProjectileVector>>::failure(valid.status());
+    if (length(base) <= 1e-12)
+        return carrierValueError<std::vector<ProjectileVector>>(DiagnosticCode::InvalidArgument,
+                                                                "Volley base direction must be non-zero",
+                                                                "direction");
+
+    const auto forward = normalized(base);
+    ProjectileVector yawAxis{0.0, 1.0, 0.0};
+    if (std::fabs(forward.x * yawAxis.x + forward.y * yawAxis.y + forward.z * yawAxis.z) > 0.999)
+        yawAxis = lateralBasis(forward);
+
+    std::vector<ProjectileVector> directions;
+    directions.reserve(static_cast<std::size_t>(volley.count));
+    if (volley.count == 1) {
+        directions.push_back(forward);
+        return Result<std::vector<ProjectileVector>>::success(std::move(directions));
+    }
+    if (volley.pattern == CarrierVolleyPattern::Ring) {
+        for (int i = 0; i < volley.count; ++i) {
+            const double radians = (2.0 * kPi * static_cast<double>(i)) / static_cast<double>(volley.count);
+            directions.push_back(normalized(rotateAroundAxis(forward, yawAxis, radians)));
+        }
+        return Result<std::vector<ProjectileVector>>::success(std::move(directions));
+    }
+    const double total = volley.spreadDegrees * kPi / 180.0;
+    for (int i = 0; i < volley.count; ++i) {
+        const double t       = static_cast<double>(i) / static_cast<double>(volley.count - 1);
+        const double radians = -0.5 * total + t * total;
+        directions.push_back(normalized(rotateAroundAxis(forward, yawAxis, radians)));
+    }
+    return Result<std::vector<ProjectileVector>>::success(std::move(directions));
 }
 
 }  // namespace
@@ -99,6 +174,22 @@ Result<void> CarrierRecipe::validate() const {
                     return carrierError(DiagnosticCode::InvalidArgument,
                                         "Homing turn rate must be finite and positive", path + ".maxTurnRateDegrees");
                 break;
+            case CarrierMotionOpKind::SteerAvoidBody:
+                if (!std::isfinite(op.avoidLookAhead) || op.avoidLookAhead <= 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Body-avoid look-ahead must be finite and positive", path + ".avoidLookAhead");
+                if (!std::isfinite(op.avoidStrength) || op.avoidStrength < 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Body-avoid strength must be finite and non-negative", path + ".avoidStrength");
+                if (!std::isfinite(op.avoidRadiusPadding) || op.avoidRadiusPadding < 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Body-avoid radius padding must be finite and non-negative",
+                                        path + ".avoidRadiusPadding");
+                if (!std::isfinite(op.maxTurnRateDegrees) || op.maxTurnRateDegrees <= 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Body-avoid turn rate must be finite and positive",
+                                        path + ".maxTurnRateDegrees");
+                break;
             case CarrierMotionOpKind::ApplyGravity:
                 if (!std::isfinite(op.gravity) || op.gravity < 0.0)
                     return carrierError(DiagnosticCode::InvalidArgument,
@@ -108,6 +199,15 @@ Result<void> CarrierRecipe::validate() const {
                 if (!std::isfinite(op.acceleration) || op.acceleration < 0.0)
                     return carrierError(DiagnosticCode::InvalidArgument,
                                         "Acceleration must be finite and non-negative", path + ".acceleration");
+                break;
+            case CarrierMotionOpKind::CurveSway:
+            case CarrierMotionOpKind::CurveHelix:
+                if (!std::isfinite(op.curveAmplitude) || op.curveAmplitude < 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Curve amplitude must be finite and non-negative", path + ".curveAmplitude");
+                if (!std::isfinite(op.curveFrequencyHz) || op.curveFrequencyHz <= 0.0)
+                    return carrierError(DiagnosticCode::InvalidArgument,
+                                        "Curve frequency must be finite and positive", path + ".curveFrequencyHz");
                 break;
             case CarrierMotionOpKind::IntegrateLinear:
                 hasIntegrate = true;
@@ -229,6 +329,7 @@ Result<CombatCarrierRuntime::LiveRecipe> CombatCarrierRuntime::prepareRecipe(con
     live.recipe = recipe;
     for (const auto& op : recipe.motionOps) {
         if (op.kind == CarrierMotionOpKind::SteerHoming) live.needsHoming = true;
+        if (op.kind == CarrierMotionOpKind::SteerAvoidBody) live.needsBodyAvoid = true;
     }
     for (const auto& trigger : recipe.triggers) {
         if (trigger.kind == CarrierTriggerKind::OnHit) live.needsHit = true;
@@ -330,9 +431,45 @@ Result<CarrierHandle> CombatCarrierRuntime::spawn(const CarrierRecipe& recipe, c
     return spawn(recipe.id, request);
 }
 
-Result<CarrierFrame> CombatCarrierRuntime::update(Duration                        delta,
-                                                  const IProjectileTargetProvider* targets,
-                                                  const ICarrierHitProbe*         hits) {
+Result<std::vector<CarrierHandle>> CombatCarrierRuntime::spawnVolley(const LogicalId&           recipeId,
+                                                                     const CarrierSpawnRequest& request,
+                                                                     const CarrierVolleySpec&   volley) {
+    auto dirs = volleyDirections(request.direction, volley);
+    if (!dirs) return Result<std::vector<CarrierHandle>>::failure(dirs.status());
+    if (activeCount_ + dirs.value().size() > slots_.size())
+        return carrierValueError<std::vector<CarrierHandle>>(DiagnosticCode::Conflict,
+                                                             "Carrier pool cannot fit the full volley", "capacity");
+
+    std::vector<CarrierHandle> handles;
+    handles.reserve(dirs.value().size());
+    const std::size_t activeBefore = activeCount_;
+    const auto        slotsBefore  = slots_;
+    for (const auto& direction : dirs.value()) {
+        CarrierSpawnRequest one = request;
+        one.direction           = direction;
+        auto spawned            = spawn(recipeId, one);
+        if (!spawned) {
+            slots_       = slotsBefore;
+            activeCount_ = activeBefore;
+            return Result<std::vector<CarrierHandle>>::failure(spawned.status());
+        }
+        handles.push_back(spawned.value());
+    }
+    return Result<std::vector<CarrierHandle>>::success(std::move(handles));
+}
+
+Result<std::vector<CarrierHandle>> CombatCarrierRuntime::spawnVolley(const CarrierRecipe&       recipe,
+                                                                     const CarrierSpawnRequest& request,
+                                                                     const CarrierVolleySpec&   volley) {
+    auto registered = registerRecipe(recipe);
+    if (!registered) return Result<std::vector<CarrierHandle>>::failure(registered.status());
+    return spawnVolley(recipe.id, request, volley);
+}
+
+Result<CarrierFrame> CombatCarrierRuntime::update(Duration                           delta,
+                                                  const IProjectileTargetProvider*    targets,
+                                                  const ICarrierHitProbe*            hits,
+                                                  const ICarrierBodyDefenseProvider* bodies) {
     if (delta < Duration::zero())
         return carrierValueError<CarrierFrame>(DiagnosticCode::InvalidArgument, "Carrier update delta must be >= 0",
                                                "delta");
@@ -372,6 +509,10 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
         if (live->needsHit && hits == nullptr)
             return carrierValueError<CarrierFrame>(DiagnosticCode::Unsupported,
                                                    "OnHit carrier update requires a hit probe", "hits");
+        if (live->needsBodyAvoid && bodies == nullptr)
+            return carrierValueError<CarrierFrame>(DiagnosticCode::Unsupported,
+                                                   "SteerAvoidBody carrier update requires a body-defense provider",
+                                                   "bodies");
         candidates.push_back({*slot.state, false});
     }
 
@@ -395,7 +536,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
             targetPos = resolved.value();
         }
 
-        const double dtSeconds = delta.seconds();
+        const double dtSeconds  = delta.seconds();
+        const double ageSeconds = candidate.state.age.seconds();
         for (const auto& op : live->recipe.motionOps) {
             switch (op.kind) {
                 case CarrierMotionOpKind::SteerHoming: {
@@ -403,6 +545,58 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
                     if (length(desired) <= 1e-12) break;
                     const double maxRadians = op.maxTurnRateDegrees * kPi / 180.0 * dtSeconds;
                     motion.velocity         = steer(motion.velocity, desired, maxRadians);
+                    break;
+                }
+                case CarrierMotionOpKind::SteerAvoidBody: {
+                    ecs::EntityHandle targetHandle{};
+                    if (candidate.state.target.has_value()) targetHandle = *candidate.state.target;
+                    auto samples = bodies->sample(candidate.state.handle, targetHandle, motion);
+                    if (!samples) return Result<CarrierFrame>::failure(samples.status());
+                    ProjectileVector avoid{0.0, 0.0, 0.0};
+                    bool             any = false;
+                    const auto       fwd = length(motion.velocity) > 1e-12 ? normalized(motion.velocity)
+                                                                          : ProjectileVector{1.0, 0.0, 0.0};
+                    for (const auto& body : samples.value()) {
+                        if (!std::isfinite(body.radius) || body.radius < 0.0) {
+                            return carrierValueError<CarrierFrame>(
+                                DiagnosticCode::InvalidArgument,
+                                "Body defense radius must be finite and non-negative", "bodies");
+                        }
+                        const auto   toCenter = directionTo(motion.position, body.center);
+                        const double dist     = length(toCenter);
+                        const double blockAt  = body.radius + op.avoidRadiusPadding + op.avoidLookAhead;
+                        if (dist <= 1e-12 || dist > blockAt) continue;
+                        if (length(body.facing) > 1e-12 && body.frontConeDegrees < 180.0) {
+                            const auto approach =
+                                normalized(ProjectileVector{-toCenter.x, -toCenter.y, -toCenter.z});
+                            const auto face = normalized(body.facing);
+                            const double dot = std::clamp(
+                                approach.x * face.x + approach.y * face.y + approach.z * face.z, -1.0, 1.0);
+                            const double angleDeg = std::acos(dot) * 180.0 / kPi;
+                            if (angleDeg > body.frontConeDegrees) continue;
+                        }
+                        auto lateral = cross(fwd, toCenter);
+                        if (length(lateral) <= 1e-12) lateral = lateralBasis(fwd);
+                        lateral = normalized(lateral);
+                        if (targetPos.has_value()) {
+                            const auto around = directionTo(body.center, *targetPos);
+                            const auto left   = lateral;
+                            const auto right  = ProjectileVector{-lateral.x, -lateral.y, -lateral.z};
+                            const double leftScore = left.x * around.x + left.y * around.y + left.z * around.z;
+                            const double rightScore = right.x * around.x + right.y * around.y + right.z * around.z;
+                            if (rightScore > leftScore) lateral = right;
+                        }
+                        const double weight = op.avoidStrength * (1.0 - dist / blockAt);
+                        avoid.x += lateral.x * weight;
+                        avoid.y += lateral.y * weight;
+                        avoid.z += lateral.z * weight;
+                        any = true;
+                    }
+                    if (any && length(avoid) > 1e-12) {
+                        const auto desired = ProjectileVector{fwd.x + avoid.x, fwd.y + avoid.y, fwd.z + avoid.z};
+                        const double maxRadians = op.maxTurnRateDegrees * kPi / 180.0 * dtSeconds;
+                        motion.velocity = steer(motion.velocity, desired, maxRadians);
+                    }
                     break;
                 }
                 case CarrierMotionOpKind::ApplyGravity:
@@ -414,6 +608,33 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
                     const auto   dir  = normalized(motion.velocity);
                     const double next = speed + op.acceleration * dtSeconds;
                     motion.velocity   = {dir.x * next, dir.y * next, dir.z * next};
+                    break;
+                }
+                case CarrierMotionOpKind::CurveSway: {
+                    const double speed = length(motion.velocity);
+                    if (speed <= 1e-12) break;
+                    const auto   fwd   = normalized(motion.velocity);
+                    const auto   side  = lateralBasis(fwd);
+                    const double omega = 2.0 * kPi * op.curveFrequencyHz;
+                    const double vLat  = op.curveAmplitude * omega * std::cos(omega * ageSeconds);
+                    motion.velocity    = {fwd.x * speed + side.x * vLat, fwd.y * speed + side.y * vLat,
+                                          fwd.z * speed + side.z * vLat};
+                    break;
+                }
+                case CarrierMotionOpKind::CurveHelix: {
+                    const double speed = length(motion.velocity);
+                    if (speed <= 1e-12) break;
+                    const auto   fwd   = normalized(motion.velocity);
+                    const auto   side0 = lateralBasis(fwd);
+                    const auto   up    = normalized(cross(side0, fwd));
+                    const double omega = 2.0 * kPi * op.curveFrequencyHz;
+                    const double phase = omega * ageSeconds;
+                    const auto   side  = ProjectileVector{side0.x * std::cos(phase) + up.x * std::sin(phase),
+                                                          side0.y * std::cos(phase) + up.y * std::sin(phase),
+                                                          side0.z * std::cos(phase) + up.z * std::sin(phase)};
+                    const double vLat  = op.curveAmplitude * omega;
+                    motion.velocity    = {fwd.x * speed + side.x * vLat, fwd.y * speed + side.y * vLat,
+                                          fwd.z * speed + side.z * vLat};
                     break;
                 }
                 case CarrierMotionOpKind::IntegrateLinear:

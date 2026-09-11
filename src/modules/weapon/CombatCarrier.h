@@ -28,8 +28,11 @@ namespace eve::weapon {
 /** @brief Ordered ballistic operators applied each simulation step. */
 enum class CarrierMotionOpKind : std::uint8_t {
     SteerHoming,       /**< Rotate velocity toward a target; does not integrate. */
+    SteerAvoidBody,    /**< Deflect around injected body/shield samples; does not integrate. */
     ApplyGravity,      /**< Subtract gravity from velocity.y. */
     Accelerate,        /**< Increase speed along the current velocity direction. */
+    CurveSway,         /**< Add sinusoidal lateral velocity (curve modifier); does not integrate. */
+    CurveHelix,        /**< Add rotating lateral velocity (corkscrew); does not integrate. */
     IntegrateLinear    /**< Integrate position from velocity. */
 };
 
@@ -58,6 +61,16 @@ struct CarrierMotionOp {
     double              gravity            = 0.0;
     double              maxTurnRateDegrees = 0.0;
     double              acceleration       = 0.0;
+    /** @brief SteerAvoidBody: meters ahead at which a body counts as blocking. */
+    double avoidLookAhead = 0.0;
+    /** @brief SteerAvoidBody: blend weight of avoidance versus current velocity (≥0). */
+    double avoidStrength = 1.0;
+    /** @brief SteerAvoidBody: extra meters added to each body radius. */
+    double avoidRadiusPadding = 0.0;
+    /** @brief CurveSway/CurveHelix: lateral amplitude in meters (helix radius). */
+    double curveAmplitude = 0.0;
+    /** @brief CurveSway/CurveHelix: oscillation frequency in Hz (>0). */
+    double curveFrequencyHz = 0.0;
 };
 
 /** @brief One trigger specification. */
@@ -115,6 +128,24 @@ struct CarrierSpawnRequest {
     ProjectileVector                 direction;
     std::optional<ecs::EntityHandle> target;
     ecs::EntityHandle                source{};
+};
+
+/** @brief Multi-projectile aim pattern for one salvo. */
+enum class CarrierVolleyPattern : std::uint8_t {
+    Fan, /**< Spread across ±spreadDegrees/2 in the aim plane. */
+    Ring /**< Evenly spaced around a full circle in the aim plane. */
+};
+
+/**
+ * @brief Deterministic multi-direction spawn descriptor.
+ *
+ * Directions are derived from the base request with no RNG: Fan uses a symmetric
+ * yaw spread around the aim vector; Ring uses equal steps over 360°.
+ */
+struct CarrierVolleySpec {
+    int                  count         = 1;
+    CarrierVolleyPattern pattern       = CarrierVolleyPattern::Fan;
+    double               spreadDegrees = 0.0; /**< Fan total angle; ignored by Ring. */
 };
 
 /** @brief Live motion snapshot for one carrier. */
@@ -206,6 +237,38 @@ public:
 };
 
 /**
+ * @brief One body/shield sample used by SteerAvoidBody to curve around defenses.
+ *
+ * `facing` + `frontConeDegrees` model a directional shield: avoidance engages
+ * only when the carrier approaches from within the front cone. A cone of 180°
+ * or greater treats the body as omnidirectional cover.
+ */
+struct CarrierBodyDefenseSample {
+    ProjectilePoint  center{};
+    double           radius           = 0.0;
+    ProjectileVector facing{0.0, 0.0, 1.0};
+    double           frontConeDegrees = 180.0;
+};
+
+/**
+ * @brief Optional body/shield boundary for SteerAvoidBody.
+ *
+ * Called synchronously without locks. Must not retain motion references across
+ * calls. Missing provider when a live recipe uses SteerAvoidBody fails the frame.
+ */
+class ICarrierBodyDefenseProvider {
+public:
+    virtual ~ICarrierBodyDefenseProvider() = default;
+
+    /**
+     * @brief Sample body/shield volumes relevant to one carrier step.
+     * @param target Homing target when present; may be a null handle for area defenses.
+     */
+    [[nodiscard]] virtual Result<std::vector<CarrierBodyDefenseSample>> sample(
+        CarrierHandle handle, ecs::EntityHandle target, const CarrierMotion& motion) const = 0;
+};
+
+/**
  * @brief Build a default recipe matching a classic ProjectileDefinition mode.
  *
  * Linear/Ballistic/Homing map to motion-op stacks with OnExpire→Release and
@@ -245,13 +308,29 @@ public:
     [[nodiscard]] Result<CarrierHandle> spawn(const CarrierRecipe& recipe, const CarrierSpawnRequest& request);
 
     /**
+     * @brief Spawn multiple carriers in deterministic Fan/Ring directions.
+     *
+     * Each projectile shares the base position/target/source and receives a
+     * rotated aim vector. Fails without partial spawns when the pool cannot fit
+     * the full volley or any single spawn is invalid.
+     */
+    [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const LogicalId&           recipeId,
+                                                                 const CarrierSpawnRequest& request,
+                                                                 const CarrierVolleySpec&   volley);
+    [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const CarrierRecipe&       recipe,
+                                                                 const CarrierSpawnRequest& request,
+                                                                 const CarrierVolleySpec&   volley);
+
+    /**
      * @brief Atomically advance all live carriers by supplied deterministic time.
      * @param targets Optional provider required when any live recipe uses homing/proximity.
      * @param hits Optional probe required when any live recipe uses OnHit.
+     * @param bodies Optional provider required when any live recipe uses SteerAvoidBody.
      */
-    [[nodiscard]] Result<CarrierFrame> update(Duration                         delta,
-                                              const IProjectileTargetProvider*  targets = nullptr,
-                                              const ICarrierHitProbe*          hits    = nullptr);
+    [[nodiscard]] Result<CarrierFrame> update(Duration                           delta,
+                                              const IProjectileTargetProvider*    targets = nullptr,
+                                              const ICarrierHitProbe*            hits    = nullptr,
+                                              const ICarrierBodyDefenseProvider* bodies  = nullptr);
 
     /** @brief Explicitly release one live handle; stale handles are rejected. */
     [[nodiscard]] Result<void> release(CarrierHandle handle);
@@ -282,11 +361,12 @@ private:
 
     struct LiveRecipe {
         CarrierRecipe recipe;
-        int           initialPierce = 0;
-        int           initialBounce = 0;
-        bool          needsHoming   = false;
-        bool          needsHit      = false;
+        int           initialPierce  = 0;
+        int           initialBounce  = 0;
+        bool          needsHoming    = false;
+        bool          needsHit       = false;
         bool          needsProximity = false;
+        bool          needsBodyAvoid = false;
     };
 
     [[nodiscard]] Result<CarrierHandle> spawnPrepared(const LiveRecipe&          live,
