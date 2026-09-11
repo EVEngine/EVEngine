@@ -93,7 +93,7 @@ TEST_CASE("voxel.render.tilesPerRowAtlasSample") {
     gfx->setScreenReadbackEnabled(true);
     struct Sample {
         int     size;
-        int     tile;
+        uint8_t tile;
         uint8_t blue;
     };
     for (const auto sample : {Sample{3, 1, 200}, Sample{4, 2, 220}}) {
