@@ -1538,7 +1538,8 @@ Procgen 不保存物理世界或 contact 指针，Physics、武器和脚本只�
 动态纹理绘制使用 `newDynamicMeshUvPaintSession()`。它保存当前 mesh 快照，把 triangle hit 的三维点
 按重心坐标映射到 UV，再委托既有 `UvPaintSession` 完成像素事务和 undo，因此不会复制 Ink Arena/UV Paint
 的 raster 实现。`updateMesh()` 可在每次变形后替换网格而保留已绘制纹理；无 UV 的网格可先通过
-`mesh.projectUv` 自动投射。
+`mesh.projectUv` 自动投射。`paintSurfacePoint()` 提交一次表面命中绘制，`currentImageResult()` 返回 owning
+像素快照；`getMeshRevision()` 与 `getPaintRevision()` 分别报告几何和像素事务 revision。
 Interactive Surface 使用 `applySurfaceContact()` 接收纯值接触点、法线、切向速度、半径、压入深度、
 拖拽、衰减和塑性比例；物理、鼠标、触摸与 VR 适配器负责坐标转换，不会被 Session 持有。
 `recoverSurface(dt, recoveryRate)` 使用调用方注入的 dt 做指数恢复，不读取 wall clock，也不会每帧污染
