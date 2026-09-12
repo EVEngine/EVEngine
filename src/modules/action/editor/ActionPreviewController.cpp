@@ -61,6 +61,9 @@ Result<action::ActionPreviewFrame> ActionPreviewController::buildFrame(
     }
     frame.previous = previous;
     frame.current  = current;
+    auto activeBlocks = editor_.target().timeline().activeBlocks(current);
+    if (!activeBlocks) return Result<action::ActionPreviewFrame>::failure(activeBlocks.status());
+    frame.activeBlocks = std::move(activeBlocks).takeValue();
     frame.cues.reserve(events.size());
     for (const auto& event : events)
         frame.cues.push_back({cueKind(event), event.itemId, event.type, event.time, event.payload});

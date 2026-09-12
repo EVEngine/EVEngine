@@ -3,6 +3,7 @@
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionPrefabInstances.h"
+#include "action/ActionPreview.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/EntitySpatialResolver.h"
@@ -53,12 +54,14 @@ public:
                 if (auto* live = ecs::try_get(entity)) ecs::DestroyEntity(live);
     }
 
-    [[nodiscard]] Result<PrefabLease> spawn(const std::string& uri, const WorldTransform& transform) {
+    [[nodiscard]] Result<PrefabLease> spawn(const std::string& uri, const WorldTransform& transform,
+                                            bool visible = true) {
         for (std::uint32_t index = 0; index < slots_.size(); ++index) {
             auto& slot = slots_[index];
             if (slot.occupied || slot.retired || slot.uri != uri || !allEntitiesAlive(slot)) continue;
             slot.occupied = true;
-            setVisible(slot, true);
+            slot.independent = false;
+            setSlotVisible(slot, visible);
             apply(slot, transform);
             return Result<PrefabLease>::success(PrefabLease(index, slot.generation));
         }
@@ -82,6 +85,7 @@ public:
             slots_.push_back(std::move(slot));
             const auto index = static_cast<std::uint32_t>(slots_.size() - 1u);
             apply(slots_.back(), transform);
+            setSlotVisible(slots_.back(), visible);
             return Result<PrefabLease>::success(PrefabLease(index, slots_.back().generation));
         } catch (const std::exception& error) {
             return fail<PrefabLease>(DiagnosticCode::Failed, error.what(), "uri");
@@ -99,13 +103,21 @@ public:
         auto slot = resolve(lease);
         if (!slot) return Result<void>::failure(slot.status());
         auto* value = slot.value();
-        setVisible(*value, false);
+        setSlotVisible(*value, false);
         value->occupied = false;
+        value->independent = false;
         const auto next = PrefabLease::nextGeneration(value->generation);
         if (next)
             value->generation = *next;
         else
             value->retired = true;
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<void> setVisible(PrefabLease lease, bool visible) {
+        auto slot = resolve(lease);
+        if (!slot) return Result<void>::failure(slot.status());
+        setSlotVisible(*slot.value(), visible);
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -161,7 +173,7 @@ private:
         return true;
     }
 
-    static void setVisible(Slot& slot, bool visible) {
+    static void setSlotVisible(Slot& slot, bool visible) {
         for (const auto entity : slot.entities)
             if (auto* renderable = dynamic_cast<graphics::Renderable3D*>(ecs::try_get(entity)))
                 renderable->setVisible(visible);
@@ -178,6 +190,72 @@ private:
     }
 
     std::vector<Slot> slots_;
+};
+
+WorldTransform previewWorldTransform(const action::ActionSpatialBinding& spatial) {
+    return {
+        static_cast<float>(spatial.positionOffset.x),
+        static_cast<float>(spatial.positionOffset.y),
+        static_cast<float>(spatial.positionOffset.z),
+        static_cast<float>(spatial.rotationOffsetDegrees.y * kDegreesToRadians),
+        static_cast<float>(spatial.rotationOffsetDegrees.x * kDegreesToRadians),
+        static_cast<float>(spatial.rotationOffsetDegrees.z * kDegreesToRadians),
+        static_cast<float>(spatial.scale.x),
+        static_cast<float>(spatial.scale.y),
+        static_cast<float>(spatial.scale.z),
+    };
+}
+
+class PrefabActionPreviewSink final : public action::IActionPreviewSink {
+public:
+    ~PrefabActionPreviewSink() override {
+        discardPrepared();
+        recycleAll(current_);
+    }
+
+    Result<void> prepare(const action::ActionPreviewFrame& frame) override {
+        discardPrepared();
+        for (const auto& block : frame.activeBlocks) {
+            if (block.type.format() != "gameplay:prefab-spawn") continue;
+            auto binding = action::ActionPrefabSpawnBinding::fromPayload(block.payload);
+            if (!binding) return Result<void>::failure(binding.status());
+            if (binding.value().lifecycle == action::PrefabSpawnLifecycle::CustomDuration &&
+                block.localTime >= binding.value().customDuration)
+                continue;
+            auto lease = pool_.spawn(binding.value().uri, previewWorldTransform(binding.value().spatial), false);
+            if (!lease) {
+                discardPrepared();
+                return Result<void>::failure(lease.status());
+            }
+            staged_.push_back(lease.value());
+        }
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    void present(const action::ActionPreviewFrame&) noexcept override {
+        recycleAll(current_);
+        current_ = std::move(staged_);
+        staged_.clear();
+        for (const auto lease : current_) {
+            auto visible = pool_.setVisible(lease, true);
+            visible.ignore();
+        }
+    }
+
+    void discardPrepared() noexcept override { recycleAll(staged_); }
+
+private:
+    void recycleAll(std::vector<PrefabLease>& leases) noexcept {
+        for (const auto lease : leases) {
+            auto recycled = pool_.recycle(lease);
+            recycled.ignore();
+        }
+        leases.clear();
+    }
+
+    RenderablePrefabPool    pool_;
+    std::vector<PrefabLease> current_;
+    std::vector<PrefabLease> staged_;
 };
 
 class PrefabActionProvider;
@@ -376,7 +454,8 @@ private:
 };
 
 class PrefabActionProvider final : public action::IActionNotifyProvider,
-                                   public action::IActionPrefabInstances {
+                                   public action::IActionPrefabInstances,
+                                   public action::IActionPreviewSinkProvider {
 public:
     void start() {
         if (!pool_) pool_ = std::make_unique<RenderablePrefabPool>();
@@ -402,6 +481,14 @@ public:
         return pool_->recycleIndependent(handle);
     }
 
+    Result<std::unique_ptr<action::IActionPreviewSink>> createActionPreviewSink() override {
+        if (!pool_)
+            return fail<std::unique_ptr<action::IActionPreviewSink>>(
+                DiagnosticCode::NotFound, "SceneLoader prefab preview service is unavailable", "sceneloader");
+        return Result<std::unique_ptr<action::IActionPreviewSink>>::success(
+            std::make_unique<PrefabActionPreviewSink>());
+    }
+
     [[nodiscard]] RenderablePrefabPool* pool() const noexcept { return pool_.get(); }
 
 private:
@@ -421,12 +508,14 @@ void registerPrefabActionCapabilities() {
     auto& value = provider();
     value.start();
     cap::provide<action::IActionPrefabInstances>(&value);
+    cap::addListener<action::IActionPreviewSinkProvider>(&value);
     cap::addListener<action::IActionNotifyProvider>(&value);
 }
 
 void shutdownPrefabActionCapabilities() {
     auto& value = provider();
     cap::removeListener<action::IActionNotifyProvider>(&value);
+    cap::removeListener<action::IActionPreviewSinkProvider>(&value);
     cap::revoke<action::IActionPrefabInstances>(&value);
     value.shutdown();
 }

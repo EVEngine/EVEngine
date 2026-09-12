@@ -103,6 +103,8 @@ std::vector<ActionNotifyDescriptor> ActionNotifyRegistry::descriptors() const {
     return result;
 }
 
+bool ActionNotifyRegistry::hasHandler(std::string_view type) const noexcept { return handlers_.contains(type); }
+
 Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) const {
     auto found = descriptors_.find(event.type.format());
     if (found == descriptors_.end())

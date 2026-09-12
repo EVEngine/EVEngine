@@ -118,6 +118,8 @@ public:
 
     /** @brief Seek the editor preview cursor from a host-space coordinate. */
     [[nodiscard]] EditorResult<void> seek(float x);
+    /** @brief Convert a host-space coordinate to its snapped authoritative timeline time. */
+    [[nodiscard]] Duration timeAt(float x) const noexcept { return xToTime(x); }
     /** @brief Present and apply selected item timing, type and JSON payload fields. */
     [[nodiscard]] EditorResult<void> inspectSelection(IEditorInspector& inspector);
 

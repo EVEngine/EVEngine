@@ -606,6 +606,10 @@ actionEditor.pointerUp(mouseX);
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());
+
+// SceneLoader 等可选模块注册真实预览层后，seek/update 会原子更新表现实例。
+if (actionEditor.hasPreviewHost())
+    actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置
 ```
 
 工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
@@ -613,6 +617,11 @@ animationPlayer.setTime(actionEditor.getPreviewTime());
 仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`
 返回与编辑器生命周期解耦的规范化资产值。完整可运行示例见
 [`examples/combat-action-editor`](../../../examples/combat-action-editor)。
+
+`ActionPreviewFrame` 同时携带当前位置的 active blocks。SceneLoader 存在时，Prefab Spawn 预览层
+会加载真实 `Renderable3D`，但使用与游戏运行时分离的池；准备失败不移动播放头，跳帧离开区间或
+编辑器销毁会回收预览实例。裁剪掉全部预览 provider 时 `hasPreviewHost()` 返回 false，时间轴编辑和
+确定性事件采样仍可使用。
 
 ```squirrel
 local dock = editor.newDock();

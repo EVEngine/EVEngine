@@ -31,6 +31,8 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         };
         created <- eve.ActionEditorModule().create("test.asset.light-attack", timelineAsset);
         actionEditor <- created.value;
+        previewHostAvailable <- actionEditor.hasPreviewHost();
+        previewRefresh <- actionEditor.refreshPreview();
         configured <- actionEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
         viewport <- actionEditor.setViewport(800.0, 36.0, 120.0);
@@ -62,6 +64,8 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
 
     CHECK(vm.find("created").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK(!vm.find("previewHostAvailable").toBool());
+    CHECK(vm.find("previewRefresh").toTable().get<bool>("ok"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));

@@ -107,8 +107,10 @@ TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {
                 .registerDescriptor({"project:combat.window", "Window", "Project",
                                      eve::action::ActionNotifyShape::State, {}})
                 .ok());
+    CHECK(!registry.hasHandler("project:combat.window"));
     auto handler = std::make_shared<RecordingHandler>();
     REQUIRE(registry.registerHandler("project:combat.window", handler).ok());
+    CHECK(registry.hasHandler("project:combat.window"));
     eve::action::ActionBlockRuntime runtime(registry);
 
     eve::action::ActionAdvance advance;

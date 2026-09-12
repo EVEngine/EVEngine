@@ -1,13 +1,16 @@
 #include "action/editor/ActionTimelineScriptBindings.h"
 
+#include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/editor/ActionEditorModule.h"
+#include "action/editor/ActionPreviewController.h"
 #include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/MontagePlayer.h"
+#include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
@@ -110,19 +113,92 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
     total.qw       = tw * delta.qw - tx * delta.qx - ty * delta.qy - tz * delta.qz;
 }
 
+class ComposedActionPreviewSink final : public action::IActionPreviewSink {
+public:
+    void add(std::unique_ptr<action::IActionPreviewSink> sink) { sinks_.push_back(std::move(sink)); }
+    [[nodiscard]] bool empty() const noexcept { return sinks_.empty(); }
+
+    Result<void> prepare(const action::ActionPreviewFrame& frame) override {
+        std::size_t prepared = 0;
+        for (; prepared < sinks_.size(); ++prepared) {
+            auto result = sinks_[prepared]->prepare(frame);
+            if (result) continue;
+            for (std::size_t index = 0; index <= prepared; ++index) sinks_[index]->discardPrepared();
+            return Result<void>::failure(result.status());
+        }
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    void present(const action::ActionPreviewFrame& frame) noexcept override {
+        for (auto& sink : sinks_) sink->present(frame);
+    }
+
+    void discardPrepared() noexcept override {
+        for (auto& sink : sinks_) sink->discardPrepared();
+    }
+
+private:
+    std::vector<std::unique_ptr<action::IActionPreviewSink>> sinks_;
+};
+
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
                                action::ActionNotifyRegistry registry)
         : registry_(std::move(registry)),
+          blockRuntime_(registry_),
           editor_(std::move(targetId), std::move(timeline)),
-          widget_(editor_, registry_) {}
+          widget_(editor_, registry_) {
+        auto composed = std::make_unique<ComposedActionPreviewSink>();
+        const auto providerCount = cap::listenerCount<action::IActionPreviewSinkProvider>();
+        for (std::size_t index = 0; index < providerCount; ++index) {
+            auto* provider = cap::listenerAt<action::IActionPreviewSinkProvider>(index);
+            if (!provider) continue;
+            auto sink = provider->createActionPreviewSink();
+            if (!sink) {
+                previewInitializationFailure_ = sink.status();
+                return;
+            }
+            composed->add(std::move(sink).takeValue());
+        }
+        if (composed->empty()) return;
+        previewSink_       = std::move(composed);
+        previewController_ = std::make_unique<ActionPreviewController>(editor_, *previewSink_);
+    }
+
+    ~ScriptActionTimelineEditor() {
+        if (executionId_.isZero()) return;
+        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_ ? montage_->time() : Duration::zero()));
+        interrupted.ignore();
+    }
 
     ActionTimelineEditor& editor() noexcept { return editor_; }
     ActionTimelineWidget& widget() noexcept { return widget_; }
 
     const ActionTimelineEditor& editor() const noexcept { return editor_; }
     const ActionTimelineWidget& widget() const noexcept { return widget_; }
+
+    [[nodiscard]] bool hasPreviewHost() const noexcept { return previewController_ != nullptr; }
+
+    [[nodiscard]] EditorResult<void> seekPreview(Duration time) {
+        if (previewInitializationFailure_)
+            return EditorResult<void>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->seek(time) : editor_.seek(time);
+    }
+
+    [[nodiscard]] EditorResult<void> seekPreviewAt(float x) { return seekPreview(widget_.timeAt(x)); }
+
+    [[nodiscard]] EditorResult<std::size_t> updatePreview(Duration delta) {
+        if (previewInitializationFailure_)
+            return EditorResult<std::size_t>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->update(delta) : editor_.update(delta);
+    }
+
+    [[nodiscard]] EditorResult<void> refreshPreview() {
+        if (previewInitializationFailure_)
+            return EditorResult<void>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->refresh() : eve::editing::noOp();
+    }
 
     [[nodiscard]] Result<void> registerRuntimeClip(std::string uri, model3d::ModelData& model,
                                                    animation::AnimSkeleton& skeleton, int animationIndex) {
@@ -203,6 +279,8 @@ public:
             tick_              = SimulationTick(tick_.value() + 1);
             auto actionAdvance = runtime_->advance(executionId_, tick_, slice);
             if (!actionAdvance) return Result<animation::MontageAdvance>::failure(actionAdvance.status());
+            auto routed = routeAvailableBlocks(actionAdvance.value());
+            if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
             auto presented = montage_->present(actionAdvance.value(), tick_);
             if (!presented) return Result<animation::MontageAdvance>::failure(presented.status());
             auto value = std::move(presented).takeValue();
@@ -249,6 +327,8 @@ public:
         tick_         = SimulationTick(tick_.value() + 1);
         auto advanced = runtime_->advance(executionId_, tick_, target);
         if (!advanced) return Result<animation::MontageAdvance>::failure(advanced.status());
+        auto routed = routeAvailableBlocks(advanced.value());
+        if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
         auto jumped = montage_->jumpToTime(executionId_, target, tick_);
         if (jumped) runtimeAdvance_ = jumped.value();
         return jumped;
@@ -295,6 +375,8 @@ public:
         tick_          = SimulationTick(tick_.value() + 1);
         auto cancelled = runtime_->cancel(executionId_, tick_);
         if (!cancelled) return cancelled;
+        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_->time()));
+        if (!interrupted) return interrupted;
         montage_->stop();
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
@@ -337,6 +419,10 @@ private:
     }
 
     [[nodiscard]] Result<void> restartExecution(bool playMontage = true) {
+        if (!executionId_.isZero()) {
+            auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_ ? montage_->time() : Duration::zero()));
+            if (!interrupted) return interrupted;
+        }
         auto                  runtime    = std::make_unique<action::ActionRuntime>();
         auto                  definition = runtimeDefinition();
         action::ActionRequest request;
@@ -352,9 +438,33 @@ private:
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
+    [[nodiscard]] action::ActionNotifyContext runtimeContext(Duration time) const {
+        action::ActionNotifyContext context;
+        context.executionId = executionId_;
+        context.time        = time;
+        return context;
+    }
+
+    [[nodiscard]] Result<void> routeAvailableBlocks(const action::ActionAdvance& advance) {
+        action::ActionAdvance handled;
+        handled.id           = advance.id;
+        handled.phase        = advance.phase;
+        handled.phaseElapsed = advance.phaseElapsed;
+        handled.totalElapsed = advance.totalElapsed;
+        for (const auto& event : advance.timelineEvents)
+            if (registry_.hasHandler(event.type.format())) handled.timelineEvents.push_back(event);
+        for (const auto& block : advance.activeBlocks)
+            if (registry_.hasHandler(block.type.format())) handled.activeBlocks.push_back(block);
+        return blockRuntime_.apply(handled, runtimeContext(advance.totalElapsed));
+    }
+
     action::ActionNotifyRegistry registry_;
+    action::ActionBlockRuntime   blockRuntime_;
     ActionTimelineEditor         editor_;
     ActionTimelineWidget         widget_;
+    std::unique_ptr<action::IActionPreviewSink> previewSink_;
+    std::unique_ptr<ActionPreviewController>    previewController_;
+    std::optional<Status>                       previewInitializationFailure_;
     std::vector<animation::MontageClipAsset>  runtimeClips_;
     std::unique_ptr<action::ActionRuntime>    runtime_;
     std::unique_ptr<animation::MontagePlayer> montage_;
@@ -483,14 +593,14 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("seekX", [vm](ScriptActionTimelineEditor* self, float x) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
-        return project(vm, self->widget().seek(x));
+        return project(vm, self->seekPreviewAt(x));
     });
     actionEditor.addFunc("seekSeconds", [vm](ScriptActionTimelineEditor* self, float value) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto duration = seconds(value);
         if (!duration) return script::projectStatusResult(vm, duration.status(), false, false);
-        return project(vm, self->editor().seek(std::move(duration).takeValue()));
+        return project(vm, self->seekPreview(std::move(duration).takeValue()));
     });
     actionEditor.addFunc("resizeState", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                              float startSeconds, float endSeconds) {
@@ -523,8 +633,16 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto delta = seconds(deltaSeconds);
         if (!delta) return script::projectStatusResult(vm, delta.status(), false, false);
-        auto result = self->editor().update(std::move(delta).takeValue());
+        auto result = self->updatePreview(std::move(delta).takeValue());
         return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value()) : 0));
+    });
+    actionEditor.addFunc("refreshPreview", [vm](ScriptActionTimelineEditor* self) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        return project(vm, self->refreshPreview());
+    });
+    actionEditor.addFunc("hasPreviewHost", [](ScriptActionTimelineEditor* self) {
+        return self && self->hasPreviewHost();
     });
     actionEditor.addFunc("snapshot", [vm](ScriptActionTimelineEditor* self) {
         if (!self)

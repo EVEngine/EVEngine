@@ -1,6 +1,7 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPrefabInstances.h"
+#include "action/ActionPreview.h"
 #include "common/Capability.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
@@ -155,4 +156,48 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     auto stale = instances->recycleIndependent(independent.front().handle);
     CHECK(!stale.ok());
     CHECK_EQ(stale.status().code(), eve::StatusCode::NotFound);
+
+    REQUIRE_EQ(eve::cap::listenerCount<eve::action::IActionPreviewSinkProvider>(), 1u);
+    auto* previewProvider = eve::cap::listenerAt<eve::action::IActionPreviewSinkProvider>(0);
+    REQUIRE(previewProvider != nullptr);
+    auto preview = previewProvider->createActionPreviewSink();
+    REQUIRE(preview.ok());
+    eve::action::ActionPreviewFrame frame;
+    eve::Value::Object previewPayload{{"uri", prefabUri},
+                                      {"lifecycle", "recycle_on_block_exit"},
+                                      {"positionOffset", eve::Value::Array{6.0, 7.0, 8.0}}};
+    frame.activeBlocks.push_back(active("prefab-item:preview", previewPayload));
+    REQUIRE(preview.value()->prepare(frame).ok());
+    CHECK_EQ(renderableCount(true), 0u);
+    preview.value()->present(frame);
+    CHECK_EQ(renderableCount(true), 1u);
+    for (auto it = transformed.begin(); it != transformed.end(); ++it) {
+        auto [transform, renderer] = *it;
+        if (!renderer->visible) continue;
+        CHECK_EQ(transform->x, 6.f);
+        CHECK_EQ(transform->y, 7.f);
+        CHECK_EQ(transform->z, 8.f);
+    }
+
+    frame.activeBlocks.front().payload["positionOffset"] = eve::Value::Array{9.0, 10.0, 11.0};
+    REQUIRE(preview.value()->prepare(frame).ok());
+    CHECK_EQ(renderableCount(true), 1u);
+    preview.value()->present(frame);
+    CHECK_EQ(renderableCount(true), 1u);
+    auto invalidFrame = frame;
+    invalidFrame.activeBlocks.front().payload.erase("uri");
+    CHECK(!preview.value()->prepare(invalidFrame).ok());
+    CHECK_EQ(renderableCount(true), 1u);
+
+    auto timedPreview = frame;
+    timedPreview.activeBlocks.front().payload["lifecycle"] = "custom_duration";
+    timedPreview.activeBlocks.front().payload["customDurationSeconds"] = 0.1;
+    timedPreview.activeBlocks.front().localTime = eve::Duration::fromNanoseconds(200000000);
+    REQUIRE(preview.value()->prepare(timedPreview).ok());
+    preview.value()->present(timedPreview);
+    CHECK_EQ(renderableCount(true), 0u);
+    eve::action::ActionPreviewFrame emptyFrame;
+    REQUIRE(preview.value()->prepare(emptyFrame).ok());
+    preview.value()->present(emptyFrame);
+    CHECK_EQ(renderableCount(true), 0u);
 }

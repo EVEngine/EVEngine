@@ -143,6 +143,8 @@ public:
     [[nodiscard]] Result<ActionNotifyDescriptor> descriptor(std::string_view type) const;
     /** @brief Return descriptors in lexical type order. */
     [[nodiscard]] std::vector<ActionNotifyDescriptor> descriptors() const;
+    /** @brief Return whether this registry has a runtime handler for the exact canonical type. */
+    [[nodiscard]] bool hasHandler(std::string_view type) const noexcept;
     /** @brief Validate type, shape and required payload fields. @param event Owning event projection. */
     [[nodiscard]] Result<void> validate(const ActionTimelineEvent& event) const;
     /**
