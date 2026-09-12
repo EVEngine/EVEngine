@@ -52,6 +52,21 @@ void sortAnimationSections(action::ActionTimeline& timeline) {
         });
 }
 
+bool containsId(const action::ActionTimeline& timeline, const LogicalId& id) {
+    if (std::any_of(timeline.animationSections.begin(), timeline.animationSections.end(),
+                    [&](const auto& section) { return section.id == id; }))
+        return true;
+    for (const auto& track : timeline.tracks) {
+        if (track.id == id) return true;
+        if (std::any_of(track.notifies.begin(), track.notifies.end(),
+                        [&](const auto& notify) { return notify.id == id; }))
+            return true;
+        if (std::any_of(track.states.begin(), track.states.end(), [&](const auto& state) { return state.id == id; }))
+            return true;
+    }
+    return false;
+}
+
 EditorValue replacementPayload(const std::string& json) {
     EditorValue::Object payload;
     payload["json"] = json;
@@ -310,8 +325,22 @@ EditorResult<void> ActionTimelineTarget::loadSnapshot(const EditorValue& snapsho
     return assign(std::move(decoded).takeValue());
 }
 
+void ActionTimelineClipboard::clear() noexcept {
+    items_.clear();
+    track_.reset();
+}
+
+bool ActionTimelineClipboard::empty() const noexcept { return items_.empty() && !track_; }
+
 ActionTimelineEditor::ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline)
-    : target_(std::move(targetId), std::move(timeline)), authority_(&target_), transactions_(&authority_) {}
+    : ActionTimelineEditor(std::move(targetId), std::move(timeline), std::make_shared<ActionTimelineClipboard>()) {}
+
+ActionTimelineEditor::ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
+                                           std::shared_ptr<ActionTimelineClipboard> clipboard)
+    : target_(std::move(targetId), std::move(timeline)),
+      authority_(&target_),
+      transactions_(&authority_),
+      clipboard_(clipboard ? std::move(clipboard) : std::make_shared<ActionTimelineClipboard>()) {}
 
 EditorResult<void> ActionTimelineEditor::rejected(std::string rule, std::string message) {
     return editorError(EditorStatus::Rejected, std::move(rule), std::move(message));
@@ -789,38 +818,47 @@ std::vector<LogicalId> ActionTimelineEditor::selectedItemIds() const {
 }
 
 EditorResult<std::size_t> ActionTimelineEditor::copySelection() {
-    clipboard_.clear();
+    clipboard_->clear();
     for (const auto& section : target_.timeline().animationSections)
         if (selection_.contains(section.id.format()))
-            clipboard_.push_back({ClipboardItem::Kind::AnimationSection, {}, section, {}, {}});
+            clipboard_->items_.push_back({ActionTimelineClipboard::Item::Kind::AnimationSection, {}, section, {}, {}});
     for (const auto& track : target_.timeline().tracks) {
         for (const auto& notify : track.notifies)
             if (selection_.contains(notify.id.format()))
-                clipboard_.push_back({ClipboardItem::Kind::Notify, track.id, {}, notify, {}});
+                clipboard_->items_.push_back({ActionTimelineClipboard::Item::Kind::Notify, track.id, {}, notify, {}});
         for (const auto& state : track.states)
             if (selection_.contains(state.id.format()))
-                clipboard_.push_back({ClipboardItem::Kind::NotifyState, track.id, {}, {}, state});
+                clipboard_->items_.push_back(
+                    {ActionTimelineClipboard::Item::Kind::NotifyState, track.id, {}, {}, state});
     }
-    return eve::editing::applied<std::size_t>(clipboard_.size());
+    return eve::editing::applied<std::size_t>(clipboard_->items_.size());
 }
 
-LogicalId ActionTimelineEditor::copiedId(const LogicalId& source) {
-    const std::string name = std::string(source.name()) + ".copy." + std::to_string(++copySequence_);
-    auto              id   = LogicalId::fromParts(source.namespaceName(), name);
-    return id ? std::move(*id) : LogicalId{};
+LogicalId ActionTimelineEditor::copiedId(const LogicalId& source, const action::ActionTimeline& candidate) {
+    while (true) {
+        const std::string name = std::string(source.name()) + ".copy." + std::to_string(++copySequence_);
+        auto              id   = LogicalId::fromParts(source.namespaceName(), name);
+        if (id && !containsId(candidate, *id)) return std::move(*id);
+    }
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
-    if (clipboard_.empty())
+EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) { return pasteItems(offset, nullptr); }
+
+EditorResult<std::size_t> ActionTimelineEditor::pasteToTrack(const LogicalId& trackId, Duration offset) {
+    return pasteItems(offset, &trackId);
+}
+
+EditorResult<std::size_t> ActionTimelineEditor::pasteItems(Duration offset, const LogicalId* destinationTrack) {
+    if (clipboard_->items_.empty())
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
                                                  RuleId("editor.action.timeline.clipboard-empty"),
-                                                 "Action timeline clipboard is empty");
+                                                 "Action timeline item clipboard is empty");
     action::ActionTimeline candidate = target_.timeline();
     std::set<std::string>  pastedSelection;
-    for (const auto& item : clipboard_) {
-        if (item.kind == ClipboardItem::Kind::AnimationSection) {
+    for (const auto& item : clipboard_->items_) {
+        if (item.kind == ActionTimelineClipboard::Item::Kind::AnimationSection) {
             auto copy  = item.animationSection;
-            copy.id    = copiedId(copy.id);
+            copy.id    = copiedId(copy.id, candidate);
             auto start = copy.start.tryAdd(offset);
             auto end   = copy.end.tryAdd(offset);
             if (!start || !end)
@@ -835,17 +873,17 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
                       [](const auto& left, const auto& right) { return left.start < right.start; });
             continue;
         }
-        auto* track = findTrack(candidate, item.trackId);
+        auto* track = findTrack(candidate, destinationTrack ? *destinationTrack : item.trackId);
         if (!track)
             return eve::editing::failed<std::size_t>(EditorStatus::Conflict,
                                                      RuleId("editor.action.timeline.track-not-found"),
-                                                     "Clipboard track no longer exists");
+                                                     "Paste target track does not exist");
         if (track->locked)
             return eve::editing::failed<std::size_t>(
                 EditorStatus::Rejected, RuleId("editor.action.timeline.track-locked"), "Clipboard track is locked");
-        if (item.kind == ClipboardItem::Kind::NotifyState) {
+        if (item.kind == ActionTimelineClipboard::Item::Kind::NotifyState) {
             auto copy  = item.notifyState;
-            copy.id    = copiedId(copy.id);
+            copy.id    = copiedId(copy.id, candidate);
             auto start = copy.start.tryAdd(offset);
             auto end   = copy.end.tryAdd(offset);
             if (!start || !end)
@@ -858,7 +896,7 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
             track->states.push_back(std::move(copy));
         } else {
             auto copy = item.notify;
-            copy.id   = copiedId(copy.id);
+            copy.id   = copiedId(copy.id, candidate);
             auto time = copy.time.tryAdd(offset);
             if (!time)
                 return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
@@ -877,6 +915,35 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
                                                  "Could not paste action timeline items");
     selection_ = std::move(pastedSelection);
     return eve::editing::applied<std::size_t>(count);
+}
+
+EditorResult<void> ActionTimelineEditor::copyTrack(const LogicalId& trackId) {
+    const auto* track = findTrack(target_.timeline(), trackId);
+    if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
+    clipboard_->clear();
+    clipboard_->track_ = *track;
+    return eve::editing::applied<void>();
+}
+
+EditorResult<LogicalId> ActionTimelineEditor::pasteTrack() {
+    if (!clipboard_->track_)
+        return eve::editing::failed<LogicalId>(EditorStatus::Rejected,
+                                               RuleId("editor.action.timeline.track-clipboard-empty"),
+                                               "Action timeline track clipboard is empty");
+    action::ActionTimeline candidate = target_.timeline();
+    auto                   track     = *clipboard_->track_;
+    track.id                         = copiedId(track.id, candidate);
+    track.label += " Copy";
+    const LogicalId pastedId = track.id;
+    candidate.tracks.push_back(std::move(track));
+    auto& pasted = candidate.tracks.back();
+    for (auto& notify : pasted.notifies) notify.id = copiedId(notify.id, candidate);
+    for (auto& state : pasted.states) state.id = copiedId(state.id, candidate);
+    sortTrack(pasted);
+    auto committed = commit(std::move(candidate), "Paste action timeline track", "action.timeline.track.paste");
+    if (!committed.ok()) return EditorResult<LogicalId>::failure(committed.status());
+    selection_.clear();
+    return eve::editing::applied<LogicalId>(pastedId);
 }
 
 EditorResult<void> ActionTimelineEditor::deleteSelection() {

@@ -189,3 +189,51 @@ TEST_CASE("actionTimelineEditor.movesAlignsAndScalesSelectionAtomically") {
     CHECK(!editor.moveSelection(eve::Duration::fromNanoseconds(1)).ok());
     CHECK_EQ(editor.target().timeline().toValue().value().toJson().value(), before.toValue().value().toJson().value());
 }
+
+TEST_CASE("actionTimelineEditor.sharesDeepClipboardAcrossDocumentsAndPastesTracks") {
+    auto clipboard = std::make_shared<eve::editor::ActionTimelineClipboard>();
+    eve::editor::ActionTimelineEditor source("asset.combat.source", timelineFixture(), clipboard);
+
+    auto destinationTimeline              = timelineFixture();
+    destinationTimeline.actionId          = id("combat:alternate-attack");
+    destinationTimeline.tracks[0].id      = id("combat-track:alternate");
+    destinationTimeline.tracks[0].label   = "Alternate";
+    destinationTimeline.tracks[0].notifies.clear();
+    destinationTimeline.tracks[0].states.clear();
+    eve::action::ActionTrack collision;
+    collision.id    = id("combat-track:gameplay.copy.1");
+    collision.label = "Existing Copy";
+    collision.kind  = eve::action::ActionTrackKind::Gameplay;
+    destinationTimeline.tracks.push_back(std::move(collision));
+    eve::editor::ActionTimelineEditor destination("asset.combat.destination", std::move(destinationTimeline),
+                                                   clipboard);
+
+    REQUIRE(source.copyTrack(id("combat-track:gameplay")).ok());
+    auto pastedTrack = destination.pasteTrack();
+    REQUIRE(pastedTrack.ok());
+    CHECK_EQ(pastedTrack.value(), id("combat-track:gameplay.copy.2"));
+    REQUIRE_EQ(destination.target().timeline().tracks.size(), 3U);
+    const auto& track = destination.target().timeline().tracks.back();
+    CHECK_EQ(track.label, "Gameplay Copy");
+    REQUIRE_EQ(track.notifies.size(), 2U);
+    REQUIRE_EQ(track.states.size(), 1U);
+    CHECK(track.notifies[0].id != source.target().timeline().tracks[0].notifies[0].id);
+    CHECK(track.states[0].id != source.target().timeline().tracks[0].states[0].id);
+    REQUIRE(destination.undo().ok());
+    CHECK_EQ(destination.target().timeline().tracks.size(), 2U);
+
+    REQUIRE(source.selectItem(id("combat-notify:hit")).ok());
+    auto copied = source.copySelection();
+    REQUIRE(copied.ok());
+    CHECK_EQ(copied.value(), 1U);
+    auto pastedItem = destination.pasteToTrack(id("combat-track:alternate"), eve::Duration::fromNanoseconds(10));
+    REQUIRE(pastedItem.ok());
+    CHECK_EQ(pastedItem.value(), 1U);
+    REQUIRE_EQ(destination.target().timeline().tracks[0].notifies.size(), 1U);
+    CHECK_EQ(destination.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(30));
+
+    REQUIRE(destination.setTrackLocked(id("combat-track:alternate"), true).ok());
+    const auto before = destination.target().timeline().toValue().value().toJson().value();
+    CHECK(!destination.pasteToTrack(id("combat-track:alternate"), eve::Duration::zero()).ok());
+    CHECK_EQ(destination.target().timeline().toValue().value().toJson().value(), before);
+}

@@ -146,10 +146,11 @@ private:
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
-                               action::ActionNotifyRegistry registry)
+                               action::ActionNotifyRegistry registry,
+                               std::shared_ptr<ActionTimelineClipboard> clipboard)
         : registry_(std::move(registry)),
           blockRuntime_(registry_),
-          editor_(std::move(targetId), std::move(timeline)),
+          editor_(std::move(targetId), std::move(timeline), std::move(clipboard)),
           widget_(editor_, registry_) {
         auto composed = std::make_unique<ComposedActionPreviewSink>();
         const auto providerCount = cap::listenerCount<action::IActionPreviewSinkProvider>();
@@ -511,6 +512,7 @@ std::string eventKind(action::ActionTimelineEventKind kind) {
 
 void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const HSQUIRRELVM vm           = table.getHandle();
+    auto              clipboard    = std::make_shared<ActionTimelineClipboard>();
     auto              actionEditor = table.addClass<ScriptActionTimelineEditor>(
         "ActionTimelineEditor",
         std::function<ScriptActionTimelineEditor*()>([]() -> ScriptActionTimelineEditor* { return nullptr; }), true);
@@ -566,6 +568,30 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             auto parsed = LogicalId::parse(trackId);
             if (!parsed) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
             return project(vm, self->editor().setTrackLocked(*parsed, locked));
+        });
+    actionEditor.addFunc("copyTrack", [vm](ScriptActionTimelineEditor* self, const std::string& trackId) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto parsed = LogicalId::parse(trackId);
+        if (!parsed) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
+        return project(vm, self->editor().copyTrack(*parsed));
+    });
+    actionEditor.addFunc("pasteTrack", [vm](ScriptActionTimelineEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto pasted = self->editor().pasteTrack();
+        return project(vm, pasted, pasted.ok() ? Value(pasted.value().format()) : Value{});
+    });
+    actionEditor.addFunc(
+        "pasteSelectionToTrack",
+        [vm](ScriptActionTimelineEditor* self, const std::string& trackId, float offsetSeconds) {
+            if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+            auto parsed = LogicalId::parse(trackId);
+            auto offset = seconds(offsetSeconds);
+            if (!parsed)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
+            if (!offset) return script::projectStatusResult(vm, offset.status(), false, false);
+            auto pasted = self->editor().pasteToTrack(*parsed, offset.value());
+            return project(vm, pasted,
+                           pasted.ok() ? Value(static_cast<std::int64_t>(pasted.value())) : Value{});
         });
     actionEditor.addFunc("setSnapSeconds", [vm](ScriptActionTimelineEditor* self, float intervalSeconds) {
         if (!self)
@@ -1133,8 +1159,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                    : std::string{};
     });
 
-    moduleClass.addFunc("create", [vm](eve::action_editor::ActionEditorModule*, const std::string& targetId,
-                                       const ssq::Object& timelineObject) {
+    moduleClass.addFunc("create", [vm, clipboard](eve::action_editor::ActionEditorModule*, const std::string& targetId,
+                                                  const ssq::Object& timelineObject) {
         if (targetId.empty())
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline target id must not be empty",
                                   "targetId");
@@ -1148,7 +1174,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!registry) return script::projectStatusResult(vm, registry.status(), false, false);
         auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(
             vm, std::make_unique<ScriptActionTimelineEditor>(targetId, std::move(timeline).takeValue(),
-                                                             std::move(registry).takeValue()));
+                                                             std::move(registry).takeValue(), clipboard));
         if (!object) return script::projectStatusResult(vm, object.status(), false, false);
         ssq::Object owned  = std::move(object).takeValue();
         auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);

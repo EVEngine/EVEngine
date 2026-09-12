@@ -13,6 +13,8 @@
 #include "editor/EditorTransactionService.h"
 #include "editor/EditorWorkspace.h"
 
+#include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -33,6 +35,36 @@ struct ActionTimelinePreviewPlan {
     bool                                     includeStart = false;
     bool                                     reachesEnd   = false;
     std::vector<action::ActionTimelineEvent> events;
+};
+
+/**
+ * @brief Owning clipboard shared explicitly by one or more action timeline editors.
+ *
+ * The clipboard contains deep value copies only. It has no target or UI lifetime
+ * dependency and may therefore be shared by multiple open documents on one owner
+ * thread. Concurrent access is not supported.
+ */
+class ActionTimelineClipboard {
+public:
+    /** @brief Remove every copied item and track. */
+    void clear() noexcept;
+    /** @brief Whether neither item nor track content is available. */
+    bool empty() const noexcept;
+
+private:
+    friend class ActionTimelineEditor;
+
+    struct Item {
+        enum class Kind : std::uint8_t { AnimationSection, Notify, NotifyState };
+        Kind                           kind = Kind::Notify;
+        LogicalId                      trackId;
+        action::ActionAnimationSection animationSection;
+        action::ActionNotify           notify;
+        action::ActionNotifyState      notifyState;
+    };
+
+    std::vector<Item>                 items_;
+    std::optional<action::ActionTrack> track_;
 };
 
 /**
@@ -121,6 +153,14 @@ class ActionTimelineEditor {
 public:
     /** @brief Construct a self-contained editor for one canonical timeline. */
     ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline);
+    /**
+     * @brief Construct an editor using an explicitly shared owning clipboard.
+     * @param targetId Stable editor target identity.
+     * @param timeline Valid canonical timeline owned by this editor.
+     * @param clipboard Clipboard whose shared ownership is retained; null creates an isolated clipboard.
+     */
+    ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
+                         std::shared_ptr<ActionTimelineClipboard> clipboard);
 
     /** @brief Borrow the authoritative target. */
     const ActionTimelineTarget& target() const noexcept { return target_; }
@@ -204,6 +244,12 @@ public:
     [[nodiscard]] EditorResult<std::size_t> copySelection();
     /** @brief Paste copied items at an exact offset with new stable ids. */
     [[nodiscard]] EditorResult<std::size_t> paste(Duration offset);
+    /** @brief Paste copied notify items into a chosen target track for cross-document workflows. */
+    [[nodiscard]] EditorResult<std::size_t> pasteToTrack(const LogicalId& trackId, Duration offset);
+    /** @brief Deep-copy one complete track into the shared clipboard. */
+    [[nodiscard]] EditorResult<void> copyTrack(const LogicalId& trackId);
+    /** @brief Paste a copied complete track with collision-free track and item ids. */
+    [[nodiscard]] EditorResult<LogicalId> pasteTrack();
     /** @brief Delete every selected item as one transaction. */
     [[nodiscard]] EditorResult<void> deleteSelection();
 
@@ -248,24 +294,16 @@ public:
     const std::vector<action::ActionTimelineEvent>& previewEvents() const noexcept { return previewEvents_; }
 
 private:
-    struct ClipboardItem {
-        enum class Kind : std::uint8_t { AnimationSection, Notify, NotifyState };
-        Kind                           kind = Kind::Notify;
-        LogicalId                      trackId;
-        action::ActionAnimationSection animationSection;
-        action::ActionNotify           notify;
-        action::ActionNotifyState      notifyState;
-    };
-
     [[nodiscard]] EditorResult<void> commit(action::ActionTimeline candidate, std::string label, std::string mergeKey);
     [[nodiscard]] static EditorResult<void> rejected(std::string rule, std::string message);
-    [[nodiscard]] LogicalId                 copiedId(const LogicalId& source);
+    [[nodiscard]] LogicalId copiedId(const LogicalId& source, const action::ActionTimeline& candidate);
+    [[nodiscard]] EditorResult<std::size_t> pasteItems(Duration offset, const LogicalId* destinationTrack);
 
     ActionTimelineTarget                     target_;
     LocalWorldAuthority                      authority_;
     LocalTransactionBackend                  transactions_;
     std::set<std::string>                    selection_;
-    std::vector<ClipboardItem>               clipboard_;
+    std::shared_ptr<ActionTimelineClipboard> clipboard_;
     std::uint64_t                            transactionSequence_ = 0;
     std::uint64_t                            copySequence_        = 0;
     Duration                                 previewTime_         = Duration::zero();
