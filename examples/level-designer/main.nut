@@ -134,9 +134,12 @@ function levelGizmoWorldPoint(object, lx, ly, lz) {
 
 function levelClearGizmoPrims() {
     foreach (prim in level.gizmoPrims) {
-        if (prim != null) {
-            try { prim.setVisible(false); } catch (error) {}
-        }
+        if (prim == null) continue;
+        try {
+            local removed = prim.remove();
+            // Best-effort: a stale proxy after hot-reload is fine to drop.
+            if (removed != null && !removed.ok) {}
+        } catch (error) {}
     }
     level.gizmoPrims = [];
 }
@@ -144,6 +147,9 @@ function levelClearGizmoPrims() {
 /**
  * @brief Draw the TransformGizmo as world primitives (missing in the old UI —
  * pick/drag worked but nothing was visible).
+ *
+ * Primitive factories return Result{ok,value}; keep the owned proxy and set
+ * depth to ignore so the gizmo stays readable over terrain.
  */
 function levelDrawGizmo() {
     levelClearGizmoPrims();
@@ -151,6 +157,15 @@ function levelDrawGizmo() {
     local object = levelObject(level.selected);
     if (object == null || level.gizmo == null) return;
     local gizmo = level.gizmo;
+
+    function keep(result) {
+        if (result == null || !result.ok) return;
+        local prim = result.value;
+        local depth = prim.setDepthMode("ignore");
+        if (depth != null && !depth.ok) {}
+        level.gizmoPrims.push(prim);
+    }
+
     for (local i = 0; i < gizmo.getPartCount(); ++i) {
         local ox = gizmo.getPartOriginX(i), oy = gizmo.getPartOriginY(i), oz = gizmo.getPartOriginZ(i);
         local length = gizmo.getPartLength(i);
@@ -161,16 +176,15 @@ function levelDrawGizmo() {
             oz + gizmo.getPartDirZ(i) * length);
         local kind = gizmo.getPartKind(i);
         local r = gizmo.getPartColorR(i), g = gizmo.getPartColorG(i), bl = gizmo.getPartColorB(i);
-        local prim = null;
         if (kind == "axis") {
             if (gizmo.getMode() == "translate")
-                prim = gfx.newPrimitiveArrow3D(a[0], a[1], a[2], b[0], b[1], b[2],
-                    length * 0.22, length * 0.08, r, g, bl, 1.0, 3.0);
+                keep(gfx.newPrimitiveArrow3D(a[0], a[1], a[2], b[0], b[1], b[2],
+                    length * 0.22, length * 0.08, r, g, bl, 1.0, 3.0));
             else
-                prim = gfx.newPrimitiveLine3D(a[0], a[1], a[2], b[0], b[1], b[2], r, g, bl, 1.0, 3.0);
+                keep(gfx.newPrimitiveLine3D(a[0], a[1], a[2], b[0], b[1], b[2], r, g, bl, 1.0, 3.0));
         } else if (kind == "center") {
             local rad = gizmo.getPartRadius(i) * 0.75;
-            prim = gfx.newPrimitiveLine3D(a[0] - rad, a[1], a[2], a[0] + rad, a[1], a[2], r, g, bl, 1.0, 2.0);
+            keep(gfx.newPrimitiveLine3D(a[0] - rad, a[1], a[2], a[0] + rad, a[1], a[2], r, g, bl, 1.0, 2.0));
         } else if (kind == "ring") {
             local normal = [gizmo.getPartDirX(i), gizmo.getPartDirY(i), gizmo.getPartDirZ(i)];
             local u = fabs(normal[1]) < 0.9 ? [-normal[2], 0.0, normal[0]] : [0.0, normal[2], -normal[1]];
@@ -189,11 +203,7 @@ function levelDrawGizmo() {
                     oz + radius * (u[2] * cos(angle) + v[2] * sin(angle)));
                 points.push(p[0]); points.push(p[1]); points.push(p[2]);
             }
-            prim = gfx.newPrimitivePolyline3D(points, true, r, g, bl, 1.0, 3.0);
-        } else continue;
-        if (prim != null) {
-            prim.setVisible(true);
-            level.gizmoPrims.push(prim);
+            keep(gfx.newPrimitivePolyline3D(points, true, r, g, bl, 1.0, 3.0));
         }
     }
 }
