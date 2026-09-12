@@ -150,6 +150,10 @@ eve_declare_module(NAME action LIB EVAction LAYER 1
 eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
                    DEPS action game_event
                    GROUP minimal 2d 3d web)
+# Optional semantic combo-window projection consumed by player, AI, and script input adapters.
+eve_declare_module(NAME action_input DIR action/input LAYER 2
+                   DEPS action
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME combat LIB EVCombat LAYER 2
                    DEPS action attributes tags
                    GROUP minimal 2d 3d web)
