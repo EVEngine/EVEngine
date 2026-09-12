@@ -621,7 +621,9 @@ if (actionEditor.hasPreviewHost())
 `ActionPreviewFrame` 同时携带当前位置的 active blocks。SceneLoader 存在时，Prefab Spawn 预览层
 会加载真实 `Renderable3D`，但使用与游戏运行时分离的池；准备失败不移动播放头，跳帧离开区间或
 编辑器销毁会回收预览实例。Audio 模块存在时，同一组合机制使用真实 Source 预览单点和区间音频；
-连续播放不会每帧重启，跳转按块内时间 seek，参数刷新失败不会破坏当前试听。裁剪掉全部预览 provider 时
+连续播放不会每帧重启，跳转按块内时间 seek，参数刷新失败不会破坏当前试听。Particles 模块存在时，
+单点和区间 VFX 使用真实 `ParticleEffect`；Seek/Refresh 从稳定 seed 重模拟到裁剪后的块内时间，
+连续 Advance 增量模拟且不重建未变实例。裁剪掉全部预览 provider 时
 `hasPreviewHost()` 返回 false，时间轴编辑和
 确定性事件采样仍可使用。
 

@@ -2,6 +2,7 @@
 
 #include "action/ActionAudioBlock.h"
 #include "action/ActionPrefabBlock.h"
+#include "action/ActionVfxBlock.h"
 
 #include "common/Capability.h"
 
@@ -126,6 +127,12 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
                                                                         : ActionAudioShape::State;
         auto audio = ActionAudioBinding::fromPayload(event.payload, shape);
         if (!audio) return Result<void>::failure(audio.status());
+    }
+    if (event.type.format() == "presentation:vfx" || event.type.format() == "presentation:vfx-state") {
+        const auto shape = event.kind == ActionTimelineEventKind::Notify ? ActionVfxShape::Instant
+                                                                        : ActionVfxShape::State;
+        auto vfx = ActionVfxBinding::fromPayload(event.payload, shape);
+        if (!vfx) return Result<void>::failure(vfx.status());
     }
     return Result<void>::success();
 }

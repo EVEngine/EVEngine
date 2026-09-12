@@ -1,5 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
+#include "action/ActionVfxBlock.h"
 #include "common/Capability.h"
 #include "common/EntitySpatialResolver.h"
 #include "common/ParticlesQuery.h"
@@ -9,8 +11,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -58,7 +62,7 @@ public:
             const auto found = active_.find(key);
             if (found == active_.end())
                 return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
-            found->second.effect->stop();
+            finish(found->second);
             active_.erase(found);
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
@@ -68,36 +72,25 @@ public:
                                        "VFX state handler requires enter or exit boundary", "event.kind");
         if (!instant && active_.contains(key))
             return actionFailure<void>(eve::DiagnosticCode::Conflict, "VFX state is already active", "itemId");
-        auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
-        if (!spatial) return eve::Result<void>::failure(spatial.status());
-        auto pose = resolvePose(spatial.value(), context);
+        const auto shape = instant ? eve::action::ActionVfxShape::Instant : eve::action::ActionVfxShape::State;
+        auto binding = eve::action::ActionVfxBinding::fromPayload(event.payload, shape);
+        if (!binding) return eve::Result<void>::failure(binding.status());
+        auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return eve::Result<void>::failure(pose.status());
-        const auto uri = event.payload.find("uri");
-        if (uri == event.payload.end() || !uri->second.getIf<std::string>())
-            return actionFailure<void>(eve::DiagnosticCode::InvalidArgument, "VFX URI must be text", "uri");
         auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
         if (!particles)
             return actionFailure<void>(eve::DiagnosticCode::NotFound, "Particles module is unavailable", "particles");
-        std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(*uri->second.getIf<std::string>()));
+        std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(binding.value().uri));
         if (!effect)
             return actionFailure<void>(eve::DiagnosticCode::Failed,
                                        particles->getLastEffectError().empty() ? "VFX asset could not be loaded"
                                                                               : particles->getLastEffectError(),
                                        "uri");
-        applyWorldTransform(*effect, spatial.value(), pose.value());
+        applyWorldTransform(*effect, binding.value().spatial, pose.value());
         effect->start();
-        ActiveEffect owned{std::move(effect), std::move(spatial).takeValue(), std::move(pose).takeValue()};
+        ActiveEffect owned{std::move(effect), binding.value(), std::move(pose).takeValue()};
         if (instant) {
-            const auto lifetime = event.payload.find("lifetimeSeconds");
-            double seconds = 0.0;
-            if (lifetime != event.payload.end()) {
-                if (const auto* value = lifetime->second.getIf<double>()) seconds = *value;
-                else if (const auto* value = lifetime->second.getIf<std::int64_t>()) seconds = static_cast<double>(*value);
-            }
-            if (!std::isfinite(seconds) || seconds <= 0.0)
-                return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "instant VFX lifetimeSeconds must be positive and finite", "lifetimeSeconds");
-            auto duration = eve::Duration::fromSeconds(seconds);
+            auto duration = eve::Duration::fromSeconds(binding.value().lifetimeSeconds);
             if (!duration) return eve::Result<void>::failure(duration.status());
             auto end = context.time.tryAdd(duration.value());
             if (!end) return eve::Result<void>::failure(end.status());
@@ -113,10 +106,10 @@ public:
         const auto found = active_.find({context.executionId, block.itemId.format()});
         if (found == active_.end())
             return actionFailure<void>(eve::DiagnosticCode::NotFound, "Active VFX state has no instance", "itemId");
-        if (found->second.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
-            auto pose = resolvePose(found->second.spatial, context);
+        if (found->second.binding.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
+            auto pose = resolvePose(found->second.binding.spatial, context);
             if (!pose) return eve::Result<void>::failure(pose.status());
-            if (found->second.spatial.mode == eve::action::ActionSpatialAttachmentMode::FollowPositionOnly) {
+            if (found->second.binding.spatial.mode == eve::action::ActionSpatialAttachmentMode::FollowPositionOnly) {
                 found->second.pose.positionX = pose.value().positionX;
                 found->second.pose.positionY = pose.value().positionY;
                 found->second.pose.positionZ = pose.value().positionZ;
@@ -124,36 +117,56 @@ public:
                 found->second.pose = std::move(pose).takeValue();
             }
         }
-        applyWorldTransform(*found->second.effect, found->second.spatial, found->second.pose);
+        applyWorldTransform(*found->second.effect, found->second.binding.spatial, found->second.pose);
+        const double duration = block.duration.seconds();
+        if (duration > 0.0) {
+            if (!std::isfinite(context.playbackRate) || context.playbackRate <= 0.0)
+                return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                           "VFX playback rate must be positive and finite", "playbackRate");
+            const double externalRate = found->second.binding.playbackRateSynced ? context.playbackRate : 1.0;
+            const float  stretch      = static_cast<float>(
+                (found->second.binding.clipEndTime - found->second.binding.clipStartTime) /
+                duration * externalRate);
+            for (int i = 0; i < found->second.effect->getEmitterCount(); ++i)
+                if (auto* emitter = found->second.effect->getEmitter(i)) emitter->setPlaybackSpeed(stretch);
+        }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
     eve::Result<void> sample(const eve::action::ActionActiveBlock& block,
                              const eve::action::ActionNotifyContext&) const override {
-        auto spatial = eve::action::ActionSpatialBinding::fromPayload(block.payload);
-        if (!spatial) return eve::Result<void>::failure(spatial.status());
-        const auto uri = block.payload.find("uri");
-        if (uri == block.payload.end() || !uri->second.getIf<std::string>())
-            return actionFailure<void>(eve::DiagnosticCode::InvalidArgument, "VFX URI must be text", "uri");
+        auto binding = eve::action::ActionVfxBinding::fromPayload(
+            block.payload, eve::action::ActionVfxShape::State);
+        if (!binding) return eve::Result<void>::failure(binding.status());
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
 
     eve::Result<void> advance(const eve::action::ActionNotifyContext& context) override {
-        const auto before = transients_.size();
-        std::erase_if(transients_, [&](TransientEffect& transient) {
-            if (transient.executionId != context.executionId || context.time < transient.endTime) return false;
-            transient.owned.effect->stop();
+        bool changed = false;
+        for (auto it = transients_.begin(); it != transients_.end();) {
+            if (it->executionId != context.executionId || context.time < it->endTime) {
+                ++it;
+                continue;
+            }
+            finish(it->owned);
+            it = transients_.erase(it);
+            changed = true;
+        }
+        const auto reaped = std::erase_if(residuals_, [](const std::unique_ptr<ParticleEffect>& effect) {
+            for (int i = 0; i < effect->getEmitterCount(); ++i)
+                if (auto* emitter = effect->getEmitter(i); emitter && emitter->getCount() > 0) return false;
             return true;
         });
+        changed = changed || reaped > 0;
         return eve::Result<void>::success(eve::Status::success(
-            before == transients_.size() ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+            changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
     }
 
 private:
     struct ActiveEffect {
-        std::unique_ptr<ParticleEffect>       effect;
-        eve::action::ActionSpatialBinding spatial;
-        eve::EntitySpatialPose             pose;
+        std::unique_ptr<ParticleEffect>  effect;
+        eve::action::ActionVfxBinding    binding;
+        eve::EntitySpatialPose           pose;
     };
     struct TransientEffect {
         eve::action::ActionExecutionId executionId;
@@ -208,17 +221,221 @@ private:
         effect.setScale(static_cast<float>(pose.scaleX * spatial.scale.x));
     }
 
+    void finish(ActiveEffect& active) {
+        active.effect->stop();
+        if (active.binding.stopBehavior == eve::action::ActionVfxStopBehavior::ClearImmediately) {
+            active.effect->reset();
+            return;
+        }
+        bool hasParticles = false;
+        for (int i = 0; i < active.effect->getEmitterCount(); ++i)
+            if (auto* emitter = active.effect->getEmitter(i); emitter && emitter->getCount() > 0) {
+                hasParticles = true;
+                break;
+            }
+        if (hasParticles) residuals_.push_back(std::move(active.effect));
+    }
+
     std::map<ActiveKey, ActiveEffect> active_;
     std::vector<TransientEffect> transients_;
+    std::vector<std::unique_ptr<ParticleEffect>> residuals_;
 };
 
-class ParticleActionProvider final : public eve::action::IActionNotifyProvider {
+class ParticleActionPreviewSink final : public eve::action::IActionPreviewSink {
+public:
+    eve::Result<void> prepare(const eve::action::ActionPreviewFrame& frame) override {
+        discardPrepared();
+        preparedReason_ = frame.reason;
+        for (const auto& block : frame.activeBlocks) {
+            if (block.type.format() != "presentation:vfx-state") continue;
+            const std::string key = block.itemId.format();
+            auto binding = eve::action::ActionVfxBinding::fromPayload(
+                block.payload, eve::action::ActionVfxShape::State);
+            if (!binding) return failPrepared(binding.status());
+            const double target = mediaTime(binding.value(), block.localTime, block.duration);
+            const auto   found  = current_.find(key);
+            if (frame.reason == eve::action::ActionPreviewReason::Advance && found != current_.end() &&
+                found->second.payload == block.payload && found->second.duration == block.duration &&
+                target + kTimeEpsilon >= found->second.mediaTime) {
+                preparedRetained_.emplace(key, target);
+                continue;
+            }
+            auto effect = makeEffect(binding.value(), target);
+            if (!effect) return failPrepared(effect.status());
+            preparedStates_.emplace(
+                key, PreviewEffect{block.payload, block.duration, std::move(effect).takeValue(), target});
+        }
+
+        for (const auto& cue : frame.cues) {
+            if (cue.kind != eve::action::ActionPreviewCueKind::Vfx || cue.type.format() != "presentation:vfx")
+                continue;
+            auto binding = eve::action::ActionVfxBinding::fromPayload(
+                cue.payload, eve::action::ActionVfxShape::Instant);
+            if (!binding) return failPrepared(binding.status());
+            auto lifetime = eve::Duration::fromSeconds(binding.value().lifetimeSeconds);
+            if (!lifetime) return failPrepared(lifetime.status());
+            auto end = cue.time.tryAdd(lifetime.value());
+            if (!end) return failPrepared(end.status());
+            if (frame.current >= end.value()) continue;
+            const auto elapsedNs = std::max<std::int64_t>(0, frame.current.nanoseconds() - cue.time.nanoseconds());
+            const auto elapsed   = eve::Duration::fromNanoseconds(elapsedNs);
+            const double target  = mediaTime(binding.value(), elapsed, lifetime.value());
+            auto effect = makeEffect(binding.value(), target);
+            if (!effect) return failPrepared(effect.status());
+            preparedInstants_.push_back(
+                TransientEffect{std::move(binding).takeValue(), cue.time, end.value(),
+                                std::move(effect).takeValue(), target});
+        }
+        preparedCurrent_ = frame.current;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    void present(const eve::action::ActionPreviewFrame&) noexcept override {
+        for (auto it = current_.begin(); it != current_.end();) {
+            if (preparedRetained_.contains(it->first)) {
+                ++it;
+                continue;
+            }
+            it = current_.erase(it);
+        }
+        for (const auto& [key, target] : preparedRetained_) {
+            auto& current = current_.at(key);
+            simulateRange(*current.effect, current.mediaTime, target);
+            current.mediaTime = target;
+        }
+        current_.merge(preparedStates_);
+        for (auto& [key, value] : current_) {
+            (void)key;
+            value.effect->setVisible(true);
+        }
+
+        if (preparedReason_ != eve::action::ActionPreviewReason::Advance) transients_.clear();
+        for (auto it = transients_.begin(); it != transients_.end();) {
+            if (preparedCurrent_ >= it->endTime) {
+                it = transients_.erase(it);
+                continue;
+            }
+            const auto elapsedNs = std::max<std::int64_t>(
+                0, preparedCurrent_.nanoseconds() - it->startTime.nanoseconds());
+            const auto duration = eve::Duration::fromNanoseconds(
+                it->endTime.nanoseconds() - it->startTime.nanoseconds());
+            const double target = mediaTime(
+                it->binding, eve::Duration::fromNanoseconds(elapsedNs), duration);
+            simulateRange(*it->effect, it->mediaTime, target);
+            it->mediaTime = target;
+            ++it;
+        }
+        for (auto& value : preparedInstants_) value.effect->setVisible(true);
+        transients_.splice(transients_.end(), preparedInstants_);
+        preparedRetained_.clear();
+    }
+
+    void discardPrepared() noexcept override {
+        preparedStates_.clear();
+        preparedInstants_.clear();
+        preparedRetained_.clear();
+    }
+
+private:
+    static constexpr double kTimeEpsilon = 1e-9;
+
+    struct PreviewEffect {
+        eve::Value::Object             payload;
+        eve::Duration                  duration;
+        std::unique_ptr<ParticleEffect> effect;
+        double                         mediaTime = 0.0;
+    };
+
+    struct TransientEffect {
+        eve::action::ActionVfxBinding   binding;
+        eve::Duration                   startTime;
+        eve::Duration                   endTime;
+        std::unique_ptr<ParticleEffect> effect;
+        double                          mediaTime = 0.0;
+    };
+
+    eve::Result<void> failPrepared(const eve::Status& status) {
+        discardPrepared();
+        return eve::Result<void>::failure(status);
+    }
+
+    static double mediaTime(const eve::action::ActionVfxBinding& binding,
+                            eve::Duration localTime, eve::Duration blockDuration) noexcept {
+        const double duration = blockDuration.seconds();
+        const double progress = duration > 0.0 ? std::clamp(localTime.seconds() / duration, 0.0, 1.0) : 0.0;
+        return binding.clipStartTime + progress * (binding.clipEndTime - binding.clipStartTime);
+    }
+
+    static void simulateRange(ParticleEffect& effect, double from, double to) noexcept {
+        double remaining = std::max(0.0, to - from);
+        constexpr float fixedStep = 1.0f / 60.0f;
+        while (remaining > kTimeEpsilon) {
+            const float step = static_cast<float>(std::min<double>(remaining, fixedStep));
+            for (int i = 0; i < effect.getEmitterCount(); ++i) {
+                auto* emitter = effect.getEmitter(i);
+                if (!emitter) continue;
+                auto sim          = emitter->sim();
+                const bool paused = sim->paused;
+                sim->paused       = false;
+                stepEmitterSim(*emitter->config(), *sim, step);
+                sim->paused = paused;
+            }
+            remaining -= step;
+        }
+    }
+
+    static eve::Result<std::unique_ptr<ParticleEffect>> makeEffect(
+        const eve::action::ActionVfxBinding& binding, double targetTime) {
+        auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
+        if (!particles)
+            return actionFailure<std::unique_ptr<ParticleEffect>>(
+                eve::DiagnosticCode::NotFound, "VFX preview requires the Particles module", "particles");
+        std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(binding.uri));
+        if (!effect)
+            return actionFailure<std::unique_ptr<ParticleEffect>>(
+                eve::DiagnosticCode::Failed,
+                particles->getLastEffectError().empty() ? "VFX preview asset could not be loaded"
+                                                        : particles->getLastEffectError(),
+                "uri");
+        effect->setVisible(false);
+        effect->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
+                            static_cast<float>(binding.spatial.positionOffset.y));
+        effect->setRotation(static_cast<float>(binding.spatial.rotationOffsetDegrees.z * 0.017453292519943295));
+        effect->setScale(static_cast<float>(binding.spatial.scale.x));
+        for (int i = 0; i < effect->getEmitterCount(); ++i) {
+            auto* emitter = effect->getEmitter(i);
+            if (!emitter) continue;
+            emitter->setRandomSeed(emitter->getRandomSeed());
+            emitter->setPlaybackSpeed(1.0f);
+        }
+        effect->start();
+        simulateRange(*effect, 0.0, targetTime);
+        effect->pause();
+        return eve::Result<std::unique_ptr<ParticleEffect>>::success(std::move(effect));
+    }
+
+    std::map<std::string, PreviewEffect> current_;
+    std::list<TransientEffect>           transients_;
+    std::map<std::string, PreviewEffect> preparedStates_;
+    std::list<TransientEffect>           preparedInstants_;
+    std::map<std::string, double>        preparedRetained_;
+    eve::action::ActionPreviewReason     preparedReason_ = eve::action::ActionPreviewReason::Refresh;
+    eve::Duration                        preparedCurrent_ = eve::Duration::zero();
+};
+
+class ParticleActionProvider final : public eve::action::IActionNotifyProvider,
+                                     public eve::action::IActionPreviewSinkProvider {
 public:
     eve::Result<void> install(eve::action::ActionNotifyRegistry& registry) override {
         auto handler = std::make_shared<ParticleActionHandler>();
         auto instant = registry.registerHandler("presentation:vfx", handler);
         if (!instant) return instant;
         return registry.registerHandler("presentation:vfx-state", std::move(handler));
+    }
+
+    eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>> createActionPreviewSink() override {
+        return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::success(
+            std::make_unique<ParticleActionPreviewSink>());
     }
 };
 
@@ -229,6 +446,7 @@ void registerParticlesCapabilities() {
     static ParticleActionProvider actionProvider;
     eve::cap::provide<eve::IParticlesQuery>(&impl);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
+    eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
 }
 
 }  // namespace eve::particles

@@ -4,6 +4,7 @@
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionPrefabInstances.h"
 #include "action/ActionSpatialBlock.h"
+#include "action/ActionVfxBlock.h"
 #include "common/Capability.h"
 #include "common/EntitySpatialResolver.h"
 
@@ -221,6 +222,36 @@ TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
         payload, eve::action::ActionAudioShape::Instant);
     CHECK(!invalidPitch.ok());
     CHECK_EQ(invalidPitch.status().diagnostics().front().path(), "pitch");
+}
+
+TEST_CASE("actionVfxBlock.validatesTrimStopAndLifetimeContract") {
+    eve::Value::Object payload{{"uri", "asset://vfx/sword-trail.effect.json"},
+                               {"stopBehavior", "clear_immediately"},
+                               {"playbackRateSynced", false},
+                               {"clipStartTime", 0.25},
+                               {"clipEndTime", 1.75},
+                               {"lifetimeSeconds", 2.0}};
+    auto instant = eve::action::ActionVfxBinding::fromPayload(
+        payload, eve::action::ActionVfxShape::Instant);
+    REQUIRE(instant.ok());
+    CHECK_EQ(instant.value().uri, "asset://vfx/sword-trail.effect.json");
+    CHECK_EQ(instant.value().stopBehavior, eve::action::ActionVfxStopBehavior::ClearImmediately);
+    CHECK(!instant.value().playbackRateSynced);
+    CHECK_EQ(instant.value().clipStartTime, 0.25);
+    CHECK_EQ(instant.value().clipEndTime, 1.75);
+    CHECK_EQ(instant.value().lifetimeSeconds, 2.0);
+
+    payload["clipEndTime"] = 0.25;
+    auto invalidClip = eve::action::ActionVfxBinding::fromPayload(
+        payload, eve::action::ActionVfxShape::State);
+    CHECK(!invalidClip.ok());
+    CHECK_EQ(invalidClip.status().diagnostics().front().path(), "clipEndTime");
+    payload["clipEndTime"] = 1.75;
+    payload["lifetimeSeconds"] = 0.0;
+    auto invalidLifetime = eve::action::ActionVfxBinding::fromPayload(
+        payload, eve::action::ActionVfxShape::Instant);
+    CHECK(!invalidLifetime.ok());
+    CHECK_EQ(invalidLifetime.status().diagnostics().front().path(), "lifetimeSeconds");
 }
 
 TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
