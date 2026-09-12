@@ -22,7 +22,7 @@ function levelConfigureWorkspace() {
     // Top is a single toolbar row (Unity-style); bottom holds the asset strip.
     level.workspace.setRegionSize("top", 64.0);
     level.workspace.setRegionSize("left", 260.0);
-    level.workspace.setRegionSize("right", 310.0);
+    level.workspace.setRegionSize("right", 340.0);
     level.workspace.setRegionSize("bottom", 200.0);
     level.workspace.layout(config.width.tofloat(), config.height.tofloat());
     level.workspace.registerPanel("toolbar", "Toolbar", "top", 0);
@@ -119,8 +119,8 @@ function levelPanelHierarchy() {
 
 function levelPanelViewport() {
     local help = level.mode == "play"
-        ? "Mouse look · WASD + Shift run · Q/E zoom · F1 character · F2 motion · Esc stop"
-        : "LMB select/place · drag gizmo · RMB orbit · MMB pan · Q/E zoom · F focus · Del delete · 1/2/3 tools";
+        ? "Mouse look · WASD+Shift · Q/E zoom · F1/F2 · Esc"
+        : "LMB select/place · RMB orbit · MMB pan · wheel zoom · F focus · Del · 1/2/3";
     ui.text(help, "viewport-help");
     local vpW = level.workspace.getRegionW("center") - 16.0;
     local vpH = level.workspace.getRegionH("center") - 78.0;
