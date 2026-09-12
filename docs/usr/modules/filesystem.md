@@ -74,3 +74,11 @@ WebGPU 当前无法提供同等级替换保证，会明确返回失败；普通�
 
 **源码：** [`src/modules/filesystem/`](../../../src/modules/filesystem/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `filesystem`。
+
+## 不可变文件准备
+
+`filesystem.requestPreparedFile(path)` 返回结构化 Result，提交 CPU 读取；需要已初始化的 filesystem
+和 thread 资源执行器。重复请求使用 ResourceManager 的同一缓存键。C++ `readPreparedFile(path, limit)`
+等待已有任务或同步加载，返回共享只读 FileData；缓存卸载/重载不使已持有的快照失效。
+单文件上限 1 GiB，调用者的更小 limit 额外检查；空路径和保留的 `?` 后缀被拒绝。
+提交及同步读取在游戏线程，工作线程不访问 VM/GPU；文件系统销毁前必须排空任务。

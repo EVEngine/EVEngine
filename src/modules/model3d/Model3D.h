@@ -65,6 +65,35 @@ public:
     /** @brief newModelDataFromFile with explicit decode options. */
     ModelData *newModelDataFromFile(std::string path, const ModelLoadOptions &options);
 
+    /** @brief Queue default-option model decoding on the engine resource worker pool.
+     * @param path VFS model
+     * path, copied into the cache request.
+     * @return Success means queued/already cached, not decoded;
+     * InvalidArgument for an empty path,
+     * Unsupported without a worker executor, or the resource request
+     * diagnostic.
+     * @ownership ResourceManager owns pending work and decoded data; no model pointer is returned.
+
+     * * @lifetime A later newModelDataFromFile joins the same cache entry and reports decode failure.
+     * Cache
+     * unload/clear follows ResourceManager's epoch and lifetime contract.
+     * @thread Call on the game thread.
+     * Workers perform CPU decode only; no script or GPU calls.
+     * @reentrancy Invokes no script callbacks; do not
+     * synchronously wait from the same worker pool.
+     */
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path);
+
+    /** @brief Queue CPU decoding with explicit postprocess options, copied into the cache key.
+     * @param path VFS
+     * path copied before submission.
+     * @param options Decode settings; the later read must use identical settings
+     * to join this job.
+     * @return Submission result. Ownership, thread affinity and lifetime match
+     * requestModelData(path).
+     */
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path, const ModelLoadOptions &options);
+
     /**
      * Assemble one Renderable3D for a mesh of a decoded model: node transform
      * baked into vertices, material base color / metallic / roughness applied,
