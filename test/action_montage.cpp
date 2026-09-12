@@ -3,6 +3,7 @@
 #include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/MontageCoordinator.h"
@@ -12,6 +13,7 @@
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <string_view>
 
@@ -61,6 +63,20 @@ std::vector<eve::animation::MontageClipAsset> montageClips() {
     std::vector<eve::animation::MontageClipAsset> clips;
     clips.push_back({"memory://clips/anticipation", rootClip("anticipation", 1.0f)});
     clips.push_back({"memory://clips/strike", rootClip("strike", 2.0f)});
+    return clips;
+}
+
+std::vector<eve::animation::MontageClipAsset> maskedMontageClips() {
+    auto clip = std::make_unique<eve::animation::AnimClip>("masked");
+    clip->setDuration(1.0f);
+    clip->setLoop(false);
+    clip->addPositionKey(0, 0.0f, 0.0f, 0.0f, 0.0f);
+    clip->addPositionKey(0, 1.0f, 2.0f, 0.0f, 0.0f);
+    clip->addPositionKey(1, 0.0f, 0.0f, 1.0f, 0.0f);
+    clip->addPositionKey(1, 1.0f, 0.0f, 3.0f, 0.0f);
+    std::vector<eve::animation::MontageClipAsset> clips;
+    clips.push_back({"memory://clips/anticipation", std::move(clip)});
+    clips.push_back({"memory://clips/strike", rootClip("unused", 0.0f)});
     return clips;
 }
 
@@ -326,6 +342,48 @@ TEST_CASE("actionMontage.coordinatorPingPongsSlotsAndRejectsStaleHandles") {
     REQUIRE(third.ok());
     CHECK_EQ(third.value().index(), first.value().index());
     CHECK_NE(third.value().generation(), first.value().generation());
+}
+
+TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("upper", 0);
+    skeleton.setBindPosition(1, 0.0f, 1.0f, 0.0f);
+    eve::animation::MontageCoordinator coordinator(skeleton);
+
+    CHECK(!coordinator.setLayerBoneMask(0, {1.0f}).ok());
+    CHECK(!coordinator.setLayerBoneMask(0, {0.0f, std::numeric_limits<float>::infinity()}).ok());
+    eve::animation::AnimBoneMask upperBody(&skeleton);
+    REQUIRE(upperBody.setBoneAndChildren("upper", 0.5f));
+    REQUIRE(coordinator.setLayerBoneMask(0, upperBody).ok());
+    eve::animation::AnimSkeleton otherSkeleton;
+    otherSkeleton.addBone("root");
+    eve::animation::AnimBoneMask foreignMask(&otherSkeleton);
+    CHECK(!coordinator.setLayerBoneMask(0, foreignMask).ok());
+    auto configured = coordinator.layerBoneMask(0);
+    REQUIRE(configured.ok());
+    REQUIRE_EQ(configured.value().size(), 2U);
+    CHECK_EQ(configured.value()[1], 0.5f);
+
+    auto handle = coordinator.play(0, montageTimeline(), maskedMontageClips(),
+                                   eve::action::ActionExecutionId(21), eve::SimulationTick(1));
+    REQUIRE(handle.ok());
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId(21);
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(handle.value(), advance, eve::SimulationTick(2)).ok());
+    auto pose = coordinator.pose(0);
+    REQUIRE(pose.ok());
+    CHECK(std::fabs(pose.value().get().local(0).px) < 1e-5f);
+    CHECK(std::fabs(pose.value().get().local(1).py - 1.5f) < 1e-5f);
+
+    REQUIRE(coordinator.clearLayerBoneMask(0).ok());
+    REQUIRE(coordinator.pose(0).ok());
+    auto unmasked = coordinator.pose(0);
+    REQUIRE(unmasked.ok());
+    CHECK(std::fabs(unmasked.value().get().local(0).px - 1.0f) < 1e-5f);
+    CHECK(std::fabs(unmasked.value().get().local(1).py - 2.0f) < 1e-5f);
 }
 
 TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {

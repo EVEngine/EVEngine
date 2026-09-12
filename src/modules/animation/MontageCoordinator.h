@@ -12,6 +12,8 @@
 
 namespace eve::animation {
 
+class AnimBoneMask;
+
 struct MontageHandleTag {};
 /** @brief Generation-qualified identity owned by one MontageCoordinator. */
 using MontageHandle = RuntimeHandle<MontageHandleTag>;
@@ -47,6 +49,22 @@ public:
                                                 MontageHandle except = MontageHandle::invalid());
     /** @brief Stop one live slot with a continuous blend-out. */
     [[nodiscard]] Result<MontageAdvance> stop(MontageHandle handle, Duration blendOut, SimulationTick tick);
+    /**
+     * @brief Atomically replace one layer's owning per-bone blend weights.
+     * @param layer Layer index configured independently from montage slot generations.
+     * @param weights One finite weight in [0,1] for every skeleton bone.
+     */
+    [[nodiscard]] Result<void> setLayerBoneMask(std::size_t layer, std::vector<float> weights);
+    /**
+     * @brief Snapshot an existing animation bone mask into one montage layer.
+     * @param layer Layer index.
+     * @param mask Borrowed only for this synchronous call; it must target the coordinator skeleton.
+     */
+    [[nodiscard]] Result<void> setLayerBoneMask(std::size_t layer, const AnimBoneMask& mask);
+    /** @brief Remove one layer's bone mask so subsequent composition affects every bone. */
+    [[nodiscard]] Result<void> clearLayerBoneMask(std::size_t layer);
+    /** @brief Return an owning copy of one configured layer mask. */
+    [[nodiscard]] Result<std::vector<float>> layerBoneMask(std::size_t layer) const;
     /** @brief Borrow the composed layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
     /** @brief Reclaim finished slots and invalidate their handles. */
@@ -62,6 +80,7 @@ private:
         Slot                      slots[2];
         std::size_t               active = 1;
         std::unique_ptr<AnimPose> pose;
+        std::vector<float>        boneMask;
     };
 
     [[nodiscard]] static std::size_t handleIndex(std::size_t layer, std::size_t slot) noexcept {

@@ -1,9 +1,11 @@
 #include "animation/MontageCoordinator.h"
 
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <utility>
 
@@ -128,6 +130,47 @@ Result<MontageAdvance> MontageCoordinator::stop(MontageHandle handle, Duration b
     return player.value().get().beginBlendOut(blendOut, tick);
 }
 
+Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, std::vector<float> weights) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+    if (weights.size() != static_cast<std::size_t>(skeleton_.getBoneCount()))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
+                                      "montage layer mask must contain one weight per skeleton bone", "weights");
+    if (std::any_of(weights.begin(), weights.end(), [](float weight) {
+            return !std::isfinite(weight) || weight < 0.0f || weight > 1.0f;
+        }))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
+                                      "montage layer mask weights must be finite and within [0,1]", "weights");
+    ensureLayer(layer);
+    layers_[layer].boneMask = std::move(weights);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, const AnimBoneMask& mask) {
+    if (mask.getSkeleton() != &skeleton_)
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
+                                      "montage layer mask belongs to a different skeleton", "mask");
+    std::vector<float> weights;
+    weights.reserve(static_cast<std::size_t>(mask.getBoneCount()));
+    for (int bone = 0; bone < mask.getBoneCount(); ++bone) weights.push_back(mask.getBoneWeight(bone));
+    return setLayerBoneMask(layer, std::move(weights));
+}
+
+Result<void> MontageCoordinator::clearLayerBoneMask(std::size_t layer) {
+    if (layer >= layers_.size())
+        return coordinatorError<void>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+    if (layers_[layer].boneMask.empty()) return Result<void>::success(Status::success(StatusCode::NoOp));
+    layers_[layer].boneMask.clear();
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<std::vector<float>> MontageCoordinator::layerBoneMask(std::size_t layer) const {
+    if (layer >= layers_.size())
+        return coordinatorError<std::vector<float>>(DiagnosticCode::NotFound,
+                                                    "montage layer does not exist", "layer");
+    return Result<std::vector<float>>::success(layers_[layer].boneMask);
+}
+
 Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t layerIndex) {
     if (layerIndex >= layers_.size())
         return coordinatorError<std::reference_wrapper<AnimPose>>(DiagnosticCode::NotFound,
@@ -138,7 +181,15 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t la
         if (!slot.player || slot.player->weight() <= 0.0) continue;
         AnimPose base;
         base.copyFrom(layer.pose.get());
-        layer.pose->blendFrom(&base, &slot.player->pose(), static_cast<float>(slot.player->weight()));
+        if (layer.boneMask.empty()) {
+            layer.pose->blendFrom(&base, &slot.player->pose(), static_cast<float>(slot.player->weight()));
+            continue;
+        }
+        for (int bone = 0; bone < layer.pose->getBoneCount(); ++bone) {
+            const float weight = static_cast<float>(slot.player->weight()) *
+                                 layer.boneMask[static_cast<std::size_t>(bone)];
+            layer.pose->local(bone) = blendTRS(base.local(bone), slot.player->pose().local(bone), weight);
+        }
     }
     return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*layer.pose));
 }
