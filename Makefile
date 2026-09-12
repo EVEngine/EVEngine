@@ -481,13 +481,17 @@ build/linux-asan: build/linux-asan/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
+# Keep sanitizer instrumentation and engine assertions, but use modest
+# optimization so the monolithic unit_test stays within x86-64's PC-relative
+# relocation range. Disabling linker relaxation also avoids GOTPCREL overflows
+# against static third-party libraries near that limit.
 build/linux-asan/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
 		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
 		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
-		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
 		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
 		-DEVENGINE_ENABLE_ASSERTS=ON \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
@@ -1033,7 +1037,11 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
-CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
+# Full FPS sweeps are opt-in; correctness still covers every ClassicScenes asset.
+# Run FILTER=ClassicScenes.perf.maxFps or INCLUDE_BENCHMARKS=1 to include them.
+INCLUDE_BENCHMARKS ?= 0
+CTEST_BENCHMARK_SEL = $(if $(FILTER),,$(if $(filter 1,$(INCLUDE_BENCHMARKS)),,-LE benchmark))
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/') $(CTEST_BENCHMARK_SEL)
 
 # Retry each failed test once before reporting it (see CI-DEBUG-PLAYBOOK:
 # xvfb display allocation, first-run network fetches and TCP echo timing can

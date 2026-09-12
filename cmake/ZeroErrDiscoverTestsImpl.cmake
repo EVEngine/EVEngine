@@ -59,6 +59,26 @@ if(NOT _cases)
   message(FATAL_ERROR "no test cases discovered from ${ZEROERR_EXE}")
 endif()
 
+# Exact-name filters must select one definition. Otherwise each duplicate CTest
+# entry runs every definition of that name, multiplying execution and hiding
+# which source owns a failure. Validate before writing the generated registry.
+set(_seen_names "")
+set(_seen_locations "")
+foreach(_entry IN LISTS _cases)
+  string(REPLACE "|" ";" _parts "${_entry}")
+  list(GET _parts 0 _name)
+  list(GET _parts 1 _file)
+  list(GET _parts 2 _line)
+  list(FIND _seen_names "${_name}" _previous)
+  if(NOT _previous EQUAL -1)
+    list(GET _seen_locations ${_previous} _first_location)
+    message(FATAL_ERROR
+      "duplicate zeroerr test name '${_name}': ${_first_location} and ${_file}:${_line}; test names must be unique")
+  endif()
+  list(APPEND _seen_names "${_name}")
+  list(APPEND _seen_locations "${_file}:${_line}")
+endforeach()
+
 # 2) Unique source files (by basename) that own at least one test case.
 set(_bundle_files "")
 foreach(_entry IN LISTS _cases)
@@ -73,8 +93,8 @@ endforeach()
 # 3) Emit CTest entries:
 #    - one per test case (exact --testcase filter, kept for `ctest -R`),
 #    - one "bundle/<basename>" per file that runs all of the file's cases in
-#      a single process (--file=<basename regex>, --quiet) so the default
-#      `make test` run spawns ~100 processes instead of ~1400.
+#      a single process (--file=<basename regex>, --quiet), as an opt-in.
+#      Default `make test` excludes bundles to preserve process isolation.
 #
 # Test names and source basenames only contain [A-Za-z0-9_.], so no regex
 # escaping is applied: backslash-escaping (e.g. \.) produced "Invalid escape
@@ -93,6 +113,16 @@ foreach(_basename IN LISTS _bundle_files)
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
         "set_tests_properties(\"${_name}\" PROPERTIES WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+      if(_name MATCHES "^ClassicScenes[.]")
+        # These asset-dependent cases already return early with these diagnostics.
+        # Expose that outcome as skipped rather than a zero-assertion pass.
+        string(APPEND _content
+          "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
+      endif()
+      if(_name STREQUAL "ClassicScenes.perf.maxFps")
+        string(APPEND _content
+          "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"benchmark\")\n")
+      endif()
       if(_name MATCHES "^resourceFormats\\.")
         # Helpers must receive TestContext, but fail closed if a future helper
         # logs an assertion without propagating it to zeroerr's exit status.

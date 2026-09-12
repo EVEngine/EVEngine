@@ -1,5 +1,7 @@
-#include <iostream>
 #include <cassert>
+#include <iostream>
+#include <map>
+#include <string>
 
 #include "ScriptTest.h"
 #include "sqpcheader.h"
@@ -111,21 +113,37 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
 #endif
 
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.PerformInteration") {
-    ssq::Class cls = vm.findClass("Test1");
-    auto& v = vm.getHandle();
+TEST_CASE("SimpleSquirrelTest.PerformInteration") {
+    ssq::VM vm(128);
+    auto    script = vm.compileSource(R"(
+        class Attr {}
+        class Test1 {
+            attr1 = Attr;
+            attr2 = null;
+            constructor(a, b) { attr1 = a; attr2 = b; }
+            function test() {}
+        }
+    )");
+    vm.run(script);
+    auto                                cls        = vm.findClass("Test1");
+    auto                                v          = vm.getHandle();
+    const auto                          initialTop = sq_gettop(v);
+    std::map<std::string, SQObjectType> members;
     sq_pushobject(v, cls.getRaw());
-    sq_pushnull(v);  //null iterator
-    while(SQ_SUCCEEDED(sq_next(v,-2)))
-    {
-        //here -1 is the value and -2 is the key
-        const char* name;
-        sq_getstring(v, -2, &name);
-        printf("%s\n", name);
-        sq_pop(v,2); //pops key and val before the nex iteration
+    sq_pushnull(v);
+    while (SQ_SUCCEEDED(sq_next(v, -2))) {
+        const char* name   = nullptr;
+        const auto  result = sq_getstring(v, -2, &name);
+        REQUIRE(SQ_SUCCEEDED(result));
+        REQUIRE(name != nullptr);
+        members.emplace(name, sq_gettype(v, -1));
+        sq_pop(v, 2);
     }
-
-    sq_pop(v,2); //pops the null iterator
+    sq_pop(v, 2);
+    const std::map<std::string, SQObjectType> expected = {
+        {"attr1", OT_CLASS}, {"attr2", OT_NULL}, {"constructor", OT_CLOSURE}, {"test", OT_CLOSURE}};
+    REQUIRE(members == expected);
+    REQUIRE(sq_gettop(v) == initialTop);
 }
 
 
@@ -134,32 +152,41 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") {
 }
 
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetAttr") {
-    ssq::Class cls = vm.findClass("Avatar");
-    auto& v = vm.getHandle();
-    sq_pushobject(v, cls.getRaw());
-    sq_pushnull(v);  //null iterator
-    while(SQ_SUCCEEDED(sq_next(v,-2)))
-    {
-        //here -1 is the value and -2 is the key
-        const char* name;
-        sq_getstring(v, -2, &name);
-        printf("%s\n", name);
-
-        sq_pop(v,1); //pops key and val before the nex iteration
-        sq_getattributes(v, -3);
-
-        // loop table
-        sq_pushnull(v);  //null iterator
-        while(SQ_SUCCEEDED(sq_next(v,-2))) {
-            const char* key;
-            sq_getstring(v, -2, &key);
-            SQObjectType t = sq_gettype(v, -1);
-            printf("  %s %d\n", key,t==OT_CLASS? 1:0);
-            sq_pop(v,2);
+TEST_CASE("SimpleSquirrelTest.GetAttr") {
+    ssq::VM vm(128);
+    auto    script = vm.compileSource(R"(
+        class Canvas {}
+        class Avatar {
+            name = "";
+            </ type = Canvas /> can = null;
         }
-        sq_pop(v,2); // pops iterator and table
+    )");
+    vm.run(script);
+    auto       cls        = vm.findClass("Avatar");
+    auto       v          = vm.getHandle();
+    const auto initialTop = sq_gettop(v);
+    sq_pushobject(v, cls.getRaw());
+    sq_pushstring(v, "can", -1);
+    const auto result = sq_getattributes(v, -2);
+    REQUIRE(SQ_SUCCEEDED(result));
+    REQUIRE(sq_gettype(v, -1) == OT_TABLE);
+    std::map<std::string, SQObjectType> attributes;
+    sq_pushnull(v);
+    while (SQ_SUCCEEDED(sq_next(v, -2))) {
+        const char* name      = nullptr;
+        const auto  keyResult = sq_getstring(v, -2, &name);
+        REQUIRE(SQ_SUCCEEDED(keyResult));
+        REQUIRE(name != nullptr);
+        attributes.emplace(name, sq_gettype(v, -1));
+        sq_pop(v, 2);
     }
-
-    sq_pop(v,2); //pops the null iterator and object
+    sq_pop(v, 2);
+    const std::map<std::string, SQObjectType> expected = {{"type", OT_CLASS}};
+    REQUIRE(attributes == expected);
+    sq_pushstring(v, "name", -1);
+    const auto emptyResult = sq_getattributes(v, -2);
+    REQUIRE(SQ_SUCCEEDED(emptyResult));
+    REQUIRE(sq_gettype(v, -1) == OT_NULL);
+    sq_pop(v, 2);
+    REQUIRE(sq_gettop(v) == initialTop);
 }

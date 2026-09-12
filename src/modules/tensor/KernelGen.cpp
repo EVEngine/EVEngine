@@ -1,5 +1,5 @@
-#include "tensor/KernelGen.h"
 #include "tensor/CpuKernels.h"
+#include "tensor/KernelGenInternal.h"
 #include "tensor/Quant.h"
 
 #include <algorithm>
@@ -7,11 +7,10 @@
 #include <sstream>
 
 namespace eve::tensor {
-namespace {
+namespace glsl_detail {
 
-constexpr int kLocalSize = 256;
 
-std::string header(int localX, int localY = 1) {
+std::string header(int localX, int localY) {
     std::ostringstream os;
     os << "#version 450\n";
     os << "layout(local_size_x = " << localX;
@@ -392,18 +391,20 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     const bool is1d = cn.type == OpType::Conv1d;
     const int stride = cn.i0, pad = cn.i1;
     const bool hasBias = grp.biasNode >= 0;
-    const int bindingOut = hasBias ? 3 : 2;
+    const bool       hasConvBias = cn.in2 >= 0;
+    const int        bindingOut  = 2 + int(hasConvBias) + int(hasBias);
 
     std::ostringstream os;
     os << header(kLocalSize);
     os << bufferDecl(0, "x");
     os << bufferDecl(1, "w");
-    if (hasBias) os << bufferDecl(2, "bias");
+    if (hasConvBias) os << bufferDecl(2, "convBias");
+    if (hasBias) os << bufferDecl(hasConvBias ? 3 : 2, "bias");
     os << bufferDecl(bindingOut, "o");
     os << pushConstant();
     std::vector<std::string> indexExprs(grp.inputs.size(), "i_");
     ChainContext ctx{g, grp, indexExprs, "r", os, 0, ""};
-    ctx.biasIndexExpr = "f";
+    ctx.biasIndexExpr = is1d ? "ol" : "ow";
 
     os << "void main() {\n";
     os << "  uint i_ = gl_GlobalInvocationID.x;\n";
@@ -415,7 +416,7 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
         os << "  uint rem = i_ % (" << F << "u * " << cn.dims[2] << "u);\n";
         os << "  uint f = rem / " << cn.dims[2] << "u;\n";
         os << "  uint ol = rem % " << cn.dims[2] << "u;\n";
-        os << "  float r = " << (hasBias ? "bias[f]" : "0.0") << ";\n";
+        os << "  float r = " << (hasConvBias ? "convBias[f]" : "0.0") << ";\n";
         os << "  for (uint c = 0u; c < " << C << "u; ++c) {\n";
         os << "    for (uint kk = 0u; kk < " << K << "u; ++kk) {\n";
         os << "      int il = int(ol) * " << stride << " + int(kk) - " << pad << ";\n";
@@ -433,7 +434,7 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
         os << "  uint rem2 = rem % (" << cn.dims[2] << "u * " << cn.dims[3] << "u);\n";
         os << "  uint oh = rem2 / " << cn.dims[3] << "u;\n";
         os << "  uint ow = rem2 % " << cn.dims[3] << "u;\n";
-        os << "  float r = " << (hasBias ? "bias[f]" : "0.0") << ";\n";
+        os << "  float r = " << (hasConvBias ? "convBias[f]" : "0.0") << ";\n";
         os << "  for (uint c = 0u; c < " << C << "u; ++c) {\n";
         os << "    for (uint kh = 0u; kh < " << KH << "u; ++kh) {\n";
         os << "      int ih = int(oh) * " << stride << " + int(kh) - " << pad << ";\n";
@@ -456,7 +457,7 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     out.pass1.clear();
     out.pass2 = os.str();
     out.groupsX2 = groupsFor(g.node(grp.outputNode).size);
-    out.inputCount = hasBias ? 3 : 2;
+    out.inputCount = 2 + int(hasConvBias) + int(hasBias);
     return true;
 }
 
@@ -849,56 +850,6 @@ bool genPermute(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     return true;
 }
 
-bool genResize2d(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
-    const GraphNode &rn = g.node(grp.outputNode);
-    const GraphNode &X = g.node(rn.in0);
-    const int H = X.dims[2], W = X.dims[3];
-    const int OH = rn.dims[2], OW = rn.dims[3];
-    const bool nearest = rn.i0 == 0;
-    std::ostringstream os;
-    os << header(kLocalSize);
-    os << bufferDecl(0, "in_");
-    os << bufferDecl(1, "o");
-    os << pushConstant();
-    os << "void main() {\n";
-    os << "  uint i_ = gl_GlobalInvocationID.x;\n";
-    os << "  if (i_ >= " << rn.size << "u) return;\n";
-    os << "  uint ow = i_ % " << OW << "u;\n";
-    os << "  uint rem = i_ / " << OW << "u;\n";
-    os << "  uint oh = rem % " << OH << "u;\n";
-    os << "  uint rem2 = rem / " << OH << "u;\n";
-    os << "  uint c = rem2 % " << X.dims[1] << "u;\n";
-    os << "  uint n_ = rem2 / " << X.dims[1] << "u;\n";
-    os << "  uint base = (n_ * " << X.dims[1] << "u + c) * " << H << "u * " << W << "u;\n";
-    if (nearest) {
-        os << "  uint ih = uint(float(oh) * " << scalarStr(float(H) / OH) << ") ;\n";
-        os << "  uint iw = uint(float(ow) * " << scalarStr(float(W) / OW) << ") ;\n";
-        os << "  ih = min(ih, " << H - 1 << "u); iw = min(iw, " << W - 1 << "u);\n";
-        os << "  o[i_] = in_[base + ih * " << W << "u + iw];\n";
-    } else {
-        os << "  float fx = float(ow) * " << scalarStr(float(W) / OW) << " - 0.5;\n";
-        os << "  float fy = float(oh) * " << scalarStr(float(H) / OH) << " - 0.5;\n";
-        os << "  fx = clamp(fx, 0.0, " << scalarStr(float(W - 1)) << ");\n";
-        os << "  fy = clamp(fy, 0.0, " << scalarStr(float(H - 1)) << ");\n";
-        os << "  uint x0 = uint(floor(fx)); uint y0 = uint(floor(fy));\n";
-        os << "  uint x1 = min(x0 + 1u, " << W - 1 << "u); uint y1 = min(y0 + 1u, " << H - 1
-           << "u);\n";
-        os << "  float w00 = in_[base + y0 * " << W << "u + x0];\n";
-        os << "  float w10 = in_[base + y0 * " << W << "u + x1];\n";
-        os << "  float w01 = in_[base + y1 * " << W << "u + x0];\n";
-        os << "  float w11 = in_[base + y1 * " << W << "u + x1];\n";
-        os << "  float top = w00 + (w10 - w00) * (fx - float(x0));\n";
-        os << "  float bot = w01 + (w11 - w01) * (fx - float(x0));\n";
-        os << "  o[i_] = top + (bot - top) * (fy - float(y0));\n";
-    }
-    os << "}\n";
-    out.pass1.clear();
-    out.pass2 = os.str();
-    out.groupsX2 = groupsFor(rn.size);
-    out.inputCount = 1;
-    return true;
-}
-
 bool genSdpa(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     const GraphNode &qn = g.node(grp.outputNode);
     const GraphNode &Q = g.node(qn.in0);
@@ -965,9 +916,10 @@ bool genSdpa(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     return true;
 }
 
-}  // namespace
+}  // namespace glsl_detail
 
 bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out) {
+    using namespace glsl_detail;
     out = KernelSpec{};
     switch (group.kind) {
         case GroupKind::Elementwise: return genElementwise(graph, group, out);
@@ -988,7 +940,7 @@ bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out
         case GroupKind::Concat: return genConcat(graph, group, out);
         case GroupKind::Slice: return genSlice(graph, group, out);
         case GroupKind::Permute: return genPermute(graph, group, out);
-        case GroupKind::Resize2d: return genResize2d(graph, group, out);
+        case GroupKind::Resize2d: genResize2d(graph, group, out); return true;
         case GroupKind::Sdpa: return genSdpa(graph, group, out);
         case GroupKind::Alias: return true;  // no kernel; pure buffer alias
     }
@@ -997,6 +949,7 @@ bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out
 
 bool generateMatMulVariant(const Graph &graph, const FusedGroup &group, bool tiled,
                            KernelSpec &out) {
+    using namespace glsl_detail;
     out = KernelSpec{};
     if (group.kind != GroupKind::MatMul) return false;
     return genMatMul(graph, group, tiled, out);

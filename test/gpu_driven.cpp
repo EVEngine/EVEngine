@@ -3,9 +3,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "graphics/Graphics.h"
@@ -30,13 +27,6 @@
 
 using namespace eve::graphics;
 
-namespace {
-
-
-}  // namespace
-
-// Direct SDL Vulkan probe, independent of the engine init path. If this
-// crashes, the problem is in SDL/driver state rather than Graphics::init.
 TEST_CASE("GpuDriven.capsAvailable") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;

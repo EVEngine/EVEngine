@@ -77,8 +77,11 @@ bool UdpSocket::sendTo(eve::data::ByteData* data, std::string host, uint16_t por
     net_->worker()->submit([self, buf, host, port]() {
         try {
             if (!self->sock_) return;
-            self->sock_->sendTo(buf->data(), static_cast<int>(buf->size()),
-                                Poco::Net::SocketAddress(host, port));
+            if (self->connected_) {
+                self->sock_->sendBytes(buf->data(), static_cast<int>(buf->size()));
+            } else {
+                self->sock_->sendTo(buf->data(), static_cast<int>(buf->size()), Poco::Net::SocketAddress(host, port));
+            }
             self->net_->recordSent(buf->size());
         } catch (...) {
             NetCompletion c;

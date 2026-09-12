@@ -11,7 +11,7 @@ namespace eve::tensor {
 /**
  * A generated, fully specialized compute kernel (AITemplate-style codegen).
  *
- * Shapes are baked into the GLSL as constants; the only runtime inputs are the
+ * Shapes are baked into the GLSL or WGSL as constants; the only runtime inputs are the
  * storage buffers themselves, so a CompiledFunction is a static executable
  * program with no per-dispatch shape computation.
  *
@@ -26,6 +26,9 @@ struct KernelSpec {
     std::string pass2;   // always set
     int groupsX1 = 0, groupsY1 = 1, groupsZ1 = 1;
     int groupsX2 = 0, groupsY2 = 1, groupsZ2 = 1;
+    /** @brief Input slot to representative slot; empty means identity. WGSL aliases repeated
+     * read inputs to one declaration so WebGPU never binds overlapping writable ranges. */
+    std::vector<int> inputRepresentatives;
     int inputCount = 0;          // total group input buffers
     int inputsReadPass1 = 0;     // leading inputs bound in pass1
     int statsCount = 0;          // per-row stats buffers (allocated by the runtime)

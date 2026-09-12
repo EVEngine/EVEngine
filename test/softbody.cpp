@@ -251,30 +251,35 @@ TEST_CASE("softbody.cloth3d.grabMovesParticle") {
 }
 
 TEST_CASE("softbody.cloth3d.selfCollisionSeparates") {
-    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(10, 8, 0.5f, -1.f, 2.f, -1.f));
-    cloth->setGravity(0.f, -2.5f, 0.f);
-    cloth->setBounds(-1.f, -2.f, -1.f, 6.f, 6.f, 6.f);
-    cloth->setStiffness(0.9f);
-    cloth->setMaxFoldAngle(130.f);
-    const float minDist = cloth->getParticleSize() * 2.f;
-    for (int f = 0; f < 240; ++f) {
-        if ((f / 40) % 2 == 0)
-            cloth->applyForce(2.f, 0.f, 0.f);
+    for (bool enabled : {true, false}) {
+        std::unique_ptr<Cloth3D> cloth(
+            eve::cloth::Cloth::create()->newCloth3D(4, 4, 0.5f, 0.f, 0.f, 0.f));
+        cloth->setGravity(0.f, 0.f, 0.f);
+        cloth->setStiffness(0.f);
+        cloth->setFoldStiffness(0.f);
+        cloth->setDamping(1.f);
+        cloth->setSelfCollision(enabled);
+        for (int i = 0; i < cloth->getParticleCount(); ++i) cloth->pin(i);
+        const int moving = cloth->getParticleCount() - 1;
+        cloth->unpin(moving);
+        // Opposite corners are not linked. Put the free corner inside the pinned
+        // corner's collision radius; springs cannot separate them in this fixture.
+        cloth->setParticlePosition(moving, 0.05f, 0.f, 0.f);
+        const float minimum = cloth->getParticleSize() * 2.f;
+        REQUIRE(0.05f < minimum * 0.5f);
+        for (int frame = 0; frame < 240; ++frame) cloth->update(1.f / 60.f);
+        const float x        = cloth->getParticleX(moving);
+        const float y        = cloth->getParticleY(moving);
+        const float z        = cloth->getParticleZ(moving);
+        const float distance = std::sqrt(x * x + y * y + z * z);
+        if (enabled)
+            REQUIRE(distance > minimum * 0.5f);
         else
-            cloth->applyForce(-2.f, 0.f, 0.f);
-        cloth->interactAt(float(f % 60) * 0.04f, 1.2f, 0.f, 90.f, -30.f);
-        cloth->update(1.f / 60.f);
+            REQUIRE(std::fabs(distance - 0.05f) < 1e-4f);
+        REQUIRE(cloth->getParticleX(0) == 0.f);
+        REQUIRE(cloth->getParticleY(0) == 0.f);
+        REQUIRE(cloth->getParticleZ(0) == 0.f);
     }
-    float minSeen = 1e9f;
-    for (int i = 0; i < cloth->getParticleCount(); ++i) {
-        for (int j = i + 1; j < cloth->getParticleCount(); ++j) {
-            const float dx = cloth->getParticleX(j) - cloth->getParticleX(i);
-            const float dy = cloth->getParticleY(j) - cloth->getParticleY(i);
-            const float dz = cloth->getParticleZ(j) - cloth->getParticleZ(i);
-            minSeen = std::min(minSeen, std::sqrt(dx * dx + dy * dy + dz * dz));
-        }
-    }
-    REQUIRE_GT(minSeen, minDist * 0.5f);
 }
 
 TEST_CASE("softbody.cloth3d.foldAngleLimited") {
