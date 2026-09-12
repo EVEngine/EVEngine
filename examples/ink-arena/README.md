@@ -12,7 +12,8 @@
 build/ink-arena/src/engine/eve.exe run examples/ink-arena
 ```
 
-鼠标左键喷橙墨，右键喷紫墨；A / D 转动相机；C 清空；R 恢复展示。
+鼠标左键喷橙墨，右键喷紫墨；快速拖动会按屏幕距离补点；A / D 转动相机；
+C 清空；R 恢复展示；Z 撤销最近一笔 GPU 喷墨；B 将当前命令设为不可撤销检查点。
 四个滑条实时调整边缘强度、反光强度、粗糙度、纹理比例，不修改已有墨迹。
 `parameters.nut` 定义默认值，运行时调整不写回磁盘。
 纹理比例控制世界空间格纹和细纹频率：2 表示密度翻倍，不改变喷射半径。
@@ -26,6 +27,13 @@ RGB 使用 SrcAlpha / OneMinusSrcAlpha，alpha 使用 One / OneMinusSrcAlpha，
 等价于参考公式 `field = lerp(field, colorRGBA, coverage)`。
 GPU Canvas 是唯一墨迹状态，正常游玩不维护 CPU 像素镜像、不逐像素调用脚本或上传喷墨纹理。
 这使用 GPU 光栅化与混合，不是 ComputeShader 移植。
+
+命中后的 UV 中心、椭圆半径、颜色校验和裁剪像素矩形统一由 Image 模块的
+可复用的 `UvPaintRegion` 生成；`UvPaintSession` 的 CPU 可撤销绘制与本示例 GPU Canvas
+使用同一命令语义。两者只保留各自必要的执行后端，避免维护第二套 UV 边界算法。
+GPU 路径保存确定性的轻量笔触命令用于撤销后重放，不保存 CPU 像素镜像；检查点只移动
+撤销边界，因此仍由 Canvas 唯一拥有像素状态。自动验证还覆盖快速拖动补点、原子失败、
+撤销重放、检查点和 108 笔调试构建性能预算。
 
 `ink.frag` 提取覆盖轮廓、重建世界空间边缘法线、计算 GGX 高光与解析环境反射。
 显式双线性采样补偿 Canvas 默认最近邻采样。双色显示为窄抗锯齿覆盖边界，

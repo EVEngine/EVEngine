@@ -119,6 +119,21 @@ if(NOT _eve_test_has_devtools)
   endforeach()
 endif()
 
+# GCC's ASan metadata makes the full test runner's data segment exceed the
+# x86-64 PC-relative relocation range. Keep the sanitizer suite complete while
+# giving the procgen/editor feature group its own runner. Sources are exclusive
+# between the runners, so CTest still registers every case exactly once.
+set(_eve_asan_procgen_test_cpp "")
+if(UNIX AND NOT APPLE AND CMAKE_CXX_FLAGS MATCHES "-fsanitize=[^ ]*address")
+  foreach(_eve_test_cpp IN LISTS all_test_cpp)
+    get_filename_component(_eve_test_name "${_eve_test_cpp}" NAME)
+    if(_eve_test_name MATCHES "^(procgen_.*|editor_mesh_modifier_.*|editor_spline_.*|gpgpu)\\.cpp$")
+      list(APPEND _eve_asan_procgen_test_cpp "${_eve_test_cpp}")
+    endif()
+  endforeach()
+  list(REMOVE_ITEM all_test_cpp ${_eve_asan_procgen_test_cpp})
+endif()
+
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
@@ -177,6 +192,10 @@ else()
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
   target_link_libraries(unit_test eve_engine_includes)
+  if(_eve_asan_procgen_test_cpp)
+    add_executable(unit_test_procgen main.cpp ${_eve_asan_procgen_test_cpp})
+    target_link_libraries(unit_test_procgen eve_engine_includes)
+  endif()
 endif()
 
 # zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
@@ -185,6 +204,9 @@ endif()
 # every graphics test fail in Release with "graphics not initialized". Keep
 # test assertions live in the test binary so Release CI actually asserts.
 set(_eve_test_assert_targets unit_test main)
+if(TARGET unit_test_procgen)
+  list(APPEND _eve_test_assert_targets unit_test_procgen)
+endif()
 if(EVENGINE_IOS_TEST_APP)
   list(APPEND _eve_test_assert_targets eve)
 endif()
@@ -255,6 +277,17 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  if(TARGET unit_test_procgen)
+    target_link_libraries(unit_test_procgen ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_compile_definitions(unit_test_procgen PRIVATE
+      EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+      EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+      EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    if(TARGET EVAsset_graphics)
+      target_compile_definitions(unit_test_procgen PRIVATE EVE_TEST_MESH_UPLOAD=1)
+    endif()
+  endif()
   if(TARGET EVTensor AND NOT EVENGINE_WEBGPU)
     add_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
@@ -427,5 +460,8 @@ endif()  # NOT mobile test app
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)
+if(TARGET unit_test_procgen)
+  zeroerr_discover_tests(unit_test_procgen)
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)

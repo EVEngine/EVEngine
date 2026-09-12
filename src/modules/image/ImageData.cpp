@@ -2,6 +2,7 @@
 
 #include "ImageData.h"
 #include "Image.h"
+#include "UvPaintRegion.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "medialoader/image/pixelformat.h"
@@ -498,10 +499,6 @@ void ImageData::setPixel(int x, int y, const Colorf &c) {
 eve::Result<UvPaintReceipt> ImageData::paintCircleUv(float u, float v, float radiusPixels,
                                                       const Colorf &color, bool wrapU,
                                                       bool wrapV) {
-    if (!std::isfinite(u) || !std::isfinite(v) || !std::isfinite(radiusPixels) || radiusPixels < 0.f)
-        return eve::Result<UvPaintReceipt>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "UV and brush radius must be finite; radius must be non-negative", "image.paintCircleUv"));
     const int w = getWidth(), h = getHeight();
     if (w <= 0 || h <= 0)
         return eve::Result<UvPaintReceipt>::failure(eve::Diagnostic::error(
@@ -510,8 +507,14 @@ eve::Result<UvPaintReceipt> ImageData::paintCircleUv(float u, float v, float rad
         if (!wrap) return std::clamp(value, 0.f, 1.f);
         return value - std::floor(value);
     };
-    const int cx = static_cast<int>(std::lround(normalize(u, wrapU) * float(w - 1)));
-    const int cy = static_cast<int>(std::lround((1.f - normalize(v, wrapV)) * float(h - 1)));
+    const float normalizedU = normalize(u, wrapU);
+    const float normalizedV = normalize(v, wrapV);
+    auto prepared = prepareUvPaintRegionResult(
+        w, h, normalizedU, normalizedV, radiusPixels / float(w), radiusPixels / float(h),
+        color.r, color.g, color.b, color.a, true);
+    if (!prepared.ok()) return eve::Result<UvPaintReceipt>::failure(prepared.status());
+    const int cx = prepared.value().centerX;
+    const int cy = prepared.value().centerY;
     const int extent = static_cast<int>(std::ceil(radiusPixels));
     const float radiusSquared = radiusPixels * radiusPixels;
     UvPaintReceipt receipt{cx, cy, 0};

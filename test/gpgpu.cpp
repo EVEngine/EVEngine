@@ -248,6 +248,23 @@ TEST_CASE("gpgpu.dispatch.scaleFloats") {
     delete buf;
 }
 
+TEST_CASE("gpgpu.meshDeformationProvider.runsRealCompute") {
+    if (!tryInitHeadlessGfx()) return;
+    auto* mod = Gpgpu::create();
+    REQUIRE(mod->isAvailable());
+    eve::MeshDeformationComputeRequest request;
+    request.operation = eve::MeshDeformationComputeOperation::Inflate;
+    request.positions = {0.f, 0.f, 0.f, 2.f, 0.f, 0.f};
+    request.normals = {0.f, 1.f, 0.f, 0.f, 1.f, 0.f};
+    request.centerX = 0.f; request.centerY = 0.f; request.centerZ = 0.f;
+    request.radius = 1.f; request.strength = 0.5f; request.falloff = 1.f;
+    auto output = mod->deform(std::move(request));
+    REQUIRE(output.ok());
+    REQUIRE_EQ(output.value().size(), std::size_t{6});
+    CHECK(std::abs(output.value()[1] - 0.5f) < 1e-4f);
+    CHECK(std::abs(output.value()[4]) < 1e-4f);
+}
+
 TEST_CASE("gpgpu.sequence.dispatchScale") {
     if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
