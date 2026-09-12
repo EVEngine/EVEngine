@@ -72,6 +72,10 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
+# Optional Action adapter for generation-safe 3D body-pair collision windows.
+eve_declare_module(NAME physics_action DIR physics/action LAYER 5
+                   DEPS action physics
+                   GROUP 3d web)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
                    GROUP 2d)
