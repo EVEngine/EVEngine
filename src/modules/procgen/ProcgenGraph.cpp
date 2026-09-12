@@ -17,6 +17,10 @@ eve::Result<ProcgenMeshDeformationSessionHandleRef> Procgen::newMeshDeformationS
     return meshDeformationSessions_.emplace(std::make_unique<MeshDeformationSession>());
 }
 
+eve::Result<ProcgenDynamicMeshUvPaintSessionHandleRef> Procgen::newDynamicMeshUvPaintSessionHandle() {
+    return dynamicMeshUvPaintSessions_.emplace(std::make_unique<DynamicMeshUvPaintSession>());
+}
+
 eve::Result<ProcgenSplinePathHandleRef> Procgen::newSplinePathHandle() {
     return splinePaths_.emplace(std::make_unique<SplinePath>());
 }

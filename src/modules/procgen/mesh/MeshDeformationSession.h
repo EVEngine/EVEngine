@@ -38,6 +38,10 @@ public:
     [[nodiscard]] Result<void> applyBrushResult(std::string_view mode, float x, float y, float z, float radius,
                                                 float strength, float falloff, float directionX = 0.f,
                                                 float directionY = 1.f, float directionZ = 0.f);
+    /** @brief Apply a sculpt brush through the registered GPU provider, with no CPU fallback. */
+    [[nodiscard]] Result<void> applyBrushGpuResult(std::string_view mode, float x, float y, float z, float radius,
+                                                   float strength, float falloff, float directionX = 0.f,
+                                                   float directionY = 1.f, float directionZ = 0.f);
     /**
      * @brief Apply one collision-neutral plastic impact to the current mesh.
      * @param x Impact center X. @param y Impact center Y. @param z Impact center Z.
@@ -54,6 +58,10 @@ public:
     [[nodiscard]] Result<void> applyImpactResult(float x, float y, float z, float impulseX, float impulseY,
                                                  float impulseZ, float radius, float plasticity, float hardness,
                                                  float maxDisplacement);
+    /** @brief Apply plastic damage through the registered GPU provider, with no CPU fallback. */
+    [[nodiscard]] Result<void> applyImpactGpuResult(float x, float y, float z, float impulseX, float impulseY,
+                                                    float impulseZ, float radius, float plasticity, float hardness,
+                                                    float maxDisplacement);
     /** @brief Build a bounded uniform vertex-block index for repeated high-density impact queries. */
     [[nodiscard]] Result<void> prepareImpactVertexBlocksResult(int divisionsPerAxis);
     /** @brief Return the number of non-empty prepared impact blocks. */

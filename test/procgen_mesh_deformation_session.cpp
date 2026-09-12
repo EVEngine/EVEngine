@@ -1,5 +1,8 @@
 #include "procgen/mesh/MeshDeformationSession.h"
 
+#include "common/Capability.h"
+#include "common/MeshDeformationCompute.h"
+
 #include "zeroerr/unittest.h"
 
 #include <cmath>
@@ -23,7 +26,42 @@ MeshBuild sculptPlane() {
     return mesh;
 }
 
+class FakeMeshCompute final : public IMeshDeformationCompute {
+public:
+    Result<std::vector<float>> deform(MeshDeformationComputeRequest request) override {
+        ++calls;
+        lastOperation = request.operation;
+        for (std::size_t i = 1; i < request.positions.size(); i += 3u) request.positions[i] += 0.25f;
+        return Result<std::vector<float>>::success(std::move(request.positions));
+    }
+    int calls = 0;
+    MeshDeformationComputeOperation lastOperation = MeshDeformationComputeOperation::Inflate;
+};
+
 }  // namespace
+
+TEST_CASE("procgen.meshDeformationSession.gpuProviderIsExplicitAndCommitsAtomically") {
+    auto* previous = cap::query<IMeshDeformationCompute>();
+    if (previous) cap::revoke<IMeshDeformationCompute>(previous);
+    MeshDeformationSession session;
+    REQUIRE(session.initializeResult(sculptPlane()).ok());
+    const auto revision = session.revision();
+    auto absent = session.applyBrushGpuResult("inflate", 0.f, 0.f, 0.f, 1.f, 1.f, 1.f);
+    REQUIRE(!absent.ok());
+    CHECK_EQ(session.revision(), revision);
+
+    FakeMeshCompute provider;
+    cap::provide<IMeshDeformationCompute>(&provider);
+    REQUIRE(session.applyBrushGpuResult("smooth", 0.f, 0.f, 0.f, 1.f, 1.f, 1.f).ok());
+    CHECK_EQ(provider.calls, 1);
+    CHECK(provider.lastOperation == MeshDeformationComputeOperation::Smooth);
+    CHECK(std::abs(session.currentMeshResult().value().getPositionY(2) - 0.25f) < 1e-6f);
+    REQUIRE(session.applyImpactGpuResult(0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 1.f, 1.f, 1.f, 1.f).ok());
+    CHECK(provider.lastOperation == MeshDeformationComputeOperation::Impact);
+    CHECK_EQ(session.undoCount(), 2);
+    cap::revoke<IMeshDeformationCompute>(&provider);
+    if (previous) cap::provide<IMeshDeformationCompute>(previous);
+}
 
 TEST_CASE("procgen.meshDeformationSession.sculptsUndoesRestoresAndBakes") {
     MeshDeformationSession session;

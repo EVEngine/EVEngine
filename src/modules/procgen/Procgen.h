@@ -23,6 +23,7 @@
 #include "procgen/heightmap/TerrainMesh.h"
 #include "procgen/mesh/MeshModifierGraph.h"
 #include "procgen/mesh/MeshDeformationSession.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
 #include "procgen/spline/SplinePath.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
@@ -87,6 +88,8 @@ struct ProcgenPointGraphHandleTag {};
 struct ProcgenMeshModifierGraphHandleTag {};
 /** @brief Handle domain for module-owned interactive mesh deformation sessions. */
 struct ProcgenMeshDeformationSessionHandleTag {};
+/** @brief Handle domain for module-owned dynamic-mesh UV paint sessions. */
+struct ProcgenDynamicMeshUvPaintSessionHandleTag {};
 /** @brief Handle domain for module-owned 3D spline paths. */
 struct ProcgenSplinePathHandleTag {};
 /** @brief Handle domain for module-owned biome rules. */
@@ -113,6 +116,8 @@ using ProcgenRuntimeGenerationHandleRef = eve::script::RuntimeHandleRef<ProcgenR
 using ProcgenPointGraphHandleRef        = eve::script::RuntimeHandleRef<ProcgenPointGraphHandleTag>;
 using ProcgenMeshModifierGraphHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshModifierGraphHandleTag>;
 using ProcgenMeshDeformationSessionHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshDeformationSessionHandleTag>;
+using ProcgenDynamicMeshUvPaintSessionHandleRef =
+    eve::script::RuntimeHandleRef<ProcgenDynamicMeshUvPaintSessionHandleTag>;
 using ProcgenSplinePathHandleRef = eve::script::RuntimeHandleRef<ProcgenSplinePathHandleTag>;
 using ProcgenBiomeRulesHandleRef        = eve::script::RuntimeHandleRef<ProcgenBiomeRulesHandleTag>;
 using ProcgenShapeGrammarHandleRef      = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
@@ -276,6 +281,8 @@ public:
     [[nodiscard]] eve::Result<ProcgenMeshModifierGraphHandleRef> newMeshModifierGraphHandle();
     /** @brief Allocate a module-owned interactive mesh deformation session. */
     [[nodiscard]] eve::Result<ProcgenMeshDeformationSessionHandleRef> newMeshDeformationSessionHandle();
+    /** @brief Allocate a module-owned dynamic-mesh UV paint session. */
+    [[nodiscard]] eve::Result<ProcgenDynamicMeshUvPaintSessionHandleRef> newDynamicMeshUvPaintSessionHandle();
     /** @brief Allocate a module-owned 3D spline path. */
     [[nodiscard]] eve::Result<ProcgenSplinePathHandleRef> newSplinePathHandle();
     [[nodiscard]] eve::Result<ProcgenBiomeRulesHandleRef>        newBiomeRulesHandle();
@@ -291,6 +298,9 @@ public:
     /** @brief Resolve a mesh deformation session for the current synchronous call only. */
     [[nodiscard]] eve::script::Borrowed<MeshDeformationSession> resolveMeshDeformationSession(
         ProcgenMeshDeformationSessionHandleRef reference) noexcept;
+    /** @brief Resolve dynamic UV paint state for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<DynamicMeshUvPaintSession> resolveDynamicMeshUvPaintSession(
+        ProcgenDynamicMeshUvPaintSessionHandleRef reference) noexcept;
     /** @brief Resolve a spline path for the current synchronous call only. */
     [[nodiscard]] eve::script::Borrowed<SplinePath> resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<BiomeRules>   resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept;
@@ -304,6 +314,8 @@ public:
     [[nodiscard]] eve::Result<void> release(ProcgenMeshModifierGraphHandleRef reference);
     /** @brief Release a module-owned mesh deformation session. */
     [[nodiscard]] eve::Result<void> release(ProcgenMeshDeformationSessionHandleRef reference);
+    /** @brief Release a module-owned dynamic-mesh UV paint session. */
+    [[nodiscard]] eve::Result<void> release(ProcgenDynamicMeshUvPaintSessionHandleRef reference);
     /** @brief Release a module-owned spline path. */
     [[nodiscard]] eve::Result<void> release(ProcgenSplinePathHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenBiomeRulesHandleRef reference);
@@ -316,6 +328,8 @@ public:
     [[nodiscard]] bool isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept;
     /** @brief Report whether a mesh deformation session handle is stale. */
     [[nodiscard]] bool isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept;
+    /** @brief Report whether a dynamic-mesh UV paint handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const noexcept;
     /** @brief Report whether a spline path handle is stale. */
     [[nodiscard]] bool isStale(ProcgenSplinePathHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenBiomeRulesHandleRef reference) const noexcept;
@@ -856,6 +870,8 @@ private:
     eve::script::RuntimeObjectRegistry<MeshModifierGraph, ProcgenMeshModifierGraphHandleTag> meshModifierGraphs_;
     eve::script::RuntimeObjectRegistry<MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag>
         meshDeformationSessions_;
+    eve::script::RuntimeObjectRegistry<DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag>
+        dynamicMeshUvPaintSessions_;
     eve::script::RuntimeObjectRegistry<SplinePath, ProcgenSplinePathHandleTag>                     splinePaths_;
     eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag>               biomeRules_;
     eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag>           shapeGrammars_;

@@ -1367,7 +1367,11 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 `deform.bend`、`deform.twist`、`deform.noise`、`deform.radial`、`deform.smooth`、
 `deform.angularBend`、`deform.spherify`、`deform.ffd`、`deform.morph`、
 `deform.spline`、`deform.splinePath`、`mesh.splineTube`、`mesh.splineRibbon`、`mesh.splineExtrude`、`mesh.subdivide`、`mesh.cutPlane`、
-`mesh.append` 和 `mesh.weld`。
+`mesh.append`、`mesh.boolean`、`mesh.projectUv` 和 `mesh.weld`。
+
+`mesh.boolean` 接收两个闭合三角网格，提供 `union`、`difference` 与 `intersection` BSP 实体运算，
+交点处插值法线和 UV，并把切割体产生的面放入 `cutter.*` 分组。`mesh.projectUv` 为动态或程序化网格
+生成 `planar`、`box` 或 `spherical` UV；两者都是拓扑边界节点，不参与逐顶点融合。
 
 所有可融合的逐顶点节点都反射 `maskX/Y/Z`、`maskRadius`、`maskFalloff` 和 `maskInvert`
 参数；半径为零时关闭遮罩，否则仅在球形选择区域内按幂次衰减混合结果。`deform.spline`
@@ -1503,6 +1507,12 @@ local modifiedMesh = output.value;
 `MeshModifierGraphDomain` 负责类型连接规则、断连输入/重复输入/环路校验及隔离预览。
 GraphDocument 是 authoring state 的唯一所有者，运行时图只作为编译产物存在。
 
+`procgenEditor.createMeshModifier(targetId)` 返回统一的 `MeshModifierEditor` controller；
+`configureWorkspace()` 一次安装 Modifier Graph、Mesh Preview、Inspector、Spline、Sculpt & Damage 和 UV Paint
+六个语义面板，`activateTool()` 在 graph/spline/sculpt/uvPaint 之间切换焦点。
+controller 只记录稳定 target id 与各文档 revision，不复制 GraphDocument、SplinePathDocument、
+MeshDeformationSession 或 UV Paint 的可变状态；`observeRevision()` 会拒绝倒退的陈旧 revision。
+
 需要鼠标、触摸或碰撞驱动的实时塑形时，使用 `newMeshDeformationSession()`。Session
 分别持有 original/current 和最多 32 个 undo 快照，提供 `inflate`、`dent`、`flatten`、
 `smooth` 与 directional brush；`bake()` 显式更新恢复基线，`restore()` 回到最近一次基线。
@@ -1520,8 +1530,15 @@ Procgen 不保存物理世界或 contact 指针，Physics、武器和脚本只�
 随后 `applyImpact()` 只扫描与影响球相交的块，并保持与全量扫描逐顶点一致的结果。
 `hasImpactVertexBlocks()` 与 `getImpactVertexBlockCount()` 公开加速状态。普通笔刷、Surface、Slime、
 顶点移动、恢复或撤销会显式使索引失效，避免查询陈旧分区；连续的有界 Impact 可复用同一索引。
-该路径提供官方 Mesh Damage GPU 的 Vertex Blocks 功能等价加速语义，但当前后端是 CPU 空间块，
-不宣称 GPU compute 性能等价。
+`applyBrushGpu()` 与 `applyImpactGpu()` 使用可选 GPGPU capability 执行真实 compute shader 顶点位移，
+支持 inflate、dent、flatten、directional、smooth 和有界 plastic impact。provider 缺失或设备不可用时
+明确返回 Unsupported，不会静默回退 CPU；CPU Session 仍是唯一权威状态，只在 GPU 结果尺寸与有限值
+校验通过后重建法线并原子提交 undo。Vertex Blocks 仍是 CPU `applyImpact()` 的独立批量碰撞加速路径。
+
+动态纹理绘制使用 `newDynamicMeshUvPaintSession()`。它保存当前 mesh 快照，把 triangle hit 的三维点
+按重心坐标映射到 UV，再委托既有 `UvPaintSession` 完成像素事务和 undo，因此不会复制 Ink Arena/UV Paint
+的 raster 实现。`updateMesh()` 可在每次变形后替换网格而保留已绘制纹理；无 UV 的网格可先通过
+`mesh.projectUv` 自动投射。
 Interactive Surface 使用 `applySurfaceContact()` 接收纯值接触点、法线、切向速度、半径、压入深度、
 拖拽、衰减和塑性比例；物理、鼠标、触摸与 VR 适配器负责坐标转换，不会被 Session 持有。
 `recoverSurface(dt, recoveryRate)` 使用调用方注入的 dt 做指数恢复，不读取 wall clock，也不会每帧污染

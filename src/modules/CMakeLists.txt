@@ -552,7 +552,9 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
@@ -567,7 +569,9 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
   foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)

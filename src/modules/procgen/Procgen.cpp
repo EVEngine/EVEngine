@@ -10,6 +10,7 @@
 #include "procgen/RuntimeGenerationScript.h"
 #include "procgen/ShapeGrammarScript.h"
 #include "procgen/mesh/MeshModifierGraphScript.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
 
 #include "image/ImageData.h"
 
@@ -1321,6 +1322,11 @@ eve::script::Borrowed<MeshDeformationSession> Procgen::resolveMeshDeformationSes
     return meshDeformationSessions_.resolve(reference);
 }
 
+eve::script::Borrowed<DynamicMeshUvPaintSession> Procgen::resolveDynamicMeshUvPaintSession(
+    ProcgenDynamicMeshUvPaintSessionHandleRef reference) noexcept {
+    return dynamicMeshUvPaintSessions_.resolve(reference);
+}
+
 eve::script::Borrowed<SplinePath> Procgen::resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept {
     return splinePaths_.resolve(reference);
 }
@@ -1347,6 +1353,9 @@ eve::Result<void> Procgen::release(ProcgenMeshModifierGraphHandleRef reference) 
 eve::Result<void> Procgen::release(ProcgenMeshDeformationSessionHandleRef reference) {
     return meshDeformationSessions_.erase(reference);
 }
+eve::Result<void> Procgen::release(ProcgenDynamicMeshUvPaintSessionHandleRef reference) {
+    return dynamicMeshUvPaintSessions_.erase(reference);
+}
 eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) { return splinePaths_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) { return biomeRules_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) { return shapeGrammars_.erase(reference); }
@@ -1361,6 +1370,9 @@ bool Procgen::isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcep
 }
 bool Procgen::isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept {
     return meshDeformationSessions_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const noexcept {
+    return dynamicMeshUvPaintSessions_.isStale(reference);
 }
 bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept { return splinePaths_.isStale(reference); }
 bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept { return biomeRules_.isStale(reference); }
@@ -4104,6 +4116,26 @@ void Procgen::expose(ssq::Class &cls) {
                 return owner ? owner->release(ref)
                              : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                            "Procgen module is no longer loaded", "meshDeformation");
+            });
+    });
+    cls.addFunc("newDynamicMeshUvPaintSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<DynamicMeshUvPaintSession>(
+            vm, value->newDynamicMeshUvPaintSessionHandle(),
+            [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
+                return value->resolveDynamicMeshUvPaintSession(ref);
+            },
+            [](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "dynamicUvPaint");
             });
     });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {

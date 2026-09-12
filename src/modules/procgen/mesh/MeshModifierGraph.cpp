@@ -1,4 +1,6 @@
 #include "procgen/mesh/MeshModifierGraph.h"
+#include "procgen/mesh/MeshBoolean.h"
+#include "procgen/mesh/MeshUvProjection.h"
 
 #include <algorithm>
 #include <array>
@@ -166,6 +168,9 @@ const std::vector<OperationSpec>& operationSpecs() {
               {"keepPositive", "int", "1"},
               {"cap", "int", "0"}}},
             {"mesh.append", 2, false, {}},
+            {"mesh.boolean", 2, false, {{"operation", "string", "difference"}}},
+            {"mesh.projectUv", 1, false, {{"mode", "string", "box"}, {"scale", "float", "1"},
+                                           {"offsetU", "float", "0"}, {"offsetV", "float", "0"}}},
             {"mesh.weld", 1, false, {{"tolerance", "float", "0.0001"}}},
         };
         for (auto& spec : values) {
@@ -1822,6 +1827,18 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
                                                 "mesh.append rejected an empty or invalid input", node.id);
         return Result<MeshBuild>::success(std::move(output));
     }
+    if (node.operation == "mesh.boolean") {
+        const auto second = outputs.find(node.inputs[1]);
+        if (second == outputs.end())
+            return graphFailureValue<MeshBuild>(DiagnosticCode::PreconditionViolation,
+                                                "mesh.boolean second input was not evaluated", node.id);
+        return meshBooleanResult(first->second, second->second,
+                                 stringParameter(node, "operation", "difference"));
+    }
+    if (node.operation == "mesh.projectUv")
+        return projectMeshUvResult(first->second, stringParameter(node, "mode", "box"),
+                                   parameter(node, "scale", 1.f), parameter(node, "offsetU", 0.f),
+                                   parameter(node, "offsetV", 0.f));
     if (node.operation == "mesh.weld") return weldMesh(first->second, parameter(node, "tolerance", 0.0001f));
     return graphFailureValue<MeshBuild>(DiagnosticCode::Unsupported,
                                         "unsupported mesh modifier operation: " + node.operation, node.id);

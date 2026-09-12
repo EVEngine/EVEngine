@@ -1,5 +1,8 @@
 #include "procgen/mesh/MeshDeformationSession.h"
 
+#include "common/Capability.h"
+#include "common/MeshDeformationCompute.h"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -224,6 +227,70 @@ Result<void> MeshDeformationSession::applyBrushResult(std::string_view mode, flo
     return Result<void>::success();
 }
 
+Result<void> MeshDeformationSession::applyBrushGpuResult(std::string_view mode, float x, float y, float z, float radius,
+                                                         float strength, float falloff, float directionX,
+                                                         float directionY, float directionZ) {
+    if (!initialized_)
+        return sessionFailure(DiagnosticCode::PreconditionViolation, "sculpting session is not initialized", "mesh");
+    if ((mode != "inflate" && mode != "dent" && mode != "flatten" && mode != "smooth" && mode != "directional") ||
+        !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(radius) ||
+        !std::isfinite(strength) || !std::isfinite(falloff) || radius <= 0.f || falloff <= 0.f)
+        return sessionFailure(DiagnosticCode::InvalidArgument, "invalid GPU sculpting brush parameters", "brush");
+    const float directionLength = std::sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
+    if (mode == "directional" && directionLength < 1e-7f)
+        return sessionFailure(DiagnosticCode::InvalidArgument, "directional brush requires a direction", "direction");
+    auto* provider = eve::cap::query<IMeshDeformationCompute>();
+    if (!provider)
+        return sessionFailure(DiagnosticCode::Unsupported, "GPU mesh deformation provider is not installed", "backend");
+
+    MeshDeformationComputeRequest request;
+    request.positions = current_.positions();
+    request.normals = current_.normals();
+    request.centerX = x; request.centerY = y; request.centerZ = z; request.radius = radius;
+    request.strength = strength; request.falloff = falloff;
+    request.directionX = directionX; request.directionY = directionY; request.directionZ = directionZ;
+    if (mode == "inflate") request.operation = MeshDeformationComputeOperation::Inflate;
+    else if (mode == "dent") request.operation = MeshDeformationComputeOperation::Dent;
+    else if (mode == "flatten") request.operation = MeshDeformationComputeOperation::Flatten;
+    else if (mode == "directional") request.operation = MeshDeformationComputeOperation::Directional;
+    else {
+        request.operation = MeshDeformationComputeOperation::Smooth;
+        request.targets = request.positions;
+        std::vector<std::unordered_set<std::uint32_t>> neighbors(static_cast<std::size_t>(current_.getVertexCount()));
+        for (std::size_t i = 0; i + 2 < current_.indices().size(); i += 3u) {
+            const std::array<std::uint32_t, 3> triangle{current_.indices()[i], current_.indices()[i + 1], current_.indices()[i + 2]};
+            for (int corner = 0; corner < 3; ++corner) {
+                neighbors[triangle[corner]].insert(triangle[(corner + 1) % 3]);
+                neighbors[triangle[corner]].insert(triangle[(corner + 2) % 3]);
+            }
+        }
+        for (std::size_t vertex = 0; vertex < neighbors.size(); ++vertex) {
+            if (neighbors[vertex].empty()) continue;
+            for (std::uint32_t neighbor : neighbors[vertex])
+                for (std::size_t component = 0; component < 3u; ++component)
+                    request.targets[vertex * 3u + component] += current_.positions()[neighbor * 3u + component];
+            for (std::size_t component = 0; component < 3u; ++component)
+                request.targets[vertex * 3u + component] =
+                    (request.targets[vertex * 3u + component] - current_.positions()[vertex * 3u + component]) /
+                    static_cast<float>(neighbors[vertex].size());
+        }
+    }
+    auto deformed = provider->deform(std::move(request));
+    if (!deformed.ok()) return Result<void>::failure(deformed.status());
+    if (deformed.value().size() != current_.positions().size() ||
+        !std::all_of(deformed.value().begin(), deformed.value().end(), [](float value) { return std::isfinite(value); }))
+        return sessionFailure(DiagnosticCode::Failed, "GPU returned an invalid mesh deformation", "backend");
+    MeshBuild candidate = current_;
+    candidate.positions() = std::move(deformed).takeValue();
+    recalculateNormals(candidate);
+    pushUndo();
+    surfaceEquilibrium_ = candidate.positions();
+    current_ = std::move(candidate);
+    invalidateImpactVertexBlocks();
+    ++revision_;
+    return Result<void>::success();
+}
+
 Result<void> MeshDeformationSession::applyImpactResult(float x, float y, float z, float impulseX, float impulseY,
                                                        float impulseZ, float radius, float plasticity, float hardness,
                                                        float maxDisplacement) {
@@ -272,6 +339,40 @@ Result<void> MeshDeformationSession::applyImpactResult(float x, float y, float z
     surfaceEquilibrium_ = candidate.positions();
     current_            = std::move(candidate);
     ++revision_;
+    return Result<void>::success();
+}
+
+Result<void> MeshDeformationSession::applyImpactGpuResult(float x, float y, float z, float impulseX, float impulseY,
+                                                          float impulseZ, float radius, float plasticity,
+                                                          float hardness, float maxDisplacement) {
+    if (!initialized_)
+        return sessionFailure(DiagnosticCode::PreconditionViolation, "damage session is not initialized", "mesh");
+    const float impulseLength = std::sqrt(impulseX * impulseX + impulseY * impulseY + impulseZ * impulseZ);
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(impulseLength) ||
+        !std::isfinite(radius) || !std::isfinite(plasticity) || !std::isfinite(hardness) ||
+        !std::isfinite(maxDisplacement) || impulseLength <= 1e-7f || radius <= 0.f || plasticity < 0.f ||
+        hardness <= 0.f || maxDisplacement <= 0.f)
+        return sessionFailure(DiagnosticCode::InvalidArgument, "invalid GPU mesh impact parameters", "impact");
+    auto* provider = eve::cap::query<IMeshDeformationCompute>();
+    if (!provider)
+        return sessionFailure(DiagnosticCode::Unsupported, "GPU mesh deformation provider is not installed", "backend");
+    MeshDeformationComputeRequest request;
+    request.operation = MeshDeformationComputeOperation::Impact;
+    request.positions = current_.positions(); request.normals = current_.normals(); request.baseline = original_.positions();
+    request.centerX = x; request.centerY = y; request.centerZ = z; request.radius = radius;
+    request.strength = impulseLength * plasticity; request.falloff = hardness;
+    request.directionX = impulseX / impulseLength; request.directionY = impulseY / impulseLength;
+    request.directionZ = impulseZ / impulseLength; request.maxDisplacement = maxDisplacement;
+    auto deformed = provider->deform(std::move(request));
+    if (!deformed.ok()) return Result<void>::failure(deformed.status());
+    if (deformed.value().size() != current_.positions().size() ||
+        !std::all_of(deformed.value().begin(), deformed.value().end(), [](float value) { return std::isfinite(value); }))
+        return sessionFailure(DiagnosticCode::Failed, "GPU returned invalid impact positions", "backend");
+    MeshBuild candidate = current_;
+    candidate.positions() = std::move(deformed).takeValue();
+    recalculateNormals(candidate);
+    pushUndo(); surfaceEquilibrium_ = candidate.positions(); current_ = std::move(candidate);
+    invalidateImpactVertexBlocks(); ++revision_;
     return Result<void>::success();
 }
 

@@ -2,6 +2,8 @@
 
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
+#include "image/ImageData.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
 #include "procgen/mesh/GeometryStroke.h"
 #include "procgen/mesh/MeshDeformationSession.h"
 #include "procgen/mesh/MeshModifierGraph.h"
@@ -15,6 +17,46 @@
 namespace eve::procgen {
 
 void exposeMeshModifierGraph(ssq::Table& table) {
+    auto dynamicPaint = table.addClass<DynamicMeshUvPaintSession>(
+        "ProcgenDynamicMeshUvPaintSession",
+        std::function<DynamicMeshUvPaintSession*()>([]() -> DynamicMeshUvPaintSession* { return nullptr; }), true);
+    dynamicPaint.addFunc("initialize", [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self,
+                                                                        MeshBuild* mesh, image::ImageData* pixels) {
+        if (!mesh || !pixels)
+            return eve::script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "initialize requires mesh and ImageData", "input", {},
+                "procgen.dynamicMeshUvPaint.script")));
+        return eve::script::projectResult(vm, self->initializeResult(*mesh, *pixels));
+    });
+    dynamicPaint.addFunc("updateMesh", [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self,
+                                                                         MeshBuild* mesh) {
+        if (!mesh)
+            return eve::script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "updateMesh requires a mesh", "mesh", {},
+                "procgen.dynamicMeshUvPaint.script")));
+        return eve::script::projectResult(vm, self->updateMeshResult(*mesh));
+    });
+    dynamicPaint.addFunc("paintSurfacePoint",
+                         [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self, int triangle, float x,
+                                                         float y, float z, float radius, float r, float g, float b,
+                                                         float a, bool wrapU, bool wrapV) {
+        return eve::script::projectResult(vm, self->paintSurfacePointResult(triangle, x, y, z, radius, r, g, b, a,
+                                                                            wrapU, wrapV));
+    });
+    dynamicPaint.addFunc("undo", [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self) {
+        return eve::script::projectResult(vm, self->undoResult());
+    });
+    dynamicPaint.addFunc("currentImageResult", [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self) {
+        auto result = self->currentImageResult();
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        auto instance = eve::script::makeOwnedSquirrelInstance<image::ImageData>(vm, std::move(result).takeValue());
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
+        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
+        projected.set("value", std::move(instance).takeValue());
+        return projected;
+    });
+    dynamicPaint.addFunc("getMeshRevision", [](DynamicMeshUvPaintSession* self) { return self->meshRevision(); });
+    dynamicPaint.addFunc("getPaintRevision", [](DynamicMeshUvPaintSession* self) { return self->paintRevision(); });
     auto sample = table.addClass<SplineSample>("ProcgenSplineSample", ssq::Class::Ctor<SplineSample()>());
     sample.addFunc("getX", [](SplineSample* self) { return self->x; });
     sample.addFunc("getY", [](SplineSample* self) { return self->y; });
@@ -272,6 +314,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
                                          float z, float radius, float strength, float falloff) mutable {
                         return projectSessionVoid(self->applyBrushResult(mode, x, y, z, radius, strength, falloff));
                     });
+    session.addFunc("applyBrushGpu",
+                    [projectSessionVoid](MeshDeformationSession* self, const std::string& mode, float x, float y,
+                                         float z, float radius, float strength, float falloff) mutable {
+                        return projectSessionVoid(self->applyBrushGpuResult(mode, x, y, z, radius, strength, falloff));
+                    });
     session.addFunc(
         "applyDirectionalBrush",
         [projectSessionVoid](MeshDeformationSession* self, float x, float y, float z, float radius, float strength,
@@ -285,6 +332,14 @@ void exposeMeshModifierGraph(ssq::Table& table) {
                                          float maxDisplacement) mutable {
                         return projectSessionVoid(self->applyImpactResult(x, y, z, impulseX, impulseY, impulseZ, radius,
                                                                           plasticity, hardness, maxDisplacement));
+                    });
+    session.addFunc("applyImpactGpu",
+                    [projectSessionVoid](MeshDeformationSession* self, float x, float y, float z, float impulseX,
+                                         float impulseY, float impulseZ, float radius, float plasticity, float hardness,
+                                         float maxDisplacement) mutable {
+                        return projectSessionVoid(self->applyImpactGpuResult(x, y, z, impulseX, impulseY, impulseZ,
+                                                                             radius, plasticity, hardness,
+                                                                             maxDisplacement));
                     });
     session.addFunc("prepareImpactVertexBlocks",
                     [projectSessionVoid](MeshDeformationSession* self, int divisionsPerAxis) mutable {
