@@ -1,4 +1,4 @@
-#include "physics/Cloth.h"
+#include "physics/cloth/Cloth.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"

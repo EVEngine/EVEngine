@@ -10,6 +10,7 @@
 // ============================================================================
 
 persist physics = null
+persist clothModule = null
 persist cloth = null
 persist fluid = null
 persist grabbing = false
@@ -26,7 +27,7 @@ function resetScene() {
     local w = config.width * 1.0;
     local h = config.height * 1.0;
 
-    cloth = physics.newCloth(18, 12, 14.0, 48.0, 36.0);
+    cloth = clothModule.newCloth(18, 12, 14.0, 48.0, 36.0);
     cloth.setGravity(0.0, 980.0);
     cloth.setStiffness(0.9);
     cloth.setIterations(5);
@@ -51,6 +52,7 @@ function resetScene() {
 eve_init = function() {
     gfx.setBackgroundColor(0.07, 0.08, 0.11, 1.0);
     if (typeof physics != "instance") physics = eve.Physics();
+    if (typeof clothModule != "instance") clothModule = eve.Cloth();
     physics.setMeter(30.0);
     if (typeof cloth != "instance" || typeof fluid != "instance")
         resetScene();

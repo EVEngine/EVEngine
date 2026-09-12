@@ -23,6 +23,11 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 # reconfigures when an individual test/*.cpp is newer than that list (not when
 # anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+# Resource sharing must test the same optional validation provider as EVGraphics.
+get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
+if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
+  set_property(SOURCE ShaderResourceSharing.cpp APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
+endif()
 # The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
 set_source_files_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
   "${CMAKE_SOURCE_DIR}/src/modules/procgen/dtl_compat")
@@ -69,7 +74,7 @@ endif()
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
 # binary. Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp)
+  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()

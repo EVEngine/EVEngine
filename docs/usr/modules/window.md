@@ -48,3 +48,5 @@ print(window.getWidth() + "x" + window.getHeight() + "\n");
 
 **源码：** [`src/modules/window/`](../../../src/modules/window/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `window`。
+
+`hasFocus()` 在窗口线程返回当前窗口是否拥有输入焦点，可用于限制边缘滚动等后台不应响应的输入。

@@ -60,6 +60,10 @@ public:
     [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
         return SimulationDeterminism::ToleranceBounded;
     }
+    /** @brief Return stable backend name for scripts and diagnostics. */
+    [[nodiscard]] std::string getBackendName() const { return "gpu"; }
+    /** @brief Query a stable cloth feature name; unsupported features never silently fall back. */
+    [[nodiscard]] bool supportsFeature(const std::string &feature) const;
     /** @brief Restores tick/progress metadata after an owner-level restore. */
     [[nodiscard("check GPU cloth observation restore")]]
     eve::Result<void> restoreObservation(const SimulationObservation &observation) override;

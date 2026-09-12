@@ -24,8 +24,9 @@
 #include "graphics/Waterfall.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
-#include "physics/Cloth.h"
-#include "physics/Cloth3D.h"
+#include "physics/cloth/Cloth.h"
+#include "physics/cloth/ClothModule.h"
+#include "physics/cloth/Cloth3D.h"
 #include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
@@ -41,8 +42,7 @@ using namespace eve::physics;
 using namespace eve::graphics;
 
 TEST_CASE("softbody.cloth.fallsAndPinsHold") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(8, 6, 10.f, 100.f, 40.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(8, 6, 10.f, 100.f, 40.f));
     REQUIRE(cloth.get() != nullptr);
     CHECK_EQ(cloth->getCols(), 8);
     CHECK_EQ(cloth->getRows(), 6);
@@ -69,8 +69,7 @@ TEST_CASE("softbody.cloth.fallsAndPinsHold") {
 }
 
 TEST_CASE("softbody.cloth.grabMovesParticle") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(6, 6, 12.f, 50.f, 50.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(6, 6, 12.f, 50.f, 50.f));
     // Unpin a mid particle so it can be grabbed.
     const int idx = 3 * 6 + 3;
     cloth->unpin(idx);
@@ -91,8 +90,7 @@ TEST_CASE("softbody.cloth.grabMovesParticle") {
 }
 
 TEST_CASE("softbody.cloth.selfCollisionSeparates") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(10, 8, 12.f, 20.f, 20.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(10, 8, 12.f, 20.f, 20.f));
     cloth->setGravity(0.f, 320.f);
     cloth->setBounds(0.f, 0.f, 600.f, 600.f);
     cloth->setParticleSize(3.f);
@@ -121,8 +119,7 @@ TEST_CASE("softbody.cloth.selfCollisionSeparates") {
 }
 
 TEST_CASE("softbody.cloth.foldAngleLimited") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(3, 3, 10.f, 0.f, 0.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(3, 3, 10.f, 0.f, 0.f));
     cloth->setGravity(0.f, 0.f);
     cloth->setMaxFoldAngle(30.f);
     cloth->setFoldStiffness(1.f);
@@ -154,7 +151,7 @@ TEST_CASE("softbody.cloth.collidesWithWorld") {
     REQUIRE(ground != nullptr);
     ground->newRectangleFixture(800.f, 20.f);
 
-    std::unique_ptr<Cloth> cloth(mod->newCloth(6, 6, 10.f, 300.f, 60.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(6, 6, 10.f, 300.f, 60.f));
     for (int i = 0; i < cloth->getParticleCount(); ++i)
         cloth->unpin(i);
     cloth->setGravity(0.f, 600.f);
@@ -169,8 +166,7 @@ TEST_CASE("softbody.cloth.collidesWithWorld") {
 }
 
 TEST_CASE("softbody.cloth.interactAtRepels") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(6, 6, 12.f, 50.f, 50.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(6, 6, 12.f, 50.f, 50.f));
     for (int i = 0; i < cloth->getParticleCount(); ++i)
         cloth->unpin(i);
     cloth->setGravity(0.f, 0.f);
@@ -202,7 +198,7 @@ TEST_CASE("softbody.cloth.momentumExchangeScalesWithMass") {
         auto *box = world->newBody("dynamic", 400.f, 120.f);
         REQUIRE(box != nullptr);
         box->newRectangleFixture(40.f, 40.f, density, 0.2f, 0.f);
-        std::unique_ptr<Cloth> cloth(mod->newCloth(6, 4, 10.f, 340.f, 20.f));
+        std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(6, 4, 10.f, 340.f, 20.f));
         for (int i = 0; i < cloth->getParticleCount(); ++i)
             cloth->unpin(i);
         cloth->setGravity(0.f, 600.f);
@@ -222,8 +218,7 @@ TEST_CASE("softbody.cloth.momentumExchangeScalesWithMass") {
 }
 
 TEST_CASE("softbody.cloth3d.pinsHoldUnderGravity") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(8, 6, 0.5f, 0.f, 3.f, 0.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(8, 6, 0.5f, 0.f, 3.f, 0.f));
     REQUIRE(cloth.get() != nullptr);
     REQUIRE_EQ(cloth->getParticleCount(), 48);
     REQUIRE(cloth->isPinned(0));
@@ -236,8 +231,7 @@ TEST_CASE("softbody.cloth3d.pinsHoldUnderGravity") {
 }
 
 TEST_CASE("softbody.cloth3d.grabMovesParticle") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(6, 6, 0.5f, 0.f, 2.f, 0.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(6, 6, 0.5f, 0.f, 2.f, 0.f));
     const int idx = 3 * 6 + 3;
     cloth->unpin(idx);
     const float x = cloth->getParticleX(idx);
@@ -257,8 +251,7 @@ TEST_CASE("softbody.cloth3d.grabMovesParticle") {
 }
 
 TEST_CASE("softbody.cloth3d.selfCollisionSeparates") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(10, 8, 0.5f, -1.f, 2.f, -1.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(10, 8, 0.5f, -1.f, 2.f, -1.f));
     cloth->setGravity(0.f, -2.5f, 0.f);
     cloth->setBounds(-1.f, -2.f, -1.f, 6.f, 6.f, 6.f);
     cloth->setStiffness(0.9f);
@@ -285,8 +278,7 @@ TEST_CASE("softbody.cloth3d.selfCollisionSeparates") {
 }
 
 TEST_CASE("softbody.cloth3d.foldAngleLimited") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(3, 3, 0.5f, 0.f, 2.f, 0.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(3, 3, 0.5f, 0.f, 2.f, 0.f));
     cloth->setGravity(0.f, 0.f, 0.f);
     cloth->setMaxFoldAngle(30.f);
     cloth->setFoldStiffness(1.f);
@@ -309,7 +301,7 @@ TEST_CASE("softbody.cloth3d.collidesWithWorld3D") {
     REQUIRE(ground != nullptr);
     ground->newBoxShape(8.f, 1.f, 8.f);
 
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(8, 6, 0.5f, 0.f, 4.f, 0.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(8, 6, 0.5f, 0.f, 4.f, 0.f));
     for (int i = 0; i < cloth->getParticleCount(); ++i)
         cloth->unpin(i);
     cloth->setGravity(0.f, -6.f, 0.f);
@@ -330,7 +322,7 @@ TEST_CASE("softbody.cloth3d.momentumExchangeScalesWithMass") {
         auto *box = world3->newBody("dynamic", 0.f, 1.2f, 0.f);
         REQUIRE(box != nullptr);
         box->newBoxShape(1.f, 0.8f, 1.f, density, 0.2f, 0.f);
-        std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(6, 4, 0.4f, -0.6f, 3.f, -0.6f));
+        std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(6, 4, 0.4f, -0.6f, 3.f, -0.6f));
         for (int i = 0; i < cloth->getParticleCount(); ++i)
             cloth->unpin(i);
         cloth->setGravity(0.f, -5.f, 0.f);
@@ -415,8 +407,7 @@ float testClosestPointTriangle(float ax, float ay, float az, float bx, float by,
 }  // namespace
 
 TEST_CASE("softbody.cloth3d.triangleSelfCollision") {
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(10, 8, 0.5f, -2.f, 2.f, -2.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(10, 8, 0.5f, -2.f, 2.f, -2.f));
     cloth->setGravity(0.f, -3.f, 0.f);
     cloth->setBounds(-2.f, -3.f, -2.f, 8.f, 8.f, 8.f);
     cloth->setStiffness(0.5f);
@@ -566,7 +557,7 @@ TEST_CASE("softbody.render.clothAndFluid2DPreview") {
     REQUIRE(win->setWindowSettings(s));
 
     auto *mod = Physics::create();
-    std::unique_ptr<Cloth> cloth(mod->newCloth(14, 10, 12.f, 40.f, 30.f));
+    std::unique_ptr<Cloth> cloth(eve::cloth::Cloth::create()->newCloth(14, 10, 12.f, 40.f, 30.f));
     cloth->setBounds(0.f, 0.f, 720.f, 420.f);
     cloth->setColor(0.78f, 0.84f, 0.98f, 1.f);
 
@@ -621,8 +612,7 @@ TEST_CASE("softbody.render.cloth3DPreview") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 
-    auto *mod = Physics::create();
-    std::unique_ptr<Cloth3D> cloth(mod->newCloth3D(14, 10, 0.4f, -1.5f, 2.5f, -1.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(14, 10, 0.4f, -1.5f, 2.5f, -1.f));
     cloth->setColor(0.78f, 0.84f, 0.98f, 1.f);
     cloth->setFoldStiffness(0.7f);
 

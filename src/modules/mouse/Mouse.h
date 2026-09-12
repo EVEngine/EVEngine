@@ -52,6 +52,11 @@ public:
 	/** @brief Pixel delta latched by the most recent getMovementX(); call X then Y each frame. */
 	virtual double getMovementY() const = 0;
 
+        /** @brief Horizontal scroll from the latest platform pump; event-thread read, non-consuming. */
+        float getWheelX() const;
+        /** @brief Vertical scroll from the latest platform pump; event-thread read, non-consuming. */
+        float getWheelY() const;
+
 }; // Mouse
 
 } // eve::mouse

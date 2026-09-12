@@ -1441,9 +1441,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                 createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
         } else {
-            g->mesh3dPipeline = createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
-                                                          g->pipelineLayout, target, samples, g->owner->meshBlend,
-                                                          g->owner->meshDepthWrite, g->owner->meshDoubleSided);
+            g->mesh3dPipeline = createMesh3DStylePipeline(
+                g->owner->vertexSpirv(), g->owner->fragmentSpirv(), g->pipelineLayout, target, samples,
+                g->owner->meshBlend, g->owner->meshDepthWrite, g->owner->meshDoubleSided, g->owner->meshRasterState());
             g->mesh3dXrayPipeline =
                 createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
@@ -1539,7 +1539,9 @@ void Graphics::materializeSceneColorResolve() {
             swapchain.image_format == vk::Format::eB8G8R8A8Srgb || swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
         TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
         resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
-                                      Color(1.f, 1.f, 1.f, attachmentEncodesSrgb ? 0.f : 65536.f), 0.f, 0.f, 1.f, 1.f);
+                                      Color(getSceneToneMapping() == SceneToneMapping::Aces ? 1.f : 0.f, 1.f, 1.f,
+                                            attachmentEncodesSrgb ? 0.f : 65536.f),
+                                      0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }
     solidBatches = std::move(savedSolid);
@@ -1890,70 +1892,6 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
 
 size_t Graphics::mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided) {
     return size_t(blend) * 4u + (depthWrite ? 2u : 0u) + (doubleSided ? 1u : 0u);
-}
-
-vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
-                                                 const std::vector<uint32_t> &frag,
-                                                 vk::PipelineLayout layout,
-                                                 const vkb::BuiltRenderPass &rp,
-                                                 vk::SampleCountFlagBits samples, BlendMode blend,
-                                                 bool depthWrite, bool doubleSided) {
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    const auto cull = doubleSided ? vk::CullModeFlagBits::eNone : vk::CullModeFlagBits::eBack;
-    vk::Pipeline pipe{};
-    if (blend == BlendMode::Additive || blend == BlendMode::Premultiplied ||
-        blend == BlendMode::Multiply) {
-        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
-                                                                       makeBlendAttachment(blend));
-        vk::PipelineColorBlendStateCreateInfo cbs{};
-        cbs.attachmentCount = 1;
-        cbs.pAttachments = attachments.data();
-        pipe = device.createPipeline()
-            .useClassicPipeline(vertModule, fragModule)
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<MeshVertex>()
-                                     .addAttributeDescription<MeshVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                           vk::FrontFace::eCounterClockwise)
-            .setMultisampler(false, samples)
-            .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-            .setColorBlending(cbs)
-            .build(rp);
-    } else if (blend == BlendMode::Alpha) {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setAlphaBlending(1)
-                   .build(rp);
-    } else {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setColorAttachmentCount(1)
-                   .build(rp);
-    }
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
-    return pipe;
 }
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
