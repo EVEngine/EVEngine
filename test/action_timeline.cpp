@@ -149,3 +149,43 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
     CHECK_EQ(previewed.value(), 3u);
     CHECK_EQ(editor.previewEvents()[2].itemId, id("combat-notify:hit"));
 }
+
+TEST_CASE("actionTimelineEditor.movesAlignsAndScalesSelectionAtomically") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.selection", timelineFixture());
+    REQUIRE(editor.selectItem(id("combat-notify:hit")).ok());
+    REQUIRE(editor.selectItem(id("combat-state:buffer"), true).ok());
+
+    auto range = editor.selectionRange();
+    REQUIRE(range.ok());
+    CHECK_EQ(range.value().start, eve::Duration::fromNanoseconds(10));
+    CHECK_EQ(range.value().end, eve::Duration::fromNanoseconds(30));
+
+    REQUIRE(editor.moveSelection(eve::Duration::fromNanoseconds(10)).ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[1].time, eve::Duration::fromNanoseconds(30));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(20));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(40));
+    REQUIRE(editor.undo().ok());
+
+    REQUIRE(editor.alignSelectionStart().ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[1].time, eve::Duration::fromNanoseconds(10));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(10));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(30));
+    REQUIRE(editor.undo().ok());
+
+    REQUIRE(editor.alignSelectionEnd().ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[1].time, eve::Duration::fromNanoseconds(30));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(10));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(30));
+    REQUIRE(editor.undo().ok());
+
+    REQUIRE(editor.scaleSelection(eve::Duration::fromNanoseconds(20), eve::Duration::fromNanoseconds(60)).ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[1].time, eve::Duration::fromNanoseconds(40));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(20));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(60));
+    REQUIRE(editor.undo().ok());
+
+    REQUIRE(editor.setTrackLocked(id("combat-track:gameplay"), true).ok());
+    const auto before = editor.target().timeline();
+    CHECK(!editor.moveSelection(eve::Duration::fromNanoseconds(1)).ok());
+    CHECK_EQ(editor.target().timeline().toValue().value().toJson().value(), before.toValue().value().toJson().value());
+}

@@ -132,6 +132,59 @@ TEST_CASE("actionTimelineWidget.dragPreviewCommitsOnceAndUndoRestores") {
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(30));
 }
 
+TEST_CASE("actionTimelineWidget.draggingSelectedBodyMovesWholeSelectionOnce") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-selection", timelineFixture());
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto view = widget(editor, registry.value());
+    REQUIRE(editor.selectItem(id("combat-notify:damage")).ok());
+    REQUIRE(editor.selectItem(id("combat-state:hitbox"), true).ok());
+
+    REQUIRE(view.pointerDown(320.0f, 12.0f).ok());
+    REQUIRE(view.pointerUp(420.0f).ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(30));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(20));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(40));
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(20));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(10));
+}
+
+TEST_CASE("actionTimelineWidget.multiSelectionInspectorScalesCanonicalItems") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-selection-inspector", timelineFixture());
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto view = widget(editor, registry.value());
+    REQUIRE(editor.selectItem(id("combat-notify:damage")).ok());
+    REQUIRE(editor.selectItem(id("combat-state:hitbox"), true).ok());
+    EditingInspector inspector;
+    inspector.scalarReplacements["start"] = 0.00000002f;
+    inspector.scalarReplacements["end"]   = 0.00000006f;
+    REQUIRE(view.inspectSelection(inspector).ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(40));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(20));
+    CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(60));
+}
+
+TEST_CASE("actionTimelineWidget.exposesUndoableSelectionAlignmentCommands") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-selection-align", timelineFixture());
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto view = widget(editor, registry.value());
+    REQUIRE(editor.selectItem(id("combat-notify:damage")).ok());
+    REQUIRE(editor.selectItem(id("combat-state:hitbox"), true).ok());
+    const auto commands = view.commands();
+    REQUIRE_EQ(commands.size(), 8u);
+    CHECK(commands[3].enabled);
+    CHECK(commands[4].enabled);
+
+    REQUIRE(view.handleShortcut("Shift+[").ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(10));
+    REQUIRE(editor.undo().ok());
+    REQUIRE(view.handleShortcut("Shift+]").ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(30));
+}
+
 TEST_CASE("actionTimelineWidget.inspectorUsesRegistryAndCanonicalPayload") {
     eve::editor::ActionTimelineEditor editor("asset.combat.widget", timelineFixture());
     auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
@@ -178,13 +231,16 @@ TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
     auto view = widget(editor, registry.value());
     REQUIRE(view.seek(620.0f).ok());
     const auto track = id("combat-track:gameplay");
-    REQUIRE(view.addNotifyAtCursor(track, "presentation:vfx", {{"uri", eve::Value("asset://vfx/slash")}}).ok());
+    REQUIRE(view.addNotifyAtCursor(track, "presentation:vfx",
+                                   {{"uri", eve::Value("asset://vfx/slash")},
+                                    {"lifetimeSeconds", eve::Value(0.5)}})
+                .ok());
     REQUIRE(view.addStateAtCursor(track, "input:combo-window", eve::Duration::fromNanoseconds(10),
                                   {{"input", eve::Value("Attack.Heavy")}})
                 .ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK_EQ(editor.target().timeline().tracks[0].states.size(), 2u);
     CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 5u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 5u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 7u);
     CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).ok());
 }

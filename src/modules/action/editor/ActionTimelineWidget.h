@@ -55,7 +55,16 @@ struct TimelineWidgetLayout {
 };
 
 /** @brief Standard context-menu and keyboard actions exposed by the widget. */
-enum class TimelineWidgetCommand : std::uint8_t { Copy, Paste, DeleteSelection, Undo, Redo, PlayPause };
+enum class TimelineWidgetCommand : std::uint8_t {
+    Copy,
+    Paste,
+    DeleteSelection,
+    Undo,
+    Redo,
+    PlayPause,
+    AlignSelectionStart,
+    AlignSelectionEnd
+};
 
 /** @brief One host-renderable command entry. */
 struct TimelineWidgetCommandDescriptor {

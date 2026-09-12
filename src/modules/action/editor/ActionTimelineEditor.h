@@ -18,6 +18,12 @@
 
 namespace eve::editor {
 
+/** @brief Exact outer time bounds of the current owning timeline selection. */
+struct TimelineSelectionRange {
+    Duration start = Duration::zero();
+    Duration end   = Duration::zero();
+};
+
 /** @brief Prepared deterministic preview advance that can be validated before presentation side effects. */
 struct ActionTimelinePreviewPlan {
     unsigned long long                       timelineRevision = 0;
@@ -173,6 +179,19 @@ public:
     std::size_t selectionCount() const noexcept { return selection_.size(); }
     /** @brief Return selected item IDs in lexical order as owning values. */
     [[nodiscard]] std::vector<LogicalId> selectedItemIds() const;
+    /** @brief Return the outer bounds of every selected section, notify and notify-state. */
+    [[nodiscard]] EditorResult<TimelineSelectionRange> selectionRange() const;
+    /** @brief Move the complete selection by one exact delta in a single undoable transaction. */
+    [[nodiscard]] EditorResult<void> moveSelection(Duration delta);
+    /** @brief Align selected item starts to the earliest selected start while preserving item durations. */
+    [[nodiscard]] EditorResult<void> alignSelectionStart();
+    /** @brief Align selected item ends to the latest selected end while preserving item durations. */
+    [[nodiscard]] EditorResult<void> alignSelectionEnd();
+    /**
+     * @brief Proportionally fit the complete selection into exact destination bounds.
+     * @remarks Relative times and section blend windows are rounded to the nearest nanosecond.
+     */
+    [[nodiscard]] EditorResult<void> scaleSelection(Duration start, Duration end);
     /** @brief Copy selected items into an owning editor clipboard. */
     [[nodiscard]] EditorResult<std::size_t> copySelection();
     /** @brief Paste copied items at an exact offset with new stable ids. */

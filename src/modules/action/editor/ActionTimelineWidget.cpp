@@ -257,14 +257,24 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
 
 std::optional<TimelineHit> ActionTimelineWidget::hitTest(float x, float y) const {
     const auto projected = layout();
+    const auto containsY = [&](const TimelineItemGeometry& item) {
+        return y >= item.minimumY && y <= item.maximumY;
+    };
+    // Resize handles remain the most precise affordance even when items overlap.
     for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
-        if (y < it->minimumY || y > it->maximumY || x < it->minimumX - kHandleRadius ||
-            x > it->maximumX + kHandleRadius)
-            continue;
+        if (!containsY(*it) || !it->state) continue;
         if (it->state && std::abs(x - it->minimumX) <= kHandleRadius)
             return TimelineHit{it->itemId, TimelineHitPart::StartHandle};
         if (it->state && std::abs(x - it->maximumX) <= kHandleRadius)
             return TimelineHit{it->itemId, TimelineHitPart::EndHandle};
+    }
+    // A point notify drawn over a state span must remain directly selectable.
+    for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
+        if (!containsY(*it) || it->state) continue;
+        if (x >= it->minimumX && x <= it->maximumX) return TimelineHit{it->itemId, TimelineHitPart::Body};
+    }
+    for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
+        if (!containsY(*it) || !it->state) continue;
         if (x >= it->minimumX && x <= it->maximumX) return TimelineHit{it->itemId, TimelineHitPart::Body};
     }
     return std::nullopt;
@@ -282,7 +292,9 @@ EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool addi
         return widgetError("editor.action.timeline.widget.item-missing", "Timeline item no longer exists",
                            EditorStatus::Conflict);
     if (item->locked) return widgetError("editor.action.timeline.track-locked", "Action track is locked");
-    auto selected = editor_.selectItem(item->itemId, additiveSelection);
+    const auto selectedIds     = editor_.selectedItemIds();
+    const bool alreadySelected = std::find(selectedIds.begin(), selectedIds.end(), item->itemId) != selectedIds.end();
+    auto selected = editor_.selectItem(item->itemId, additiveSelection || alreadySelected);
     if (!selected.ok()) return selected;
     drag_ = DragState{item->itemId, hit->part, xToTime(x), item->start, item->end, item->start, item->end, item->state};
     return eve::editing::applied<void>();
@@ -331,6 +343,8 @@ EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
     const DragState completed = *drag_;
     drag_.reset();
     const auto item = findItem(editor_.target().timeline(), completed.itemId);
+    if (completed.part == TimelineHitPart::Body && editor_.selectionCount() > 1)
+        return editor_.moveSelection(difference(completed.previewStart, completed.originalStart));
     if (item && item->animationSection) {
         if (completed.part == TimelineHitPart::Body)
             return editor_.moveAnimationSection(completed.itemId,
@@ -353,7 +367,25 @@ EditorResult<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xTo
 
 EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
     const auto selected = editor_.selectedItemIds();
-    if (selected.size() != 1) return eve::editing::noOp();
+    if (selected.size() > 1) {
+        auto range = editor_.selectionRange();
+        if (!range.ok()) return EditorResult<void>::failure(range.status());
+        float       startSeconds = static_cast<float>(range.value().start.seconds());
+        float       endSeconds   = static_cast<float>(range.value().end.seconds());
+        const float maximum = static_cast<float>(editor_.target().timeline().duration.seconds());
+        inspector.beginGroup("action.timeline.selection", "Selection");
+        bool changed = inspector.scalar("start", "Start", startSeconds, 0.0f, maximum);
+        changed      = inspector.scalar("end", "End", endSeconds, 0.0f, maximum) || changed;
+        inspector.endGroup();
+        if (!changed) return eve::editing::noOp();
+        auto start = Duration::fromSeconds(startSeconds);
+        auto end   = Duration::fromSeconds(endSeconds);
+        if (!start || !end)
+            return widgetError("editor.action.timeline.widget.selection-time-invalid",
+                               "Selection bounds are invalid");
+        return editor_.scaleSelection(start.value(), end.value());
+    }
+    if (selected.empty()) return eve::editing::noOp();
     auto item = findItem(editor_.target().timeline(), selected.front());
     if (!item)
         return widgetError("editor.action.timeline.widget.item-missing", "Selected item no longer exists",
@@ -457,9 +489,12 @@ EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& insp
 
 std::vector<TimelineWidgetCommandDescriptor> ActionTimelineWidget::commands() const {
     const bool selected = editor_.selectionCount() > 0;
+    const bool multi    = editor_.selectionCount() > 1;
     return {{TimelineWidgetCommand::Copy, "Copy", "Ctrl+C", selected},
             {TimelineWidgetCommand::Paste, "Paste at Playhead", "Ctrl+V", clipboardAnchor_.has_value()},
             {TimelineWidgetCommand::DeleteSelection, "Delete", "Delete", selected},
+            {TimelineWidgetCommand::AlignSelectionStart, "Align Starts", "Shift+[", multi},
+            {TimelineWidgetCommand::AlignSelectionEnd, "Align Ends", "Shift+]", multi},
             {TimelineWidgetCommand::Undo, "Undo", "Ctrl+Z", editor_.canUndo()},
             {TimelineWidgetCommand::Redo, "Redo", "Ctrl+Y", editor_.canRedo()},
             {TimelineWidgetCommand::PlayPause, editor_.playing() ? "Pause" : "Play", "Space", true}};
@@ -487,6 +522,8 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
                          "editor.action.timeline.widget.paste", "Could not paste timeline selection");
         }
         case TimelineWidgetCommand::DeleteSelection: return editor_.deleteSelection();
+        case TimelineWidgetCommand::AlignSelectionStart: return editor_.alignSelectionStart();
+        case TimelineWidgetCommand::AlignSelectionEnd: return editor_.alignSelectionEnd();
         case TimelineWidgetCommand::Undo: {
             auto result = editor_.undo();
             if (result.ok()) return eve::editing::applied<void>();
@@ -512,6 +549,8 @@ EditorResult<void> ActionTimelineWidget::handleShortcut(std::string_view shortcu
     if (shortcut == "Ctrl+C") return invoke(TimelineWidgetCommand::Copy);
     if (shortcut == "Ctrl+V") return invoke(TimelineWidgetCommand::Paste);
     if (shortcut == "Delete" || shortcut == "Backspace") return invoke(TimelineWidgetCommand::DeleteSelection);
+    if (shortcut == "Shift+[") return invoke(TimelineWidgetCommand::AlignSelectionStart);
+    if (shortcut == "Shift+]") return invoke(TimelineWidgetCommand::AlignSelectionEnd);
     if (shortcut == "Ctrl+Z") return invoke(TimelineWidgetCommand::Undo);
     if (shortcut == "Ctrl+Y" || shortcut == "Ctrl+Shift+Z") return invoke(TimelineWidgetCommand::Redo);
     if (shortcut == "Space") return invoke(TimelineWidgetCommand::PlayPause);
