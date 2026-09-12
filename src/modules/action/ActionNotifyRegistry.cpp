@@ -3,6 +3,7 @@
 #include "action/ActionAudioBlock.h"
 #include "action/ActionCameraBlock.h"
 #include "action/ActionDamageBlock.h"
+#include "action/ActionGameplayEventBlock.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionVfxBlock.h"
@@ -63,6 +64,24 @@ public:
         });
         if (result) return std::move(*result);
         return failure(DiagnosticCode::NotFound, "no damage sink accepts the action target", "target");
+    }
+};
+
+class ActionGameplayEventHandler final : public IActionNotifyHandler {
+public:
+    Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
+        if (event.kind != ActionTimelineEventKind::Notify)
+            return failure(DiagnosticCode::InvalidArgument,
+                           "gameplay event block must be instantaneous", "event.kind");
+        auto binding = ActionGameplayEventBinding::fromPayload(event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        std::optional<Result<void>> result;
+        cap::forEachUntil<IActionGameplayEventSink>([&](IActionGameplayEventSink* sink) {
+            result.emplace(sink->emit(binding.value(), context));
+            return true;
+        });
+        if (result) return std::move(*result);
+        return failure(DiagnosticCode::NotFound, "no gameplay event sink is registered", binding.value().tag);
     }
 };
 
@@ -168,6 +187,9 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
     if (!cameraHandler) return Result<ActionNotifyRegistry>::failure(cameraHandler.status());
     auto damageHandler = registry.registerHandler("combat:damage", std::make_shared<ActionDamageHandler>());
     if (!damageHandler) return Result<ActionNotifyRegistry>::failure(damageHandler.status());
+    auto gameplayEventHandler =
+        registry.registerHandler("gameplay:event", std::make_shared<ActionGameplayEventHandler>());
+    if (!gameplayEventHandler) return Result<ActionNotifyRegistry>::failure(gameplayEventHandler.status());
     auto parameterHandler = registry.registerHandler(
         "presentation:parameter-curve", std::make_shared<ActionParameterCurveHandler>());
     if (!parameterHandler) return Result<ActionNotifyRegistry>::failure(parameterHandler.status());
@@ -270,6 +292,10 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     if (event.type.format() == "combat:damage") {
         auto damage = ActionDamageBinding::fromPayload(event.payload);
         if (!damage) return Result<void>::failure(damage.status());
+    }
+    if (event.type.format() == "gameplay:event") {
+        auto gameplayEvent = ActionGameplayEventBinding::fromPayload(event.payload);
+        if (!gameplayEvent) return Result<void>::failure(gameplayEvent.status());
     }
     return Result<void>::success();
 }

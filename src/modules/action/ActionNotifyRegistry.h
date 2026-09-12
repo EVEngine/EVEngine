@@ -45,6 +45,8 @@ struct ActionNotifyContext {
     std::vector<OptionalRef<const IAttachmentPointSource>> targetAttachments;
     /** @brief Authoritative timeline time associated with this dispatch. */
     Duration                         time = Duration::zero();
+    /** @brief Deterministic simulation tick associated with this dispatch, when available. */
+    SimulationTick                   tick = SimulationTick::zero();
     /** @brief Finite positive host playback multiplier used by synchronized presentation blocks. */
     double                           playbackRate = 1.0;
     /** @brief Whether the callback is an editor/runtime preview projection. */
