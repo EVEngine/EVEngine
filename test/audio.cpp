@@ -8,6 +8,7 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
+#include "action/ActionParameterCurve.h"
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
@@ -270,6 +271,38 @@ TEST_CASE("audio.actionWaveformProjectsRealPcmWithPitchLoopAndBoundedBuckets") {
 
     request.bucketCount = 5000;
     CHECK(!provider->waveform(request).ok());
+}
+
+TEST_CASE("audio.actionParameterCurveDrivesAndRestoresMasterVolume") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    audio->setVolume(0.8f);
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    eve::Value::Object payload{
+        {"target", "audio:master-volume"}, {"operation", "multiply"},
+        {"keys", eve::Value::Array{
+                     eve::Value::Object{{"time", 0.0}, {"value", 1.0}, {"interpolation", "linear"}},
+                     eve::Value::Object{{"time", 1.0}, {"value", 0.0}, {"interpolation", "linear"}}}}};
+    eve::action::ActionAdvance advance;
+    advance.id = eve::action::ActionExecutionId{94};
+    advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
+                                      actionLogicalId("presentation-track:parameter"),
+                                      actionLogicalId("presentation-parameter:master-fade"),
+                                      actionLogicalId("presentation:parameter-curve"),
+                                      eve::Duration::zero(), payload});
+    advance.activeBlocks.push_back({actionLogicalId("presentation-track:parameter"),
+                                    actionLogicalId("presentation-parameter:master-fade"),
+                                    actionLogicalId("presentation:parameter-curve"),
+                                    eve::Duration::fromNanoseconds(500'000'000),
+                                    eve::Duration::fromNanoseconds(1'000'000'000), payload});
+    eve::action::ActionNotifyContext context;
+    context.executionId = advance.id;
+    REQUIRE(runtime.apply(advance, context).ok());
+    CHECK(std::abs(audio->getVolume() - 0.4f) < 0.0001f);
+    REQUIRE(runtime.interrupt(context).ok());
+    CHECK(std::abs(audio->getVolume() - 0.8f) < 0.0001f);
 }
 
 TEST_CASE("audio.streamSource.pump") {

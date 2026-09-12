@@ -1,5 +1,6 @@
 #include "action/editor/ActionTimelineEditor.h"
 
+#include "action/ActionParameterCurve.h"
 #include "editor/EditorProperty.h"
 
 #include <algorithm>
@@ -587,6 +588,80 @@ EditorResult<void> ActionTimelineEditor::updateItem(const LogicalId& itemId, Log
         }
     }
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
+}
+
+EditorResult<void> ActionTimelineEditor::addParameterKey(const LogicalId& itemId,
+                                                          action::ActionParameterKey key) {
+    for (const auto& track : target_.timeline().tracks) {
+        const auto found = std::find_if(track.states.begin(), track.states.end(),
+                                        [&](const auto& state) { return state.id == itemId; });
+        if (found == track.states.end()) continue;
+        if (found->type.format() != "presentation:parameter-curve")
+            return rejected("editor.action.timeline.parameter-type", "Timeline item is not a parameter curve");
+        auto binding = action::ActionParameterCurveBinding::fromPayload(found->payload);
+        if (!binding)
+            return rejected("editor.action.timeline.parameter-invalid", commonMessage(binding.status(),
+                                                                                       "Parameter curve is invalid"));
+        binding.value().keys.push_back(key);
+        std::sort(binding.value().keys.begin(), binding.value().keys.end(),
+                  [](const auto& left, const auto& right) { return left.time < right.time; });
+        auto payload = binding.value().toPayload(found->payload);
+        auto validated = action::ActionParameterCurveBinding::fromPayload(payload);
+        if (!validated)
+            return rejected("editor.action.timeline.parameter-key-invalid",
+                            commonMessage(validated.status(), "Parameter key is invalid"));
+        return updateItem(itemId, found->type, std::move(payload));
+    }
+    return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
+}
+
+EditorResult<void> ActionTimelineEditor::editParameterKey(const LogicalId& itemId, std::size_t index,
+                                                           action::ActionParameterKey key) {
+    for (const auto& track : target_.timeline().tracks) {
+        const auto found = std::find_if(track.states.begin(), track.states.end(),
+                                        [&](const auto& state) { return state.id == itemId; });
+        if (found == track.states.end()) continue;
+        if (found->type.format() != "presentation:parameter-curve")
+            return rejected("editor.action.timeline.parameter-type", "Timeline item is not a parameter curve");
+        auto binding = action::ActionParameterCurveBinding::fromPayload(found->payload);
+        if (!binding)
+            return rejected("editor.action.timeline.parameter-invalid", commonMessage(binding.status(),
+                                                                                       "Parameter curve is invalid"));
+        if (index >= binding.value().keys.size())
+            return rejected("editor.action.timeline.parameter-key-not-found", "Parameter key index is unavailable");
+        binding.value().keys[index] = key;
+        auto payload = binding.value().toPayload(found->payload);
+        auto validated = action::ActionParameterCurveBinding::fromPayload(payload);
+        if (!validated)
+            return rejected("editor.action.timeline.parameter-key-invalid",
+                            commonMessage(validated.status(), "Parameter key is invalid"));
+        return updateItem(itemId, found->type, std::move(payload));
+    }
+    return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
+}
+
+EditorResult<void> ActionTimelineEditor::removeParameterKey(const LogicalId& itemId, std::size_t index) {
+    for (const auto& track : target_.timeline().tracks) {
+        const auto found = std::find_if(track.states.begin(), track.states.end(),
+                                        [&](const auto& state) { return state.id == itemId; });
+        if (found == track.states.end()) continue;
+        if (found->type.format() != "presentation:parameter-curve")
+            return rejected("editor.action.timeline.parameter-type", "Timeline item is not a parameter curve");
+        auto binding = action::ActionParameterCurveBinding::fromPayload(found->payload);
+        if (!binding)
+            return rejected("editor.action.timeline.parameter-invalid", commonMessage(binding.status(),
+                                                                                       "Parameter curve is invalid"));
+        if (index == 0 || index + 1 >= binding.value().keys.size())
+            return rejected("editor.action.timeline.parameter-endpoint", "Parameter curve endpoints cannot be removed");
+        binding.value().keys.erase(binding.value().keys.begin() + static_cast<std::ptrdiff_t>(index));
+        auto payload = binding.value().toPayload(found->payload);
+        auto validated = action::ActionParameterCurveBinding::fromPayload(payload);
+        if (!validated)
+            return rejected("editor.action.timeline.parameter-key-invalid",
+                            commonMessage(validated.status(), "Parameter key removal is invalid"));
+        return updateItem(itemId, found->type, std::move(payload));
+    }
+    return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
 }
 
 EditorResult<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,

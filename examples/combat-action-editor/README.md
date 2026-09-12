@@ -20,6 +20,9 @@ Controls:
 - Click empty timeline space to seek.
 - Drag an item body to move it; drag a state edge to resize it.
 - Edit the selected hitbox start/end in the inspector sliders.
+- The Presentation lane includes a cubic master-volume parameter curve. Its
+  sampled shape is drawn inside the block; native inspector/script APIs edit
+  its keys through the same undoable timeline transaction.
 - **Undo / Redo** (or Ctrl+Z / Ctrl+Y) operates on the native timeline
   transaction history.
 - Hold the right mouse button over the preview to orbit; use the mouse wheel to

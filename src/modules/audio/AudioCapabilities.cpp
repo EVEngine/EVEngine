@@ -1,5 +1,6 @@
 #include "action/ActionAudioBlock.h"
 #include "action/ActionAudioWaveform.h"
+#include "action/ActionParameterCurve.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
@@ -16,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include <list>
+#include <limits>
 #include <map>
 #include <memory>
 #include <optional>
@@ -150,6 +152,72 @@ private:
         return eve::Result<eve::action::ActionAudioWaveform>::failure(
             eve::Diagnostic::error(code, std::move(message), std::move(path)));
     }
+};
+
+class AudioActionParameterSink final : public eve::action::IActionParameterSink {
+public:
+    bool supports(const eve::LogicalId& target) const noexcept override {
+        return target.format() == "audio:master-volume";
+    }
+
+    eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
+        auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
+        if (!audio)
+            return parameterFailure(eve::DiagnosticCode::NotFound, "Audio parameter target is unavailable", "audio");
+        const ActiveKey key{sample.executionId, sample.itemId.format()};
+        auto candidate = active_;
+        if (sample.phase == eve::action::ActionParameterPhase::Begin) {
+            if (candidate.contains(key))
+                return parameterFailure(eve::DiagnosticCode::Conflict,
+                                        "Audio parameter curve is already active", "itemId");
+            if (candidate.empty()) baseline_ = audio->getVolume();
+            candidate.emplace(key, ActiveValue{sample.operation, sample.value});
+        } else if (sample.phase == eve::action::ActionParameterPhase::Update) {
+            const auto found = candidate.find(key);
+            if (found == candidate.end())
+                return parameterFailure(eve::DiagnosticCode::NotFound,
+                                        "Audio parameter curve has no active state", "itemId");
+            found->second = ActiveValue{sample.operation, sample.value};
+        } else {
+            if (!candidate.erase(key))
+                return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+        }
+        const double value = compose(candidate);
+        if (!std::isfinite(value) || value < 0.0 || value > static_cast<double>(std::numeric_limits<float>::max()))
+            return parameterFailure(eve::DiagnosticCode::InvalidArgument,
+                                    "Audio parameter curves produced an invalid master volume", "value");
+        active_ = std::move(candidate);
+        audio->setVolume(static_cast<float>(value));
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+private:
+    using ActiveKey = std::pair<eve::action::ActionExecutionId, std::string>;
+    struct ActiveValue {
+        eve::action::ActionParameterOperation operation = eve::action::ActionParameterOperation::Replace;
+        double                                value = 0.0;
+    };
+
+    double compose(const std::map<ActiveKey, ActiveValue>& values) const noexcept {
+        double result = baseline_;
+        for (const auto& [key, active] : values) {
+            (void)key;
+            switch (active.operation) {
+                case eve::action::ActionParameterOperation::Replace: result = active.value; break;
+                case eve::action::ActionParameterOperation::Add: result += active.value; break;
+                case eve::action::ActionParameterOperation::Multiply: result *= active.value; break;
+            }
+        }
+        return result;
+    }
+
+    static eve::Result<void> parameterFailure(eve::DiagnosticCode code, std::string message,
+                                               std::string path) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    }
+
+    std::map<ActiveKey, ActiveValue> active_;
+    double                           baseline_ = 1.0;
 };
 
 using ActiveKey = std::pair<eve::action::ActionExecutionId, std::string>;
@@ -482,8 +550,10 @@ void registerAudioCapabilities() {
     static AudioQueryImpl impl;
     static AudioActionProvider actionProvider;
     static ActionAudioWaveformProvider waveformProvider;
+    static AudioActionParameterSink parameterSink;
     eve::cap::provide<eve::IAudioQuery>(&impl);
     eve::cap::provide<eve::action::IActionAudioWaveformProvider>(&waveformProvider);
+    eve::cap::addListener<eve::action::IActionParameterSink>(&parameterSink);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
     eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
 }

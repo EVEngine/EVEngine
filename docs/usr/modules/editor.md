@@ -628,6 +628,14 @@ if (actionEditor.hasPreviewHost())
 `hasPreviewHost()` 返回 false，时间轴编辑和
 确定性事件采样仍可使用。
 
+连续参数自动化使用 `presentation:parameter-curve` NotifyState。payload 的 `target` 是 LogicalId，
+`operation` 可为 `replace`、`add` 或 `multiply`，`keys` 必须包含时间为 0 和 1 的端点，并可为每段选择
+`step`、`linear` 或 `cubic`。原生 Timeline 会绘制曲线和关键点；选中后 Inspector 可修改时间、数值、切线和
+插值。脚本可用 `addParameterKey`、`editParameterKey`、`removeParameterKey` 做可撤销编辑，用
+`getParameterKeyCount/Time/Value/Interpolation` 读取关键帧，并用 `sampleParameterCurve` 取得预览值。
+内建 `audio:master-volume` target 可直接驱动并在区块结束时恢复主音量；其他领域通过
+`IActionParameterSink` 注册自己的稳定 target。
+
 ```squirrel
 local dock = editor.newDock();
 dock.setRegionSize("left", 200);

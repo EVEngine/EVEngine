@@ -2,6 +2,7 @@
 
 #include "action/ActionAudioBlock.h"
 #include "action/ActionAudioWaveform.h"
+#include "action/ActionParameterCurve.h"
 #include "common/Capability.h"
 
 #include <algorithm>
@@ -15,6 +16,7 @@ namespace {
 constexpr float kHandleRadius = 6.0f;
 constexpr float kNotifyWidth  = 8.0f;
 constexpr std::size_t kMaximumWaveformBuckets = 512;
+constexpr std::size_t kMaximumCurveSegments   = 128;
 
 EditorResult<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
@@ -278,6 +280,43 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
                 }
             }
         }
+        if (item.state && item.type.format() == "presentation:parameter-curve") {
+            const auto view = findItem(timeline, item.itemId);
+            auto binding = view ? action::ActionParameterCurveBinding::fromPayload(view->payload)
+                                : Result<action::ActionParameterCurveBinding>::failure(
+                                      Diagnostic::error(DiagnosticCode::NotFound, "curve item is unavailable"));
+            if (binding) {
+                double minimum = binding.value().keys.front().value;
+                double maximum = minimum;
+                for (const auto& key : binding.value().keys) {
+                    minimum = std::min(minimum, key.value);
+                    maximum = std::max(maximum, key.value);
+                }
+                if (maximum - minimum < 1e-9) {
+                    minimum -= 0.5;
+                    maximum += 0.5;
+                }
+                const auto point = [&](double time, double value) {
+                    const float x = item.minimumX + static_cast<float>(time) * (item.maximumX - item.minimumX);
+                    const float normalized = static_cast<float>((value - minimum) / (maximum - minimum));
+                    const float y = item.maximumY - 2.0f - normalized * (item.maximumY - item.minimumY - 4.0f);
+                    return OverlayPoint{x, y, 0.0f};
+                };
+                const auto segments = std::min<std::size_t>(
+                    kMaximumCurveSegments,
+                    std::max<std::size_t>(2, static_cast<std::size_t>(item.maximumX - item.minimumX)));
+                auto previous = point(0.0, binding.value().sample(0.0));
+                for (std::size_t segment = 1; segment <= segments; ++segment) {
+                    const double time = static_cast<double>(segment) / static_cast<double>(segments);
+                    const auto current = point(time, binding.value().sample(time));
+                    overlay.line(previous, current, {0xffdc7affU, 1.5f, false});
+                    previous = current;
+                }
+                for (const auto& key : binding.value().keys)
+                    overlay.circle(point(key.time, key.value), 2.5f,
+                                   {item.selected ? 0xffffffffU : 0xffdc7affU, 1.0f, true});
+            }
+        }
         if (item.state) {
             overlay.line({item.minimumX, item.minimumY, 0.0f}, {item.minimumX, item.maximumY, 0.0f},
                          {0xffffffffU, 2.0f, false});
@@ -472,6 +511,63 @@ EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& insp
         edited.blendCurve                     = *parsedCurve;
         edited.animationUri                   = std::move(animationUri);
         return editor_.editAnimationSectionFull(std::move(edited));
+    }
+
+    if (item->state && item->type.format() == "presentation:parameter-curve") {
+        auto binding = action::ActionParameterCurveBinding::fromPayload(item->payload);
+        if (!binding)
+            return widgetError("editor.action.timeline.widget.parameter-curve-invalid",
+                               "Selected parameter curve payload is invalid");
+        std::string target = binding.value().target.format();
+        std::string operation = std::string(action::actionParameterOperationName(binding.value().operation));
+        Value::Array keys;
+        bool changed = false;
+        inspector.beginGroup("action.timeline.parameter-curve", "Parameter Curve");
+        changed = inspector.string("target", "Target", target) || changed;
+        changed = inspector.string("operation", "Operation", operation) || changed;
+        for (std::size_t index = 0; index < binding.value().keys.size(); ++index) {
+            auto key = binding.value().keys[index];
+            float time = static_cast<float>(key.time);
+            float value = static_cast<float>(key.value);
+            float inTangent = static_cast<float>(key.inTangent);
+            float outTangent = static_cast<float>(key.outTangent);
+            std::string interpolation = std::string(action::actionParameterInterpolationName(key.interpolation));
+            inspector.beginGroup("action.timeline.parameter-key." + std::to_string(index),
+                                 "Key " + std::to_string(index));
+            const bool endpoint = index == 0 || index + 1 == binding.value().keys.size();
+            const float minimumTime = endpoint ? static_cast<float>(key.time)
+                                               : static_cast<float>(binding.value().keys[index - 1].time);
+            const float maximumTime = endpoint ? static_cast<float>(key.time)
+                                               : static_cast<float>(binding.value().keys[index + 1].time);
+            changed = inspector.scalar("time", "Time", time, minimumTime, maximumTime) || changed;
+            changed = inspector.scalar("value", "Value", value, std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.scalar("inTangent", "In Tangent", inTangent,
+                                       std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.scalar("outTangent", "Out Tangent", outTangent,
+                                       std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.string("interpolation", "Interpolation", interpolation) || changed;
+            inspector.endGroup();
+            keys.emplace_back(Value::Object{{"time", static_cast<double>(time)},
+                                            {"value", static_cast<double>(value)},
+                                            {"inTangent", static_cast<double>(inTangent)},
+                                            {"outTangent", static_cast<double>(outTangent)},
+                                            {"interpolation", std::move(interpolation)}});
+        }
+        inspector.endGroup();
+        if (!changed) return eve::editing::applied<void>();
+        auto payload = item->payload;
+        payload["target"] = std::move(target);
+        payload["operation"] = std::move(operation);
+        payload["keys"] = Value(std::move(keys));
+        auto validated = action::ActionParameterCurveBinding::fromPayload(payload);
+        if (!validated)
+            return widgetError("editor.action.timeline.widget.parameter-curve-contract",
+                               "Parameter curve fields violate the block contract");
+        return editor_.updateItem(item->itemId, item->type,
+                                  validated.value().toPayload(std::move(payload)));
     }
 
     float       startSeconds = static_cast<float>(item->start.seconds());

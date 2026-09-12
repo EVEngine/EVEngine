@@ -1,6 +1,7 @@
 #include "action/editor/ActionTimelineWidget.h"
 
 #include "action/ActionAudioWaveform.h"
+#include "action/ActionParameterCurve.h"
 #include "common/Capability.h"
 
 #include "zeroerr/assert.h"
@@ -100,6 +101,24 @@ public:
     std::map<std::string, float>       scalarReplacements;
 };
 
+class CurveEditingInspector final : public eve::editor::IEditorInspector {
+public:
+    void beginGroup(const std::string& id, const std::string&) override { groups.push_back(id); }
+    void endGroup() override { groups.pop_back(); }
+    bool boolean(const std::string&, const std::string&, bool&) override { return false; }
+    bool integer(const std::string&, const std::string&, int&, int, int) override { return false; }
+    bool scalar(const std::string& id, const std::string&, float& value, float, float) override {
+        if (!groups.empty() && groups.back() == "action.timeline.parameter-key.1" && id == "value") {
+            value = 0.25f;
+            return true;
+        }
+        return false;
+    }
+    bool string(const std::string&, const std::string&, std::string&) override { return false; }
+
+    std::vector<std::string> groups;
+};
+
 eve::editor::ActionTimelineWidget widget(eve::editor::ActionTimelineEditor& editor,
                                          eve::action::ActionNotifyRegistry& registry) {
     eve::editor::ActionTimelineWidget result(editor, registry);
@@ -163,6 +182,65 @@ TEST_CASE("actionTimelineWidget.projectsBoundedAudioWaveformWithoutOwningAudioSt
     CHECK(provider.lastRequest.bucketCount > 0);
     CHECK(provider.lastRequest.bucketCount <= 512);
     CHECK(overlay.lines >= static_cast<int>(provider.lastRequest.bucketCount));
+}
+
+TEST_CASE("actionTimelineWidget.drawsAndTransactionallyInspectsParameterCurveKeys") {
+    auto timeline = timelineFixture();
+    timeline.tracks[0].states.clear();
+    timeline.tracks[0].notifies.clear();
+    timeline.tracks[0].states.push_back(
+        {id("parameter-curve:fade"), id("presentation:parameter-curve"),
+         eve::Duration::fromNanoseconds(10), eve::Duration::fromNanoseconds(90),
+         {{"target", "audio:master-volume"}, {"operation", "multiply"},
+          {"keys", eve::Value::Array{
+                       eve::Value::Object{{"time", 0.0}, {"value", 1.0}, {"interpolation", "linear"}},
+                       eve::Value::Object{{"time", 0.5}, {"value", 0.5}, {"interpolation", "cubic"}},
+                       eve::Value::Object{{"time", 1.0}, {"value", 0.0}, {"interpolation", "linear"}}}}}});
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-curve", std::move(timeline));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto view = widget(editor, registry.value());
+    RecordingOverlay overlay;
+    view.draw(overlay);
+    CHECK(overlay.lines >= 128);
+    CHECK(overlay.circles >= 3);
+
+    REQUIRE(editor.selectItem(id("parameter-curve:fade")).ok());
+    CurveEditingInspector inspector;
+    REQUIRE(view.inspectSelection(inspector).ok());
+    auto binding = eve::action::ActionParameterCurveBinding::fromPayload(
+        editor.target().timeline().tracks[0].states[0].payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().keys[1].value, 0.25);
+    REQUIRE(editor.undo().ok());
+    binding = eve::action::ActionParameterCurveBinding::fromPayload(
+        editor.target().timeline().tracks[0].states[0].payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().keys[1].value, 0.5);
+
+    REQUIRE(editor.addParameterKey(id("parameter-curve:fade"),
+                                   {0.25, 0.75, 0.0, 0.0,
+                                    eve::action::ActionParameterInterpolation::Linear})
+                .ok());
+    binding = eve::action::ActionParameterCurveBinding::fromPayload(
+        editor.target().timeline().tracks[0].states[0].payload);
+    REQUIRE(binding.ok());
+    REQUIRE_EQ(binding.value().keys.size(), 4u);
+    CHECK_EQ(binding.value().keys[1].time, 0.25);
+    CHECK(!editor.addParameterKey(id("parameter-curve:fade"), binding.value().keys[1]).ok());
+    REQUIRE(editor.editParameterKey(id("parameter-curve:fade"), 1,
+                                    {0.2, 0.8, 0.0, 0.0,
+                                     eve::action::ActionParameterInterpolation::Step})
+                .ok());
+    REQUIRE(editor.removeParameterKey(id("parameter-curve:fade"), 1).ok());
+    CHECK(!editor.removeParameterKey(id("parameter-curve:fade"), 0).ok());
+    REQUIRE(editor.undo().ok());
+    REQUIRE(editor.redo().ok());
+    REQUIRE(editor.setTrackLocked(id("combat-track:gameplay"), true).ok());
+    CHECK(!editor.addParameterKey(id("parameter-curve:fade"),
+                                  {0.25, 0.75, 0.0, 0.0,
+                                   eve::action::ActionParameterInterpolation::Linear})
+               .ok());
 }
 
 TEST_CASE("actionTimelineWidget.dragPreviewCommitsOnceAndUndoRestores") {

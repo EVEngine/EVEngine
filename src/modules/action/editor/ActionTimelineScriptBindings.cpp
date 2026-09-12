@@ -2,6 +2,7 @@
 
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionParameterCurve.h"
 #include "action/editor/ActionEditorModule.h"
 #include "action/editor/ActionPreviewController.h"
 #include "action/editor/ActionTimelineEditor.h"
@@ -19,6 +20,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <iterator>
 #include <memory>
@@ -616,6 +618,37 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return project(
             vm, self->editor().resizeState(*parsedItemId, std::move(start).takeValue(), std::move(end).takeValue()));
     });
+    actionEditor.addFunc("addParameterKey", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                  float time, float value, float inTangent, float outTangent,
+                                                  const std::string& interpolation) {
+        auto parsedId = LogicalId::parse(itemId);
+        auto parsedInterpolation = action::actionParameterInterpolationFromName(interpolation);
+        if (!self || !parsedId || !parsedInterpolation)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "parameter item id or interpolation is invalid", "parameterKey");
+        return project(vm, self->editor().addParameterKey(
+                               *parsedId, {time, value, inTangent, outTangent, *parsedInterpolation}));
+    });
+    actionEditor.addFunc("editParameterKey", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                   int index, float time, float value, float inTangent,
+                                                   float outTangent, const std::string& interpolation) {
+        auto parsedId = LogicalId::parse(itemId);
+        auto parsedInterpolation = action::actionParameterInterpolationFromName(interpolation);
+        if (!self || !parsedId || index < 0 || !parsedInterpolation)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "parameter key identity or interpolation is invalid", "parameterKey");
+        return project(vm, self->editor().editParameterKey(
+                               *parsedId, static_cast<std::size_t>(index),
+                               {time, value, inTangent, outTangent, *parsedInterpolation}));
+    });
+    actionEditor.addFunc("removeParameterKey", [vm](ScriptActionTimelineEditor* self,
+                                                     const std::string& itemId, int index) {
+        auto parsedId = LogicalId::parse(itemId);
+        if (!self || !parsedId || index < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "parameter key identity is invalid", "parameterKey");
+        return project(vm, self->editor().removeParameterKey(*parsedId, static_cast<std::size_t>(index)));
+    });
     actionEditor.addFunc("undo", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
@@ -994,6 +1027,47 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("getStateEnd", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
         return state ? static_cast<float>(state->end.seconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getParameterKeyCount", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
+        if (!state || state->type.format() != "presentation:parameter-curve") return 0;
+        auto binding = action::ActionParameterCurveBinding::fromPayload(state->payload);
+        return binding ? static_cast<int>(binding.value().keys.size()) : 0;
+    });
+    actionEditor.addFunc("getParameterKeyTime", [](ScriptActionTimelineEditor* self,
+                                                   const std::string& itemId, int index) {
+        const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
+        if (!state || index < 0) return 0.0f;
+        auto binding = action::ActionParameterCurveBinding::fromPayload(state->payload);
+        return binding && static_cast<std::size_t>(index) < binding.value().keys.size()
+                   ? static_cast<float>(binding.value().keys[static_cast<std::size_t>(index)].time)
+                   : 0.0f;
+    });
+    actionEditor.addFunc("getParameterKeyValue", [](ScriptActionTimelineEditor* self,
+                                                    const std::string& itemId, int index) {
+        const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
+        if (!state || index < 0) return 0.0f;
+        auto binding = action::ActionParameterCurveBinding::fromPayload(state->payload);
+        return binding && static_cast<std::size_t>(index) < binding.value().keys.size()
+                   ? static_cast<float>(binding.value().keys[static_cast<std::size_t>(index)].value)
+                   : 0.0f;
+    });
+    actionEditor.addFunc("getParameterKeyInterpolation", [](ScriptActionTimelineEditor* self,
+                                                            const std::string& itemId, int index) {
+        const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
+        if (!state || index < 0) return std::string{};
+        auto binding = action::ActionParameterCurveBinding::fromPayload(state->payload);
+        return binding && static_cast<std::size_t>(index) < binding.value().keys.size()
+                   ? std::string(action::actionParameterInterpolationName(
+                         binding.value().keys[static_cast<std::size_t>(index)].interpolation))
+                   : std::string{};
+    });
+    actionEditor.addFunc("sampleParameterCurve", [](ScriptActionTimelineEditor* self,
+                                                    const std::string& itemId, float progress) {
+        const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
+        if (!state || !std::isfinite(progress)) return 0.0f;
+        auto binding = action::ActionParameterCurveBinding::fromPayload(state->payload);
+        return binding ? static_cast<float>(binding.value().sample(progress)) : 0.0f;
     });
 
     actionEditor.addFunc("getEventCount", [](ScriptActionTimelineEditor* self) {

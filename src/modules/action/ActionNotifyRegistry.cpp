@@ -1,11 +1,14 @@
 #include "action/ActionNotifyRegistry.h"
 
 #include "action/ActionAudioBlock.h"
+#include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionVfxBlock.h"
 
 #include "common/Capability.h"
 
+#include <algorithm>
+#include <map>
 #include <set>
 #include <utility>
 
@@ -22,6 +25,79 @@ Result<void> failure(DiagnosticCode code, std::string message, std::string path 
 }
 
 bool validType(std::string_view type) { return LogicalId::parse(type).has_value(); }
+
+class ActionParameterCurveHandler final : public IActionNotifyHandler {
+public:
+    Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
+        auto binding = ActionParameterCurveBinding::fromPayload(event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        const ActiveKey key{context.executionId, event.itemId.format()};
+        if (event.kind == ActionTimelineEventKind::StateEnter)
+            return Result<void>::success(Status::success(StatusCode::NoOp));
+        if (event.kind != ActionTimelineEventKind::StateExit)
+            return failure(DiagnosticCode::InvalidArgument, "parameter curve requires state boundaries", "event.kind");
+        const auto found = active_.find(key);
+        if (found == active_.end())
+            return Result<void>::success(Status::success(StatusCode::NoOp));
+        ActionParameterSample sample{ActionParameterPhase::End, context.executionId, event.itemId,
+                                     found->second.target, found->second.operation, found->second.value,
+                                     context.preview};
+        auto applied = dispatch(sample);
+        if (!applied) return applied;
+        active_.erase(found);
+        return applied;
+    }
+
+    Result<void> update(const ActionActiveBlock& block, const ActionNotifyContext& context) override {
+        auto binding = ActionParameterCurveBinding::fromPayload(block.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        if (block.duration <= Duration::zero())
+            return failure(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive",
+                           "duration");
+        const double progress = std::clamp(block.localTime.seconds() / block.duration.seconds(), 0.0, 1.0);
+        const double value    = binding.value().sample(progress);
+        const ActiveKey key{context.executionId, block.itemId.format()};
+        const auto found = active_.find(key);
+        const auto phase = found == active_.end() ? ActionParameterPhase::Begin : ActionParameterPhase::Update;
+        ActionParameterSample sample{phase, context.executionId, block.itemId, binding.value().target,
+                                     binding.value().operation, value, context.preview};
+        auto applied = dispatch(sample);
+        if (!applied) return applied;
+        active_[key] = ActiveParameter{binding.value().target, binding.value().operation, value};
+        return applied;
+    }
+
+    Result<void> sample(const ActionActiveBlock& block, const ActionNotifyContext&) const override {
+        auto binding = ActionParameterCurveBinding::fromPayload(block.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        if (block.duration <= Duration::zero())
+            return failure(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive",
+                           "duration");
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    }
+
+private:
+    using ActiveKey = std::pair<ActionExecutionId, std::string>;
+    struct ActiveParameter {
+        LogicalId                target;
+        ActionParameterOperation operation = ActionParameterOperation::Replace;
+        double                   value = 0.0;
+    };
+
+    static Result<void> dispatch(const ActionParameterSample& sample) {
+        std::optional<Result<void>> result;
+        cap::forEachUntil<IActionParameterSink>([&](IActionParameterSink* sink) {
+            if (!sink->supports(sample.target)) return false;
+            result.emplace(sink->apply(sample));
+            return true;
+        });
+        if (result) return std::move(*result);
+        return failure(DiagnosticCode::NotFound,
+                       "no parameter sink accepts the action target", sample.target.format());
+    }
+
+    std::map<ActiveKey, ActiveParameter> active_;
+};
 
 }  // namespace
 
@@ -41,11 +117,16 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"input:combo-window", "Combo Window", "Input", ActionNotifyShape::State, {"input"}},
         {"collision:ignore-window", "Collision Ignore", "Collision", ActionNotifyShape::State, {"channel"}},
         {"movement:root-motion-window", "Root Motion", "Movement", ActionNotifyShape::State, {"mode"}},
+        {"presentation:parameter-curve", "Parameter Curve", "Presentation", ActionNotifyShape::State,
+         {"target", "keys"}},
     };
     for (auto descriptor : builtins) {
         auto registered = registry.registerDescriptor(std::move(descriptor));
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
+    auto parameterHandler = registry.registerHandler(
+        "presentation:parameter-curve", std::make_shared<ActionParameterCurveHandler>());
+    if (!parameterHandler) return Result<ActionNotifyRegistry>::failure(parameterHandler.status());
     Result<void> providers = Result<void>::success(Status::success(StatusCode::NoOp));
     cap::forEach<IActionNotifyProvider>([&](IActionNotifyProvider* provider) {
         if (!providers) return;
@@ -133,6 +214,10 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
                                                                         : ActionVfxShape::State;
         auto vfx = ActionVfxBinding::fromPayload(event.payload, shape);
         if (!vfx) return Result<void>::failure(vfx.status());
+    }
+    if (event.type.format() == "presentation:parameter-curve") {
+        auto curve = ActionParameterCurveBinding::fromPayload(event.payload);
+        if (!curve) return Result<void>::failure(curve.status());
     }
     return Result<void>::success();
 }

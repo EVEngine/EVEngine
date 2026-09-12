@@ -68,10 +68,18 @@ function attackTimeline(duration) {
                 { id="kaykit-notify:swing-audio", type="presentation:audio", timeNs=ns(duration * 0.32),
                   payload={ uri="asset://audio/sword-whoosh" } },
                 { id="kaykit-notify:swing-vfx", type="presentation:vfx", timeNs=ns(duration * 0.34),
-                  payload={ uri="asset://vfx/sword-arc" } },
+                  payload={ uri="asset://vfx/sword-arc", lifetimeSeconds=0.45 } },
                 { id="kaykit-notify:impact-camera", type="presentation:camera", timeNs=ns(duration * 0.46),
                   payload={ cue="combat.light-impact" } },
-              ], states=[] },
+              ], states=[
+                { id="kaykit-state:volume-curve", type="presentation:parameter-curve",
+                  startNs=ns(duration * 0.20), endNs=ns(duration * 0.75),
+                  payload={ target="audio:master-volume", operation="multiply", keys=[
+                      { time=0.0, value=0.35, inTangent=0.0, outTangent=2.2, interpolation="cubic" },
+                      { time=0.35, value=1.0, inTangent=0.0, outTangent=0.0, interpolation="cubic" },
+                      { time=1.0, value=0.55, inTangent=-0.8, outTangent=0.0, interpolation="linear" },
+                  ] } },
+              ] },
             { id="kaykit-track:movement", label="Root Motion", kind="movement", muted=false, locked=false,
               notifies=[], states=[
                 { id="kaykit-state:root-motion", type="movement:root-motion-window", startNs=0,
@@ -485,6 +493,16 @@ function drawTimeline() {
         local y0 = combatEditor.timeline.getItemMinY(i) + 5.0;
         local y1 = combatEditor.timeline.getItemMaxY(i) - 5.0;
         gfx.drawSolidRect(x0, y0, x1 - x0, y1 - y0, r, g, b, 0.95);
+        if (combatEditor.timeline.getItemType(i) == "presentation:parameter-curve") {
+            local curveId = combatEditor.timeline.getItemId(i);
+            for (local sample = 0; sample <= 64; ++sample) {
+                local t = sample / 64.0;
+                local value = combatEditor.timeline.sampleParameterCurve(curveId, t);
+                local px = x0 + t * (x1 - x0);
+                local py = y1 - clampf(value, 0.0, 1.0) * (y1 - y0);
+                gfx.drawSolidRect(px - 1.0, py - 1.0, 2.0, 2.0, 1.0, 0.86, 0.42, 1.0);
+            }
+        }
         if (isState) {
             gfx.drawSolidRect(x0, y0, 3.0, y1 - y0, 1.0, 0.86, 0.44, 1.0);
             gfx.drawSolidRect(x1 - 3.0, y0, 3.0, y1 - y0, 1.0, 0.86, 0.44, 1.0);

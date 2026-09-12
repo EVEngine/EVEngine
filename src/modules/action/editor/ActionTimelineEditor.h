@@ -6,6 +6,7 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "action/ActionParameterCurve.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorSelection.h"
@@ -159,6 +160,13 @@ public:
     [[nodiscard]] EditorResult<void> resizeState(const LogicalId& itemId, Duration start, Duration end);
     /** @brief Replace one item's type and owning payload through one undoable transaction. */
     [[nodiscard]] EditorResult<void> updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload);
+    /** @brief Insert one normalized key into a parameter curve as an undoable edit. */
+    [[nodiscard]] EditorResult<void> addParameterKey(const LogicalId& itemId, action::ActionParameterKey key);
+    /** @brief Replace one indexed parameter key as an undoable edit. */
+    [[nodiscard]] EditorResult<void> editParameterKey(const LogicalId& itemId, std::size_t index,
+                                                      action::ActionParameterKey key);
+    /** @brief Remove one non-endpoint parameter key as an undoable edit. */
+    [[nodiscard]] EditorResult<void> removeParameterKey(const LogicalId& itemId, std::size_t index);
     /** @brief Atomically replace one item's timing, type and owning payload. */
     [[nodiscard]] EditorResult<void> editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
                                               Value::Object payload);

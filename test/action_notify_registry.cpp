@@ -1,6 +1,7 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionAudioBlock.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionPrefabInstances.h"
 #include "action/ActionSpatialBlock.h"
@@ -71,6 +72,29 @@ public:
     eve::Duration                  lastLocalTime = eve::Duration::zero();
 };
 
+class RecordingParameterSink final : public eve::action::IActionParameterSink {
+public:
+    bool supports(const eve::LogicalId& target) const noexcept override {
+        return target.format() == "test:parameter";
+    }
+
+    eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
+        samples.push_back(sample);
+        return eve::Result<void>::success();
+    }
+
+    std::vector<eve::action::ActionParameterSample> samples;
+};
+
+eve::Value::Object curvePayload() {
+    return {{"target", "test:parameter"},
+            {"operation", "multiply"},
+            {"keys", eve::Value::Array{
+                         eve::Value::Object{{"time", 0.0}, {"value", 0.0}, {"interpolation", "linear"}},
+                         eve::Value::Object{{"time", 0.5}, {"value", 1.0}, {"interpolation", "step"}},
+                         eve::Value::Object{{"time", 1.0}, {"value", 0.25}, {"interpolation", "linear"}}}}};
+}
+
 }  // namespace
 
 TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
@@ -78,7 +102,7 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     const auto descriptors = registry.value().descriptors();
-    REQUIRE_EQ(descriptors.size(), 13u);
+    REQUIRE_EQ(descriptors.size(), 14u);
     CHECK_EQ(descriptors.front().type, "collision:ignore-window");
     CHECK_EQ(descriptors.back().type, "presentation:vfx-state");
 
@@ -95,6 +119,71 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     REQUIRE(prefab.ok());
     CHECK_EQ(prefab.value().displayName, "Spawn Prefab");
     CHECK(static_cast<int>(prefab.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
+}
+
+TEST_CASE("actionParameterCurve.validatesSamplesAndRoutesPairedRuntimeLifecycle") {
+    auto payload = curvePayload();
+    auto binding = eve::action::ActionParameterCurveBinding::fromPayload(payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().target, id("test:parameter"));
+    CHECK_EQ(binding.value().operation, eve::action::ActionParameterOperation::Multiply);
+    CHECK_EQ(binding.value().sample(0.25), 0.5);
+    CHECK_EQ(binding.value().sample(0.75), 1.0);
+    CHECK_EQ(binding.value().toPayload({{"extension", true}}).at("extension").asBool(), true);
+    auto invalid = payload;
+    invalid["keys"] = eve::Value::Array{
+        eve::Value::Object{{"time", 0.1}, {"value", 0.0}},
+        eve::Value::Object{{"time", 1.0}, {"value", 1.0}}};
+    auto rejected = eve::action::ActionParameterCurveBinding::fromPayload(invalid);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().path(), "keys");
+
+    {
+        auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+        REQUIRE(registry.ok());
+        eve::action::ActionBlockRuntime runtime(registry.value());
+        eve::action::ActionAdvance advance;
+        advance.id = eve::action::ActionExecutionId{100};
+        advance.activeBlocks.push_back({id("parameter-track:main"), id("parameter-curve:missing-sink"),
+                                        id("presentation:parameter-curve"), eve::Duration::zero(),
+                                        eve::Duration::fromNanoseconds(100), payload});
+        eve::action::ActionNotifyContext context;
+        context.executionId = advance.id;
+        auto missing = runtime.apply(advance, context);
+        CHECK(!missing.ok());
+        CHECK_EQ(missing.status().code(), eve::StatusCode::NotFound);
+    }
+
+    RecordingParameterSink sink;
+    eve::cap::addListener<eve::action::IActionParameterSink>(&sink);
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    eve::action::ActionAdvance advance;
+    advance.id = eve::action::ActionExecutionId{101};
+    advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
+                                      id("parameter-track:main"), id("parameter-curve:fade"),
+                                      id("presentation:parameter-curve"), eve::Duration::zero(), payload});
+    advance.activeBlocks.push_back({id("parameter-track:main"), id("parameter-curve:fade"),
+                                    id("presentation:parameter-curve"), eve::Duration::zero(),
+                                    eve::Duration::fromNanoseconds(100), payload});
+    eve::action::ActionNotifyContext context;
+    context.executionId = advance.id;
+    REQUIRE(runtime.apply(advance, context).ok());
+    REQUIRE_EQ(sink.samples.size(), 1u);
+    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::Begin);
+    CHECK_EQ(sink.samples.back().value, 0.0);
+
+    advance.timelineEvents.clear();
+    advance.activeBlocks.front().localTime = eve::Duration::fromNanoseconds(25);
+    REQUIRE(runtime.apply(advance, context).ok());
+    REQUIRE_EQ(sink.samples.size(), 2u);
+    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::Update);
+    CHECK_EQ(sink.samples.back().value, 0.5);
+    REQUIRE(runtime.interrupt(context).ok());
+    REQUIRE_EQ(sink.samples.size(), 3u);
+    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::End);
+    eve::cap::removeListener<eve::action::IActionParameterSink>(&sink);
 }
 
 TEST_CASE("entitySpatialResolver.absentProviderFailsObservably") {
