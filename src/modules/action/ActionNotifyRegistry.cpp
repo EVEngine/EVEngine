@@ -6,6 +6,7 @@
 #include "action/ActionGameplayEventBlock.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
+#include "action/ActionStateWindowBlock.h"
 #include "action/ActionVfxBlock.h"
 
 #include "common/Capability.h"
@@ -82,6 +83,27 @@ public:
         });
         if (result) return std::move(*result);
         return failure(DiagnosticCode::NotFound, "no gameplay event sink is registered", binding.value().tag);
+    }
+};
+
+class ActionStateWindowHandler final : public IActionNotifyHandler {
+public:
+    Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
+        if (event.kind != ActionTimelineEventKind::StateEnter && event.kind != ActionTimelineEventKind::StateExit)
+            return failure(DiagnosticCode::InvalidArgument, "state window requires enter or exit", "event.kind");
+        auto binding = ActionStateWindowBinding::fromPayload(event.type.format(), event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        std::optional<Result<void>> result;
+        cap::forEachUntil<IActionStateWindowSink>([&](IActionStateWindowSink* sink) {
+            if (!sink->supports(binding.value().kind)) return false;
+            result.emplace(event.kind == ActionTimelineEventKind::StateEnter
+                               ? sink->enter(binding.value(), event, context)
+                               : sink->exit(binding.value(), event, context));
+            return true;
+        });
+        if (result) return std::move(*result);
+        return failure(DiagnosticCode::NotFound, "no state-window sink accepts the action block",
+                       event.type.format());
     }
 };
 
@@ -190,6 +212,12 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
     auto gameplayEventHandler =
         registry.registerHandler("gameplay:event", std::make_shared<ActionGameplayEventHandler>());
     if (!gameplayEventHandler) return Result<ActionNotifyRegistry>::failure(gameplayEventHandler.status());
+    auto stateWindowHandler = std::make_shared<ActionStateWindowHandler>();
+    for (const char* type : {"collision:ignore-window", "combat:hitbox-window",
+                             "combat:invulnerability-window", "input:combo-window"}) {
+        auto registered = registry.registerHandler(type, stateWindowHandler);
+        if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
+    }
     auto parameterHandler = registry.registerHandler(
         "presentation:parameter-curve", std::make_shared<ActionParameterCurveHandler>());
     if (!parameterHandler) return Result<ActionNotifyRegistry>::failure(parameterHandler.status());
@@ -296,6 +324,11 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     if (event.type.format() == "gameplay:event") {
         auto gameplayEvent = ActionGameplayEventBinding::fromPayload(event.payload);
         if (!gameplayEvent) return Result<void>::failure(gameplayEvent.status());
+    }
+    if (event.type.format() == "collision:ignore-window" || event.type.format() == "combat:hitbox-window" ||
+        event.type.format() == "combat:invulnerability-window" || event.type.format() == "input:combo-window") {
+        auto window = ActionStateWindowBinding::fromPayload(event.type.format(), event.payload);
+        if (!window) return Result<void>::failure(window.status());
     }
     return Result<void>::success();
 }

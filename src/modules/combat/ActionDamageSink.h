@@ -11,6 +11,8 @@
 
 namespace eve::combat {
 
+class CombatActionWindowState;
+
 /**
  * @brief Resolves a borrowed mutable CombatState for one live ECS handle.
  * @remarks Called synchronously on the owner thread without an engine lock. The
@@ -35,6 +37,13 @@ public:
 
     /** @brief Opt this adapter into or out of Action damage dispatch. */
     void setEnabled(bool enabled);
+    /**
+     * @brief Borrow active combat windows so invulnerability can reject damage.
+     * @lifetime The state owner must outlive this sink or be cleared before destruction.
+     */
+    void setWindowState(const CombatActionWindowState& state) noexcept;
+    /** @brief Clear the borrowed active-window observer. */
+    void clearWindowState() noexcept;
     /** @brief Return whether this exact adapter is currently registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionDamageSink::supports */
@@ -49,6 +58,7 @@ private:
     ActionCombatStateResolver    resolver_;
     DamageRuntime                runtime_;
     std::optional<DamageOutcome> lastOutcome_;
+    const CombatActionWindowState* windowState_ = nullptr;
 };
 
 }  // namespace eve::combat

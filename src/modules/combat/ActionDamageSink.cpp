@@ -1,5 +1,7 @@
 #include "combat/ActionDamageSink.h"
 
+#include "combat/ActionWindowState.h"
+
 #include "common/Capability.h"
 
 #include <utility>
@@ -32,6 +34,12 @@ void CombatActionDamageSink::setEnabled(bool value) {
         cap::removeListener<action::IActionDamageSink>(this);
 }
 
+void CombatActionDamageSink::setWindowState(const CombatActionWindowState& state) noexcept {
+    windowState_ = &state;
+}
+
+void CombatActionDamageSink::clearWindowState() noexcept { windowState_ = nullptr; }
+
 bool CombatActionDamageSink::supports(ecs::EntityHandle target) const {
     return resolver_ && resolver_(target).has_value();
 }
@@ -43,6 +51,10 @@ Result<void> CombatActionDamageSink::apply(const action::ActionDamageBinding& bi
         return failure(DiagnosticCode::NotFound, "damage target index is unavailable", "targetIndex");
     auto target = resolver_(context.targets[binding.targetIndex]);
     if (!target) return failure(DiagnosticCode::NotFound, "damage target has no combat state", "target");
+    if (windowState_ && windowState_->isInvulnerable(target->get().subject)) {
+        lastOutcome_.reset();
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    }
 
     SubjectRef source = SubjectRef::nil();
     if (context.source) {
