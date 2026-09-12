@@ -1997,12 +1997,18 @@ int World3D::getQueryBodyId(int index) const {
 }
 
 bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const {
+    return pointProbeFiltered(x, y, z, radius, out, ~uint64_t{0}, ~uint64_t{0}) == ClothProbeStatus::Hit;
+}
+
+ClothProbeStatus World3D::pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out,
+                                              uint64_t categoryBits, uint64_t maskBits) const {
     if (out) *out = ClothContact3D{};
-    if (!isValid() || radius <= 0.f) return false;
+    if (!isValid() || radius <= 0.f || !out) return ClothProbeStatus::Miss;
 
     const b3Vec3 target{x, y, z};
     for (Shape3D *s : shapes_) {
         if (!s || !s->isValid() || s->isSensor()) continue;
+        if ((maskBits & s->getCategoryBits()) == 0 || (s->getMaskBits() & categoryBits) == 0) continue;
         // Box3D closest-point proxies are convex-only. Concave surfaces are handled by
         // swept queries (and rigid contact generation), not b3Shape_GetClosestPoint.
         const std::string kind = s->getKind();
@@ -2024,9 +2030,11 @@ bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D
                 out->nz = 0.f;
             }
             out->body = s->getBody();
+            out->friction = s->getFriction();
+            out->restitution = s->getRestitution();
         }
     }
-    return out->hit;
+    return out->hit ? ClothProbeStatus::Hit : ClothProbeStatus::Miss;
 }
 
 const World3D::RayResult &World3D::rayResultAt(int index, const char *operation) const {

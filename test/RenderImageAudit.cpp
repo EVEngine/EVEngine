@@ -72,7 +72,7 @@ using eve::graphics::Color;
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 #include "physics/Body.h"
-#include "physics/Cloth.h"
+#include "physics/cloth/Cloth.h"
 #include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
