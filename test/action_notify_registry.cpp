@@ -1,5 +1,6 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionPrefabBlock.h"
 #include "action/ActionSpatialBlock.h"
 #include "common/EntitySpatialResolver.h"
 
@@ -72,7 +73,7 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     const auto descriptors = registry.value().descriptors();
-    REQUIRE_EQ(descriptors.size(), 12u);
+    REQUIRE_EQ(descriptors.size(), 13u);
     CHECK_EQ(descriptors.front().type, "collision:ignore-window");
     CHECK_EQ(descriptors.back().type, "presentation:vfx-state");
 
@@ -84,6 +85,11 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto hitbox = registry.value().descriptor("combat:hitbox-window");
     REQUIRE(hitbox.ok());
     CHECK(static_cast<int>(hitbox.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
+
+    auto prefab = registry.value().descriptor("gameplay:prefab-spawn");
+    REQUIRE(prefab.ok());
+    CHECK_EQ(prefab.value().displayName, "Spawn Prefab");
+    CHECK(static_cast<int>(prefab.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
 }
 
 TEST_CASE("entitySpatialResolver.absentProviderFailsObservably") {
@@ -159,6 +165,35 @@ TEST_CASE("actionSpatialBlock.decodesSharedAttachmentContractTransactionally") {
     CHECK_EQ(rejected.status().diagnostics().front().path(), "scale");
 }
 
+TEST_CASE("actionPrefabBlock.validatesLifecycleDurationAndSpatialContract") {
+    eve::Value::Object payload{
+        {"uri", "asset://prefabs/sword-wave.glb"},
+        {"lifecycle", "custom_duration"},
+        {"customDurationSeconds", 1.25},
+        {"attachment", "follow_target"},
+        {"bone", "hand_r"},
+        {"scale", eve::Value::Array{1.0, 2.0, 1.0}},
+    };
+    auto binding = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().uri, "asset://prefabs/sword-wave.glb");
+    CHECK_EQ(binding.value().lifecycle, eve::action::PrefabSpawnLifecycle::CustomDuration);
+    CHECK_EQ(binding.value().customDuration, eve::Duration::fromNanoseconds(1250000000));
+    CHECK_EQ(binding.value().spatial.bone, "hand_r");
+    CHECK_EQ(binding.value().spatial.scale.y, 2.0);
+
+    payload["customDurationSeconds"] = 0.0;
+    auto rejected = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().path(), "customDurationSeconds");
+
+    payload["customDurationSeconds"] = 0.5;
+    payload["lifecycle"] = "unknown";
+    rejected = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().path(), "lifecycle");
+}
+
 TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
@@ -175,6 +210,13 @@ TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
     CHECK(registry.value().validate(hitbox).ok());
     hitbox.kind = eve::action::ActionTimelineEventKind::Notify;
     CHECK(!registry.value().validate(hitbox).ok());
+
+    auto prefab = event(eve::action::ActionTimelineEventKind::StateEnter, "gameplay:prefab-spawn");
+    prefab.payload.emplace("uri", eve::Value("asset://prefabs/sword-wave.glb"));
+    prefab.payload.emplace("lifecycle", eve::Value("custom_duration"));
+    CHECK(!registry.value().validate(prefab).ok());
+    prefab.payload.emplace("customDurationSeconds", eve::Value(0.5));
+    CHECK(registry.value().validate(prefab).ok());
 }
 
 TEST_CASE("actionNotifyRegistry.rejectsInvalidAndDuplicateDescriptors") {

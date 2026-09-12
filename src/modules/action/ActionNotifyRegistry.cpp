@@ -1,5 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 
+#include "action/ActionPrefabBlock.h"
+
 #include "common/Capability.h"
 
 #include <set>
@@ -30,6 +32,7 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"presentation:vfx-state", "VFX State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"presentation:audio", "Play Audio", "Presentation", ActionNotifyShape::Instant, {"uri"}},
         {"presentation:audio-state", "Audio State", "Presentation", ActionNotifyShape::State, {"uri"}},
+        {"gameplay:prefab-spawn", "Spawn Prefab", "Gameplay", ActionNotifyShape::State, {"uri"}},
         {"presentation:camera", "Camera Cue", "Presentation", ActionNotifyShape::Instant, {"cue"}},
         {"combat:hitbox-window", "Hitbox Window", "Combat", ActionNotifyShape::State, {"hitbox"}},
         {"combat:invulnerability-window", "Invulnerability Window", "Combat", ActionNotifyShape::State, {}},
@@ -111,6 +114,10 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     for (const auto& field : found->second.requiredPayloadFields)
         if (!event.payload.contains(field))
             return failure(DiagnosticCode::InvalidArgument, "Timeline event is missing required payload field", field);
+    if (event.type.format() == "gameplay:prefab-spawn") {
+        auto prefab = ActionPrefabSpawnBinding::fromPayload(event.payload);
+        if (!prefab) return Result<void>::failure(prefab.status());
+    }
     return Result<void>::success();
 }
 
