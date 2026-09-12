@@ -32,7 +32,9 @@ Controls:
   undoable transactions; the toolbar deletes the selected block and exposes the
   same undo/redo history. Notify type and payload JSON are editable for advanced
   authoring; registered type, Instant/State shape and typed payload contracts are
-  validated before the document changes. The **Joint** tab retains skeleton
+  validated before the document changes. **Enabled** persists in schema v4;
+  disabled blocks remain visible and editable but do not emit preview/runtime
+  events. The **Joint** tab retains skeleton
   transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its
   sampled shape is drawn inside the block; native inspector/script APIs edit

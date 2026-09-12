@@ -772,6 +772,29 @@ EditorResult<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
+EditorResult<void> ActionTimelineEditor::setItemEnabled(const LogicalId& itemId, bool enabled) {
+    action::ActionTimeline candidate = target_.timeline();
+    for (auto& track : candidate.tracks) {
+        for (auto& notify : track.notifies) {
+            if (notify.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            if (notify.enabled == enabled) return eve::editing::noOp();
+            notify.enabled = enabled;
+            return commit(std::move(candidate), enabled ? "Enable action notify" : "Disable action notify",
+                          "action.timeline.item.enabled");
+        }
+        for (auto& state : track.states) {
+            if (state.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            if (state.enabled == enabled) return eve::editing::noOp();
+            state.enabled = enabled;
+            return commit(std::move(candidate), enabled ? "Enable action notify state" : "Disable action notify state",
+                          "action.timeline.item.enabled");
+        }
+    }
+    return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
+}
+
 EditorResult<void> ActionTimelineEditor::setTrackMuted(const LogicalId& trackId, bool muted) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);

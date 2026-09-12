@@ -59,6 +59,10 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
             "test-state:hitbox", "combat:damage", "{\"damageType\":\"slash\",\"amount\":2}");
         invalidPayload <- actionEditor.editItemDetails(
             "test-state:hitbox", "combat:hitbox-window", "{}");
+        disableResult <- actionEditor.setItemEnabled("test-state:hitbox", false);
+        disabledValue <- actionEditor.getItemEnabled("test-state:hitbox");
+        restoreEnabledResult <- actionEditor.undo();
+        restoredEnabledValue <- actionEditor.getItemEnabled("test-state:hitbox");
         removeItemResult <- actionEditor.removeItem("test-state:hitbox");
         itemCountAfterRemove <- actionEditor.getItemCount();
         restoreRemovedResult <- actionEditor.undo();
@@ -101,6 +105,10 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_NE(vm.find("payloadAfterDetails").toString().find("weapon.alt"), std::string::npos);
     CHECK(!vm.find("shapeMismatch").toTable().get<bool>("ok"));
     CHECK(!vm.find("invalidPayload").toTable().get<bool>("ok"));
+    CHECK(vm.find("disableResult").toTable().get<bool>("ok"));
+    CHECK(!vm.find("disabledValue").toBool());
+    CHECK(vm.find("restoreEnabledResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("restoredEnabledValue").toBool());
     CHECK(vm.find("removeItemResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("itemCountAfterRemove").toInt(), 0);
     CHECK(vm.find("restoreRemovedResult").toTable().get<bool>("ok"));

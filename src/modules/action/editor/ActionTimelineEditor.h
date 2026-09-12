@@ -213,6 +213,8 @@ public:
     /** @brief Atomically replace one item's timing, type and owning payload. */
     [[nodiscard]] EditorResult<void> editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
                                               Value::Object payload);
+    /** @brief Enable or disable one notify/state through an undoable transaction. */
+    [[nodiscard]] EditorResult<void> setItemEnabled(const LogicalId& itemId, bool enabled);
     /** @brief Remove one notify or state. */
     [[nodiscard]] EditorResult<void> removeItem(const LogicalId& itemId);
     /** @brief Mute/unmute one track through an undoable operation. */

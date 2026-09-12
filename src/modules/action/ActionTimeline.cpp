@@ -61,6 +61,7 @@ Value encodeNotify(const ActionNotify& notify) {
     object["type"]    = notify.type.format();
     object["timeNs"]  = notify.time.nanoseconds();
     object["payload"] = payloadValue(notify.payload);
+    object["enabled"] = notify.enabled;
     return Value(std::move(object));
 }
 
@@ -71,6 +72,7 @@ Value encodeState(const ActionNotifyState& state) {
     object["startNs"] = state.start.nanoseconds();
     object["endNs"]   = state.end.nanoseconds();
     object["payload"] = payloadValue(state.payload);
+    object["enabled"] = state.enabled;
     return Value(std::move(object));
 }
 
@@ -119,7 +121,7 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
     return Result<ActionAnimationSection>::success(std::move(section));
 }
 
-Result<ActionNotify> decodeNotify(const Value& value, const std::string& path) {
+Result<ActionNotify> decodeNotify(const Value& value, const std::string& path, std::int64_t schemaVersion) {
     if (!value.isObject()) return invalid<ActionNotify>("expected notify object", path);
     auto id = logicalIdField(value, "id", path + ".id");
     if (!id) return Result<ActionNotify>::failure(id.status());
@@ -129,12 +131,18 @@ Result<ActionNotify> decodeNotify(const Value& value, const std::string& path) {
     if (!time) return Result<ActionNotify>::failure(time.status());
     auto payload = payloadField(value, path + ".payload");
     if (!payload) return Result<ActionNotify>::failure(payload.status());
+    bool enabled = true;
+    if (schemaVersion >= 4) {
+        auto decodedEnabled = boolField(value, "enabled", path + ".enabled");
+        if (!decodedEnabled) return Result<ActionNotify>::failure(decodedEnabled.status());
+        enabled = decodedEnabled.value();
+    }
     return Result<ActionNotify>::success(ActionNotify{std::move(id).takeValue(), std::move(type).takeValue(),
                                                       Duration::fromNanoseconds(time.value()),
-                                                      std::move(payload).takeValue()});
+                                                      std::move(payload).takeValue(), enabled});
 }
 
-Result<ActionNotifyState> decodeState(const Value& value, const std::string& path) {
+Result<ActionNotifyState> decodeState(const Value& value, const std::string& path, std::int64_t schemaVersion) {
     if (!value.isObject()) return invalid<ActionNotifyState>("expected notify-state object", path);
     auto id = logicalIdField(value, "id", path + ".id");
     if (!id) return Result<ActionNotifyState>::failure(id.status());
@@ -146,9 +154,15 @@ Result<ActionNotifyState> decodeState(const Value& value, const std::string& pat
     if (!end) return Result<ActionNotifyState>::failure(end.status());
     auto payload = payloadField(value, path + ".payload");
     if (!payload) return Result<ActionNotifyState>::failure(payload.status());
+    bool enabled = true;
+    if (schemaVersion >= 4) {
+        auto decodedEnabled = boolField(value, "enabled", path + ".enabled");
+        if (!decodedEnabled) return Result<ActionNotifyState>::failure(decodedEnabled.status());
+        enabled = decodedEnabled.value();
+    }
     return Result<ActionNotifyState>::success(ActionNotifyState{
         std::move(id).takeValue(), std::move(type).takeValue(), Duration::fromNanoseconds(start.value()),
-        Duration::fromNanoseconds(end.value()), std::move(payload).takeValue()});
+        Duration::fromNanoseconds(end.value()), std::move(payload).takeValue(), enabled});
 }
 
 bool inWindow(Duration value, Duration previous, Duration current, bool includePrevious) {
@@ -273,11 +287,14 @@ Result<std::vector<ActionTimelineEvent>> ActionTimeline::sample(Duration previou
     std::vector<ActionTimelineEvent> out;
     for (const auto& track : tracks) {
         if (track.muted) continue;
-        for (const auto& notify : track.notifies)
+        for (const auto& notify : track.notifies) {
+            if (!notify.enabled) continue;
             if (inWindow(notify.time, previous, current, includePrevious))
                 out.push_back(
                     {ActionTimelineEventKind::Notify, track.id, notify.id, notify.type, notify.time, notify.payload});
+        }
         for (const auto& state : track.states) {
+            if (!state.enabled) continue;
             if (inWindow(state.start, previous, current, includePrevious))
                 out.push_back(
                     {ActionTimelineEventKind::StateEnter, track.id, state.id, state.type, state.start, state.payload});
@@ -305,6 +322,7 @@ Result<std::vector<ActionActiveBlock>> ActionTimeline::activeBlocks(Duration tim
     for (const auto& track : tracks) {
         if (track.muted) continue;
         for (const auto& state : track.states) {
+            if (!state.enabled) continue;
             if (time < state.start || time >= state.end) continue;
             out.push_back({track.id,
                            state.id,
@@ -488,13 +506,15 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
         track.locked             = locked.value();
         const auto& notifyValues = *notifies->getIf<Value::Array>();
         for (std::size_t index = 0; index < notifyValues.size(); ++index) {
-            auto decoded = decodeNotify(notifyValues[index], path + ".notifies[" + std::to_string(index) + "]");
+            auto decoded = decodeNotify(notifyValues[index], path + ".notifies[" + std::to_string(index) + "]",
+                                        version.value());
             if (!decoded) return Result<ActionTimeline>::failure(decoded.status());
             track.notifies.push_back(std::move(decoded).takeValue());
         }
         const auto& stateValues = *states->getIf<Value::Array>();
         for (std::size_t index = 0; index < stateValues.size(); ++index) {
-            auto decoded = decodeState(stateValues[index], path + ".states[" + std::to_string(index) + "]");
+            auto decoded = decodeState(stateValues[index], path + ".states[" + std::to_string(index) + "]",
+                                       version.value());
             if (!decoded) return Result<ActionTimeline>::failure(decoded.status());
             track.states.push_back(std::move(decoded).takeValue());
         }

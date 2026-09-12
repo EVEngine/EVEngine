@@ -95,7 +95,7 @@ public:
 
 }  // namespace
 
-TEST_CASE("actionMontage.schemaV2RoundTripAndV1Migration") {
+TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     auto timeline                       = montageTimeline();
     timeline.montage.basePlayRate       = 1.25;
     timeline.montage.looping            = true;
@@ -133,10 +133,26 @@ TEST_CASE("actionMontage.schemaV2RoundTripAndV1Migration") {
         object->erase("sourceEndNs");
         object->erase("blendCurve");
     }
+    auto* tracks = (*versionTwoObject)["tracks"].getIf<eve::Value::Array>();
+    REQUIRE(tracks != nullptr);
+    for (auto& track : *tracks) {
+        auto* trackObject = track.getIf<eve::Value::Object>();
+        REQUIRE(trackObject != nullptr);
+        for (const char* collection : {"notifies", "states"}) {
+            auto* items = (*trackObject)[collection].getIf<eve::Value::Array>();
+            REQUIRE(items != nullptr);
+            for (auto& item : *items) {
+                auto* itemObject = item.getIf<eve::Value::Object>();
+                REQUIRE(itemObject != nullptr);
+                itemObject->erase("enabled");
+            }
+        }
+    }
     auto migratedV2 = eve::action::ActionTimeline::fromValue(versionTwo);
     REQUIRE(migratedV2.ok());
     CHECK(migratedV2.value().splitTimestamps.empty());
     CHECK_EQ(migratedV2.value().animationSections[0].blendCurve, eve::action::ActionBlendCurve::EaseInOut);
+    CHECK(migratedV2.value().tracks[0].states[0].enabled);
 
     auto  legacy       = encoded.value();
     auto* legacyObject = legacy.getIf<eve::Value::Object>();

@@ -888,6 +888,13 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
         return project(vm, self->editor().removeItem(*parsedItemId));
     });
+    actionEditor.addFunc("setItemEnabled", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                 bool enabled) {
+        auto parsedItemId = LogicalId::parse(itemId);
+        if (!self || !parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
+        return project(vm, self->editor().setItemEnabled(*parsedItemId, enabled));
+    });
     actionEditor.addFunc("editItemDetails", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                   const std::string& type, const std::string& payloadJson) {
         auto parsedItemId = LogicalId::parse(itemId);
@@ -1399,6 +1406,14 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (const auto* state = findState(timeline, itemId)) return static_cast<float>(state->end.seconds());
         if (const auto* notify = findNotify(timeline, itemId)) return static_cast<float>(notify->time.seconds());
         return 0.0f;
+    });
+    actionEditor.addFunc("getItemEnabled", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self) return false;
+        const auto& timeline = self->editor().target().timeline();
+        if (findSection(timeline, itemId)) return true;
+        if (const auto* state = findState(timeline, itemId)) return state->enabled;
+        if (const auto* notify = findNotify(timeline, itemId)) return notify->enabled;
+        return false;
     });
     actionEditor.addFunc("getItemPayloadJson", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         if (!self) return std::string("{}");

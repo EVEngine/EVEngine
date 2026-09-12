@@ -381,6 +381,7 @@ function panelInspector() {
     if (combatEditor.inspectorMode == "action") {
         ui.text("Action Block", "action-block-title"); ui.text("No Action Block selected", "action-block-id");
         ui.text("", "action-block-kind");
+        ui.checkbox("Enabled", true, "action-enabled");
         ui.text("Type", "action-type-label"); ui.inputText("##Type", "", "action-type");
         ui.setItemSize(300.0, 0.0);
         ui.text("Payload JSON", "action-payload-label"); ui.inputText("##Payload", "{}", "action-payload");
@@ -592,6 +593,10 @@ function handleUiEvents() {
                 local finish = combatEditor.selectedActionState ? ui.getValue("action-end") : start;
                 result = combatEditor.timeline.setItemTiming(combatEditor.selectedActionId, start, finish);
                 combatEditor.status = result.ok ? "Action Block timing committed" : result.status.summary;
+            } else if (id == "action-enabled" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemEnabled(combatEditor.selectedActionId,
+                                                               ui.getChecked("action-enabled"));
+                combatEditor.status = result.ok ? "Action Block enabled state committed" : result.status.summary;
             } else if ((id == "action-type" || id == "action-payload") && combatEditor.selectedActionId != "") {
                 result = combatEditor.timeline.editItemDetails(combatEditor.selectedActionId,
                     ui.getValueText("action-type"), ui.getValueText("action-payload"));
@@ -724,18 +729,21 @@ function updateLabels() {
                        (combatEditor.selectedActionState ? "State window" : "Instant notify"));
             ui.setValueText("action-type", selectedType);
             ui.setValueText("action-payload", combatEditor.timeline.getItemPayloadJson(combatEditor.selectedActionId));
+            ui.setChecked("action-enabled", combatEditor.timeline.getItemEnabled(combatEditor.selectedActionId));
             ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
             ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
             ui.setEnabled("action-start", true); ui.setEnabled("action-end", combatEditor.selectedActionState);
             ui.setEnabled("action-type", selectedType != "animation:section");
             ui.setEnabled("action-payload", selectedType != "animation:section");
+            ui.setEnabled("action-enabled", selectedType != "animation:section");
             ui.setEnabled("delete-action", true);
         } else {
             combatEditor.selectedActionId = "";
             ui.setText("action-block-id", "No Action Block selected");
             ui.setText("action-block-kind", "Select a block in the montage timeline");
             ui.setEnabled("action-start", false); ui.setEnabled("action-end", false);
-            ui.setEnabled("action-type", false); ui.setEnabled("action-payload", false); ui.setEnabled("delete-action", false);
+            ui.setEnabled("action-enabled", false); ui.setEnabled("action-type", false);
+            ui.setEnabled("action-payload", false); ui.setEnabled("delete-action", false);
         }
         ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("action-redo", combatEditor.timeline.canRedo());
@@ -775,6 +783,7 @@ function drawTimeline() {
     }
     for (local i = 0; i < combatEditor.timeline.getItemCount(); ++i) {
         local selected = combatEditor.timeline.getItemSelected(i);
+        local enabled = combatEditor.timeline.getItemEnabled(combatEditor.timeline.getItemId(i));
         local isState = combatEditor.timeline.getItemState(i);
         local r = selected ? 0.98 : (isState ? 0.25 : 0.86);
         local g = selected ? 0.67 : (isState ? 0.58 : 0.38);
@@ -782,7 +791,7 @@ function drawTimeline() {
         local x0 = combatEditor.timeline.getItemMinX(i); local x1 = combatEditor.timeline.getItemMaxX(i);
         local y0 = combatEditor.timeline.getItemMinY(i) + 5.0;
         local y1 = combatEditor.timeline.getItemMaxY(i) - 5.0;
-        gfx.drawSolidRect(x0, y0, x1 - x0, y1 - y0, r, g, b, 0.95);
+        gfx.drawSolidRect(x0, y0, x1 - x0, y1 - y0, r, g, b, enabled ? 0.95 : 0.28);
         if (combatEditor.timeline.getItemType(i) == "presentation:parameter-curve") {
             local curveId = combatEditor.timeline.getItemId(i);
             for (local sample = 0; sample <= 64; ++sample) {

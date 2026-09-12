@@ -81,6 +81,27 @@ TEST_CASE("actionTimeline.versionedRoundTripAndDeterministicSampling") {
     CHECK(!decoded.value().activeBlocks(eve::Duration::fromNanoseconds(101)).ok());
 }
 
+TEST_CASE("actionTimeline.disabledItemsPersistAndDoNotProjectRuntimeState") {
+    auto timeline = timelineFixture();
+    timeline.tracks[0].notifies[1].enabled = false;
+    timeline.tracks[0].states[0].enabled   = false;
+
+    auto encoded = timeline.toValue();
+    REQUIRE(encoded.ok());
+    auto decoded = eve::action::ActionTimeline::fromValue(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK(!decoded.value().tracks[0].notifies[1].enabled);
+    CHECK(!decoded.value().tracks[0].states[0].enabled);
+
+    auto sampled = decoded.value().sample(eve::Duration::zero(), eve::Duration::fromNanoseconds(30), true);
+    REQUIRE(sampled.ok());
+    REQUIRE_EQ(sampled.value().size(), 1U);
+    CHECK_EQ(sampled.value()[0].itemId, id("combat-notify:begin"));
+    auto active = decoded.value().activeBlocks(eve::Duration::fromNanoseconds(20));
+    REQUIRE(active.ok());
+    CHECK(active.value().empty());
+}
+
 TEST_CASE("gameplayAction.advanceProjectsAuthoredTimelineBoundaries") {
     eve::action::ActionDefinition definition;
     definition.id            = id("combat:light-attack");

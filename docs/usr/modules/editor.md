@@ -603,6 +603,12 @@ actionEditor.pointerDown(mouseX, mouseY, false);
 actionEditor.pointerMove(mouseX);
 actionEditor.pointerUp(mouseX);
 
+// Inspector mutations share the same native transaction history. Disabled
+// blocks remain authored in schema v4 but do not emit runtime events.
+actionEditor.setItemEnabled("combat-state:hitbox", false);
+actionEditor.editItemDetails("combat-state:hitbox", "combat:hitbox-window",
+                             "{\"hitbox\":\"weapon.main\"}");
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());

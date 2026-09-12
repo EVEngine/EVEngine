@@ -22,7 +22,7 @@ namespace eve::action {
 /** @brief Canonical schema identifier for persisted action timelines. */
 inline constexpr std::string_view kActionTimelineSchemaId = "eve.action.timeline";
 /** @brief Current action timeline schema version. */
-inline constexpr std::uint64_t kActionTimelineSchemaVersion = 3;
+inline constexpr std::uint64_t kActionTimelineSchemaVersion = 4;
 
 /** @brief Built-in deterministic cross-fade curve evaluated without asset callbacks. */
 enum class ActionBlendCurve : std::uint8_t {
@@ -96,6 +96,7 @@ struct ActionNotify {
     LogicalId     type;
     Duration      time = Duration::zero();
     Value::Object payload;
+    bool          enabled = true;
 
     auto operator<=>(const ActionNotify&) const = default;
 };
@@ -107,6 +108,7 @@ struct ActionNotifyState {
     Duration      start = Duration::zero();
     Duration      end   = Duration::zero();
     Value::Object payload;
+    bool          enabled = true;
 
     auto operator<=>(const ActionNotifyState&) const = default;
 };
