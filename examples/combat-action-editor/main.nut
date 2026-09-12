@@ -7,6 +7,7 @@ persist combatEditor = {
     workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
     actionModule = null, assetCatalog = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
     assetPickerOpen = false, assetSearch = "",
+    inspectorMode = "joint", selectedActionId = "", selectedActionState = false,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -371,7 +372,24 @@ function panelPreview() {
 }
 
 function panelInspector() {
-    ui.text("Joint Inspector", "inspector-title"); ui.text("", "action-uri"); ui.text("", "revision");
+    ui.text("Inspector", "inspector-title");
+    ui.beginToolbar("inspector-tabs");
+    ui.iconButton("bone", "Joint", "inspect-joint"); ui.setItemSelected(combatEditor.inspectorMode == "joint");
+    ui.iconButton("layers", "Action Block", "inspect-action"); ui.setItemSelected(combatEditor.inspectorMode == "action");
+    ui.end();
+    ui.text("", "action-uri"); ui.text("", "revision");
+    if (combatEditor.inspectorMode == "action") {
+        ui.text("Action Block", "action-block-title"); ui.text("No Action Block selected", "action-block-id");
+        ui.text("", "action-block-type"); ui.text("", "action-block-kind");
+        ui.slider("Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-start");
+        ui.slider("End", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-end");
+        ui.beginToolbar("action-tools"); ui.iconButton("trash", "Delete Block", "delete-action");
+        ui.iconButton("undo", "", "action-undo"); ui.iconButton("redo", "", "action-redo"); ui.end();
+        ui.textWrapped("Timing edits are validated and committed as undoable timeline transactions.",
+                       245.0, "action-help");
+        return;
+    }
+    ui.text("Joint Transform", "joint-title");
     ui.text("", "selected-item");
     ui.separator("inspector-sep-1"); ui.text("Position", "position-label");
     ui.slider("X", 0.0, -2.0, 2.0, "position-x"); ui.slider("Y", 0.0, -2.0, 2.0, "position-y");
@@ -387,6 +405,12 @@ function panelInspector() {
     ui.separator("inspector-sep-2"); ui.text("", "last-event");
     ui.textWrapped("Drag a state body to move it, or drag either edge to resize. Empty-space click seeks.",
                    245.0, "interaction-help");
+}
+
+function selectedActionIndex() {
+    for (local i = 0; i < combatEditor.timeline.getItemCount(); ++i)
+        if (combatEditor.timeline.getItemSelected(i)) return i;
+    return -1;
 }
 
 function panelTimeline() {
@@ -441,6 +465,14 @@ function mountTimelinePanel() {
     ui.mountBuildAs("action.timeline"); ui.select("action.timeline");
     ui.setHostPos(combatEditor.workspace.getRegionX("bottom"), combatEditor.workspace.getRegionY("bottom"), 0.0, 0.0);
     ui.setHostSize(combatEditor.workspace.getRegionW("bottom"), combatEditor.workspace.getRegionH("bottom"));
+    ui.setHostMovable(false); ui.setHostResizable(false); ui.setHostOverlay(false);
+}
+
+function mountInspectorPanel() {
+    ui.beginBuild(); ui.beginWindow("Inspector", "root"); panelInspector(); ui.end();
+    ui.mountBuildAs("action.inspector"); ui.select("action.inspector");
+    ui.setHostPos(combatEditor.workspace.getRegionX("right"), combatEditor.workspace.getRegionY("right"), 0.0, 0.0);
+    ui.setHostSize(combatEditor.workspace.getRegionW("right"), combatEditor.workspace.getRegionH("right"));
     ui.setHostMovable(false); ui.setHostResizable(false); ui.setHostOverlay(false);
 }
 
@@ -515,6 +547,15 @@ function handleUiEvents() {
             combatEditor.status = "Runtime interruption · paired state exits + 0.20 s blend";
         } else if (id == "undo" || id == "redo") {
             applyHistory(id);
+        } else if (id == "inspect-joint" || id == "inspect-action") {
+            combatEditor.inspectorMode = id == "inspect-action" ? "action" : "joint";
+            mountInspectorPanel();
+        } else if (id == "delete-action" && combatEditor.selectedActionId != "") {
+            local result = combatEditor.timeline.removeItem(combatEditor.selectedActionId);
+            combatEditor.status = result.ok ? "Action Block deleted" : result.status.summary;
+            if (result.ok) combatEditor.selectedActionId = "";
+        } else if (id == "action-undo" || id == "action-redo") {
+            applyHistory(id == "action-undo" ? "undo" : "redo");
         } else if (id == "set-key" || id == "delete-key" || id == "clip-undo" || id == "clip-redo") {
             local result = id == "set-key" ? combatEditor.clipEditor.keySelectedBone() :
                 id == "delete-key" ? combatEditor.clipEditor.deleteSelectedKey() :
@@ -542,17 +583,23 @@ function handleUiEvents() {
         } else if (host == "action.inspector") {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
-            if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
+            if ((id == "action-start" || id == "action-end") && combatEditor.selectedActionId != "") {
+                local start = ui.getValue("action-start");
+                local finish = combatEditor.selectedActionState ? ui.getValue("action-end") : start;
+                result = combatEditor.timeline.setItemTiming(combatEditor.selectedActionId, start, finish);
+                combatEditor.status = result.ok ? "Action Block timing committed" : result.status.summary;
+            } else if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
                 ui.getValue("position-x"), ui.getValue("position-y"), ui.getValue("position-z"));
             else if (id.find("rotation-") == 0) result = combatEditor.clipEditor.setSelectedRotation(
                 ui.getValue("rotation-x"), ui.getValue("rotation-y"), ui.getValue("rotation-z"));
             else if (id.find("scale-") == 0) result = combatEditor.clipEditor.setSelectedScale(
                 ui.getValue("scale-x"), ui.getValue("scale-y"), ui.getValue("scale-z"));
             else if (id == "key-time") result = combatEditor.clipEditor.moveSelectedKey(ui.getValue("key-time"));
-            if (result.ok) requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
+            if (id.find("action-") != 0 && result.ok) requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
                                          "Rebuild edited KayKit clip");
-            combatEditor.status = result.ok ? "Joint transform keyed · revision " + combatEditor.clipEditor.getRevision()
-                                            : result.status.summary;
+            if (id.find("action-") != 0)
+                combatEditor.status = result.ok ? "Joint transform keyed · revision " + combatEditor.clipEditor.getRevision()
+                                                : result.status.summary;
         }
         changed = ui.consumeChange();
     }
@@ -582,6 +629,15 @@ function updateTimelinePointer() {
     }
     if (down && !combatEditor.mouseDown) {
         combatEditor.timeline.pointerDown(x, y, false);
+        local selectedIndex = selectedActionIndex();
+        if (selectedIndex >= 0) {
+            combatEditor.selectedActionId = combatEditor.timeline.getItemId(selectedIndex);
+            combatEditor.selectedActionState = combatEditor.timeline.getItemState(selectedIndex);
+            if (combatEditor.inspectorMode != "action") {
+                combatEditor.inspectorMode = "action";
+                mountInspectorPanel();
+            }
+        }
         if (!combatEditor.timeline.isDragging()) {
             requireResult(combatEditor.timeline.seekX(x), "Seek timeline");
             combatEditor.status = "Playhead positioned from timeline";
@@ -649,6 +705,29 @@ function updateLabels() {
         combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
     ui.select("action.inspector"); ui.setText("action-uri", "Clip: Melee_1H_Attack_Chop");
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
+    if (combatEditor.inspectorMode == "action") {
+        local selected = selectedActionIndex();
+        if (selected >= 0) {
+            combatEditor.selectedActionId = combatEditor.timeline.getItemId(selected);
+            combatEditor.selectedActionState = combatEditor.timeline.getItemState(selected);
+            local selectedType = combatEditor.timeline.getItemType(selected);
+            ui.setText("action-block-id", combatEditor.selectedActionId);
+            ui.setText("action-block-type", "Type: " + selectedType);
+            ui.setText("action-block-kind", selectedType == "animation:section" ? "Animation section" :
+                       (combatEditor.selectedActionState ? "State window" : "Instant notify"));
+            ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
+            ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
+            ui.setEnabled("action-start", true); ui.setEnabled("action-end", combatEditor.selectedActionState);
+            ui.setEnabled("delete-action", true);
+        } else {
+            combatEditor.selectedActionId = "";
+            ui.setText("action-block-id", "No Action Block selected"); ui.setText("action-block-type", "");
+            ui.setText("action-block-kind", "Select a block in the montage timeline");
+            ui.setEnabled("action-start", false); ui.setEnabled("action-end", false); ui.setEnabled("delete-action", false);
+        }
+        ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
+        ui.setEnabled("action-redo", combatEditor.timeline.canRedo());
+    }
     ui.setText("selected-item", "Joint: " + combatEditor.clipEditor.getSelectedBone());
     ui.setText("last-event", combatEditor.lastEvent);
     ui.setValue("position-x", combatEditor.clipEditor.getSelectedPositionX()); ui.setValue("position-y", combatEditor.clipEditor.getSelectedPositionY()); ui.setValue("position-z", combatEditor.clipEditor.getSelectedPositionZ());

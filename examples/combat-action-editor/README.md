@@ -27,7 +27,11 @@ Controls:
   toggles playback.
 - Click empty timeline space to seek.
 - Drag an item body to move it; drag a state edge to resize it.
-- Edit the selected hitbox start/end in the inspector sliders.
+- Selecting an animation section, instant notify, or state window automatically
+  opens the **Action Block** inspector. Its timing sliders commit validated,
+  undoable transactions; the toolbar deletes the selected block and exposes the
+  same undo/redo history. The **Joint** tab retains skeleton transform and key
+  editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its
   sampled shape is drawn inside the block; native inspector/script APIs edit
   its keys through the same undoable timeline transaction.

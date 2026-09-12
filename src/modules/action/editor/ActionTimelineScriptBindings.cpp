@@ -90,6 +90,21 @@ const action::ActionNotifyState* findState(const action::ActionTimeline& timelin
     return nullptr;
 }
 
+const action::ActionNotify* findNotify(const action::ActionTimeline& timeline, const std::string& itemId) {
+    for (const auto& track : timeline.tracks) {
+        const auto found = std::find_if(track.notifies.begin(), track.notifies.end(),
+                                        [&](const auto& notify) { return notify.id.format() == itemId; });
+        if (found != track.notifies.end()) return &*found;
+    }
+    return nullptr;
+}
+
+const action::ActionAnimationSection* findSection(const action::ActionTimeline& timeline, const std::string& itemId) {
+    const auto found = std::find_if(timeline.animationSections.begin(), timeline.animationSections.end(),
+                                    [&](const auto& section) { return section.id.format() == itemId; });
+    return found == timeline.animationSections.end() ? nullptr : &*found;
+}
+
 class ScriptActionTimelineAssetCatalog {
 public:
     explicit ScriptActionTimelineAssetCatalog(std::filesystem::path projectRoot)
@@ -843,6 +858,35 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return project(
             vm, self->editor().resizeState(*parsedItemId, std::move(start).takeValue(), std::move(end).takeValue()));
     });
+    actionEditor.addFunc("setItemTiming", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                float startSeconds, float endSeconds) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        auto parsedItemId = LogicalId::parse(itemId);
+        auto start        = seconds(startSeconds);
+        auto end          = seconds(endSeconds);
+        if (!parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is not canonical", "itemId");
+        if (!start) return script::projectStatusResult(vm, start.status(), false, false);
+        if (!end) return script::projectStatusResult(vm, end.status(), false, false);
+        const auto& timeline = self->editor().target().timeline();
+        if (const auto* section = findSection(timeline, itemId))
+            return project(vm, self->editor().resizeAnimationSection(*parsedItemId, start.value(), end.value(),
+                                                                      section->blendIn));
+        if (const auto* state = findState(timeline, itemId))
+            return project(vm, self->editor().editItem(*parsedItemId, start.value(), end.value(), state->type,
+                                                       state->payload));
+        if (const auto* notify = findNotify(timeline, itemId))
+            return project(vm, self->editor().editItem(*parsedItemId, start.value(), start.value(), notify->type,
+                                                       notify->payload));
+        return bindingFailure(vm, DiagnosticCode::NotFound, "timeline item was not found", "itemId");
+    });
+    actionEditor.addFunc("removeItem", [vm](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        auto parsedItemId = LogicalId::parse(itemId);
+        if (!self || !parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
+        return project(vm, self->editor().removeItem(*parsedItemId));
+    });
     actionEditor.addFunc("addParameterKey", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                   float time, float value, float inTangent, float outTangent,
                                                   const std::string& interpolation) {
@@ -1290,6 +1334,22 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("getStateEnd", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
         return state ? static_cast<float>(state->end.seconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getItemStart", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self) return 0.0f;
+        const auto& timeline = self->editor().target().timeline();
+        if (const auto* section = findSection(timeline, itemId)) return static_cast<float>(section->start.seconds());
+        if (const auto* state = findState(timeline, itemId)) return static_cast<float>(state->start.seconds());
+        if (const auto* notify = findNotify(timeline, itemId)) return static_cast<float>(notify->time.seconds());
+        return 0.0f;
+    });
+    actionEditor.addFunc("getItemEnd", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self) return 0.0f;
+        const auto& timeline = self->editor().target().timeline();
+        if (const auto* section = findSection(timeline, itemId)) return static_cast<float>(section->end.seconds());
+        if (const auto* state = findState(timeline, itemId)) return static_cast<float>(state->end.seconds());
+        if (const auto* notify = findNotify(timeline, itemId)) return static_cast<float>(notify->time.seconds());
+        return 0.0f;
     });
     actionEditor.addFunc("getParameterKeyCount", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;
