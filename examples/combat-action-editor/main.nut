@@ -5,7 +5,8 @@ const HITBOX_ID = "kaykit-state:hitbox";
 
 persist combatEditor = {
     workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
-    actionModule = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
+    actionModule = null, assetCatalog = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
+    assetPickerOpen = false, assetSearch = "",
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -232,6 +233,59 @@ function openBundledDocument(assetGuid) {
     activateTab(combatEditor.tabs.len() - 1);
 }
 
+function saveActiveDocument() {
+    local tab = combatEditor.tabs[combatEditor.activeTab];
+    local saved = tab.editor.saveDocument();
+    if (!saved.ok) { combatEditor.status = "Save failed · " + saved.status.summary; return; }
+    local indexed = combatEditor.assetCatalog.registerDocument(tab.assetGuid, tab.resourceUri);
+    if (!indexed.ok) {
+        combatEditor.status = "Saved, but AssetDB registration failed · " + indexed.status.summary;
+        return;
+    }
+    combatEditor.assetCatalog.refresh(combatEditor.assetSearch);
+    combatEditor.status = "Saved and indexed · " + tab.resourceUri;
+    combatEditor.closeArmed = -1; combatEditor.tabUiSignature = "";
+}
+
+function mountAssetPicker() {
+    ui.beginBuild(); ui.beginWindow("Open Montage Asset", "root");
+    ui.searchField("Search Content paths", combatEditor.assetSearch, "asset-search");
+    ui.text(combatEditor.assetCatalog.getAssetCount() + " validated Montage assets", "asset-count");
+    ui.beginScrollList("asset-results", 315.0, 25.0);
+    for (local i = 0; i < combatEditor.assetCatalog.getAssetCount(); ++i)
+        ui.listItem(combatEditor.assetCatalog.getAssetTitle(i) + "  ·  " +
+                    combatEditor.assetCatalog.getAssetUri(i), "pick-asset-" + i);
+    ui.end();
+    ui.beginToolbar("asset-picker-actions"); ui.iconButton("close", "Cancel", "close-asset-picker"); ui.end();
+    ui.end(); ui.mountBuildAs("action.asset-picker"); ui.select("action.asset-picker");
+    ui.setHostOverlay(true); ui.setHostModal(true); ui.setHostMovable(false); ui.setHostResizable(false);
+    ui.setHostPos(330.0, 150.0, 0.0, 0.0); ui.setHostSize(620.0, 420.0); ui.setHostVisible(true);
+}
+
+function showAssetPicker() {
+    local refreshed = combatEditor.assetCatalog.refresh(combatEditor.assetSearch);
+    combatEditor.status = refreshed.ok ? "AssetDB query · " + refreshed.value + " Montage assets"
+                                       : "AssetDB query failed · " + refreshed.status.summary;
+    combatEditor.assetPickerOpen = true;
+    mountAssetPicker();
+}
+
+function hideAssetPicker() {
+    combatEditor.assetPickerOpen = false;
+    ui.select("action.asset-picker"); ui.setHostVisible(false); ui.setHostModal(false);
+}
+
+function openCatalogAsset(index) {
+    if (index < 0 || index >= combatEditor.assetCatalog.getAssetCount()) return;
+    local guid = combatEditor.assetCatalog.getAssetGuid(index);
+    local existing = findOpenAsset(guid);
+    if (existing >= 0) { hideAssetPicker(); activateTab(existing); return; }
+    local title = combatEditor.assetCatalog.getAssetTitle(index);
+    local uri = combatEditor.assetCatalog.getAssetUri(index);
+    openActionDocument(guid, title, uri, attackTimeline(combatEditor.clip.getDuration()));
+    hideAssetPicker(); activateTab(combatEditor.tabs.len() - 1);
+}
+
 function activateTab(index) {
     if (index < 0 || index >= combatEditor.tabs.len()) return;
     combatEditor.activeTab = index;
@@ -267,6 +321,9 @@ function closeTab(index) {
 function buildWorkspace() {
     combatEditor.workspace = editor.newWorkspace("kaykit.combat", "KayKit Combat Action Editor");
     combatEditor.actionModule = eve.ActionEditorModule();
+    combatEditor.assetCatalog = requireResult(combatEditor.actionModule.createAssetCatalog("."),
+                                              "Create Action AssetDB browser");
+    requireResult(combatEditor.assetCatalog.refresh(""), "Scan Montage assets");
     combatEditor.tabs = [];
     local timelineData = attackTimeline(combatEditor.clip.getDuration());
     openActionDocument("asset.kaykit.light-attack", "Light Attack",
@@ -417,16 +474,13 @@ function handleUiEvents() {
     while (click != "") {
         local event = eventParts(click); local host = event[0]; local id = event[1];
         if (id == "save-document") {
-            local result = combatEditor.timeline.saveDocument();
-            combatEditor.status = result.ok ? "Saved · " + combatEditor.timeline.getDocumentUri()
-                                            : "Save failed · " + result.status.summary;
-            combatEditor.closeArmed = -1; combatEditor.tabUiSignature = "";
+            saveActiveDocument();
         } else if (id == "open-document") {
-            local light = findOpenAsset("asset.kaykit.light-attack");
-            local followUp = findOpenAsset("asset.kaykit.follow-up");
-            if (light < 0) openBundledDocument("asset.kaykit.light-attack");
-            else if (followUp < 0) openBundledDocument("asset.kaykit.follow-up");
-            else combatEditor.status = "Both bundled montage assets are already open";
+            showAssetPicker();
+        } else if (id == "close-asset-picker") {
+            hideAssetPicker();
+        } else if (id.find("pick-asset-") == 0) {
+            openCatalogAsset(id.slice(11).tointeger());
         } else if (id.find("close-tab-") == 0) {
             closeTab(id.slice(10).tointeger());
         } else if (id.find("tab-") == 0) {
@@ -479,7 +533,13 @@ function handleUiEvents() {
     local changed = ui.consumeChange();
     while (changed != "") {
         local event = eventParts(changed); local host = event[0]; local id = event[1];
-        if (host == "action.inspector") {
+        if (host == "action.asset-picker" && id == "asset-search") {
+            ui.select("action.asset-picker"); combatEditor.assetSearch = ui.getValueText("asset-search");
+            local refreshed = combatEditor.assetCatalog.refresh(combatEditor.assetSearch);
+            combatEditor.status = refreshed.ok ? "AssetDB query · " + refreshed.value + " Montage assets"
+                                               : "AssetDB query failed · " + refreshed.status.summary;
+            mountAssetPicker();
+        } else if (host == "action.inspector") {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
             if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
@@ -570,9 +630,7 @@ function updateKeyboardShortcuts() {
     if (undo && !combatEditor.undoWas) applyHistory("undo");
     if (redo && !combatEditor.redoWas) applyHistory("redo");
     if (save && !combatEditor.saveWas) {
-        local result = combatEditor.timeline.saveDocument();
-        combatEditor.status = result.ok ? "Saved · " + combatEditor.timeline.getDocumentUri()
-                                        : "Save failed · " + result.status.summary;
+        saveActiveDocument();
     }
     combatEditor.undoWas = undo; combatEditor.redoWas = redo; combatEditor.saveWas = save;
 }

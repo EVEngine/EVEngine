@@ -20,7 +20,9 @@ Controls:
   marks unsaved edits; closing a dirty tab requires a second explicit click to
   discard its changes.
 - The save icon or Ctrl+S atomically writes the active document under
-  `Content/Actions`; reopening the resource restores the saved timeline.
+  `Content/Actions`, validates it, and registers its stable GUID sidecar with
+  AssetDB. **Open Asset** provides a searchable picker over indexed, validated
+  Montage documents; selecting an already-open GUID activates its existing tab.
 - The compact transport icons control deterministic action preview; Space
   toggles playback.
 - Click empty timeline space to seek.

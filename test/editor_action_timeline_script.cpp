@@ -108,6 +108,7 @@ TEST_CASE("editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState") {
                     muted=false, locked=false, notifies=[], states=[]
                 }]
             };
+            editor <- eve.Editor();
             module <- eve.ActionEditorModule();
             opened <- module.openDocument(")") + root.generic_string() + R"(", "test.asset.persistent", "Persistent Action",
                 "content://Actions/Persistent.action", timelineAsset);
@@ -133,6 +134,32 @@ TEST_CASE("editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState") {
         CHECK(!vm.find("dirtyAfterSave").toBool());
         CHECK(vm.find("reopened").toTable().get<bool>("ok"));
         CHECK_EQ(vm.find("reopenedLabel").toString(), std::string("Gameplay Saved"));
+
+        const std::string catalogSource = std::string(R"(
+            catalogCreated <- module.createAssetCatalog(")") + root.generic_string() + R"(");
+            catalog <- catalogCreated.value;
+            catalogRegister <- catalog.registerDocument(
+                "test.asset.persistent", "content://Actions/Persistent.action");
+            catalogRefresh <- catalog.refresh("persistent");
+            catalogCount <- catalog.getAssetCount();
+            catalogGuid <- catalog.getAssetGuid(0);
+            catalogUri <- catalog.getAssetUri(0);
+            catalogTitle <- catalog.getAssetTitle(0);
+            catalogGeneration <- catalog.getGeneration();
+            catalogEmptySearch <- catalog.refresh("missing-query");
+            catalogEmptyCount <- catalog.getAssetCount();
+        )";
+        vm.run(vm.compileSource(catalogSource.c_str()));
+        CHECK(vm.find("catalogCreated").toTable().get<bool>("ok"));
+        CHECK(vm.find("catalogRegister").toTable().get<bool>("ok"));
+        CHECK(vm.find("catalogRefresh").toTable().get<bool>("ok"));
+        CHECK_EQ(vm.find("catalogCount").toInt(), 1);
+        CHECK_EQ(vm.find("catalogGuid").toString(), std::string("test.asset.persistent"));
+        CHECK_EQ(vm.find("catalogUri").toString(), std::string("content://Actions/Persistent.action"));
+        CHECK_EQ(vm.find("catalogTitle").toString(), std::string("Persistent"));
+        CHECK(vm.find("catalogGeneration").toInt() > 0);
+        CHECK(vm.find("catalogEmptySearch").toTable().get<bool>("ok"));
+        CHECK_EQ(vm.find("catalogEmptyCount").toInt(), 0);
     }
 
     CHECK(std::filesystem::is_regular_file(root / "Content" / "Actions" / "Persistent.action"));

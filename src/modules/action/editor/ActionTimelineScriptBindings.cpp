@@ -14,6 +14,8 @@
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
+#include "editor/EditorAssetDatabase.h"
+#include "editor/EditorDiskAssetCatalog.h"
 #include "editor/EditorDiskDocumentStore.h"
 #include "editor/EditorWorkspace.h"
 #include "model3d/ModelData.h"
@@ -87,6 +89,81 @@ const action::ActionNotifyState* findState(const action::ActionTimeline& timelin
     }
     return nullptr;
 }
+
+class ScriptActionTimelineAssetCatalog {
+public:
+    explicit ScriptActionTimelineAssetCatalog(std::filesystem::path projectRoot)
+        : store_(projectRoot), catalog_(std::move(projectRoot), &database_) {}
+
+    [[nodiscard]] EditorResult<std::size_t> refresh(std::string text) {
+        auto scanned = catalog_.scan();
+        if (!scanned.ok()) return EditorResult<std::size_t>::failure(scanned.status());
+        AssetQuery query;
+        query.typeIds = {"eve.action.timeline"};
+        query.text    = std::move(text);
+        auto page     = database_.query(query, 0, 512);
+        if (!page.ok()) return EditorResult<std::size_t>::failure(page.status());
+
+        entries_.clear();
+        auto diagnostics = scanned.diagnostics();
+        for (const auto& record : page.value().values) {
+            auto stored = store_.read(record.logicalUri);
+            if (!stored.ok()) {
+                diagnostics.insert(diagnostics.end(), stored.diagnostics().begin(), stored.diagnostics().end());
+                continue;
+            }
+            auto timeline = action::ActionTimeline::fromValue(toPresentationValue(stored.value().content));
+            if (!timeline) {
+                diagnostics.insert(diagnostics.end(), timeline.diagnostics().begin(), timeline.diagnostics().end());
+                continue;
+            }
+            entries_.push_back(record);
+        }
+        generation_ = page.value().generation;
+        return eve::editing::applied<std::size_t>(entries_.size(), std::move(diagnostics));
+    }
+
+    [[nodiscard]] EditorResult<void> registerDocument(const std::string& guid, const std::string& uri) {
+        if (guid.empty() || !uri.starts_with("content://") || uri.size() <= std::string("content://").size())
+            return eve::editing::failed<void>(EditorStatus::Rejected,
+                                              RuleId("editor.action.asset-registration-invalid"),
+                                              "Action asset registration requires a GUID and content URI");
+        auto stored = store_.read(uri);
+        if (!stored.ok()) return EditorResult<void>::failure(stored.status());
+        auto timeline = action::ActionTimeline::fromValue(toPresentationValue(stored.value().content));
+        if (!timeline) return EditorResult<void>::failure(timeline.status());
+        return catalog_.writeSidecar(uri.substr(std::string("content://").size()), AssetGuid(guid),
+                                     "eve.action.timeline");
+    }
+
+    [[nodiscard]] int count() const noexcept { return static_cast<int>(entries_.size()); }
+    [[nodiscard]] std::uint64_t generation() const noexcept { return generation_; }
+    [[nodiscard]] std::string guid(int index) const {
+        const auto* entry = at(index);
+        return entry ? entry->guid.value() : std::string{};
+    }
+    [[nodiscard]] std::string uri(int index) const {
+        const auto* entry = at(index);
+        return entry ? entry->logicalUri : std::string{};
+    }
+    [[nodiscard]] std::string title(int index) const {
+        const auto* entry = at(index);
+        if (!entry) return {};
+        return std::filesystem::path(entry->logicalUri.substr(std::string("content://").size())).stem().string();
+    }
+
+private:
+    [[nodiscard]] const AssetRecord* at(int index) const {
+        if (index < 0 || static_cast<std::size_t>(index) >= entries_.size()) return nullptr;
+        return &entries_[static_cast<std::size_t>(index)];
+    }
+
+    MemoryAssetDatabase      database_;
+    DiskAtomicDocumentStore  store_;
+    DiskAssetCatalog         catalog_;
+    std::vector<AssetRecord> entries_;
+    std::uint64_t            generation_ = 0;
+};
 
 Value montageAdvanceValue(const animation::MontageAdvance& value) {
     Value::Object projected;
@@ -590,6 +667,35 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     auto              actionEditor = table.addClass<ScriptActionTimelineEditor>(
         "ActionTimelineEditor",
         std::function<ScriptActionTimelineEditor*()>([]() -> ScriptActionTimelineEditor* { return nullptr; }), true);
+    auto assetCatalog = table.addClass<ScriptActionTimelineAssetCatalog>(
+        "ActionTimelineAssetCatalog",
+        std::function<ScriptActionTimelineAssetCatalog*()>([]() -> ScriptActionTimelineAssetCatalog* {
+            return nullptr;
+        }),
+        true);
+    assetCatalog.addFunc("refresh", [vm](ScriptActionTimelineAssetCatalog* self, const std::string& text) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action asset catalog is null");
+        auto refreshed = self->refresh(text);
+        return project(vm, refreshed,
+                       refreshed.ok() ? Value(static_cast<std::int64_t>(refreshed.value())) : Value{});
+    });
+    assetCatalog.addFunc("getAssetCount",
+                         [](ScriptActionTimelineAssetCatalog* self) { return self ? self->count() : 0; });
+    assetCatalog.addFunc("getGeneration", [](ScriptActionTimelineAssetCatalog* self) {
+        return self ? static_cast<std::int64_t>(self->generation()) : std::int64_t{0};
+    });
+    assetCatalog.addFunc("getAssetGuid",
+                         [](ScriptActionTimelineAssetCatalog* self, int index) { return self ? self->guid(index) : ""; });
+    assetCatalog.addFunc("getAssetUri",
+                         [](ScriptActionTimelineAssetCatalog* self, int index) { return self ? self->uri(index) : ""; });
+    assetCatalog.addFunc("getAssetTitle", [](ScriptActionTimelineAssetCatalog* self, int index) {
+        return self ? self->title(index) : "";
+    });
+    assetCatalog.addFunc("registerDocument", [vm](ScriptActionTimelineAssetCatalog* self, const std::string& guid,
+                                                   const std::string& uri) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action asset catalog is null");
+        return project(vm, self->registerDocument(guid, uri));
+    });
 
     actionEditor.addFunc("configureWorkspace", [vm](ScriptActionTimelineEditor* self, EditorWorkspace* workspace) {
         if (!self || !workspace)
@@ -1259,6 +1365,19 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                    : std::string{};
     });
 
+    moduleClass.addFunc("createAssetCatalog", [vm](eve::action_editor::ActionEditorModule*,
+                                                    const std::string& projectRoot) {
+        if (projectRoot.empty())
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "project root must not be empty");
+        auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineAssetCatalog>(
+            vm, std::make_unique<ScriptActionTimelineAssetCatalog>(std::filesystem::path(projectRoot)));
+        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        ssq::Object owned  = std::move(object).takeValue();
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        result.set("value", owned);
+        result.set("ownership", std::string("owned"));
+        return result;
+    });
     moduleClass.addFunc("create", [vm, clipboard](eve::action_editor::ActionEditorModule*, const std::string& targetId,
                                                   const ssq::Object& timelineObject) {
         if (targetId.empty())
