@@ -4,6 +4,7 @@
 #include "editor/EditorProperty.h"
 
 #include <algorithm>
+#include <cmath>
 #include <optional>
 #include <utility>
 
@@ -902,6 +903,43 @@ EditorResult<void> ActionTimelineEditor::deleteSelection() {
 EditorResult<TransactionReceipt> ActionTimelineEditor::undo() { return transactions_.undo(); }
 
 EditorResult<TransactionReceipt> ActionTimelineEditor::redo() { return transactions_.redo(); }
+
+EditorResult<void> ActionTimelineEditor::stop() {
+    auto stopped = seek(Duration::zero());
+    if (stopped.ok()) playing_ = false;
+    return stopped;
+}
+
+EditorResult<Duration> ActionTimelineEditor::frameStepTarget(std::int64_t frames, double frameRate) const {
+    if (!std::isfinite(frameRate) || frameRate <= 0.0)
+        return eve::editing::failed<Duration>(EditorStatus::Rejected,
+                                              RuleId("editor.action.timeline.frame-rate"),
+                                              "Preview frame rate must be finite and positive");
+    const long double seconds = static_cast<long double>(previewTime_.nanoseconds()) / 1'000'000'000.0L +
+                                static_cast<long double>(frames) / static_cast<long double>(frameRate);
+    const long double maximum = static_cast<long double>(target_.timeline().duration.nanoseconds()) /
+                                1'000'000'000.0L;
+    auto target = Duration::fromSeconds(static_cast<double>(std::clamp(seconds, 0.0L, maximum)));
+    if (!target)
+        return eve::editing::failed<Duration>(EditorStatus::Rejected,
+                                              RuleId("editor.action.timeline.frame-step-overflow"),
+                                              "Preview frame step is outside the duration domain");
+    return eve::editing::applied<Duration>(std::move(target).takeValue());
+}
+
+EditorResult<void> ActionTimelineEditor::stepFrames(std::int64_t frames, double frameRate) {
+    auto target = frameStepTarget(frames, frameRate);
+    if (!target.ok()) return EditorResult<void>::failure(target.status());
+    auto stepped = seek(target.value());
+    if (stepped.ok()) playing_ = false;
+    return stepped;
+}
+
+EditorResult<void> ActionTimelineEditor::jumpToEnd() {
+    auto jumped = seek(target_.timeline().duration);
+    if (jumped.ok()) playing_ = false;
+    return jumped;
+}
 
 EditorResult<void> ActionTimelineEditor::seek(Duration time) {
     if (time < Duration::zero() || time > target_.timeline().duration)

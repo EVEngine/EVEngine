@@ -190,6 +190,25 @@ public:
 
     [[nodiscard]] EditorResult<void> seekPreviewAt(float x) { return seekPreview(widget_.timeAt(x)); }
 
+    [[nodiscard]] EditorResult<void> stopPreview() {
+        if (previewInitializationFailure_)
+            return EditorResult<void>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->stop() : editor_.stop();
+    }
+
+    [[nodiscard]] EditorResult<void> stepPreviewFrames(std::int64_t frames, double frameRate) {
+        if (previewInitializationFailure_)
+            return EditorResult<void>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->stepFrames(frames, frameRate)
+                                  : editor_.stepFrames(frames, frameRate);
+    }
+
+    [[nodiscard]] EditorResult<void> jumpPreviewToEnd() {
+        if (previewInitializationFailure_)
+            return EditorResult<void>::failure(*previewInitializationFailure_);
+        return previewController_ ? previewController_->jumpToEnd() : editor_.jumpToEnd();
+    }
+
     [[nodiscard]] EditorResult<std::size_t> updatePreview(Duration delta) {
         if (previewInitializationFailure_)
             return EditorResult<std::size_t>::failure(*previewInitializationFailure_);
@@ -817,6 +836,18 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("pause", [](ScriptActionTimelineEditor* self) {
         if (self) self->editor().pause();
+    });
+    actionEditor.addFunc("stop", [vm](ScriptActionTimelineEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        return project(vm, self->stopPreview());
+    });
+    actionEditor.addFunc("stepFrames", [vm](ScriptActionTimelineEditor* self, int frames, float frameRate) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        return project(vm, self->stepPreviewFrames(frames, frameRate));
+    });
+    actionEditor.addFunc("jumpToEnd", [vm](ScriptActionTimelineEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        return project(vm, self->jumpPreviewToEnd());
     });
     actionEditor.addFunc("isPlaying",
                          [](ScriptActionTimelineEditor* self) { return self && self->editor().playing(); });

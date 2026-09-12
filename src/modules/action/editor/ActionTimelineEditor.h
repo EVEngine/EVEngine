@@ -220,6 +220,18 @@ public:
     void play() noexcept { playing_ = true; }
     /** @brief Pause preview playback. */
     void pause() noexcept { playing_ = false; }
+    /** @brief Pause and return the preview cursor to the first frame. */
+    [[nodiscard]] EditorResult<void> stop();
+    /**
+     * @brief Resolve a signed frame step without mutating transport state.
+     * @param frames Signed number of frames; negative values step backward.
+     * @param frameRate Finite positive frames per second used for deterministic rounding.
+     */
+    [[nodiscard]] EditorResult<Duration> frameStepTarget(std::int64_t frames, double frameRate) const;
+    /** @brief Pause and move by a signed number of frames, clamped to the timeline. */
+    [[nodiscard]] EditorResult<void> stepFrames(std::int64_t frames, double frameRate);
+    /** @brief Pause and move the cursor to the final frame boundary. */
+    [[nodiscard]] EditorResult<void> jumpToEnd();
     /** @brief Seek preview without emitting crossed events. */
     [[nodiscard]] EditorResult<void> seek(Duration time);
     /** @brief Advance preview by injected time and collect crossed events. */

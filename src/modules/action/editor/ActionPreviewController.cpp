@@ -112,6 +112,26 @@ EditorResult<void> ActionPreviewController::seek(Duration time) {
     return eve::editing::applied<void>();
 }
 
+EditorResult<void> ActionPreviewController::stop() {
+    auto stopped = seek(Duration::zero());
+    if (stopped.ok()) editor_.pause();
+    return stopped;
+}
+
+EditorResult<void> ActionPreviewController::stepFrames(std::int64_t frames, double frameRate) {
+    auto target = editor_.frameStepTarget(frames, frameRate);
+    if (!target.ok()) return EditorResult<void>::failure(target.status());
+    auto stepped = seek(target.value());
+    if (stepped.ok()) editor_.pause();
+    return stepped;
+}
+
+EditorResult<void> ActionPreviewController::jumpToEnd() {
+    auto jumped = seek(editor_.target().timeline().duration);
+    if (jumped.ok()) editor_.pause();
+    return jumped;
+}
+
 EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
     auto plan = editor_.planPreview(delta);
     if (!plan.ok())

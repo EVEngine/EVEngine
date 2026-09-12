@@ -265,9 +265,12 @@ function panelInspector() {
 }
 
 function panelTimeline() {
-    ui.beginRow("transport", 8.0); ui.button("Play / Pause", "play-pause");
-    ui.button("Restart", "restart"); ui.button("Strike", "jump-strike");
-    ui.button("Blend Out", "blend-out"); ui.button("Undo", "undo"); ui.button("Redo", "redo"); ui.end();
+    ui.beginToolbar("transport");
+    ui.iconButton("home", "", "first-frame"); ui.iconButton("chevron-left", "", "previous-frame");
+    ui.iconButton("play", "", "play-pause"); ui.iconButton("stop", "", "stop");
+    ui.iconButton("chevron-right", "", "next-frame"); ui.iconButton("refresh", "", "last-frame");
+    ui.iconButton("layers", "Strike", "jump-strike"); ui.iconButton("close", "Blend Out", "blend-out");
+    ui.iconButton("undo", "", "undo"); ui.iconButton("redo", "", "redo"); ui.end();
     ui.text("Animation keys · click a diamond to select, empty space to scrub", "bone-timeline-label");
     ui.viewport("bone-timeline", combatEditor.workspace.getRegionW("bottom") - 20.0, 118.0);
     ui.text("Montage gameplay tracks", "action-timeline-label");
@@ -320,10 +323,20 @@ function handleUiEvents() {
             } else {
                 combatEditor.timeline.play(); combatEditor.status = "Preview playing";
             }
-        } else if (id == "restart") {
-            requireResult(combatEditor.timeline.seekSeconds(0.0), "Restart preview");
+        } else if (id == "first-frame") {
+            requireResult(combatEditor.timeline.stop(), "Jump to first frame");
             requireResult(combatEditor.timeline.jumpRuntimeSeconds(0.0), "Restart montage runtime");
-            combatEditor.timeline.play(); combatEditor.status = "Preview restarted at 0.000 s";
+            combatEditor.status = "Preview stopped at first frame";
+        } else if (id == "previous-frame" || id == "next-frame") {
+            requireResult(combatEditor.timeline.stepFrames(id == "previous-frame" ? -1 : 1, 30.0),
+                          "Step preview frame");
+            combatEditor.status = id == "previous-frame" ? "Previous frame" : "Next frame";
+        } else if (id == "stop") {
+            requireResult(combatEditor.timeline.stop(), "Stop preview");
+            combatEditor.status = "Preview stopped at 0.000 s";
+        } else if (id == "last-frame") {
+            requireResult(combatEditor.timeline.jumpToEnd(), "Jump to last frame");
+            combatEditor.status = "Preview moved to final frame";
         } else if (id == "jump-strike") {
             requireResult(combatEditor.timeline.jumpRuntimeSection(1), "Jump montage to strike section");
             requireResult(combatEditor.timeline.seekSeconds(combatEditor.timeline.getDuration() * 0.30),
