@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 
+#include <set>
 #include <utility>
 
 namespace eve::action {
@@ -25,7 +26,7 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
     const std::vector<ActionNotifyDescriptor> builtins = {
         {"gameplay:event", "Gameplay Event", "Gameplay", ActionNotifyShape::Instant, {"tag"}},
         {"combat:damage", "Apply Damage", "Combat", ActionNotifyShape::Instant, {"damageType", "amount"}},
-        {"presentation:vfx", "Spawn VFX", "Presentation", ActionNotifyShape::Instant, {"uri"}},
+        {"presentation:vfx", "Spawn VFX", "Presentation", ActionNotifyShape::Instant, {"uri", "lifetimeSeconds"}},
         {"presentation:vfx-state", "VFX State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"presentation:audio", "Play Audio", "Presentation", ActionNotifyShape::Instant, {"uri"}},
         {"presentation:audio-state", "Audio State", "Presentation", ActionNotifyShape::State, {"uri"}},
@@ -146,6 +147,19 @@ Result<void> ActionNotifyRegistry::dispatchSample(const ActionActiveBlock& block
         return failure(DiagnosticCode::NotFound, "No preview handler is registered for notify type",
                        block.type.format());
     return handler->second->sample(block, context);
+}
+
+Result<void> ActionNotifyRegistry::advanceHandlers(const ActionNotifyContext& context) {
+    std::set<IActionNotifyHandler*> advanced;
+    StatusCode outcome = StatusCode::NoOp;
+    for (const auto& [type, handler] : handlers_) {
+        (void)type;
+        if (!advanced.insert(handler.get()).second) continue;
+        auto result = handler->advance(context);
+        if (!result) return result;
+        if (result.status().code() == StatusCode::Applied) outcome = StatusCode::Applied;
+    }
+    return Result<void>::success(Status::success(outcome));
 }
 
 }  // namespace eve::action

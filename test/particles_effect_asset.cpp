@@ -210,3 +210,31 @@ TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
     REQUIRE(runtime.interrupt(context).ok());
     CHECK_EQ(particles->getEmitterCount(), before);
 }
+
+TEST_CASE("particles.instantActionNotifyRetainsThenDeterministicallyReleasesEffect") {
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto* particles = Particles::create();
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    const int before = particles->getEmitterCount();
+    eve::action::ActionAdvance trigger;
+    trigger.id = eve::action::ActionExecutionId{94};
+    trigger.timelineEvents.push_back({eve::action::ActionTimelineEventKind::Notify,
+                                      logicalId("presentation-track:vfx"),
+                                      logicalId("presentation-vfx:hit"), logicalId("presentation:vfx"),
+                                      eve::Duration::zero(),
+                                      {{"uri", "examples/particle-playback-lab/impact.effect.json"},
+                                       {"lifetimeSeconds", 1.5}}});
+    eve::action::ActionNotifyContext context;
+    context.executionId = trigger.id;
+    REQUIRE(runtime.apply(trigger, context).ok());
+    CHECK_EQ(particles->getEmitterCount(), before + 2);
+
+    eve::action::ActionAdvance expired;
+    expired.id = trigger.id;
+    expired.totalElapsed = eve::Duration::fromNanoseconds(2'000'000'000LL);
+    REQUIRE(runtime.apply(expired, context).ok());
+    CHECK_EQ(particles->getEmitterCount(), before);
+}

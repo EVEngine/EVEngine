@@ -7,10 +7,13 @@
 #include "particles/ParticleEffect.h"
 #include "particles/Particles.h"
 
+#include <algorithm>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::particles {
 namespace {
@@ -59,10 +62,11 @@ public:
             active_.erase(found);
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
-        if (event.kind != eve::action::ActionTimelineEventKind::StateEnter)
+        const bool instant = event.kind == eve::action::ActionTimelineEventKind::Notify;
+        if (!instant && event.kind != eve::action::ActionTimelineEventKind::StateEnter)
             return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                        "VFX state handler requires enter or exit boundary", "event.kind");
-        if (active_.contains(key))
+        if (!instant && active_.contains(key))
             return actionFailure<void>(eve::DiagnosticCode::Conflict, "VFX state is already active", "itemId");
         auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
         if (!spatial) return eve::Result<void>::failure(spatial.status());
@@ -82,8 +86,25 @@ public:
                                        "uri");
         applyWorldTransform(*effect, spatial.value(), pose.value());
         effect->start();
-        active_.emplace(key, ActiveEffect{std::move(effect), std::move(spatial).takeValue(),
-                                          std::move(pose).takeValue()});
+        ActiveEffect owned{std::move(effect), std::move(spatial).takeValue(), std::move(pose).takeValue()};
+        if (instant) {
+            const auto lifetime = event.payload.find("lifetimeSeconds");
+            double seconds = 0.0;
+            if (lifetime != event.payload.end()) {
+                if (const auto* value = lifetime->second.getIf<double>()) seconds = *value;
+                else if (const auto* value = lifetime->second.getIf<std::int64_t>()) seconds = static_cast<double>(*value);
+            }
+            if (!std::isfinite(seconds) || seconds <= 0.0)
+                return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                           "instant VFX lifetimeSeconds must be positive and finite", "lifetimeSeconds");
+            auto duration = eve::Duration::fromSeconds(seconds);
+            if (!duration) return eve::Result<void>::failure(duration.status());
+            auto end = context.time.tryAdd(duration.value());
+            if (!end) return eve::Result<void>::failure(end.status());
+            transients_.push_back({context.executionId, std::move(end).takeValue(), std::move(owned)});
+        } else {
+            active_.emplace(key, std::move(owned));
+        }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -117,11 +138,27 @@ public:
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
 
+    eve::Result<void> advance(const eve::action::ActionNotifyContext& context) override {
+        const auto before = transients_.size();
+        std::erase_if(transients_, [&](TransientEffect& transient) {
+            if (transient.executionId != context.executionId || context.time < transient.endTime) return false;
+            transient.owned.effect->stop();
+            return true;
+        });
+        return eve::Result<void>::success(eve::Status::success(
+            before == transients_.size() ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+    }
+
 private:
     struct ActiveEffect {
         std::unique_ptr<ParticleEffect>       effect;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose             pose;
+    };
+    struct TransientEffect {
+        eve::action::ActionExecutionId executionId;
+        eve::Duration endTime;
+        ActiveEffect owned;
     };
 
     static eve::Result<eve::EntitySpatialPose> resolvePose(
@@ -172,12 +209,16 @@ private:
     }
 
     std::map<ActiveKey, ActiveEffect> active_;
+    std::vector<TransientEffect> transients_;
 };
 
 class ParticleActionProvider final : public eve::action::IActionNotifyProvider {
 public:
     eve::Result<void> install(eve::action::ActionNotifyRegistry& registry) override {
-        return registry.registerHandler("presentation:vfx-state", std::make_shared<ParticleActionHandler>());
+        auto handler = std::make_shared<ParticleActionHandler>();
+        auto instant = registry.registerHandler("presentation:vfx", handler);
+        if (!instant) return instant;
+        return registry.registerHandler("presentation:vfx-state", std::move(handler));
     }
 };
 

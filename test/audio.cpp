@@ -155,6 +155,34 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     REQUIRE(runtime.interrupt(context).ok());
 }
 
+TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    const int before = audio->getSourceCount();
+    eve::action::ActionAdvance trigger;
+    trigger.id = eve::action::ActionExecutionId{93};
+    trigger.timelineEvents.push_back({eve::action::ActionTimelineEventKind::Notify,
+                                      actionLogicalId("presentation-track:audio"),
+                                      actionLogicalId("presentation-audio:hit"),
+                                      actionLogicalId("presentation:audio"), eve::Duration::zero(),
+                                      {{"uri", "test/fixtures/resource_formats/tone.wav"}, {"volume", 0.5}}});
+    eve::action::ActionNotifyContext context;
+    context.executionId = trigger.id;
+    REQUIRE(runtime.apply(trigger, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    eve::action::ActionAdvance expired;
+    expired.id = trigger.id;
+    expired.totalElapsed = eve::Duration::fromNanoseconds(10'000'000'000LL);
+    REQUIRE(runtime.apply(expired, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before);
+}
+
 TEST_CASE("audio.streamSource.pump") {
     auto *audio = tryCreateAudio();
     if (!audio)

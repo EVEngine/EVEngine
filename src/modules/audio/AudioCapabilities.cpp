@@ -8,8 +8,10 @@
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace eve::audio {
 namespace {
@@ -45,8 +47,11 @@ public:
             active_.erase(found);
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
-        if (event.kind != eve::action::ActionTimelineEventKind::StateEnter)
+        const bool instant = event.kind == eve::action::ActionTimelineEventKind::Notify;
+        if (!instant && event.kind != eve::action::ActionTimelineEventKind::StateEnter)
             return fail(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind");
+        if (!instant && active_.contains(key))
+            return fail(eve::DiagnosticCode::Conflict, "audio state is already active", "itemId");
         auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
         if (!spatial) return eve::Result<void>::failure(spatial.status());
         auto pose = resolvePose(spatial.value(), context);
@@ -65,11 +70,25 @@ public:
             if (const auto value = event.payload.find("pitch"); value != event.payload.end())
                 if (const auto* number = value->second.getIf<double>()) source->setPitch(static_cast<float>(*number));
             if (const auto value = event.payload.find("looping"); value != event.payload.end())
-                if (const auto* enabled = value->second.getIf<bool>()) source->setLooping(*enabled);
+                if (const auto* enabled = value->second.getIf<bool>()) {
+                    if (instant && *enabled)
+                        return fail(eve::DiagnosticCode::InvalidArgument,
+                                    "instant audio cannot loop; use audio-state", "looping");
+                    source->setLooping(*enabled);
+                }
             applyPosition(*source, spatial.value(), pose.value());
             source->play();
-            active_.emplace(key, ActiveSource{std::move(data), std::move(source),
-                                              std::move(spatial).takeValue(), std::move(pose).takeValue()});
+            ActiveSource owned{std::move(data), std::move(source),
+                               std::move(spatial).takeValue(), std::move(pose).takeValue()};
+            if (instant) {
+                auto duration = eve::Duration::fromSeconds(owned.source->getDuration() / owned.source->getPitch());
+                if (!duration) return eve::Result<void>::failure(duration.status());
+                auto end = context.time.tryAdd(duration.value());
+                if (!end) return eve::Result<void>::failure(end.status());
+                transients_.push_back({context.executionId, std::move(end).takeValue(), std::move(owned)});
+            } else {
+                active_.emplace(key, std::move(owned));
+            }
         } catch (const std::exception& error) {
             return fail(eve::DiagnosticCode::Failed, error.what(), "uri");
         }
@@ -100,12 +119,28 @@ public:
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
 
+    eve::Result<void> advance(const eve::action::ActionNotifyContext& context) override {
+        const auto before = transients_.size();
+        std::erase_if(transients_, [&](TransientSource& transient) {
+            if (transient.executionId != context.executionId || context.time < transient.endTime) return false;
+            transient.owned.source->stop();
+            return true;
+        });
+        return eve::Result<void>::success(eve::Status::success(
+            before == transients_.size() ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+    }
+
 private:
     struct ActiveSource {
         std::unique_ptr<eve::sound::SoundData> data;
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose pose;
+    };
+    struct TransientSource {
+        eve::action::ActionExecutionId executionId;
+        eve::Duration endTime;
+        ActiveSource owned;
     };
 
     static eve::Result<eve::EntitySpatialPose> resolvePose(
@@ -161,12 +196,16 @@ private:
     }
 
     std::map<ActiveKey, ActiveSource> active_;
+    std::vector<TransientSource> transients_;
 };
 
 class AudioActionProvider final : public eve::action::IActionNotifyProvider {
 public:
     eve::Result<void> install(eve::action::ActionNotifyRegistry& registry) override {
-        return registry.registerHandler("presentation:audio-state", std::make_shared<AudioActionHandler>());
+        auto handler = std::make_shared<AudioActionHandler>();
+        auto instant = registry.registerHandler("presentation:audio", handler);
+        if (!instant) return instant;
+        return registry.registerHandler("presentation:audio-state", std::move(handler));
     }
 };
 

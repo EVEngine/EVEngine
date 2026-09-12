@@ -48,9 +48,19 @@ public:
         return eve::Result<void>::success();
     }
 
+    eve::Result<void> advance(const eve::action::ActionNotifyContext&) override {
+        ++advances;
+        if (failAdvance)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "advance failed", "handler"));
+        return eve::Result<void>::success();
+    }
+
     int                            calls = 0;
     int                            updates = 0;
     mutable int                    samples = 0;
+    int                            advances = 0;
+    bool                           failAdvance = false;
     std::string                    lastType;
     eve::action::ActionExecutionId lastExecution;
     eve::Duration                  lastLocalTime = eve::Duration::zero();
@@ -105,6 +115,7 @@ TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {
     REQUIRE(runtime.apply(advance, context).ok());
     CHECK_EQ(handler->calls, 1);
     CHECK_EQ(handler->updates, 1);
+    CHECK_EQ(handler->advances, 1);
     CHECK_EQ(handler->lastLocalTime, eve::Duration::fromNanoseconds(15));
     CHECK_EQ(runtime.executionCount(), 1u);
 
@@ -195,4 +206,30 @@ TEST_CASE("actionNotifyRegistry.handlerLifecycleIsExplicitAndObservable") {
     REQUIRE(registry.unregisterHandler("project:combat.custom").ok());
     CHECK(!registry.dispatch(routed, context).ok());
     CHECK(!registry.unregisterHandler("project:combat.custom").ok());
+}
+
+TEST_CASE("actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure") {
+    eve::action::ActionNotifyRegistry registry;
+    REQUIRE(registry
+                .registerDescriptor({"project:first", "First", "Project",
+                                     eve::action::ActionNotifyShape::Instant, {}})
+                .ok());
+    REQUIRE(registry
+                .registerDescriptor({"project:second", "Second", "Project",
+                                     eve::action::ActionNotifyShape::Instant, {}})
+                .ok());
+    auto handler = std::make_shared<RecordingHandler>();
+    REQUIRE(registry.registerHandler("project:first", handler).ok());
+    REQUIRE(registry.registerHandler("project:second", handler).ok());
+
+    eve::action::ActionNotifyContext context;
+    context.executionId = eve::action::ActionExecutionId{43};
+    REQUIRE(registry.advanceHandlers(context).ok());
+    CHECK_EQ(handler->advances, 1);
+
+    handler->failAdvance = true;
+    auto failed = registry.advanceHandlers(context);
+    CHECK(!failed.ok());
+    CHECK_EQ(failed.status().diagnostics().front().path(), "handler");
+    CHECK_EQ(handler->advances, 2);
 }

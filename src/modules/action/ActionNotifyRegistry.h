@@ -87,6 +87,15 @@ public:
     [[nodiscard]] virtual Result<void> sample(const ActionActiveBlock&, const ActionNotifyContext&) const {
         return Result<void>::success(Status::success(StatusCode::NoOp));
     }
+    /**
+     * @brief Advance handler-owned transient instances after events and state updates.
+     * @param context Current deterministic action time and synchronous bindings.
+     * @return Applied/NoOp or a structured maintenance failure.
+     * @remarks Called once per unique handler instance per ActionBlockRuntime apply.
+     */
+    [[nodiscard]] virtual Result<void> advance(const ActionNotifyContext&) {
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    }
 };
 
 /**
@@ -155,6 +164,8 @@ public:
      */
     [[nodiscard]] Result<void> dispatchSample(const ActionActiveBlock& block,
                                               const ActionNotifyContext& context) const;
+    /** @brief Advance each unique registered handler once in lexical type order. */
+    [[nodiscard]] Result<void> advanceHandlers(const ActionNotifyContext& context);
 
 private:
     std::map<std::string, ActionNotifyDescriptor, std::less<>>                descriptors_;

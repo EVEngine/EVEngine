@@ -161,6 +161,11 @@ void Audio::stopAll() {
     }
 }
 
+int Audio::getSourceCount() {
+    std::lock_guard<std::mutex> lock(mutex);
+    return static_cast<int>(allSources.size());
+}
+
 void Audio::setVolume(float v) {
     masterVolume = std::max(0.f, v);
     alListenerf(AL_GAIN, masterVolume);

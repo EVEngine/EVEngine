@@ -23,6 +23,8 @@ Result<void> ActionBlockRuntime::apply(const ActionAdvance& advance, ActionNotif
         auto updated = registry_.dispatchUpdate(block, context);
         if (!updated) return updated;
     }
+    auto maintained = registry_.advanceHandlers(context);
+    if (!maintained) return maintained;
     if (advance.activeBlocks.empty())
         active_.erase(advance.id);
     else
