@@ -4,6 +4,12 @@
 `PixelFragment` detached by PixelWorld into one Box2D dynamic body without making
 Physics a second source of live terrain.
 
+The 2D runtime profile exposes the module as `pixelworldPhysics`. Scripts create an
+owned projection with `pixelworldPhysics.newTerrainCache()`, then call
+`cache.sync(physicsWorld, pixelWorld, maximumFixturesPerChunk)` after authoritative
+PixelWorld edits or steps. The shipped `examples/pixelworld` game exercises this
+production path; the cache is a projection and never becomes the material authority.
+
 `PixelFragmentBody::create()` performs deterministic top-left greedy rectangle
 decomposition, creating one fixture per maximal rectangle under an explicit fixture
 budget. The adapter retains the detached bitmap and a generation-qualified

@@ -147,6 +147,7 @@ public:
     b3JointId raw() const { return jointId_; }
 
 private:
+    friend struct WorldSnapshotAccess;
     friend class Body3D;
     friend class World3D;
     void requireKind(Kind expected, const char *operation) const;

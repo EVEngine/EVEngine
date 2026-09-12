@@ -60,7 +60,8 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
 # Cloth is a host-owned physics satellite: rigid-body physics stays usable in
-# trimmed builds without cloth topology, rendering, or compute backends.
+# trimmed builds without cloth topology, rendering, or compute backends. Its
+# accelerator provider registers independently and cannot replace the fluids provider.
 eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLOT cloth
                    DEPS physics graphics gpgpu
                    GROUP 2d 3d web)
@@ -72,9 +73,12 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
-eve_declare_module(NAME pixelworld_physics LAYER 5
+eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
                    GROUP 2d)
+eve_declare_module(NAME scene_physics DIR scene/physics LAYER 5 SCRIPT ScenePhysics SLOT scenePhysics
+                   DEPS physics scene
+                   GROUP 3d)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5

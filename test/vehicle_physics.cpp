@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
@@ -8,6 +9,7 @@
 #include "vehicle/Vehicle.h"
 
 #include <cmath>
+#include <memory>
 #include <string>
 
 using namespace eve::vehicle;
@@ -99,4 +101,149 @@ TEST_CASE("vehicle.physics3d.suspensionDrives") {
     CHECK_GT(mod.getY(v), 5.f);
     CHECK_GT(mod.getHeight(v), 0.15f);
     CHECK_LT(mod.getHeight(v), 2.5f);
+}
+
+TEST_CASE("vehicle.physicsLink.detachInvalidatesBodyAndProjection") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld(0.f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    Vehicle mod;
+    REQUIRE_EQ(mod.registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod.newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod.attachPhysics2D(vehicle, world));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    CHECK(mod.detachPhysics(vehicle));
+    CHECK(!mod.hasPhysics(vehicle));
+    CHECK_EQ(mod.getPhysicsSpace(vehicle), std::string{});
+    CHECK(!body->isValid());
+
+    delete body;
+    delete world;
+}
+
+TEST_CASE("vehicle.physicsLink.externalBodyDestructionBecomesStale") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld(0.f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    Vehicle mod;
+    REQUIRE_EQ(mod.registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod.newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod.attachPhysics2D(vehicle, world));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    body->destroy();
+    CHECK(!mod.hasPhysics(vehicle));
+    CHECK_EQ(mod.getPhysicsSpace(vehicle), std::string{});
+    mod.update(1.f / 60.f);
+    CHECK(mod.detachPhysics(vehicle));
+    CHECK_EQ(mod.getPhysicsSpace(vehicle), std::string{});
+
+    delete body;
+    delete world;
+}
+
+TEST_CASE("vehicle.physicsLink.worldFirstDestructionIsSafe") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld(0.f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    Vehicle mod;
+    REQUIRE_EQ(mod.registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod.newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod.attachPhysics2D(vehicle, world));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    delete world;
+    CHECK(!mod.hasPhysics(vehicle));
+    CHECK_EQ(mod.getPhysicsSpace(vehicle), std::string{});
+    mod.update(1.f / 60.f);
+    CHECK(mod.detachPhysics(vehicle));
+    CHECK(!body->isValid());
+    delete body;
+}
+
+TEST_CASE("vehicle.physicsLink.vehicleFirstDestructionReleasesBody") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld(0.f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    auto mod = std::make_unique<Vehicle>();
+    REQUIRE_EQ(mod->registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod->newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod->attachPhysics2D(vehicle, world));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    mod.reset();
+    CHECK(!body->isValid());
+    CHECK(world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u)) == nullptr);
+
+    delete body;
+    delete world;
+}
+
+TEST_CASE("vehicle.physicsLink.worldFirstDestructionIsSafe3D") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld3D(0.f, -9.8f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    Vehicle mod;
+    REQUIRE_EQ(mod.registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod.newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod.attachPhysics3D(vehicle, world, 2.f));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    delete world;
+    CHECK(!mod.hasPhysics(vehicle));
+    CHECK_EQ(mod.getPhysicsSpace(vehicle), std::string{});
+    CHECK_EQ(mod.getHeight(vehicle), 0.f);
+    mod.update(1.f / 60.f);
+    CHECK(mod.detachPhysics(vehicle));
+    CHECK(!body->isValid());
+    delete body;
+}
+
+TEST_CASE("vehicle.physicsLink.vehicleFirstDestructionReleasesBody3D") {
+    eve::physics::Physics ph;
+    auto* world = ph.newWorld3D(0.f, -9.8f, 0.f, true);
+    REQUIRE(world != nullptr);
+
+    auto mod = std::make_unique<Vehicle>();
+    REQUIRE_EQ(mod->registerVehiclesFromJson(
+                   "[{\"id\":\"car\",\"mobility\":\"wheel\",\"maxSpeed\":20,\"radius\":2}]"),
+               1);
+    auto* vehicle = mod->newVehicle("car", 0.f, 0.f);
+    REQUIRE(vehicle != nullptr);
+    REQUIRE(mod->attachPhysics3D(vehicle, world, 2.f));
+    auto* body = world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u));
+    REQUIRE(body != nullptr);
+
+    mod.reset();
+    CHECK(!body->isValid());
+    CHECK(world->findBody(eve::physics::PhysicsBodyHandle(1u, 1u)) == nullptr);
+
+    delete body;
+    delete world;
 }

@@ -191,6 +191,7 @@ public:
     void invalidate();
 
 private:
+    friend struct WorldSnapshotAccess;
     friend class World;
     friend class Fixture;
 

@@ -55,7 +55,8 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
-# surfaces, droplet coalescence) with screen-space surface reconstruction.
+# surfaces, droplet coalescence) with screen-space surface reconstruction. Its
+# accelerator provider has an independent lifetime from physics_cloth.
 eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    DEPS gpgpu graphics physics physics_backend
                    GROUP 3d web)
@@ -154,7 +155,8 @@ eve_declare_module(NAME material_editor LAYER 7 DEPS editor graphics_editor mate
 eve_declare_module(NAME network_editor LAYER 7 DEPS editor network_editing GROUP 2d 3d web)
 eve_declare_module(NAME npc_ai_editor LAYER 7 DEPS editor npc_ai_editing GROUP 2d 3d web)
 eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
-eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing GROUP 3d web)
+eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing
+                   SCRIPT PhysicsEditorModule SLOT physicsEditor GROUP 3d web)
 eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen procgen_editing
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)

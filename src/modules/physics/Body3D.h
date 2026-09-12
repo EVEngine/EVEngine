@@ -338,6 +338,7 @@ public:
     void invalidate();
 
 private:
+    friend struct WorldSnapshotAccess;
     friend class World3D;
     friend class Shape3D;
 

@@ -14,6 +14,7 @@ namespace eve::physics {
 
 class Body3D;
 class World3D;
+struct WorldSnapshotAccess;
 
 /**
  * @brief 3D shape (box/sphere/capsule) attached to a Body3D with material
@@ -305,6 +306,7 @@ public:
 private:
     friend class World3D;
     friend class Body3D;
+    friend struct WorldSnapshotAccess;
 
     void recreate(bool sensor);
     void enableContactOverrideFiltering();

@@ -7,6 +7,7 @@
 
 #include "common/ArtifactPublication.h"
 #include "common/RuntimeHandle.h"
+#include "physics/PhysicsHandles.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -42,6 +43,8 @@ struct PhysicsArtifactCollider {
     eve::PersistentId     id;
     std::string           buildKey;
     PhysicsArtifactHandle handle;
+    /** @brief Shared or compatibility-world identity that owns the live collider. */
+    PhysicsWorldHandle    world = PhysicsWorldHandle::invalid();
     std::string           shape;
     /** @brief Backend family that owns the live shape, normally `box3d`. */
     std::string                backend = "box3d";
@@ -53,9 +56,11 @@ struct PhysicsArtifactCollider {
 /**
  * @brief Real physics-module provider for generated collider publication.
  *
- * It owns the backend-neutral descriptor plus a real static Box3D world/body/
- * triangle-mesh shape for every committed collider. Procgen never includes
- * Box3D; the backend remains an implementation detail of this module.
+ * It owns the backend-neutral descriptor plus a real static Box3D body and
+ * triangle-mesh shape for every committed collider. By default each collider
+ * keeps its historical private compatibility world; bindWorld() instead puts
+ * future colliders in one caller-owned simulation authority. Procgen never
+ * includes Box3D; the backend remains an implementation detail of this module.
  */
 class PhysicsArtifactProvider final : public eve::artifact::IPhysicsArtifactAdapter {
 public:
@@ -106,7 +111,30 @@ public:
     [[nodiscard]] std::string backendName(eve::PersistentId id) const;
     /** @brief Return whether a collider currently owns a valid Box3D shape. */
     [[nodiscard]] bool isBox3DBacked(eve::PersistentId id) const noexcept;
-    /** @brief Remove all colliders while retiring their runtime handle slots. */
+    /**
+     * @brief Bind future collider publications to a caller-owned shared world.
+     * @param world Live world borrowed until unbindWorld() or provider destruction.
+     * @return Applied, NoOp for the same target, or Conflict while state/stages exist.
+     * @ownership The caller retains the world; the provider owns and removes only the bodies and shapes it prepares.
+     * @lifetime The caller must keep the world alive through every staged transaction. World destruction after commit
+     * makes published runtime colliders stale; clear() safely releases their invalidated wrappers.
+     * @note prepare() reserves a disabled body in this world. It cannot participate in simulation or queries before
+     * commit(); rollback() removes it. Diagnostic body counts may include this disabled reservation while staged.
+     * @thread Owner-thread only; publication and world stepping must not run concurrently.
+     * @reentrancy Invokes no callbacks.
+     */
+    [[nodiscard]] eve::Result<void> bindWorld(World3D& world);
+    /**
+     * @brief Remove an empty provider's matching shared-world binding.
+     * @param world Expected generation-qualified world identity.
+     * @return Applied, NotFound for a different/stale binding, or Conflict while publications exist.
+     */
+    [[nodiscard]] eve::Result<void> unbindWorld(PhysicsWorldHandle world);
+    /** @brief Return the live shared-world binding, or invalid for compatibility-private mode/stale binding. */
+    [[nodiscard]] PhysicsWorldHandle boundWorld() const noexcept;
+    /** @brief Return whether the collider resolves to the currently live shared world binding. */
+    [[nodiscard]] bool isSharedWorldBacked(eve::PersistentId id) const noexcept;
+    /** @brief Remove all colliders while retiring their runtime handle slots; the world binding is retained. */
     void clear() noexcept;
     /** @brief Inject a prepare failure for composition tests. */
     void setPrepareFailure(bool enabled) noexcept { failPrepare_ = enabled; }
@@ -121,6 +149,10 @@ private:
     std::unique_ptr<State> state_;
     std::uint32_t          nextIndex_   = 0;
     bool                   failPrepare_ = false;
+    World3D*               boundWorld_  = nullptr;
+    PhysicsWorldHandle     boundWorldHandle_ = PhysicsWorldHandle::invalid();
+    std::weak_ptr<const void> boundWorldLifetime_;
+    std::shared_ptr<const void> providerLifetime_ = std::make_shared<int>(0);
 };
 
 /** @brief Return the process-owned physics artifact provider singleton. */
