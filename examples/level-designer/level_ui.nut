@@ -19,10 +19,11 @@ function levelEventParts(path) {
 
 function levelConfigureWorkspace() {
     level.workspace = editor.newWorkspace("level-designer.ui", "Level Designer");
-    level.workspace.setRegionSize("top", 52.0);
-    level.workspace.setRegionSize("left", 248.0);
-    level.workspace.setRegionSize("right", 304.0);
-    level.workspace.setRegionSize("bottom", 176.0);
+    // Top is a single toolbar row (Unity-style); bottom holds the asset strip.
+    level.workspace.setRegionSize("top", 64.0);
+    level.workspace.setRegionSize("left", 260.0);
+    level.workspace.setRegionSize("right", 310.0);
+    level.workspace.setRegionSize("bottom", 200.0);
     level.workspace.layout(config.width.tofloat(), config.height.tofloat());
     level.workspace.registerPanel("toolbar", "Toolbar", "top", 0);
     level.workspace.registerPanel("hierarchy", "Outliner", "left", 10);
@@ -66,29 +67,24 @@ function levelGizmoModeLabel() {
 }
 
 function levelPanelToolbar() {
-    ui.beginRow("file-row", 6.0);
+    // One horizontal strip — stacked rows get clipped by the top region height.
+    ui.beginRow("toolbar-row", 6.0);
     ui.button("New", "new");
     ui.button("Save", "save");
     ui.button("Load", "load");
-    ui.end();
     ui.separator("tb-sep-file");
-    ui.beginRow("tool-row", 6.0);
     ui.button(level.tool == "select" ? "[Select]" : "Select", "tool:select");
     ui.button(level.tool == "whitebox" ? "[Whitebox]" : "Whitebox", "tool:whitebox");
     ui.button(level.tool == "spawn" ? "[Spawn]" : "Spawn", "tool:spawn");
-    ui.end();
     ui.separator("tb-sep-gizmo");
-    ui.beginRow("gizmo-row", 6.0);
     ui.button(level.gizmoMode == "translate" ? "[Move]" : "Move", "gizmo:translate");
     ui.button(level.gizmoMode == "rotate" ? "[Rotate]" : "Rotate", "gizmo:rotate");
     ui.button(level.gizmoMode == "scale" ? "[Scale]" : "Scale", "gizmo:scale");
-    ui.end();
     ui.separator("tb-sep-hist");
-    ui.beginRow("hist-row", 6.0);
     ui.button("Undo", "undo");
     ui.button("Redo", "redo");
-    ui.button(level.mode == "play" ? "Stop (Esc)" : "Play (F5)", "play");
-    ui.button("Frame all", "frame");
+    ui.button(level.mode == "play" ? "Stop" : "Play", "play");
+    ui.button("Frame", "frame");
     ui.button("Focus", "focus");
     ui.spacer("tb-fill", 1.0);
     ui.badge(level.mode == "play" ? "PLAY" : "EDIT", "mode-badge");
@@ -244,22 +240,14 @@ function levelPanelPalette() {
         ui.sectionHeader("Whitebox palette · " + level.recipes.len() + " recipes", "palette-header");
         ui.text("Active: " + level.piece.slice("prototype.".len()) + "  ·  click terrain to place",
             "palette-active");
-        local listH = level.workspace.getRegionH("bottom") - 64.0;
-        if (listH < 72.0) listH = 72.0;
+        local listH = level.workspace.getRegionH("bottom") - 70.0;
+        if (listH < 80.0) listH = 80.0;
+        // Flat scroll list — nested beginRow wrapping clipped most recipes.
         ui.beginScrollList("palette", listH, 0.0);
-        ui.beginRow("palette-row", 4.0);
-        local col = 0;
         foreach (recipe in level.recipes) {
             local label = recipe.slice("prototype.".len());
-            ui.button(level.piece == recipe ? "[" + label + "]" : label, "piece:" + recipe);
-            col += 1;
-            if (col >= 8) {
-                ui.end();
-                ui.beginRow("palette-row-" + recipe, 4.0);
-                col = 0;
-            }
+            ui.button(level.piece == recipe ? "> " + label : label, "piece:" + recipe);
         }
-        ui.end();
         ui.end();
     } else if (level.tool == "spawn") {
         ui.sectionHeader("Spawn tool", "palette-header");
