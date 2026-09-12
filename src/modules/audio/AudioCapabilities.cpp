@@ -1,4 +1,5 @@
 #include "action/ActionAudioBlock.h"
+#include "action/ActionAudioWaveform.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
@@ -11,7 +12,9 @@
 #include "sound/SoundData.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cmath>
+#include <cstring>
 #include <list>
 #include <map>
 #include <memory>
@@ -37,6 +40,115 @@ public:
 
     void stopAll() override {
         if (auto *a = eve::ModuleManager::getInstance<Audio>("Audio")) a->stopAll();
+    }
+};
+
+class ActionAudioWaveformProvider final : public eve::action::IActionAudioWaveformProvider {
+public:
+    eve::Result<eve::action::ActionAudioWaveform> waveform(
+        const eve::action::ActionAudioWaveformRequest& request) override {
+        if (request.bucketCount == 0 || request.bucketCount > kMaximumBuckets)
+            return failure(eve::DiagnosticCode::InvalidArgument,
+                           "Audio waveform bucket count is outside the bounded range", "bucketCount");
+        if (request.blockDuration <= eve::Duration::zero())
+            return failure(eve::DiagnosticCode::InvalidArgument,
+                           "Audio waveform block duration must be positive", "blockDuration");
+        if (request.binding.uri.empty())
+            return failure(eve::DiagnosticCode::InvalidArgument,
+                           "Audio waveform URI must be non-empty", "uri");
+        if (!std::isfinite(request.binding.pitch) || request.binding.pitch <= 0.0)
+            return failure(eve::DiagnosticCode::InvalidArgument,
+                           "Audio waveform pitch must be positive and finite", "pitch");
+        try {
+            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(request.binding.uri);
+            if (!data || data->getSampleRate() <= 0 || data->getSampleCount() <= 0 ||
+                (data->getBitDepth() != 8 && data->getBitDepth() != 16) ||
+                (data->getChannelCount() != 1 && data->getChannelCount() != 2))
+                return failure(eve::DiagnosticCode::Unsupported,
+                               "Audio waveform requires bounded PCM8 or PCM16 data", "uri");
+            eve::ref<eve::sound::SoundData> retained(data);
+            (void)retained;
+            eve::action::ActionAudioWaveform result;
+            result.clipDurationSeconds = data->getDuration();
+            result.buckets.resize(request.bucketCount);
+            const double blockSeconds = request.blockDuration.seconds();
+            const auto   frameCount   = static_cast<std::size_t>(data->getSampleCount());
+            for (std::size_t bucket = 0; bucket < request.bucketCount; ++bucket) {
+                const double localStart = blockSeconds * static_cast<double>(bucket) /
+                                          static_cast<double>(request.bucketCount);
+                const double localEnd = blockSeconds * static_cast<double>(bucket + 1) /
+                                        static_cast<double>(request.bucketCount);
+                result.buckets[bucket] = sampleBucket(*data, request.binding, localStart, localEnd, frameCount);
+            }
+            return eve::Result<eve::action::ActionAudioWaveform>::success(std::move(result));
+        } catch (const std::exception& error) {
+            return failure(eve::DiagnosticCode::Failed, error.what(), "uri");
+        }
+    }
+
+private:
+    static constexpr std::size_t kMaximumBuckets = 4096;
+    static constexpr std::size_t kMaximumSamplesPerBucket = 8192;
+
+    static float sampleAt(const eve::sound::SoundData& data, std::size_t frame, int channel) noexcept {
+        const auto channels = static_cast<std::size_t>(data.getChannelCount());
+        const auto index    = frame * channels + static_cast<std::size_t>(channel);
+        const auto* bytes   = static_cast<const std::uint8_t*>(data.getData());
+        if (data.getBitDepth() == 8)
+            return (static_cast<float>(bytes[index]) - 128.0f) / 128.0f;
+        std::int16_t sample = 0;
+        std::memcpy(&sample, bytes + index * sizeof(sample), sizeof(sample));
+        return static_cast<float>(sample) / 32768.0f;
+    }
+
+    static eve::action::ActionAudioWaveformBucket sampleBucket(
+        const eve::sound::SoundData& data, const eve::action::ActionAudioBinding& binding,
+        double localStart, double localEnd, std::size_t frameCount) noexcept {
+        eve::action::ActionAudioWaveformBucket result;
+        result.minimum = 1.0f;
+        result.maximum = -1.0f;
+        const double duration = data.getDuration();
+        if (duration <= 0.0) return {};
+        double mediaStart = localStart * binding.pitch;
+        double mediaEnd   = localEnd * binding.pitch;
+        if (!binding.looping && mediaStart >= duration) return {};
+        if (binding.looping) {
+            const double span = std::max(0.0, mediaEnd - mediaStart);
+            mediaStart = span >= duration ? 0.0 : std::fmod(mediaStart, duration);
+            mediaEnd   = mediaStart + std::min(span, duration);
+        } else {
+            mediaStart = std::min(mediaStart, duration);
+            mediaEnd   = std::min(mediaEnd, duration);
+        }
+        const double mediaSpan = std::max(0.0, mediaEnd - mediaStart);
+        const auto estimatedFrames = static_cast<std::size_t>(
+            std::ceil(mediaSpan * static_cast<double>(data.getSampleRate())));
+        const std::size_t stride = std::max<std::size_t>(
+            1, (estimatedFrames + kMaximumSamplesPerBucket - 1) / kMaximumSamplesPerBucket);
+        const std::size_t samples = std::max<std::size_t>(
+            1, std::min(estimatedFrames + 1, kMaximumSamplesPerBucket));
+        for (std::size_t offset = 0; offset < samples; ++offset) {
+            double media = mediaStart + static_cast<double>(offset * stride) /
+                                            static_cast<double>(data.getSampleRate());
+            if (binding.looping)
+                media = std::fmod(media, duration);
+            else
+                media = std::min(media, duration);
+            const auto frame = std::min(frameCount - 1, static_cast<std::size_t>(media * data.getSampleRate()));
+            for (int channel = 0; channel < data.getChannelCount(); ++channel) {
+                const float value = sampleAt(data, frame, channel);
+                result.minimum = std::min(result.minimum, value);
+                result.maximum = std::max(result.maximum, value);
+            }
+        }
+        if (result.minimum > result.maximum) return {};
+        return result;
+    }
+
+    static eve::Result<eve::action::ActionAudioWaveform> failure(
+        eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<eve::action::ActionAudioWaveform>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path)));
     }
 };
 
@@ -369,7 +481,9 @@ public:
 void registerAudioCapabilities() {
     static AudioQueryImpl impl;
     static AudioActionProvider actionProvider;
+    static ActionAudioWaveformProvider waveformProvider;
     eve::cap::provide<eve::IAudioQuery>(&impl);
+    eve::cap::provide<eve::action::IActionAudioWaveformProvider>(&waveformProvider);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
     eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
 }

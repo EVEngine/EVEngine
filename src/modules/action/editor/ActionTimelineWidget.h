@@ -50,6 +50,8 @@ struct TimelineWidgetLayout {
     float                             width     = 0.0f;
     float                             height    = 0.0f;
     float                             playheadX = 0.0f;
+    /** @brief Whether an audio module currently provides waveform projection. */
+    bool                              audioWaveformsAvailable = false;
     std::vector<TimelineItemGeometry> items;
     std::vector<TimelineRulerTick>    rulerTicks;
 };

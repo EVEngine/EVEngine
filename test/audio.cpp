@@ -4,6 +4,7 @@
 #include "audio/Audio.h"
 #include "audio/Source.h"
 #include "action/ActionAudioBlock.h"
+#include "action/ActionAudioWaveform.h"
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
@@ -243,6 +244,32 @@ TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
     CHECK_EQ(audio->getSourceCount(), before + 1);
     sink.value().reset();
     CHECK_EQ(audio->getSourceCount(), before);
+}
+
+TEST_CASE("audio.actionWaveformProjectsRealPcmWithPitchLoopAndBoundedBuckets") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto* provider = eve::cap::query<eve::action::IActionAudioWaveformProvider>();
+    REQUIRE(provider != nullptr);
+
+    eve::action::ActionAudioWaveformRequest request;
+    request.binding.uri = "test/fixtures/resource_formats/tone.wav";
+    request.binding.pitch = 2.0;
+    request.binding.looping = true;
+    request.blockDuration = eve::Duration::fromNanoseconds(200'000'000);
+    request.bucketCount = 64;
+    auto waveform = provider->waveform(request);
+    REQUIRE(waveform.ok());
+    CHECK(waveform.value().clipDurationSeconds > 0.0);
+    REQUIRE_EQ(waveform.value().buckets.size(), 64u);
+    CHECK(std::any_of(waveform.value().buckets.begin(), waveform.value().buckets.end(), [](const auto& bucket) {
+        return bucket.minimum < -0.01f || bucket.maximum > 0.01f;
+    }));
+
+    request.bucketCount = 5000;
+    CHECK(!provider->waveform(request).ok());
 }
 
 TEST_CASE("audio.streamSource.pump") {

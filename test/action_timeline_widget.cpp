@@ -1,5 +1,8 @@
 #include "action/editor/ActionTimelineWidget.h"
 
+#include "action/ActionAudioWaveform.h"
+#include "common/Capability.h"
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -37,9 +40,11 @@ eve::action::ActionTimeline timelineFixture() {
 
 class RecordingOverlay final : public eve::editor::IEditorOverlay {
 public:
-    void line(const eve::editor::OverlayPoint&, const eve::editor::OverlayPoint&,
+    void line(const eve::editor::OverlayPoint& from, const eve::editor::OverlayPoint& to,
               const eve::editor::OverlayStyle&) override {
         ++lines;
+        (void)from;
+        (void)to;
     }
     void circle(const eve::editor::OverlayPoint&, float, const eve::editor::OverlayStyle&) override { ++circles; }
     void rectangle(const eve::editor::OverlayPoint&, const eve::editor::OverlayPoint&,
@@ -54,6 +59,22 @@ public:
     int circles    = 0;
     int rectangles = 0;
     int texts      = 0;
+};
+
+class TestWaveformProvider final : public eve::action::IActionAudioWaveformProvider {
+public:
+    eve::Result<eve::action::ActionAudioWaveform> waveform(
+        const eve::action::ActionAudioWaveformRequest& request) override {
+        ++calls;
+        lastRequest = request;
+        eve::action::ActionAudioWaveform result;
+        result.clipDurationSeconds = 0.5;
+        result.buckets.assign(request.bucketCount, {-0.5f, 0.75f});
+        return eve::Result<eve::action::ActionAudioWaveform>::success(std::move(result));
+    }
+
+    int calls = 0;
+    eve::action::ActionAudioWaveformRequest lastRequest;
 };
 
 class EditingInspector final : public eve::editor::IEditorInspector {
@@ -110,6 +131,38 @@ TEST_CASE("actionTimelineWidget.projectsDrawsAndHitTestsSemanticItems") {
     CHECK(overlay.rectangles >= 3);
     CHECK(overlay.lines >= 4);
     CHECK_EQ(overlay.texts, 1);
+}
+
+TEST_CASE("actionTimelineWidget.projectsBoundedAudioWaveformWithoutOwningAudioState") {
+    auto timeline = timelineFixture();
+    timeline.tracks[0].kind = eve::action::ActionTrackKind::Audio;
+    timeline.tracks[0].notifies.clear();
+    timeline.tracks[0].states.clear();
+    timeline.tracks[0].states.push_back(
+        {id("audio-state:loop"), id("presentation:audio-state"), eve::Duration::fromNanoseconds(10),
+         eve::Duration::fromNanoseconds(90),
+         {{"uri", "audio/hit.wav"}, {"pitch", 1.5}, {"looping", true}}});
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-waveform", std::move(timeline));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto view = widget(editor, registry.value());
+    CHECK(!view.layout().audioWaveformsAvailable);
+
+    TestWaveformProvider provider;
+    eve::cap::provide<eve::action::IActionAudioWaveformProvider>(&provider);
+    CHECK(view.layout().audioWaveformsAvailable);
+    RecordingOverlay overlay;
+    view.draw(overlay);
+    eve::cap::revoke<eve::action::IActionAudioWaveformProvider>(&provider);
+
+    REQUIRE_EQ(provider.calls, 1);
+    CHECK_EQ(provider.lastRequest.binding.uri, std::string("audio/hit.wav"));
+    CHECK_EQ(provider.lastRequest.binding.pitch, 1.5);
+    CHECK(provider.lastRequest.binding.looping);
+    CHECK_EQ(provider.lastRequest.blockDuration, eve::Duration::fromNanoseconds(80));
+    CHECK(provider.lastRequest.bucketCount > 0);
+    CHECK(provider.lastRequest.bucketCount <= 512);
+    CHECK(overlay.lines >= static_cast<int>(provider.lastRequest.bucketCount));
 }
 
 TEST_CASE("actionTimelineWidget.dragPreviewCommitsOnceAndUndoRestores") {

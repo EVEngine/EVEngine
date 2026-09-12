@@ -1,5 +1,9 @@
 #include "action/editor/ActionTimelineWidget.h"
 
+#include "action/ActionAudioBlock.h"
+#include "action/ActionAudioWaveform.h"
+#include "common/Capability.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -10,6 +14,7 @@ namespace {
 
 constexpr float kHandleRadius = 6.0f;
 constexpr float kNotifyWidth  = 8.0f;
+constexpr std::size_t kMaximumWaveformBuckets = 512;
 
 EditorResult<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
@@ -157,6 +162,7 @@ Duration ActionTimelineWidget::xToTime(float x) const noexcept {
 TimelineWidgetLayout ActionTimelineWidget::layout() const {
     TimelineWidgetLayout result;
     result.width                       = width_;
+    result.audioWaveformsAvailable     = eve::cap::query<action::IActionAudioWaveformProvider>() != nullptr;
     const bool        hasAnimationLane = !editor_.target().timeline().animationSections.empty();
     const std::size_t rowOffset        = hasAnimationLane ? 1U : 0U;
     result.height         = rowHeight_ * static_cast<float>(editor_.target().timeline().tracks.size() + rowOffset);
@@ -243,6 +249,35 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
             item.selected ? 0xf2b84bffU : (animationSection ? 0xa66bd4ffU : (item.state ? 0x568bd7ffU : 0x61c28bffU));
         overlay.rectangle({item.minimumX, item.minimumY, 0.0f}, {item.maximumX, item.maximumY, 0.0f},
                           {color, 1.0f, true});
+        if (item.state && item.type.format() == "presentation:audio-state") {
+            const auto view      = findItem(timeline, item.itemId);
+            auto*      waveforms = eve::cap::query<action::IActionAudioWaveformProvider>();
+            if (view && waveforms) {
+                auto binding = action::ActionAudioBinding::fromPayload(
+                    view->payload, action::ActionAudioShape::State);
+                const auto pixels = static_cast<std::size_t>(
+                    std::max(1.0f, std::floor(item.maximumX - item.minimumX)));
+                if (binding) {
+                    action::ActionAudioWaveformRequest request{
+                        std::move(binding).takeValue(), difference(view->end, view->start),
+                        std::min(pixels, kMaximumWaveformBuckets)};
+                    auto waveform = waveforms->waveform(request);
+                    if (waveform && !waveform.value().buckets.empty()) {
+                        const float middle = (item.minimumY + item.maximumY) * 0.5f;
+                        const float amplitude = std::max(1.0f, (item.maximumY - item.minimumY) * 0.42f);
+                        const float step = (item.maximumX - item.minimumX) /
+                                           static_cast<float>(waveform.value().buckets.size());
+                        for (std::size_t index = 0; index < waveform.value().buckets.size(); ++index) {
+                            const auto& bucket = waveform.value().buckets[index];
+                            const float x = item.minimumX + (static_cast<float>(index) + 0.5f) * step;
+                            overlay.line({x, middle - std::clamp(bucket.maximum, -1.0f, 1.0f) * amplitude, 0.0f},
+                                         {x, middle - std::clamp(bucket.minimum, -1.0f, 1.0f) * amplitude, 0.0f},
+                                         {0xe7f4ffffU, 1.0f, false});
+                        }
+                    }
+                }
+            }
+        }
         if (item.state) {
             overlay.line({item.minimumX, item.minimumY, 0.0f}, {item.minimumX, item.maximumY, 0.0f},
                          {0xffffffffU, 2.0f, false});
