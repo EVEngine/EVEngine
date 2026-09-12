@@ -1,0 +1,348 @@
+#include "scene/loader/PrefabActionCapabilities.h"
+
+#include "action/ActionNotifyRegistry.h"
+#include "action/ActionPrefabBlock.h"
+#include "common/Capability.h"
+#include "common/ECS.h"
+#include "common/EntitySpatialResolver.h"
+#include "common/RuntimeHandle.h"
+#include "graphics/Graphics.h"
+#include "graphics/RenderSystem3D.h"
+#include "model3d/Model3D.h"
+#include "model3d/ModelRenderer.h"
+
+#include <cmath>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace eve::sceneloader {
+namespace {
+
+constexpr double kDegreesToRadians = 0.017453292519943295;
+using ActiveKey = std::pair<action::ActionExecutionId, std::string>;
+
+struct PrefabLeaseTag {};
+using PrefabLease = RuntimeHandle<PrefabLeaseTag>;
+
+template <typename T>
+Result<T> fail(DiagnosticCode code, std::string message, std::string path) {
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
+}
+
+struct WorldTransform {
+    float x = 0.f;
+    float y = 0.f;
+    float z = 0.f;
+    float yaw = 0.f;
+    float pitch = 0.f;
+    float roll = 0.f;
+    float sx = 1.f;
+    float sy = 1.f;
+    float sz = 1.f;
+};
+
+class RenderablePrefabPool {
+public:
+    ~RenderablePrefabPool() {
+        for (auto& slot : slots_)
+            for (const auto entity : slot.entities)
+                if (auto* live = ecs::try_get(entity)) ecs::DestroyEntity(live);
+    }
+
+    [[nodiscard]] Result<PrefabLease> spawn(const std::string& uri, const WorldTransform& transform) {
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            auto& slot = slots_[index];
+            if (slot.occupied || slot.retired || slot.uri != uri || !allEntitiesAlive(slot)) continue;
+            slot.occupied = true;
+            setVisible(slot, true);
+            apply(slot, transform);
+            return Result<PrefabLease>::success(PrefabLease(index, slot.generation));
+        }
+
+        auto* graphics = ModuleManager::getInstance<graphics::Graphics>("Graphics");
+        auto* models = ModuleManager::getInstance<model3d::Model3D>("Model3D");
+        if (!graphics || !models)
+            return fail<PrefabLease>(DiagnosticCode::NotFound,
+                                     "Prefab spawn requires Graphics and Model3D modules", "uri");
+        try {
+            auto* model = models->newModelDataFromFile(uri);
+            auto renderables = model3d::buildRenderables(*graphics, model);
+            if (renderables.empty())
+                return fail<PrefabLease>(DiagnosticCode::Failed,
+                                         "Prefab model contains no renderable meshes", "uri");
+            Slot slot;
+            slot.uri = uri;
+            slot.occupied = true;
+            slot.entities.reserve(renderables.size());
+            for (auto* renderable : renderables) slot.entities.push_back(ecs::handle_of(renderable));
+            slots_.push_back(std::move(slot));
+            const auto index = static_cast<std::uint32_t>(slots_.size() - 1u);
+            apply(slots_.back(), transform);
+            return Result<PrefabLease>::success(PrefabLease(index, slots_.back().generation));
+        } catch (const std::exception& error) {
+            return fail<PrefabLease>(DiagnosticCode::Failed, error.what(), "uri");
+        }
+    }
+
+    [[nodiscard]] Result<void> update(PrefabLease lease, const WorldTransform& transform) {
+        auto slot = resolve(lease);
+        if (!slot) return Result<void>::failure(slot.status());
+        apply(*slot.value(), transform);
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<void> recycle(PrefabLease lease) {
+        auto slot = resolve(lease);
+        if (!slot) return Result<void>::failure(slot.status());
+        auto* value = slot.value();
+        setVisible(*value, false);
+        value->occupied = false;
+        const auto next = PrefabLease::nextGeneration(value->generation);
+        if (next)
+            value->generation = *next;
+        else
+            value->retired = true;
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<void> makeIndependent(PrefabLease lease) {
+        auto slot = resolve(lease);
+        if (!slot) return Result<void>::failure(slot.status());
+        slot.value()->independent = true;
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+private:
+    struct Slot {
+        std::string uri;
+        std::vector<ecs::EntityHandle> entities;
+        std::uint32_t generation = 1;
+        bool occupied = false;
+        bool independent = false;
+        bool retired = false;
+    };
+
+    [[nodiscard]] Result<Slot*> resolve(PrefabLease lease) {
+        if (!lease.isValid() || lease.index() >= slots_.size())
+            return fail<Slot*>(DiagnosticCode::NotFound, "Prefab instance handle is invalid", "instance");
+        auto& slot = slots_[lease.index()];
+        if (!slot.occupied || slot.generation != lease.generation() || !allEntitiesAlive(slot))
+            return fail<Slot*>(DiagnosticCode::NotFound, "Prefab instance handle is missing or stale", "instance");
+        return Result<Slot*>::success(&slot);
+    }
+
+    static bool allEntitiesAlive(const Slot& slot) {
+        if (slot.entities.empty()) return false;
+        for (const auto entity : slot.entities)
+            if (!ecs::try_get(entity)) return false;
+        return true;
+    }
+
+    static void setVisible(Slot& slot, bool visible) {
+        for (const auto entity : slot.entities)
+            if (auto* renderable = dynamic_cast<graphics::Renderable3D*>(ecs::try_get(entity)))
+                renderable->setVisible(visible);
+    }
+
+    static void apply(Slot& slot, const WorldTransform& transform) {
+        for (const auto entity : slot.entities) {
+            auto* renderable = dynamic_cast<graphics::Renderable3D*>(ecs::try_get(entity));
+            if (!renderable) continue;
+            renderable->setPosition(transform.x, transform.y, transform.z);
+            renderable->setRotation(transform.yaw, transform.pitch, transform.roll);
+            renderable->setScale(transform.sx, transform.sy, transform.sz);
+        }
+    }
+
+    std::vector<Slot> slots_;
+};
+
+class PrefabActionHandler final : public action::IActionNotifyHandler {
+public:
+    Result<void> handle(const action::ActionTimelineEvent& event,
+                        const action::ActionNotifyContext& context) override {
+        const ActiveKey key{context.executionId, event.itemId.format()};
+        if (event.kind == action::ActionTimelineEventKind::StateExit) return exit(key, context);
+        if (event.kind != action::ActionTimelineEventKind::StateEnter)
+            return fail<void>(DiagnosticCode::InvalidArgument,
+                              "Prefab spawn requires state enter or exit", "event.kind");
+        if (active_.contains(key))
+            return fail<void>(DiagnosticCode::Conflict, "Prefab spawn state is already active", "itemId");
+        auto binding = action::ActionPrefabSpawnBinding::fromPayload(event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        auto pose = resolvePose(binding.value().spatial, context);
+        if (!pose) return Result<void>::failure(pose.status());
+        auto lease = pool_.spawn(binding.value().uri, worldTransform(binding.value().spatial, pose.value()));
+        if (!lease) return Result<void>::failure(lease.status());
+        auto deadline = context.time.tryAdd(binding.value().customDuration);
+        if (!deadline) {
+            auto recycled = pool_.recycle(lease.value());
+            recycled.ignore();
+            return Result<void>::failure(deadline.status());
+        }
+        active_.emplace(key, Active{lease.value(), std::move(binding).takeValue(),
+                                    std::move(pose).takeValue(), deadline.value()});
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    Result<void> update(const action::ActionActiveBlock& block,
+                        const action::ActionNotifyContext& context) override {
+        const auto found = active_.find({context.executionId, block.itemId.format()});
+        if (found == active_.end())
+            return fail<void>(DiagnosticCode::NotFound, "Active prefab state has no instance", "itemId");
+        auto& active = found->second;
+        if (active.recycled) return Result<void>::success(Status::success(StatusCode::NoOp));
+        if (active.binding.lifecycle == action::PrefabSpawnLifecycle::CustomDuration &&
+            context.time >= active.deadline) {
+            auto recycled = pool_.recycle(active.lease);
+            if (!recycled) return recycled;
+            active.recycled = true;
+            return recycled;
+        }
+        if (active.binding.spatial.mode != action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
+            auto pose = resolvePose(active.binding.spatial, context);
+            if (!pose) return Result<void>::failure(pose.status());
+            if (active.binding.spatial.mode == action::ActionSpatialAttachmentMode::FollowPositionOnly) {
+                active.pose.positionX = pose.value().positionX;
+                active.pose.positionY = pose.value().positionY;
+                active.pose.positionZ = pose.value().positionZ;
+            } else {
+                active.pose = std::move(pose).takeValue();
+            }
+        }
+        return pool_.update(active.lease, worldTransform(active.binding.spatial, active.pose));
+    }
+
+    Result<void> sample(const action::ActionActiveBlock& block,
+                        const action::ActionNotifyContext&) const override {
+        auto binding = action::ActionPrefabSpawnBinding::fromPayload(block.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    }
+
+    Result<void> advance(const action::ActionNotifyContext& context) override {
+        StatusCode outcome = StatusCode::NoOp;
+        for (std::size_t index = 0; index < timed_.size();) {
+            if (timed_[index].executionId != context.executionId || context.time < timed_[index].deadline) {
+                ++index;
+                continue;
+            }
+            auto recycled = pool_.recycle(timed_[index].lease);
+            if (!recycled) return recycled;
+            timed_.erase(timed_.begin() + static_cast<std::ptrdiff_t>(index));
+            outcome = StatusCode::Applied;
+        }
+        return Result<void>::success(Status::success(outcome));
+    }
+
+private:
+    struct Active {
+        PrefabLease lease;
+        action::ActionPrefabSpawnBinding binding;
+        EntitySpatialPose pose;
+        Duration deadline;
+        bool recycled = false;
+    };
+    struct Timed {
+        action::ActionExecutionId executionId;
+        PrefabLease lease;
+        Duration deadline;
+    };
+
+    Result<void> exit(const ActiveKey& key, const action::ActionNotifyContext& context) {
+        const auto found = active_.find(key);
+        if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
+        if (found->second.recycled) {
+            active_.erase(found);
+            return Result<void>::success(Status::success(StatusCode::NoOp));
+        }
+        if (found->second.binding.lifecycle == action::PrefabSpawnLifecycle::CustomDuration) {
+            timed_.push_back({context.executionId, found->second.lease, found->second.deadline});
+            active_.erase(found);
+            return Result<void>::success(Status::success(StatusCode::Applied));
+        }
+        auto result = found->second.binding.lifecycle == action::PrefabSpawnLifecycle::RecycleOnBlockExit
+                          ? pool_.recycle(found->second.lease)
+                          : pool_.makeIndependent(found->second.lease);
+        if (!result) return result;
+        active_.erase(found);
+        return result;
+    }
+
+    static Result<EntitySpatialPose> resolvePose(const action::ActionSpatialBinding& spatial,
+                                                  const action::ActionNotifyContext& context) {
+        std::optional<ecs::EntityHandle> handle;
+        OptionalRef<const IAttachmentPointSource> attachments;
+        if (spatial.target == action::ActionSpatialTarget::Source) {
+            handle = context.source;
+            attachments = context.sourceAttachment;
+        } else {
+            if (spatial.targetIndex >= context.targets.size())
+                return fail<EntitySpatialPose>(DiagnosticCode::NotFound,
+                                               "Prefab target index is unavailable", "targetIndex");
+            handle = context.targets[spatial.targetIndex];
+            if (spatial.targetIndex < context.targetAttachments.size())
+                attachments = context.targetAttachments[spatial.targetIndex];
+        }
+        EntitySpatialPose pose;
+        if (handle) {
+            auto root = resolveEntitySpatialPose(*handle);
+            if (!root) return root;
+            pose = std::move(root).takeValue();
+        }
+        if (spatial.bone.empty()) return Result<EntitySpatialPose>::success(std::move(pose));
+        if (!attachments)
+            return fail<EntitySpatialPose>(DiagnosticCode::Unsupported,
+                                           "Prefab bone requires an attachment source", "bone");
+        auto point = attachments->get().sampleAttachmentPoint(
+            spatial.bone, {static_cast<float>(spatial.positionOffset.x),
+                           static_cast<float>(spatial.positionOffset.y),
+                           static_cast<float>(spatial.positionOffset.z)});
+        if (!point) return Result<EntitySpatialPose>::failure(point.status());
+        pose.positionX = point.value().x;
+        pose.positionY = point.value().y;
+        pose.positionZ = point.value().z;
+        return Result<EntitySpatialPose>::success(std::move(pose));
+    }
+
+    static WorldTransform worldTransform(const action::ActionSpatialBinding& spatial,
+                                         const EntitySpatialPose& pose) {
+        const bool bone = !spatial.bone.empty();
+        return {
+            static_cast<float>(pose.positionX + (bone ? 0.0 : spatial.positionOffset.x)),
+            static_cast<float>(pose.positionY + (bone ? 0.0 : spatial.positionOffset.y)),
+            static_cast<float>(pose.positionZ + (bone ? 0.0 : spatial.positionOffset.z)),
+            static_cast<float>((pose.rotationYDegrees + spatial.rotationOffsetDegrees.y) * kDegreesToRadians),
+            static_cast<float>((pose.rotationXDegrees + spatial.rotationOffsetDegrees.x) * kDegreesToRadians),
+            static_cast<float>((pose.rotationZDegrees + spatial.rotationOffsetDegrees.z) * kDegreesToRadians),
+            static_cast<float>(pose.scaleX * spatial.scale.x),
+            static_cast<float>(pose.scaleY * spatial.scale.y),
+            static_cast<float>(pose.scaleZ * spatial.scale.z),
+        };
+    }
+
+    RenderablePrefabPool pool_;
+    std::map<ActiveKey, Active> active_;
+    std::vector<Timed> timed_;
+};
+
+class PrefabActionProvider final : public action::IActionNotifyProvider {
+public:
+    Result<void> install(action::ActionNotifyRegistry& registry) override {
+        return registry.registerHandler("gameplay:prefab-spawn", std::make_shared<PrefabActionHandler>());
+    }
+};
+
+}  // namespace
+
+void registerPrefabActionCapabilities() {
+    static PrefabActionProvider provider;
+    cap::addListener<action::IActionNotifyProvider>(&provider);
+}
+
+}  // namespace eve::sceneloader

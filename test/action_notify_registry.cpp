@@ -217,6 +217,11 @@ TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
     CHECK(!registry.value().validate(prefab).ok());
     prefab.payload.emplace("customDurationSeconds", eve::Value(0.5));
     CHECK(registry.value().validate(prefab).ok());
+    eve::action::ActionNotifyContext context;
+    context.executionId = eve::action::ActionExecutionId{99};
+    auto dispatched = registry.value().dispatch(prefab, context);
+    CHECK(!dispatched.ok());
+    CHECK_EQ(dispatched.status().code(), eve::StatusCode::NotFound);
 }
 
 TEST_CASE("actionNotifyRegistry.rejectsInvalidAndDuplicateDescriptors") {

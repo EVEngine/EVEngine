@@ -232,7 +232,7 @@ eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
-                   DEPS animation data filesystem graphics image model3d scene thread
+                   DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
 eve_declare_module(NAME dialogue LAYER 6

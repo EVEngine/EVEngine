@@ -1,4 +1,5 @@
 #include "scene/loader/SceneLoader.h"
+#include "scene/loader/PrefabActionCapabilities.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -59,6 +60,8 @@ SceneLoader::DecodedScene::DecodedScene(DecodedScene &&) noexcept = default;
 SceneLoader::DecodedScene &SceneLoader::DecodedScene::operator=(DecodedScene &&) noexcept = default;
 
 Module_IMPL(SceneLoader, new SceneLoader());
+
+SceneLoader::SceneLoader() { registerPrefabActionCapabilities(); }
 
 SceneLoader::~SceneLoader() {
     // Decoded ModelData instances are owned by the unified resource cache
