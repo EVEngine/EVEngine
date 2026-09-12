@@ -869,6 +869,13 @@ TEST_CASE("devtools.dap.caughtErrorPausesAtReportSite") {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         dap.poll();
     }
+    // If the script thread is still blocked in waitWhilePaused, force-resume
+    // before teardown so dap.stop()/detach cannot race a paused VM (SEGFAULT).
+    if (!scriptDone.load() && dbg.isPaused()) dbg.resume();
+    for (int i = 0; i < 100 && !scriptDone.load(); ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        dap.poll();
+    }
     if (scriptThread.joinable()) {
         if (scriptDone.load())
             scriptThread.join();
