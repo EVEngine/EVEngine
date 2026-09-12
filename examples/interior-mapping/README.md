@@ -35,5 +35,7 @@ cd examples/interior-mapping && ../../build/linux-debug/src/engine/eve run
 ## 文件
 
 - `shaders/interior_mapping.frag` — Mesh3D 自定义片元着色器
-- `main.nut` — 场景、Atlas 生成、参数绑定
+- `main.nut` — 场景、参数绑定
+- `assets/room_atlas.png` — 预投影房间图集（4×4）
+- `scripts/gen_room_atlas.py` — 重新生成图集
 - `config.nut` — 窗口配置

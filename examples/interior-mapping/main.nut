@@ -29,7 +29,6 @@ persist imStatus = "orbit on"
 
 const ATLAS_COLS = 4;
 const ATLAS_ROWS = 4;
-const CELL = 128;
 const WIN_X = 6;
 const WIN_Y = 4;
 
@@ -52,105 +51,8 @@ function pushUniforms() {
     imShader.sendFloat("frameWidth", 0.055);
 }
 
-function roomPalette(id) {
-    // Distinct wall / floor / ceiling / accent per room cell.
-    local walls = [
-        [0.78, 0.74, 0.68],
-        [0.55, 0.68, 0.72],
-        [0.72, 0.58, 0.52],
-        [0.62, 0.66, 0.55],
-        [0.70, 0.62, 0.78],
-        [0.80, 0.72, 0.58],
-        [0.58, 0.60, 0.68],
-        [0.74, 0.70, 0.62],
-        [0.66, 0.74, 0.70],
-        [0.76, 0.66, 0.60],
-        [0.60, 0.70, 0.78],
-        [0.68, 0.60, 0.58],
-        [0.72, 0.72, 0.66],
-        [0.58, 0.64, 0.58],
-        [0.70, 0.58, 0.66],
-        [0.64, 0.68, 0.74]
-    ];
-    return walls[id % walls.len()];
-}
-
-function paintRoom(img, ox, oy, id) {
-    local wall = roomPalette(id);
-    local floorC = [wall[0] * 0.55, wall[1] * 0.48, wall[2] * 0.42];
-    local ceilC = [wall[0] * 1.08, wall[1] * 1.06, wall[2] * 1.05];
-    local accent = [
-        0.35 + 0.4 * ((id * 17) % 5).tofloat() / 4.0,
-        0.25 + 0.35 * ((id * 9) % 7).tofloat() / 6.0,
-        0.20 + 0.45 * ((id * 13) % 4).tofloat() / 3.0
-    ];
-    local backDoor = (id % 3) == 0;
-    local windowSide = (id % 5) == 2;
-    local shelf = (id % 4) != 1;
-
-    for (local y = 0; y < CELL; ++y) {
-        for (local x = 0; x < CELL; ++x) {
-            local u = (x + 0.5) / CELL.tofloat();
-            local v = (y + 0.5) / CELL.tofloat();
-            // Orthographic "pre-projection": floor / ceiling / side walls / back.
-            local col = wall;
-            if (v < 0.18) {
-                col = ceilC;
-            } else if (v > 0.78) {
-                // Floor with simple board lines.
-                local board = ((u * 8.0).tointeger() % 2) == 0 ? 0.92 : 1.0;
-                col = [floorC[0] * board, floorC[1] * board, floorC[2] * board];
-            } else if (u < 0.12) {
-                col = [wall[0] * 0.82, wall[1] * 0.82, wall[2] * 0.85];
-            } else if (u > 0.88) {
-                col = [wall[0] * 0.88, wall[1] * 0.86, wall[2] * 0.84];
-            } else {
-                // Back wall with optional door / art / window.
-                col = wall;
-                if (backDoor && u > 0.38 && u < 0.62 && v > 0.28 && v < 0.78) {
-                    col = [0.22, 0.18, 0.14];
-                    if (u > 0.56 && u < 0.60 && v > 0.48 && v < 0.54) {
-                        col = [0.75, 0.65, 0.35]; // knob
-                    }
-                }
-                if (windowSide && u > 0.70 && u < 0.86 && v > 0.32 && v < 0.62) {
-                    col = [0.45, 0.62, 0.82];
-                }
-                if (shelf && u > 0.16 && u < 0.34 && v > 0.40 && v < 0.70) {
-                    local onShelf = ((v * 20.0).tointeger() % 4) == 0;
-                    if (onShelf) col = [accent[0] * 0.5, accent[1] * 0.5, accent[2] * 0.5];
-                    else col = accent;
-                }
-                // Ceiling lamp hint.
-                if (u > 0.46 && u < 0.54 && v > 0.20 && v < 0.28) {
-                    col = [0.95, 0.90, 0.70];
-                }
-            }
-            // Soft vignette toward edges of the cell (helps perspective read).
-            local edge = clampf(u * 4.0, 0.0, 1.0) * clampf((1.0 - u) * 4.0, 0.0, 1.0) *
-                         clampf(v * 3.0, 0.0, 1.0) * clampf((1.0 - v) * 3.0, 0.0, 1.0);
-            edge = 0.75 + 0.25 * edge;
-            img.setPixel(ox + x, oy + y, col[0] * edge, col[1] * edge, col[2] * edge, 1.0);
-        }
-    }
-}
-
 function buildAtlas() {
-    local imageModule = eve.Image();
-    local w = ATLAS_COLS * CELL;
-    local h = ATLAS_ROWS * CELL;
-    local pixels = imageModule.newEmptyImageData(w, h, "RGBA8");
-    local id = 0;
-    for (local row = 0; row < ATLAS_ROWS; ++row) {
-        for (local col = 0; col < ATLAS_COLS; ++col) {
-            // Atlas V grows downward in ImageData; shader UV V grows up conventionally
-            // for Mesh3D — paint so row 0 is the top of the image (v=1 in GL).
-            local oy = (ATLAS_ROWS - 1 - row) * CELL;
-            paintRoom(pixels, col * CELL, oy, id);
-            id += 1;
-        }
-    }
-    imAtlas = gfx.newTexture(pixels, false, false);
+    imAtlas = gfx.newTextureFromFile("assets/room_atlas.png");
     gfx.setTextureSampler(imAtlas, "linear", "none", 1.0, 0.0);
 }
 
@@ -229,7 +131,7 @@ eve_init = function() {
         imFacade.setTint(1.0, 1.0, 1.0, 1.0);
         imFacade.setCastShadow(false);
         imFacade.setReceiveShadow(false);
-        imFacade.setPosition(0.0, 0.9, 0.0);
+        imFacade.setPosition(0.0, 2.15, 0.0);
     }
     if (imGround == null) {
         imGround = eve.Renderable3D();
