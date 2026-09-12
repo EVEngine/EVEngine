@@ -43,6 +43,13 @@ void sortTrack(action::ActionTrack& track) {
     });
 }
 
+void sortAnimationSections(action::ActionTimeline& timeline) {
+    std::stable_sort(
+        timeline.animationSections.begin(), timeline.animationSections.end(), [](const auto& left, const auto& right) {
+            return left.start == right.start ? left.id.format() < right.id.format() : left.start < right.start;
+        });
+}
+
 EditorValue replacementPayload(const std::string& json) {
     EditorValue::Object payload;
     payload["json"] = json;
@@ -72,12 +79,12 @@ action::ActionTimeline seedTimeline(const std::string& targetId) {
 PropertyDescriptor property(const char* path, const char* label, PropertyType type, EditorValue defaultValue,
                             double minimum = 0.0, double maximum = 1e9) {
     PropertyDescriptor descriptor;
-    descriptor.path           = PropertyPath(path);
-    descriptor.displayNameKey = label;
-    descriptor.category       = "timeline";
-    descriptor.type           = type;
-    descriptor.flags          = PropertyFlag::Runtime;
-    descriptor.defaultValue   = std::move(defaultValue);
+    descriptor.path            = PropertyPath(path);
+    descriptor.displayNameKey  = label;
+    descriptor.category        = "timeline";
+    descriptor.type            = type;
+    descriptor.flags           = PropertyFlag::Runtime;
+    descriptor.defaultValue    = std::move(defaultValue);
     descriptor.numeric.minimum = minimum;
     descriptor.numeric.maximum = maximum;
     return descriptor;
@@ -94,7 +101,10 @@ ActionTimelineTarget::ActionTimelineTarget(std::string targetId, action::ActionT
     : targetId_(std::move(targetId)), timeline_(std::move(timeline)) {}
 
 TargetDescriptor ActionTimelineTarget::describe() const {
-    return {TargetId(targetId_), "action-timeline", revision_, false,
+    return {TargetId(targetId_),
+            "action-timeline",
+            revision_,
+            false,
             {propertyCapabilityId(), eve::editing::IEditingSnapshotProvider::editingCapabilityId()}};
 }
 
@@ -200,26 +210,26 @@ eve::Result<eve::Revision> ActionTimelineTarget::currentRevision(const Selection
 
 PropertySchema ActionTimelineTarget::schema(const SelectionSnapshot&) const {
     PropertySchema schema;
-    schema.typeId                  = "action.timeline";
-    schema.version                 = 1;
-    auto animation                 = property("timeline.animationUri", "editor.action.animation-uri",
-                                              PropertyType::AssetRef, "");
-    animation.assetTypeFilters     = {"animation", "model3d"};
-    schema.properties              = {property("timeline.actionId", "editor.action.action-id", PropertyType::String,
-                                               seedTimeline(targetId_).actionId.format()),
-                                      property("timeline.durationSeconds", "editor.action.duration", PropertyType::Float,
-                                               1.0, 0.0, 3600.0),
-                                      std::move(animation)};
+    schema.typeId  = "action.timeline";
+    schema.version = 1;
+    auto animation = property("timeline.animationUri", "editor.action.animation-uri", PropertyType::AssetRef, "");
+    animation.assetTypeFilters = {"animation", "model3d"};
+    schema.properties          = {
+        property("timeline.actionId", "editor.action.action-id", PropertyType::String,
+                          seedTimeline(targetId_).actionId.format()),
+        property("timeline.durationSeconds", "editor.action.duration", PropertyType::Float, 1.0, 0.0, 3600.0),
+        std::move(animation)};
     return schema;
 }
 
 PropertyReadResult ActionTimelineTarget::read(const SelectionSnapshot& selection, const PropertyPath& path) const {
     if (!matches(selection) || !schema(selection).find(path)) return {};
-    if (path == PropertyPath("timeline.actionId"))
-        return {PropertyReadState::Value, timeline_.actionId.format(), {}};
+    if (path == PropertyPath("timeline.actionId")) return {PropertyReadState::Value, timeline_.actionId.format(), {}};
     if (path == PropertyPath("timeline.durationSeconds"))
         return {PropertyReadState::Value, timeline_.duration.seconds(), {}};
-    return {PropertyReadState::Value, timeline_.animationUri, {}};
+    const std::string& projectedUri =
+        timeline_.animationSections.empty() ? timeline_.animationUri : timeline_.animationSections.front().animationUri;
+    return {PropertyReadState::Value, projectedUri, {}};
 }
 
 EditorResult<DomainOperation> ActionTimelineTarget::makeSet(const SelectionSnapshot& selection,
@@ -255,6 +265,7 @@ EditorResult<DomainOperation> ActionTimelineTarget::makeSet(const SelectionSnaps
             return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.animation-uri",
                                                 "Animation URI must be a string");
         candidate.animationUri = *uri;
+        if (!candidate.animationSections.empty()) candidate.animationSections.front().animationUri = *uri;
     }
     auto valid = candidate.validate();
     if (!valid)
@@ -390,6 +401,108 @@ EditorResult<void> ActionTimelineEditor::addTrack(action::ActionTrack track) {
     return commit(std::move(candidate), "Add action track", "action.timeline.track.add");
 }
 
+EditorResult<void> ActionTimelineEditor::removeTrack(const LogicalId& trackId) {
+    action::ActionTimeline candidate = target_.timeline();
+    const auto             found     = std::find_if(candidate.tracks.begin(), candidate.tracks.end(),
+                                                    [&](const auto& track) { return track.id == trackId; });
+    if (found == candidate.tracks.end())
+        return rejected("editor.action.timeline.track-not-found", "Action track was not found");
+    for (const auto& notify : found->notifies) selection_.erase(notify.id.format());
+    for (const auto& state : found->states) selection_.erase(state.id.format());
+    candidate.tracks.erase(found);
+    return commit(std::move(candidate), "Delete action track", "action.timeline.track.delete");
+}
+
+EditorResult<void> ActionTimelineEditor::renameTrack(const LogicalId& trackId, std::string label) {
+    if (label.empty()) return rejected("editor.action.timeline.track-label", "Action track label must not be empty");
+    action::ActionTimeline candidate = target_.timeline();
+    auto*                  track     = findTrack(candidate, trackId);
+    if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
+    track->label = std::move(label);
+    return commit(std::move(candidate), "Rename action track", "action.timeline.track.rename");
+}
+
+EditorResult<void> ActionTimelineEditor::addAnimationSection(action::ActionAnimationSection section) {
+    action::ActionTimeline candidate = target_.timeline();
+    candidate.animationSections.push_back(std::move(section));
+    sortAnimationSections(candidate);
+    return commit(std::move(candidate), "Add montage animation section", "action.timeline.animation-section.add");
+}
+
+EditorResult<void> ActionTimelineEditor::moveAnimationSection(const LogicalId& sectionId, Duration delta) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                                                [&](const auto& section) { return section.id == sectionId; });
+    if (found == candidate.animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    auto start = found->start.tryAdd(delta);
+    auto end   = found->end.tryAdd(delta);
+    if (!start || !end) return rejected("editor.action.timeline.time-overflow", "Animation section time overflowed");
+    found->start = std::move(start).takeValue();
+    found->end   = std::move(end).takeValue();
+    sortAnimationSections(candidate);
+    return commit(std::move(candidate), "Move montage animation section", "action.timeline.animation-section.move");
+}
+
+EditorResult<void> ActionTimelineEditor::resizeAnimationSection(const LogicalId& sectionId, Duration start,
+                                                                Duration end, Duration blendIn) {
+    const auto found =
+        std::find_if(target_.timeline().animationSections.begin(), target_.timeline().animationSections.end(),
+                     [&](const auto& section) { return section.id == sectionId; });
+    if (found == target_.timeline().animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    return editAnimationSection(sectionId, start, end, blendIn, found->animationUri);
+}
+
+EditorResult<void> ActionTimelineEditor::editAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+                                                              Duration blendIn, std::string animationUri) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                                                [&](const auto& section) { return section.id == sectionId; });
+    if (found == candidate.animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    found->start        = start;
+    found->end          = end;
+    found->blendIn      = blendIn;
+    found->animationUri = std::move(animationUri);
+    sortAnimationSections(candidate);
+    return commit(std::move(candidate), "Resize montage animation section", "action.timeline.animation-section.resize");
+}
+
+EditorResult<void> ActionTimelineEditor::editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
+                                                                    Duration                 sourceEnd,
+                                                                    action::ActionBlendCurve blendCurve) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                                                [&](const auto& section) { return section.id == sectionId; });
+    if (found == candidate.animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    found->sourceStart = sourceStart;
+    found->sourceEnd   = sourceEnd;
+    found->blendCurve  = blendCurve;
+    return commit(std::move(candidate), "Edit montage clip trim", "action.timeline.animation-section.trim");
+}
+
+EditorResult<void> ActionTimelineEditor::editAnimationSectionFull(action::ActionAnimationSection section) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                                                [&](const auto& value) { return value.id == section.id; });
+    if (found == candidate.animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    *found = std::move(section);
+    sortAnimationSections(candidate);
+    return commit(std::move(candidate), "Edit montage animation section", "action.timeline.animation-section.edit");
+}
+
+EditorResult<void> ActionTimelineEditor::removeAnimationSection(const LogicalId& sectionId) {
+    action::ActionTimeline candidate = target_.timeline();
+    const auto             before    = candidate.animationSections.size();
+    std::erase_if(candidate.animationSections, [&](const auto& section) { return section.id == sectionId; });
+    if (candidate.animationSections.size() == before)
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    return commit(std::move(candidate), "Remove montage animation section", "action.timeline.animation-section.remove");
+}
+
 EditorResult<void> ActionTimelineEditor::addNotify(const LogicalId& trackId, action::ActionNotify notify) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
@@ -510,6 +623,14 @@ EditorResult<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Durat
 
 EditorResult<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
     action::ActionTimeline candidate = target_.timeline();
+    const auto section = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                                      [&](const auto& value) { return value.id == itemId; });
+    if (section != candidate.animationSections.end()) {
+        candidate.animationSections.erase(section);
+        selection_.erase(itemId.format());
+        return commit(std::move(candidate), "Delete montage animation section",
+                      "action.timeline.animation-section.delete");
+    }
     for (auto& track : candidate.tracks) {
         const auto notify = std::find_if(track.notifies.begin(), track.notifies.end(),
                                          [&](const auto& value) { return value.id == itemId; });
@@ -540,12 +661,23 @@ EditorResult<void> ActionTimelineEditor::setTrackMuted(const LogicalId& trackId,
                   "action.timeline.track.mute");
 }
 
+EditorResult<void> ActionTimelineEditor::setTrackLocked(const LogicalId& trackId, bool locked) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto*                  track     = findTrack(candidate, trackId);
+    if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
+    track->locked = locked;
+    return commit(std::move(candidate), locked ? "Lock action track" : "Unlock action track",
+                  "action.timeline.track.lock");
+}
+
 EditorResult<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Duration end) {
     if (start < Duration::zero() || end < start || end > target_.timeline().duration)
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
-                                                RuleId("editor.action.timeline.selection-range"),
-                                                "Selection range is outside the timeline");
+                                                 RuleId("editor.action.timeline.selection-range"),
+                                                 "Selection range is outside the timeline");
     selection_.clear();
+    for (const auto& section : target_.timeline().animationSections)
+        if (section.end >= start && section.start <= end) selection_.insert(section.id.format());
     for (const auto& track : target_.timeline().tracks) {
         for (const auto& notify : track.notifies)
             if (notify.time >= start && notify.time <= end) selection_.insert(notify.id.format());
@@ -556,7 +688,8 @@ EditorResult<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Durati
 }
 
 EditorResult<void> ActionTimelineEditor::selectItem(const LogicalId& itemId, bool additive) {
-    bool found = false;
+    bool found = std::any_of(target_.timeline().animationSections.begin(), target_.timeline().animationSections.end(),
+                             [&](const auto& section) { return section.id == itemId; });
     for (const auto& track : target_.timeline().tracks) {
         found = found || std::any_of(track.notifies.begin(), track.notifies.end(),
                                      [&](const auto& item) { return item.id == itemId; });
@@ -581,11 +714,16 @@ std::vector<LogicalId> ActionTimelineEditor::selectedItemIds() const {
 
 EditorResult<std::size_t> ActionTimelineEditor::copySelection() {
     clipboard_.clear();
+    for (const auto& section : target_.timeline().animationSections)
+        if (selection_.contains(section.id.format()))
+            clipboard_.push_back({ClipboardItem::Kind::AnimationSection, {}, section, {}, {}});
     for (const auto& track : target_.timeline().tracks) {
         for (const auto& notify : track.notifies)
-            if (selection_.contains(notify.id.format())) clipboard_.push_back({track.id, false, notify, {}});
+            if (selection_.contains(notify.id.format()))
+                clipboard_.push_back({ClipboardItem::Kind::Notify, track.id, {}, notify, {}});
         for (const auto& state : track.states)
-            if (selection_.contains(state.id.format())) clipboard_.push_back({track.id, true, {}, state});
+            if (selection_.contains(state.id.format()))
+                clipboard_.push_back({ClipboardItem::Kind::NotifyState, track.id, {}, {}, state});
     }
     return eve::editing::applied<std::size_t>(clipboard_.size());
 }
@@ -599,28 +737,45 @@ LogicalId ActionTimelineEditor::copiedId(const LogicalId& source) {
 EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
     if (clipboard_.empty())
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
-                                                RuleId("editor.action.timeline.clipboard-empty"),
-                                                "Action timeline clipboard is empty");
+                                                 RuleId("editor.action.timeline.clipboard-empty"),
+                                                 "Action timeline clipboard is empty");
     action::ActionTimeline candidate = target_.timeline();
     std::set<std::string>  pastedSelection;
     for (const auto& item : clipboard_) {
+        if (item.kind == ClipboardItem::Kind::AnimationSection) {
+            auto copy  = item.animationSection;
+            copy.id    = copiedId(copy.id);
+            auto start = copy.start.tryAdd(offset);
+            auto end   = copy.end.tryAdd(offset);
+            if (!start || !end)
+                return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
+                                                         RuleId("editor.action.timeline.time-overflow"),
+                                                         "Pasted animation-section time overflowed");
+            copy.start = std::move(start).takeValue();
+            copy.end   = std::move(end).takeValue();
+            pastedSelection.insert(copy.id.format());
+            candidate.animationSections.push_back(std::move(copy));
+            std::sort(candidate.animationSections.begin(), candidate.animationSections.end(),
+                      [](const auto& left, const auto& right) { return left.start < right.start; });
+            continue;
+        }
         auto* track = findTrack(candidate, item.trackId);
         if (!track)
             return eve::editing::failed<std::size_t>(EditorStatus::Conflict,
-                                                    RuleId("editor.action.timeline.track-not-found"),
-                                                    "Clipboard track no longer exists");
+                                                     RuleId("editor.action.timeline.track-not-found"),
+                                                     "Clipboard track no longer exists");
         if (track->locked)
             return eve::editing::failed<std::size_t>(
                 EditorStatus::Rejected, RuleId("editor.action.timeline.track-locked"), "Clipboard track is locked");
-        if (item.state) {
+        if (item.kind == ClipboardItem::Kind::NotifyState) {
             auto copy  = item.notifyState;
             copy.id    = copiedId(copy.id);
             auto start = copy.start.tryAdd(offset);
             auto end   = copy.end.tryAdd(offset);
             if (!start || !end)
                 return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
-                                                        RuleId("editor.action.timeline.time-overflow"),
-                                                        "Pasted notify-state time overflowed");
+                                                         RuleId("editor.action.timeline.time-overflow"),
+                                                         "Pasted notify-state time overflowed");
             copy.start = std::move(start).takeValue();
             copy.end   = std::move(end).takeValue();
             pastedSelection.insert(copy.id.format());
@@ -631,8 +786,8 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
             auto time = copy.time.tryAdd(offset);
             if (!time)
                 return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
-                                                        RuleId("editor.action.timeline.time-overflow"),
-                                                        "Pasted notify time overflowed");
+                                                         RuleId("editor.action.timeline.time-overflow"),
+                                                         "Pasted notify time overflowed");
             copy.time = std::move(time).takeValue();
             pastedSelection.insert(copy.id.format());
             track->notifies.push_back(std::move(copy));
@@ -643,7 +798,7 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
     auto committed          = commit(std::move(candidate), "Paste action timeline items", "action.timeline.item.paste");
     if (!committed.ok())
         return eve::editing::failed<std::size_t>(committed.code(), RuleId("editor.action.timeline.paste-failed"),
-                                                "Could not paste action timeline items");
+                                                 "Could not paste action timeline items");
     selection_ = std::move(pastedSelection);
     return eve::editing::applied<std::size_t>(count);
 }
@@ -651,6 +806,8 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
 EditorResult<void> ActionTimelineEditor::deleteSelection() {
     if (selection_.empty()) return rejected("editor.action.timeline.selection-empty", "No timeline items are selected");
     action::ActionTimeline candidate = target_.timeline();
+    std::erase_if(candidate.animationSections,
+                  [&](const auto& section) { return selection_.contains(section.id.format()); });
     for (auto& track : candidate.tracks) {
         const bool touchesLocked =
             track.locked && (std::any_of(track.notifies.begin(), track.notifies.end(),
@@ -684,7 +841,7 @@ EditorResult<std::size_t> ActionTimelineEditor::update(Duration delta) {
     auto plan = planPreview(delta);
     if (!plan.ok())
         return eve::editing::failed<std::size_t>(plan.code(), RuleId("editor.action.timeline.preview-plan"),
-                                                "Could not prepare preview advance");
+                                                 "Could not prepare preview advance");
     if (plan.code() == EditorStatus::NoOp) {
         previewEvents_.clear();
         return EditorResult<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
@@ -698,13 +855,12 @@ EditorResult<ActionTimelinePreviewPlan> ActionTimelineEditor::planPreview(Durati
         plan.timelineRevision = target_.revision();
         plan.previous         = previewTime_;
         plan.current          = previewTime_;
-        return EditorResult<ActionTimelinePreviewPlan>::success(
-            std::move(plan), Status::success(EditorStatus::NoOp));
+        return EditorResult<ActionTimelinePreviewPlan>::success(std::move(plan), Status::success(EditorStatus::NoOp));
     }
     if (delta < Duration::zero())
         return eve::editing::failed<ActionTimelinePreviewPlan>(EditorStatus::Rejected,
-                                                              RuleId("editor.action.timeline.preview-delta"),
-                                                              "Preview delta must be non-negative");
+                                                               RuleId("editor.action.timeline.preview-delta"),
+                                                               "Preview delta must be non-negative");
     auto next = previewTime_.tryAdd(delta);
     if (!next)
         return eve::editing::failed<ActionTimelinePreviewPlan>(
@@ -730,14 +886,14 @@ EditorResult<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelineP
     if (!playing_ || plan.timelineRevision != target_.revision() || plan.previous != previewTime_ ||
         plan.includeStart == previewStarted_)
         return eve::editing::failed<std::size_t>(EditorStatus::Conflict,
-                                                RuleId("editor.action.timeline.preview-plan-stale"),
-                                                "Prepared preview advance no longer matches transport state");
+                                                 RuleId("editor.action.timeline.preview-plan-stale"),
+                                                 "Prepared preview advance no longer matches transport state");
     auto expected = target_.timeline().sample(plan.previous, plan.current, plan.includeStart);
     if (!expected || expected.value() != plan.events ||
         plan.reachesEnd != (plan.current == target_.timeline().duration))
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
-                                                RuleId("editor.action.timeline.preview-plan-invalid"),
-                                                "Prepared preview advance does not match the authoritative timeline");
+                                                 RuleId("editor.action.timeline.preview-plan-invalid"),
+                                                 "Prepared preview advance does not match the authoritative timeline");
     previewEvents_  = std::move(plan.events);
     previewTime_    = plan.current;
     previewStarted_ = true;

@@ -1,10 +1,15 @@
 #include "animation/editor/AnimationClipEditor.h"
 
+#include "animation/AnimClip.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
 #include "editor/EditorProtocol.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <numbers>
+#include <set>
 #include <utility>
 
 namespace eve::animation_editor {
@@ -33,10 +38,68 @@ animation_editing::EditorValue trackValue(const char* id, const char* bone,
 
 AnimationClipEditor::AnimationClipEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {
+    skeleton_ = {{"Hips", {}}, {"Spine", "Hips"}, {"Chest", "Spine"}, {"Head", "Chest"},
+                 {"LeftArm", "Chest"}, {"RightArm", "Chest"}};
     seedPreviewClip();
     auto previewed = refreshPreview();
     if (!previewed.ok())
         previewed.ignore("animation clip editor keeps an empty overlay when the seeded preview is rejected");
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::loadRuntimeClip(const animation::AnimSkeleton& skeleton,
+                                                                            const animation::AnimClip& clip) {
+    if (skeleton.getBoneCount() <= 0 || clip.getDuration() <= 0.0f)
+        return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.runtime-source",
+                           "Runtime skeleton and clip must contain bones and a positive duration");
+    animation_editing::EditorValue::Array tracks;
+    std::vector<SkeletonBone> candidateSkeleton;
+    animation::AnimPose pose(skeleton.getBoneCount());
+    for (int bone = 0; bone < skeleton.getBoneCount(); ++bone) {
+        const std::string name = skeleton.getBoneName(bone);
+        const int parent = skeleton.getParent(bone);
+        candidateSkeleton.push_back({name, parent >= 0 ? skeleton.getBoneName(parent) : std::string{}});
+        std::set<double> times;
+        for (int key = 0; key < clip.getPositionKeyCount(bone); ++key) times.insert(clip.getPositionKeyTime(bone, key));
+        for (int key = 0; key < clip.getRotationKeyCount(bone); ++key) times.insert(clip.getRotationKeyTime(bone, key));
+        for (int key = 0; key < clip.getScaleKeyCount(bone); ++key) times.insert(clip.getScaleKeyTime(bone, key));
+        if (times.empty()) times.insert(0.0);
+        animation_editing::EditorValue::Array keys;
+        int keyIndex = 0;
+        for (const double time : times) {
+            clip.sample(static_cast<float>(time), &pose, &skeleton);
+            keys.push_back(animation_editing::EditorValue::Object{
+                {"id", "runtime-key:" + std::to_string(bone) + ":" + std::to_string(keyIndex++)}, {"time", time},
+                {"px", static_cast<double>(pose.getLocalPositionX(bone))}, {"py", static_cast<double>(pose.getLocalPositionY(bone))},
+                {"pz", static_cast<double>(pose.getLocalPositionZ(bone))}, {"rx", static_cast<double>(pose.getLocalRotationX(bone))},
+                {"ry", static_cast<double>(pose.getLocalRotationY(bone))}, {"rz", static_cast<double>(pose.getLocalRotationZ(bone))},
+                {"rw", static_cast<double>(pose.getLocalRotationW(bone))}, {"sx", static_cast<double>(pose.getLocalScaleX(bone))},
+                {"sy", static_cast<double>(pose.getLocalScaleY(bone))}, {"sz", static_cast<double>(pose.getLocalScaleZ(bone))}});
+        }
+        tracks.push_back(trackValue(("runtime-track:" + std::to_string(bone)).c_str(), name.c_str(), std::move(keys)));
+    }
+    animation_editing::EditorValue::Object root;
+    root["schemaVersion"] = std::int64_t{1};
+    root["settings"] = animation_editing::EditorValue::Object{{"duration", static_cast<double>(clip.getDuration())},
+                                                               {"sampleRate", static_cast<double>(clip.getSampleRate())},
+                                                               {"loop", clip.getLoop()}};
+    root["tracks"] = std::move(tracks); root["events"] = animation_editing::EditorValue::Array{};
+    root["masks"] = animation_editing::EditorValue::Array{};
+    auto loaded = target_.loadSnapshot(animation_editing::EditorValue(std::move(root)));
+    if (!loaded.ok()) return loaded;
+    skeleton_ = std::move(candidateSkeleton);
+    selectedBone_ = skeleton_.front().name; selectedKeyId_ = animation_editing::StableId();
+    playhead_ = 0.0; playing_ = false;
+    return refreshPreview();
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::writeRuntimeClip(
+    animation::AnimClip& clip, const animation::AnimSkeleton& skeleton) const {
+    animation_editing::AnimationClipRuntimeBuilder builder;
+    auto built = builder.build(target_, &skeleton);
+    if (!built.ok()) return animation_editing::EditorResult<void>::failure(built.status());
+    std::unique_ptr<animation::AnimClip> candidate(std::move(built).takeValue());
+    clip.adopt(*candidate);
+    return eve::editing::applied<void>();
 }
 
 void AnimationClipEditor::seedPreviewClip() {
@@ -47,6 +110,10 @@ void AnimationClipEditor::seedPreviewClip() {
     tracks.push_back(trackValue("spine-track", "Spine",
                                 {keyValue("spine-start", 0.0, 0.0, 1.0, 0.0),
                                  keyValue("spine-end", 2.0, 2.0, 1.2, 0.0)}));
+    tracks.push_back(trackValue("chest-track", "Chest", {keyValue("chest-start", 0.0, 0.0, 1.7, 0.0), keyValue("chest-end", 2.0, 2.0, 1.8, 0.0)}));
+    tracks.push_back(trackValue("head-track", "Head", {keyValue("head-start", 0.0, 0.0, 2.25, 0.0), keyValue("head-end", 2.0, 2.0, 2.3, 0.0)}));
+    tracks.push_back(trackValue("left-arm-track", "LeftArm", {keyValue("left-arm-start", 0.0, -0.55, 1.75, 0.0), keyValue("left-arm-end", 2.0, 1.45, 1.65, 0.0)}));
+    tracks.push_back(trackValue("right-arm-track", "RightArm", {keyValue("right-arm-start", 0.0, 0.55, 1.75, 0.0), keyValue("right-arm-end", 2.0, 2.55, 1.85, 0.0)}));
     animation_editing::EditorValue::Array events;
     events.push_back(animation_editing::EditorValue::Object{{"id", std::string("footstep")},
                                                             {"time", 0.5},
@@ -68,7 +135,14 @@ void AnimationClipEditor::seedPreviewClip() {
 }
 
 std::vector<std::string> AnimationClipEditor::skeletonBones() const {
-    return {"Hips", "Spine"};
+    std::vector<std::string> result; result.reserve(skeleton_.size());
+    for (const auto& bone : skeleton_) result.push_back(bone.name);
+    return result;
+}
+
+std::string AnimationClipEditor::skeletonParent(const std::string& bone) const {
+    for (const auto& entry : skeleton_) if (entry.name == bone) return entry.parent;
+    return {};
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::configureWorkspace(
@@ -153,10 +227,12 @@ animation_editing::EditorResult<void> AnimationClipEditor::pointerDown(float x, 
     }
     if (best >= 0) {
         selectedKeyTrack_ = keys[static_cast<std::size_t>(best)].trackId;
-        selectedKeyIndex_ = keys[static_cast<std::size_t>(best)].keyIndex;
+        selectedKeyId_    = target_.tracks()[static_cast<std::size_t>(keys[static_cast<std::size_t>(best)].row)]
+                                .keys[static_cast<std::size_t>(keys[static_cast<std::size_t>(best)].keyIndex)]
+                                .id;
         return selectBone(keys[static_cast<std::size_t>(best)].bone);
     }
-    selectedKeyIndex_ = -1;
+    selectedKeyId_ = animation_editing::StableId();
     return seekX(x);
 }
 
@@ -185,7 +261,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::setLoop(bool loop) {
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::moveSelectedKey(double time) {
-    if (selectedKeyIndex_ < 0)
+    if (selectedKeyId_.empty())
         return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.no-selected-key",
                            "No key is selected");
     if (!std::isfinite(time) || time < 0.0 || time > target_.duration())
@@ -194,14 +270,113 @@ animation_editing::EditorResult<void> AnimationClipEditor::moveSelectedKey(doubl
     auto tracks = target_.tracks();
     for (auto& track : tracks) {
         if (track.id != selectedKeyTrack_) continue;
-        if (selectedKeyIndex_ >= static_cast<int>(track.keys.size()))
-            return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.key-missing",
-                               "Selected key is no longer on the track");
-        track.keys[static_cast<std::size_t>(selectedKeyIndex_)].time = time;
+        const auto key = std::find_if(track.keys.begin(), track.keys.end(),
+                                      [&](const auto& candidate) { return candidate.id == selectedKeyId_; });
+        if (key == track.keys.end()) continue;
+        key->time = time;
         return commit(target_.makeSetTrack(track), "Move key");
     }
     return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.track-missing",
                        "Selected key track was not found");
+}
+
+animation_editing::AnimationTransformKey AnimationClipEditor::sampledSelectedTransform() const {
+    animation_editing::AnimationTransformKey result;
+    result.time = playhead_;
+    for (const auto& bone : preview_.bones) {
+        if (bone.bone != selectedBone_) continue;
+        result.positionX = bone.positionX; result.positionY = bone.positionY; result.positionZ = bone.positionZ;
+        result.rotationX = bone.rotationX; result.rotationY = bone.rotationY; result.rotationZ = bone.rotationZ; result.rotationW = bone.rotationW;
+        result.scaleX = bone.scaleX; result.scaleY = bone.scaleY; result.scaleZ = bone.scaleZ;
+        break;
+    }
+    return result;
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::keySelectedBone() {
+    auto tracks = target_.tracks();
+    for (auto& track : tracks) {
+        if (track.bone != selectedBone_) continue;
+        auto key = std::find_if(track.keys.begin(), track.keys.end(), [&](const auto& candidate) {
+            return std::abs(candidate.time - playhead_) < 1e-6;
+        });
+        if (key == track.keys.end()) {
+            auto inserted = sampledSelectedTransform();
+            inserted.id = animation_editing::StableId("key." + selectedBone_ + "." + std::to_string(++txSequence_));
+            track.keys.push_back(std::move(inserted));
+            selectedKeyId_ = track.keys.back().id;
+        } else {
+            selectedKeyId_ = key->id;
+        }
+        selectedKeyTrack_ = track.id;
+        return commit(target_.makeSetTrack(track), "Key " + selectedBone_);
+    }
+    return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.track-missing",
+                       "Selected bone has no editable transform track");
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::deleteSelectedKey() {
+    if (selectedKeyId_.empty())
+        return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.no-selected-key", "No key is selected");
+    auto tracks = target_.tracks();
+    for (auto& track : tracks) {
+        if (track.id != selectedKeyTrack_) continue;
+        const auto before = track.keys.size();
+        std::erase_if(track.keys, [&](const auto& key) { return key.id == selectedKeyId_; });
+        if (track.keys.size() == before) break;
+        selectedKeyId_ = animation_editing::StableId();
+        return commit(target_.makeSetTrack(track), "Delete key");
+    }
+    return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.key-missing", "Selected key no longer exists");
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::updateSelectedTransform(
+    const animation_editing::AnimationTransformKey& value, std::string label) {
+    auto tracks = target_.tracks();
+    for (auto& track : tracks) {
+        if (track.bone != selectedBone_) continue;
+        auto key = std::find_if(track.keys.begin(), track.keys.end(), [&](const auto& candidate) {
+            return std::abs(candidate.time - playhead_) < 1e-6;
+        });
+        if (key == track.keys.end()) {
+            auto inserted = value;
+            inserted.id = animation_editing::StableId("key." + selectedBone_ + "." + std::to_string(++txSequence_));
+            inserted.time = playhead_;
+            track.keys.push_back(std::move(inserted));
+            selectedKeyId_ = track.keys.back().id;
+        } else {
+            auto replacement = value; replacement.id = key->id; replacement.time = key->time; *key = replacement;
+            selectedKeyId_ = key->id;
+        }
+        selectedKeyTrack_ = track.id;
+        return commit(target_.makeSetTrack(track), std::move(label));
+    }
+    return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.track-missing", "Selected bone has no editable transform track");
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::setSelectedPosition(double x, double y, double z) {
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+        return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.position", "Position must be finite");
+    auto value = sampledSelectedTransform(); value.positionX = x; value.positionY = y; value.positionZ = z;
+    return updateSelectedTransform(value, "Set position " + selectedBone_);
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::setSelectedRotation(double xd, double yd, double zd) {
+    if (!std::isfinite(xd) || !std::isfinite(yd) || !std::isfinite(zd))
+        return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.rotation", "Rotation must be finite");
+    const double k = std::numbers::pi / 360.0;
+    const double cx = std::cos(xd*k), sx = std::sin(xd*k), cy = std::cos(yd*k), sy = std::sin(yd*k), cz = std::cos(zd*k), sz = std::sin(zd*k);
+    auto value = sampledSelectedTransform();
+    value.rotationW = cx*cy*cz + sx*sy*sz; value.rotationX = sx*cy*cz - cx*sy*sz;
+    value.rotationY = cx*sy*cz + sx*cy*sz; value.rotationZ = cx*cy*sz - sx*sy*cz;
+    return updateSelectedTransform(value, "Set rotation " + selectedBone_);
+}
+
+animation_editing::EditorResult<void> AnimationClipEditor::setSelectedScale(double x, double y, double z) {
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || x <= 0.0 || y <= 0.0 || z <= 0.0)
+        return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.scale", "Scale must be positive and finite");
+    auto value = sampledSelectedTransform(); value.scaleX = x; value.scaleY = y; value.scaleZ = z;
+    return updateSelectedTransform(value, "Set scale " + selectedBone_);
 }
 
 animation_editing::EditorResult<void> AnimationClipEditor::commit(
@@ -287,8 +462,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::refreshPreview() {
     for (const auto& sample : sampled.bones) {
         animation_editing::SkeletonOverlayBone bone;
         bone.id         = animation_editing::StableId(sample.bone);
-        bone.parent     = sample.bone == "Spine" ? animation_editing::StableId("Hips")
-                                                 : animation_editing::StableId();
+        bone.parent     = animation_editing::StableId(skeletonParent(sample.bone));
         bone.name       = sample.bone;
         bone.position   = {sample.positionX, sample.positionY, sample.positionZ};
         bone.rotation   = {sample.rotationX, sample.rotationY, sample.rotationZ, sample.rotationW};
@@ -321,6 +495,24 @@ double AnimationClipEditor::selectedMaskWeight() const {
         if (sample.bone == selectedBone_) return sample.maskWeight;
     return 1.0;
 }
+
+double AnimationClipEditor::selectedKeyTime() const {
+    for (const auto& track : target_.tracks()) for (const auto& key : track.keys) if (key.id == selectedKeyId_) return key.time;
+    return playhead_;
+}
+
+double AnimationClipEditor::selectedPositionX() const { return sampledSelectedTransform().positionX; }
+double AnimationClipEditor::selectedPositionY() const { return sampledSelectedTransform().positionY; }
+double AnimationClipEditor::selectedPositionZ() const { return sampledSelectedTransform().positionZ; }
+double AnimationClipEditor::selectedScaleX() const { return sampledSelectedTransform().scaleX; }
+double AnimationClipEditor::selectedScaleY() const { return sampledSelectedTransform().scaleY; }
+double AnimationClipEditor::selectedScaleZ() const { return sampledSelectedTransform().scaleZ; }
+double AnimationClipEditor::selectedRotationX() const { const auto q=sampledSelectedTransform(); return std::atan2(2*(q.rotationW*q.rotationX+q.rotationY*q.rotationZ),1-2*(q.rotationX*q.rotationX+q.rotationY*q.rotationY))*180/std::numbers::pi; }
+double AnimationClipEditor::selectedRotationY() const { const auto q=sampledSelectedTransform(); return std::asin(std::clamp(2*(q.rotationW*q.rotationY-q.rotationZ*q.rotationX),-1.0,1.0))*180/std::numbers::pi; }
+double AnimationClipEditor::selectedRotationZ() const { const auto q=sampledSelectedTransform(); return std::atan2(2*(q.rotationW*q.rotationZ+q.rotationX*q.rotationY),1-2*(q.rotationY*q.rotationY+q.rotationZ*q.rotationZ))*180/std::numbers::pi; }
+int AnimationClipEditor::boneCount() const noexcept { return static_cast<int>(skeletonBones().size()); }
+std::string AnimationClipEditor::boneName(int index) const { const auto bones=skeletonBones(); return index >= 0 && static_cast<std::size_t>(index) < bones.size() ? bones[static_cast<std::size_t>(index)] : std::string{}; }
+std::string AnimationClipEditor::boneParent(int index) const { return skeletonParent(boneName(index)); }
 
 int AnimationClipEditor::trackCount() const { return static_cast<int>(target_.tracks().size()); }
 
@@ -356,7 +548,8 @@ bool AnimationClipEditor::isKeySelected(int index) const {
     const auto keys = flattenKeys();
     if (index < 0 || static_cast<std::size_t>(index) >= keys.size()) return false;
     const auto& key = keys[static_cast<std::size_t>(index)];
-    return selectedKeyIndex_ == key.keyIndex && selectedKeyTrack_ == key.trackId;
+    const auto tracks = target_.tracks();
+    return selectedKeyTrack_ == key.trackId && tracks[static_cast<std::size_t>(key.row)].keys[static_cast<std::size_t>(key.keyIndex)].id == selectedKeyId_;
 }
 
 int AnimationClipEditor::eventCount() const { return static_cast<int>(target_.events().size()); }

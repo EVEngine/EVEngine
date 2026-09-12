@@ -32,6 +32,13 @@ struct TimelineItemGeometry {
     float     maximumY = 0.0f;
 };
 
+/** @brief One deterministic ruler tick projected into host coordinates. */
+struct TimelineRulerTick {
+    Duration time;
+    float    x     = 0.0f;
+    bool     major = false;
+};
+
 /** @brief Result of widget hit testing. */
 struct TimelineHit {
     LogicalId       itemId;
@@ -44,6 +51,7 @@ struct TimelineWidgetLayout {
     float                             height    = 0.0f;
     float                             playheadX = 0.0f;
     std::vector<TimelineItemGeometry> items;
+    std::vector<TimelineRulerTick>    rulerTicks;
 };
 
 /** @brief Standard context-menu and keyboard actions exposed by the widget. */
@@ -71,6 +79,14 @@ public:
 
     /** @brief Configure host-space dimensions used for layout and hit testing. */
     [[nodiscard]] EditorResult<void> setViewport(float width, float rowHeight, float labelWidth = 120.0f);
+    /** @brief Set deterministic drag/seek snapping; zero disables snapping. */
+    [[nodiscard]] EditorResult<void> setSnapInterval(Duration interval);
+    /** @brief Set the visible timeline interval used for zoomed projection and interaction. */
+    [[nodiscard]] EditorResult<void> setVisibleRange(Duration start, Duration end);
+    /** @brief Zoom the visible interval around a normalized anchor in [0, 1]. */
+    [[nodiscard]] EditorResult<void> zoom(double factor, double normalizedAnchor = 0.5);
+    /** @brief Pan the visible interval by an exact timeline delta, clamped to the asset. */
+    [[nodiscard]] EditorResult<void> pan(Duration delta);
     /** @brief Project the current authoritative timeline plus any active drag preview. */
     [[nodiscard]] TimelineWidgetLayout layout() const;
     /** @brief Emit rows, items, handles and playhead to an arbitrary overlay host. */
@@ -134,6 +150,9 @@ private:
     float                               width_      = 800.0f;
     float                               rowHeight_  = 24.0f;
     float                               labelWidth_ = 120.0f;
+    Duration                            snapInterval_ = Duration::zero();
+    Duration                            visibleStart_ = Duration::zero();
+    Duration                            visibleEnd_   = Duration::zero();
     std::optional<DragState>            drag_;
     std::optional<Duration>             clipboardAnchor_;
     std::uint64_t                       generatedSequence_ = 0;

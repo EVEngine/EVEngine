@@ -93,7 +93,7 @@ eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    GROUP 2d 3d)
 # L4 -- rendering extensions and simulation (continued)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS data filesystem graphics image model3d
+                   DEPS action data filesystem graphics image model3d
                    THIRDPARTY poco assimp
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
