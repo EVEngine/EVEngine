@@ -481,15 +481,19 @@ build/linux-asan: build/linux-asan/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
-# The instrumented unit_test is large enough for GNU ld's GOTPCREL relaxation
-# to overflow when linking static third-party libraries. Keep the relocations
-# unrelaxed for this sanitizer-only executable build.
+# Keep sanitizer instrumentation and engine assertions, but use modest
+# optimization so the monolithic unit_test stays within x86-64's PC-relative
+# relocation range. Disabling linker relaxation also avoids GOTPCREL overflows
+# against static third-party libraries near that limit.
 build/linux-asan/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
 		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
 		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
+		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
 		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DEVENGINE_ENABLE_ASSERTS=ON \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
 
 build/linux-coverage: build/linux-coverage/Makefile
