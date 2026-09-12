@@ -3,6 +3,7 @@
 #include "common/Assert.h"
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
@@ -13,6 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <limits>
+#include <string>
 #include <vector>
 
 namespace eve::hd2d {
@@ -50,11 +52,14 @@ void Sprite3D::buildQuad(graphics::Graphics *gfx) {
     renderable_ = graphics::Renderable3D::create();
     if (!renderable_) throw eve::Exception("Sprite3D: Renderable3D create failed");
     renderable_->setMesh(quad_);
-    auto* material = gfx->newMaterial();
+    auto *material = gfx->newMaterial();
     material->setSurfaceMode("masked");
     material->setReceiveLight(false);
     material->setAlbedoTexture(texture_);
     material->setTint(tintR_, tintG_, tintB_, tintA_);
+    material->setAlphaCutoff(alphaCutoff_);
+    material->setDepthWrite(depthWrite_);
+    material->setDoubleSided(doubleSided_);
     renderable_->setMaterial(material);
     // 2D sprites are self-lit (HD-2D characters), not shaded by 3D lights.
     renderable_->setReceiveLight(false);
@@ -63,6 +68,17 @@ void Sprite3D::buildQuad(graphics::Graphics *gfx) {
     renderable_->setTint(tintR_, tintG_, tintB_, tintA_);
     renderable_->setVisible(visible_);
     updateFrameUv();
+}
+
+void Sprite3D::syncMaterial() {
+    if (!renderable_ || !renderable_->getMaterial()) return;
+    auto *material = renderable_->getMaterial();
+    material->setSurfaceMode("masked");
+    material->setAlphaCutoff(alphaCutoff_);
+    material->setDepthWrite(depthWrite_);
+    material->setDoubleSided(doubleSided_);
+    material->setTint(tintR_, tintG_, tintB_, tintA_);
+    material->setAlbedoTexture(texture_);
 }
 
 void Sprite3D::updateFrameUv() {
@@ -91,7 +107,7 @@ void Sprite3D::setTexture(graphics::Texture *texture) {
     texture_ = texture;
     if (renderable_) {
         renderable_->setTexture(texture);
-        renderable_->getMaterial()->setAlbedoTexture(texture);
+        syncMaterial();
     }
 }
 graphics::Texture *Sprite3D::getTexture() const { return texture_; }
@@ -183,16 +199,29 @@ void Sprite3D::orientToCamera() {
     const float     length2 = glm::dot(forward, forward);
     if (!std::isfinite(length2) || length2 < 1e-12f) return;
     forward /= std::sqrt(length2);
-    glm::vec3   right        = glm::cross(forward, glm::vec3(cam.upX, cam.upY, cam.upZ));
-    const float rightLength2 = glm::dot(right, right);
-    if (!std::isfinite(rightLength2) || rightLength2 < 1e-12f) return;
-    right /= std::sqrt(rightLength2);
-    // Use the camera basis, not eye-to-sprite: all sprites remain parallel to
-    // the image plane, including off-center sprites and rolled cameras.
+
     glm::mat4 rotation(1.f);
-    rotation[0] = glm::vec4(-right, 0.f);
-    rotation[1] = glm::vec4(glm::cross(right, forward), 0.f);
-    rotation[2] = glm::vec4(forward, 0.f);
+    if (yawBillboard_) {
+        // Cylindrical (Y-up) billboard: face the camera on XZ only.
+        glm::vec3 flat(-forward.x, 0.f, -forward.z);
+        const float flatLen2 = glm::dot(flat, flat);
+        if (!std::isfinite(flatLen2) || flatLen2 < 1e-12f) return;
+        flat /= std::sqrt(flatLen2);
+        const glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), flat));
+        rotation[0] = glm::vec4(-right, 0.f);
+        rotation[1] = glm::vec4(0.f, 1.f, 0.f, 0.f);
+        rotation[2] = glm::vec4(flat, 0.f);
+    } else {
+        glm::vec3   right        = glm::cross(forward, glm::vec3(cam.upX, cam.upY, cam.upZ));
+        const float rightLength2 = glm::dot(right, right);
+        if (!std::isfinite(rightLength2) || rightLength2 < 1e-12f) return;
+        right /= std::sqrt(rightLength2);
+        // Use the camera basis, not eye-to-sprite: all sprites remain parallel to
+        // the image plane, including off-center sprites and rolled cameras.
+        rotation[0] = glm::vec4(-right, 0.f);
+        rotation[1] = glm::vec4(glm::cross(right, forward), 0.f);
+        rotation[2] = glm::vec4(forward, 0.f);
+    }
     float yaw, pitch, roll;
     glm::extractEulerAngleYXZ(rotation, yaw, pitch, roll);
     renderable_->setRotation(yaw, pitch, roll);
@@ -235,7 +264,7 @@ void Sprite3D::setTint(float r, float g, float b, float a) {
     tintA_ = std::max(0.f, std::min(1.f, a));
     if (renderable_) {
         renderable_->setTint(tintR_, tintG_, tintB_, tintA_);
-        renderable_->getMaterial()->setTint(tintR_, tintG_, tintB_, tintA_);
+        syncMaterial();
     }
 }
 void Sprite3D::setVisible(bool visible) {
@@ -243,5 +272,36 @@ void Sprite3D::setVisible(bool visible) {
     if (renderable_) renderable_->setVisible(visible);
 }
 bool Sprite3D::getVisible() const { return visible_; }
+
+void Sprite3D::setAlphaCutoff(float cutoff) {
+    if (!std::isfinite(cutoff)) throw eve::Exception("Sprite3D.setAlphaCutoff: cutoff must be finite");
+    alphaCutoff_ = std::max(0.f, std::min(1.f, cutoff));
+    syncMaterial();
+}
+float Sprite3D::getAlphaCutoff() const { return alphaCutoff_; }
+
+void Sprite3D::setDepthWrite(bool enabled) {
+    depthWrite_ = enabled;
+    syncMaterial();
+}
+bool Sprite3D::getDepthWrite() const { return depthWrite_; }
+
+void Sprite3D::setDoubleSided(bool enabled) {
+    doubleSided_ = enabled;
+    syncMaterial();
+}
+bool Sprite3D::getDoubleSided() const { return doubleSided_; }
+
+void Sprite3D::setBillboardMode(const std::string &mode) {
+    if (mode == "yaw" || mode == "cylindrical" || mode == "y") {
+        yawBillboard_ = true;
+    } else if (mode == "screen" || mode == "camera" || mode.empty()) {
+        yawBillboard_ = false;
+    } else {
+        throw eve::Exception("Sprite3D.setBillboardMode: expected 'screen' or 'yaw'");
+    }
+    orientToCamera();
+}
+std::string Sprite3D::getBillboardMode() const { return yawBillboard_ ? "yaw" : "screen"; }
 
 }  // namespace eve::hd2d
